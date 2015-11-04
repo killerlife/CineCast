@@ -1,0 +1,16 @@
+base referer
+rect $classXKMSMessageAbstractType.html 8,272 202,296
+rect $classXKMSRequestAbstractType.html 252,152 441,176
+rect $classXKMSResultType.html 282,392 410,416
+rect $classXKMSCompoundRequest.html 490,8 666,32
+rect $classXKMSLocateRequest.html 504,56 653,80
+rect $classXKMSPendingRequest.html 498,104 658,128
+rect $classXKMSRegisterRequest.html 498,152 658,176
+rect $classXKMSStatusRequest.html 504,200 653,224
+rect $classXKMSValidateRequest.html 500,248 657,272
+rect $classXKMSCompoundResult.html 497,296 660,320
+rect $classXKMSLocateResult.html 509,344 648,368
+rect $classXKMSRegisterResult.html 504,392 653,416
+rect $classXKMSResult.html 529,440 628,464
+rect $classXKMSStatusResult.html 510,488 646,512
+rect $classXKMSValidateResult.html 505,536 652,560

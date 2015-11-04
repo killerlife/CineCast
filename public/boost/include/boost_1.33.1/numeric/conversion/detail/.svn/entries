@@ -1,0 +1,98 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/numeric/conversion/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+bounds.hpp
+file
+
+
+
+add
+
+old_numeric_cast.hpp
+file
+
+
+
+add
+
+conversion_traits.hpp
+file
+
+
+
+add
+
+int_float_mixture.hpp
+file
+
+
+
+add
+
+sign_mixture.hpp
+file
+
+
+
+add
+
+udt_builtin_mixture.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+is_subranged.hpp
+file
+
+
+
+add
+
+meta.hpp
+file
+
+
+
+add
+
+converter.hpp
+file
+
+
+
+add
+

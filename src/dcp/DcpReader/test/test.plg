@@ -1,0 +1,86 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: DcpReader - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP141.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../../../mxf/include/" /I "../../../../xml/include/" /I "../../../include/" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "DCPREADER_EXPORTS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /Zm200 /c 
+"D:\MyProject\dciproject\dcp\src\DcpReader\reader\DcpReader.cpp"
+"D:\MyProject\dciproject\dcp\src\DcpReader\reader\TaCompositionReader.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP141.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP142.tmp" with contents
+[
+mxfEssenceReader_d.lib DcpXmlWrapLibd.lib mxflibd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:yes /pdb:"Debug/DcpReader_d.pdb" /debug /machine:I386 /out:"Debug/DcpReader_d.dll" /implib:"Debug/DcpReader_d.lib" /pdbtype:sept /libpath:"../../../../mxf/lib/msvc6" /libpath:"../../../../xml/lib" 
+.\Debug\DcpReader.obj
+.\Debug\TaCompositionReader.obj
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP142.tmp"
+<h3>Output Window</h3>
+Compiling...
+DcpReader.cpp
+TaCompositionReader.cpp
+Generating Code...
+Linking...
+   Creating library Debug/DcpReader_d.lib and object Debug/DcpReader_d.exp
+Creating command line "bscmake.exe /nologo /o"Debug/DcpReader.bsc"  .\Debug\DcpReader.sbr .\Debug\TaCompositionReader.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP146.bat" with contents
+[
+@echo off
+copy                  /y                  debug\DcpReader_d.dll                 ..\..\..\bin
+copy                  /y                  debug\DcpReader_d.lib                 ..\..\..\lib
+]
+Creating command line "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP146.bat"
+
+已复制         1 个文件。
+已复制         1 个文件。
+<h3>
+--------------------Configuration: test - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP147.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GR /GX /ZI /Od /I "../../../../mxf/include/" /I "../../../../xml/include/" /I "../../../include/" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /Zm200 /c 
+"D:\MyProject\dciproject\dcp\src\DcpReader\test\t1.cpp"
+"D:\MyProject\dciproject\dcp\src\DcpReader\test\test.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP147.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP148.tmp" with contents
+[
+cppunitd_dll.lib DcpReader_d.lib mxflibd.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/testDcpReaderd.pdb" /debug /machine:I386 /out:"Debug/testDcpReaderd.exe" /pdbtype:sept /libpath:"../../../../mxf/lib/msvc6" /libpath:"../../../lib" 
+.\Debug\t1.obj
+.\Debug\test.obj
+\MyProject\dciproject\dcp\src\DcpReader\reader\Debug\DcpReader_d.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP148.tmp"
+<h3>Output Window</h3>
+Compiling...
+t1.cpp
+test.cpp
+Generating Code...
+Linking...
+Creating command line "bscmake.exe /nologo /o"Debug/test.bsc"  .\Debug\t1.sbr .\Debug\test.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP14A.bat" with contents
+[
+@echo off
+copy                  /y                Debug\testDcpReaderd.exe                 ..\..\..\bin
+]
+Creating command line "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP14A.bat"
+
+已复制         1 个文件。
+
+
+
+<h3>Results</h3>
+testDcpReaderd.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

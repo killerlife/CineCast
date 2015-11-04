@@ -1,0 +1,16 @@
+///////////////////////////////////////////////////////////////////////////////////////
+//
+
+#define ERR_DCPPARSER_START							-14000
+#define ERR_DCPPARSER_END							-15000
+
+//dcp parser
+#define ERR_DIRECTORY_UNEXIST						ERR_DCPPARSER_START-0
+#define ERR_PKL_FILE_UNEXIST						ERR_DCPPARSER_START-1
+#define ERR_OPEN_PKLFILE_EXCEPTION					ERR_DCPPARSER_START-2
+#define ERR_PKL_OPEN_FAILED							ERR_DCPPARSER_START-3
+#define ERR_CPL_NOT_FOUNDED							ERR_DCPPARSER_START-4
+#define ERR_DATABASE_UNCONNECTED					ERR_DCPPARSER_START-5
+
+//assit class
+#define ERR_ASSIT_GETRATING_FAILED					ERR_DCPPARSER_START-10

@@ -1,0 +1,8 @@
+base referer
+rect $classXKMSCompoundResult.html 8,158 170,182
+rect $classXKMSLocateResult.html 194,158 333,182
+rect $classXKMSRegisterResult.html 357,158 506,182
+rect $classXKMSResult.html 530,158 629,182
+rect $classXKMSStatusResult.html 653,158 789,182
+rect $classXKMSValidateResult.html 813,158 960,182
+rect $classXKMSMessageAbstractType.html 408,9 602,33

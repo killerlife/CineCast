@@ -1,0 +1,324 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="Apache Forrest" name="Generator">
+<meta name="Forrest-version" content="0.6">
+<meta name="Forrest-skin-name" content="pelt">
+<title>Resolver-Mania</title>
+<link type="text/css" href="../skin/basic.css" rel="stylesheet">
+<link media="screen" type="text/css" href="../skin/screen.css" rel="stylesheet">
+<link media="print" type="text/css" href="../skin/print.css" rel="stylesheet">
+<link type="text/css" href="../skin/profile.css" rel="stylesheet">
+<script src="../skin/getBlank.js" language="javascript" type="text/javascript"></script><script src="../skin/getMenu.js" language="javascript" type="text/javascript"></script><script src="../skin/fontsize.js" language="javascript" type="text/javascript"></script>
+</head>
+<body onload="init()">
+<script type="text/javascript">ndeSetTextSize();</script>
+<div id="top">
+<!--+
+    |breadtrail
+    +-->
+<div class="breadtrail">
+<a href="http://www.apache.org/">apache</a> &gt; <a href="http://xml.apache.org/">xml.apache</a><script src="../skin/breadcrumbs.js" language="JavaScript" type="text/javascript"></script>
+</div>
+<!--+
+    |header
+    +-->
+<div class="header">
+<!--+
+    |start group logo
+    +-->
+<div class="grouplogo">
+<a href="http:///xml.apache.org"><img class="logoImage" alt="Apache XML" src="../images/group-logo.gif"></a>
+</div>
+<!--+
+    |end group logo
+    +-->
+<!--+
+    |start Project Logo
+    +-->
+<div class="projectlogo">
+<a href="http://xml.apache.org/security"><img class="logoImage" alt="Apache XML Security" src="../images/project-logo.gif"></a>
+</div>
+<!--+
+    |end Project Logo
+    +-->
+<!--+
+    |start Search
+    +-->
+<div class="searchbox">
+<form action="http://www.google.com/search" method="get" class="roundtopsmall">
+<input value="xml.apache.org/security" name="sitesearch" type="hidden"><input onFocus="getBlank (this, 'Search the site with google:');" value="Search the site with google:" size="25" name="q" id="query" type="text">&nbsp; 
+                    <input name="Search" value="Search" type="submit">
+</form>
+</div>
+<!--+
+    |end search
+    +-->
+<!--+
+    |start Tabs
+    +-->
+<ul id="tabs">
+<li>
+<a class="base-not-selected" href="../index.html">Home</a>
+</li>
+<li class="current">
+<a class="base-selected" href="../Java/index.html">Java</a>
+</li>
+<li>
+<a class="base-not-selected" href="../c/index.html">C++</a>
+</li>
+</ul>
+<!--+
+    |end Tabs
+    +-->
+</div>
+</div>
+<div id="main">
+<div id="publishedStrip">
+<!--+
+    |start Subtabs
+    +-->
+<div id="level2tabs"></div>
+<!--+
+    |end Endtabs
+    +-->
+<script type="text/javascript" language="JavaScript"><!--
+              document.write("Published: " + document.lastModified);
+              //  --></script>
+</div>
+<!--+
+    |breadtrail
+    +-->
+<div class="breadtrail">
+             
+             &nbsp;
+           </div>
+<!--+
+    |start Menu, mainarea
+    +-->
+<!--+
+    |start Menu
+    +-->
+<div id="menu">
+<div onclick="SwitchMenu('menu_selected_1.1', '../skin/')" id="menu_selected_1.1Title" class="menutitle" style="background-image: url('../skin/images/chapter_open.gif');">Java</div>
+<div id="menu_selected_1.1" class="selectedmenuitemgroup" style="display: block;">
+<div class="menuitem">
+<a title="" href="../Java/index.html">Index</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/installation.html">Installation</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/examples.html">Examples</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/faq.html">FAQs</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/api.html">API Docs</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/interop.html">Interoperability</a>
+</div>
+<div class="menuitem">
+<a title="" href="http://lsd.student.utwente.nl/gump/xml-security/xml-security.html">Gump results</a>
+</div>
+<div class="menupage">
+<div class="menupagetitle">Resolvermania</div>
+</div>
+</div>
+<div id="credit"></div>
+<div id="roundbottom">
+<img style="display: none" class="corner" height="15" width="15" alt="" src="../skin/images/rc-b-l-15-1body-2menu-3menu.png"></div>
+<!--+
+  |alternative credits
+  +-->
+</div>
+<!--+
+    |end Menu
+    +-->
+<!--+
+    |start content
+    +-->
+<div id="content">
+<div id="skinconf-txtlink"></div>
+<h1>Resolver-Mania</h1> 
+    
+<a name="N1000D"></a><a name="Why+do+we+need+all+these+resolvers%3F"></a>
+<h2 class="h3">Why do we need all these resolvers?</h2>
+<div class="section">
+<p>
+	For security and comfort reasons. In the XML Security package, there
+	exist many kinds of Resolvers for different purposes. Resolvers in this
+	package do the same job as an EntityResolver in the SAX package:
+	retrieve information from the apropriate location and give it to the
+	parser/software who needs it. The reason for offering these different
+	Resolvers is that it should be under complete control of the
+	application which connections to the network are made. In the security
+	area, it wouldn't be a good idea to imediately fetch some documents
+	from the web or make other connections only because you want to verify
+	a Signature. This resolver framework gives the application developer
+	the ability to have total control about the interface from the library
+	to the rest of the world. 
+      </p>
+</div>
+    
+<a name="N10017"></a><a name="Types+of+resolvers"></a>
+<h2 class="h3">Types of resolvers</h2>
+<div class="section">
+<a name="N1001D"></a><a name="ResourceResolvers"></a>
+<h3 class="h4">ResourceResolvers</h3>
+<p>
+	  A 
+	  <a target="_top" href="api/org/apache/xml/security/utils/resolver/ResourceResolver.html">
+	    ResourceResolver
+	  </a> is used by a 
+	  <a target="_top" href="api/org/apache/xml/security/signature/Reference.html">
+	    Reference
+	  </a> to retrieve the signed resource from it's location. Different
+	  resolvers exist to get signed portions from the XML document in which
+	  the signature resides, to make HTTP connections or to fetch files
+	  from the local file system. <br> 
+	  The concept of a 
+	  <a target="_top" href="api/org/apache/xml/security/utils/resolver/ResourceResolver.html">
+	    ResourceResolver
+	  </a> is very similar to an org.xml.sax.EntityResolver, but in
+	  contrast to that Interface, the ResourceResolver is able to
+	  de-reference contents <em>inside</em> an XML document.  
+	</p>
+<a name="N10038"></a><a name="StorageResolver"></a>
+<h3 class="h4">StorageResolver</h3>
+<p>A 
+	  <a target="_top" href="api/org/apache/xml/security/keys/storage/StorageResolver.html">
+	    StorageResolver
+	  </a> is used by 
+	  <a target="_top" href="api/org/apache/xml/security/keys/KeyInfo.html">
+	    KeyInfo
+	  </a> and it's child objects / Elements to retrieve Certificates
+	  from storage locations. This approach is used to allow a user to
+	  customize the library for use in a specific corporate
+	  environment. It's possible to write 
+	  <a target="_top" href="api/org/apache/xml/security/keys/storage/StorageResolver.html">
+	    StorageResolver
+	  </a>s who make requests to LDAP servers or to use specificic PKI
+	  interfaces. <br>
+	  Bundled with the software come three sample 
+	  <a target="_top" href="api/org/apache/xml/security/keys/storage/StorageResolver.html">
+	    StorageResolver
+	  </a>s which can be used for common tasks:
+	</p>
+<ul>
+	  
+<li>
+	    The 
+	    <a target="_top" href="api/org/apache/xml/security/keys/storage/implementations/KeyStoreResolver.html">
+	      KeyStoreResolver
+	    </a> is able to retrieve Certificates from a JAVA KeyStore
+	    object. This 
+	    <a target="_top" href="api/org/apache/xml/security/keys/storage/implementations/KeyStoreResolver.html">
+	      KeyStoreResolver
+	    </a> is constructed from an open JAVA KeyStore.
+	  </li>
+	  
+<li>
+	    The 
+	    <a target="_top" href="api/org/apache/xml/security/keys/storage/implementations/SingleCertificateResolver.html">
+	      SingleCertificateResolver
+	    </a> resolves only to a single Certificate. The 
+	    <a target="_top" href="api/org/apache/xml/security/keys/storage/implementations/SingleCertificateResolver.html">
+	      SingleCertificateResolver
+	    </a> is constructed using this single Certificate. 
+	  </li>
+	  
+<li>
+	    The 
+	    <a target="_top" href="api/org/apache/xml/security/keys/storage/implementations/CertsInFilesystemDirectoryResolver.html">
+	      CertsInFilesystemDirectoryResolver
+	    </a> is useful for resolving to raw X.509 certificates which
+	    reside as separate files in a directory in the filesystem. Such a
+	    resolver is needed for verifying the test signatures from Merlin
+	    Huges which are bundled in a directory.
+	  </li> 
+	
+</ul>
+<p>
+	  
+<a target="_top" href="api/org/apache/xml/security/keys/storage/StorageResolver.html">
+	    StorageResolver
+	  </a>s are supplied to the KeyInfo's <span class="codefrag">addStorageResolver()</span> method.
+	</p>
+<p>
+	  Generally, a 
+	  <a target="_top" href="api/org/apache/xml/security/keys/storage/StorageResolver.html">
+	    StorageResolver
+	  </a> has only a method to return an Iterator which iterates
+	  through the available Certificates.
+	</p>
+<a name="N10085"></a><a name="KeyResolver"></a>
+<h3 class="h4">KeyResolver</h3>
+<p>
+	  A 
+	  <a target="_top" href="api/org/apache/xml/security/keys/keyresolver/KeyResolver.html">
+	    KeyResolver
+	  </a> is used by 
+	  <a target="_top" href="api/org/apache/xml/security/keys/KeyInfo.html">
+	    KeyInfo
+	  </a> to process it's child Elements. There exist two general
+	  classes of a 
+	  <a target="_top" href="api/org/apache/xml/security/keys/keyresolver/KeyResolver.html">
+	    KeyResolver
+	  </a>:
+	</p>
+<ul>
+	  
+<li>
+	    If a ds:RSAKeyValue or ds:DSAKeyValue or ds:X509Certificate is used
+	    inside the ds:KeyInfo, the resolvers can return a public key or
+	    Certificate directly without further action, because the key itself
+	    is contained inside the ds:Signature.
+	  </li>
+	  
+<li>
+	    If there is only key material identification information like a
+	    ds:KeyName or the serial number of the Certificate, the KeyResolver
+	    must use the StorageResolvers to query the available keys and
+	    certificates to find the correct one.
+	  </li>
+	
+</ul>
+<p>
+	  Of course, there are cross-dependencies: e.g. a KeyResolver named 
+	  <a target="_top" href="api/org/apache/xml/security/keys/keyresolver/implementations/RetrievalMethodResolver.html">
+	    RetrievalMethodResolver
+	  </a> uses the 
+	  <a target="_top" href="api/org/apache/xml/security/utils/resolver/ResourceResolver.html">
+	    ResourceResolver
+	  </a> framework to retrieve a public key or certificate from an
+	  arbitrary location.
+	</p>
+</div>
+  
+</div>
+<!--+
+    |end content
+    +-->
+<div class="clearboth">&nbsp;</div>
+</div>
+<div id="footer">
+<!--+
+    |start bottomstrip
+    +-->
+<div class="lastmodified">
+<script type="text/javascript"><!--
+document.write("Last Published: " + document.lastModified);
+//  --></script>
+</div>
+<div class="copyright">
+ Copyright &copy; 2002-2005 The Apache Software Foundation.</div>
+<!--+
+    |end bottomstrip
+    +-->
+</div>
+</body>
+</html>

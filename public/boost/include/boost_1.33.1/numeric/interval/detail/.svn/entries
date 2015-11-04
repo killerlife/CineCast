@@ -1,0 +1,119 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/numeric/interval/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+c99_rounding_control.hpp
+file
+
+
+
+add
+
+interval_prototype.hpp
+file
+
+
+
+add
+
+x86_rounding_control.hpp
+file
+
+
+
+add
+
+bcc_rounding_control.hpp
+file
+
+
+
+add
+
+msvc_rounding_control.hpp
+file
+
+
+
+add
+
+sparc_rounding_control.hpp
+file
+
+
+
+add
+
+test_input.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+bugs.hpp
+file
+
+
+
+add
+
+c99sub_rounding_control.hpp
+file
+
+
+
+add
+
+division.hpp
+file
+
+
+
+add
+
+ppc_rounding_control.hpp
+file
+
+
+
+add
+
+x86gcc_rounding_control.hpp
+file
+
+
+
+add
+

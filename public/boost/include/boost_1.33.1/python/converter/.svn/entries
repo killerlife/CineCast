@@ -1,0 +1,217 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/python/converter
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+to_python_function_type.hpp
+file
+
+
+
+add
+
+constructor_function.hpp
+file
+
+
+
+add
+
+obj_mgr_arg_from_python.hpp
+file
+
+
+
+add
+
+registrations.hpp
+file
+
+
+
+add
+
+registered.hpp
+file
+
+
+
+add
+
+pointer_type_id.hpp
+file
+
+
+
+add
+
+arg_from_python.hpp
+file
+
+
+
+add
+
+shared_ptr_to_python.hpp
+file
+
+
+
+add
+
+shared_ptr_deleter.hpp
+file
+
+
+
+add
+
+object_manager.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+return_from_python.hpp
+file
+
+
+
+add
+
+from_python.hpp
+file
+
+
+
+add
+
+pyobject_traits.hpp
+file
+
+
+
+add
+
+arg_to_python_base.hpp
+file
+
+
+
+add
+
+registry.hpp
+file
+
+
+
+add
+
+context_result_converter.hpp
+file
+
+
+
+add
+
+implicit.hpp
+file
+
+
+
+add
+
+as_to_python_function.hpp
+file
+
+
+
+add
+
+pytype_object_mgr_traits.hpp
+file
+
+
+
+add
+
+rvalue_from_python_data.hpp
+file
+
+
+
+add
+
+arg_to_python.hpp
+file
+
+
+
+add
+
+shared_ptr_from_python.hpp
+file
+
+
+
+add
+
+pyobject_type.hpp
+file
+
+
+
+add
+
+builtin_converters.hpp
+file
+
+
+
+add
+
+registered_pointee.hpp
+file
+
+
+
+add
+
+convertible_function.hpp
+file
+
+
+
+add
+

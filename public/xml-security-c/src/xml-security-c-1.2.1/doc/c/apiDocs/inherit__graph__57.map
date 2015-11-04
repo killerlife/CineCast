@@ -1,0 +1,5 @@
+base referer
+rect $classXSECURIResolver.html 7,56 143,80
+rect $classXSECURIResolverGenericUnix.html 198,8 406,32
+rect $classXSECURIResolverGenericWin32.html 193,56 411,80
+rect $classXSECURIResolverXerces.html 214,104 390,128

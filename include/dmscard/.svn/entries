@@ -1,0 +1,52 @@
+8
+
+dir
+5645
+svn://192.168.0.206/v15pc/include/dmscard
+svn://192.168.0.206
+
+
+
+2009-01-07T08:09:57.593750Z
+3570
+lvjianguo
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+7e3e5d03-2a0f-7348-b49d-7352a301eb2e
+
+dculc.h
+file
+
+
+
+
+2009-07-28T09:19:45.171875Z
+23ff788c4189ae48c6b944ef5f514afa
+2008-12-25T01:18:43.578125Z
+3454
+lvjianguo
+
+dmscard.h
+file
+
+
+
+
+2009-07-28T09:19:45.171875Z
+994500eb1e7202f09a4d3725f9a18597
+2009-01-07T08:09:57.593750Z
+3570
+lvjianguo
+

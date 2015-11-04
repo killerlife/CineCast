@@ -1,0 +1,106 @@
+8
+
+dir
+5645
+svn://192.168.0.206/v15pc/src/brunt/inifile
+svn://192.168.0.206
+
+
+
+2008-12-15T05:35:07.843750Z
+3355
+cuihaijun
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+7e3e5d03-2a0f-7348-b49d-7352a301eb2e
+
+stdafx.h
+file
+
+
+
+
+2009-07-28T09:20:08.218750Z
+2d1d86e9a118f3e086118b652397e7c4
+2008-12-12T02:00:25.546875Z
+3329
+liangpeng
+
+zIniFile.h
+file
+
+
+
+
+2009-07-28T09:20:08.218750Z
+cd0eb8f722d6a35ebb37f4903d550dc3
+2008-12-12T02:00:25.546875Z
+3329
+liangpeng
+
+inifile.vcproj
+file
+
+
+
+
+2009-07-28T09:20:08.234375Z
+3a8d06a20789eb7abe1b995ba4fbe569
+2008-12-12T02:00:25.546875Z
+3329
+liangpeng
+
+Debug
+dir
+
+stdafx.cpp
+file
+
+
+
+
+2009-07-28T09:20:08.234375Z
+381d450ea405e676935bea8b1e0b5479
+2008-12-12T02:00:25.546875Z
+3329
+liangpeng
+
+zIniFile.cpp
+file
+
+
+
+
+2009-07-28T09:20:08.250000Z
+2e5635a29bf7ed727aa63ef1a24efbe7
+2008-12-12T02:00:25.546875Z
+3329
+liangpeng
+
+ReadMe.txt
+file
+
+
+
+
+2009-07-28T09:20:08.250000Z
+aeb132c50add54fed1b0edfb3112e6fd
+2008-12-12T02:00:25.546875Z
+3329
+liangpeng
+
+Make_Release
+dir
+

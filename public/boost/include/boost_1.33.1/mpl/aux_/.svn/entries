@@ -1,0 +1,721 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/mpl/aux_
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+arg_typedef.hpp
+file
+
+
+
+add
+
+yes_no.hpp
+file
+
+
+
+add
+
+joint_iter.hpp
+file
+
+
+
+add
+
+find_if_pred.hpp
+file
+
+
+
+add
+
+preprocessed
+dir
+
+
+
+add
+
+iter_push_front.hpp
+file
+
+
+
+add
+
+nttp_decl.hpp
+file
+
+
+
+add
+
+apply_1st.hpp
+file
+
+
+
+add
+
+single_element_iter.hpp
+file
+
+
+
+add
+
+has_begin.hpp
+file
+
+
+
+add
+
+test.hpp
+file
+
+
+
+add
+
+traits_lambda_spec.hpp
+file
+
+
+
+add
+
+push_back_impl.hpp
+file
+
+
+
+add
+
+fold_op.hpp
+file
+
+
+
+add
+
+template_arity.hpp
+file
+
+
+
+add
+
+reverse_iter_fold_impl.hpp
+file
+
+
+
+add
+
+msvc_dtw.hpp
+file
+
+
+
+add
+
+iter_fold_impl.hpp
+file
+
+
+
+add
+
+size_impl.hpp
+file
+
+
+
+add
+
+has_rebind.hpp
+file
+
+
+
+add
+
+fold_pred.hpp
+file
+
+
+
+add
+
+transform_iter.hpp
+file
+
+
+
+add
+
+pop_back_impl.hpp
+file
+
+
+
+add
+
+contains_impl.hpp
+file
+
+
+
+add
+
+value_wknd.hpp
+file
+
+
+
+add
+
+insert_range_impl.hpp
+file
+
+
+
+add
+
+ptr_to_ref.hpp
+file
+
+
+
+add
+
+fold_impl.hpp
+file
+
+
+
+add
+
+msvc_never_true.hpp
+file
+
+
+
+add
+
+nested_type_wknd.hpp
+file
+
+
+
+add
+
+clear_impl.hpp
+file
+
+
+
+add
+
+partition_op.hpp
+file
+
+
+
+add
+
+range_c
+dir
+
+
+
+add
+
+logical_op.hpp
+file
+
+
+
+add
+
+lambda_arity_param.hpp
+file
+
+
+
+add
+
+common_name_wknd.hpp
+file
+
+
+
+add
+
+unwrap.hpp
+file
+
+
+
+add
+
+config
+dir
+
+
+
+add
+
+template_arity_fwd.hpp
+file
+
+
+
+add
+
+msvc_is_class.hpp
+file
+
+
+
+add
+
+O1_size_impl.hpp
+file
+
+
+
+add
+
+begin_end_impl.hpp
+file
+
+
+
+add
+
+overload_names.hpp
+file
+
+
+
+add
+
+na.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+numeric_op.hpp
+file
+
+
+
+add
+
+reverse_fold_impl.hpp
+file
+
+
+
+add
+
+include_preprocessed.hpp
+file
+
+
+
+add
+
+inserter_algorithm.hpp
+file
+
+
+
+add
+
+arity_spec.hpp
+file
+
+
+
+add
+
+has_size.hpp
+file
+
+
+
+add
+
+integral_wrapper.hpp
+file
+
+
+
+add
+
+adl_barrier.hpp
+file
+
+
+
+add
+
+sort_impl.hpp
+file
+
+
+
+add
+
+iter_apply.hpp
+file
+
+
+
+add
+
+comparison_op.hpp
+file
+
+
+
+add
+
+msvc_type.hpp
+file
+
+
+
+add
+
+count_impl.hpp
+file
+
+
+
+add
+
+largest_int.hpp
+file
+
+
+
+add
+
+empty_impl.hpp
+file
+
+
+
+add
+
+na_assert.hpp
+file
+
+
+
+add
+
+erase_impl.hpp
+file
+
+
+
+add
+
+type_wrapper.hpp
+file
+
+
+
+add
+
+insert_impl.hpp
+file
+
+
+
+add
+
+pop_front_impl.hpp
+file
+
+
+
+add
+
+arity.hpp
+file
+
+
+
+add
+
+test
+dir
+
+
+
+add
+
+lambda_spec.hpp
+file
+
+
+
+add
+
+order_impl.hpp
+file
+
+
+
+add
+
+numeric_cast_utils.hpp
+file
+
+
+
+add
+
+is_msvc_eti_arg.hpp
+file
+
+
+
+add
+
+na_fwd.hpp
+file
+
+
+
+add
+
+advance_backward.hpp
+file
+
+
+
+add
+
+preprocessor
+dir
+
+
+
+add
+
+static_cast.hpp
+file
+
+
+
+add
+
+full_lambda.hpp
+file
+
+
+
+add
+
+msvc_eti_base.hpp
+file
+
+
+
+add
+
+count_args.hpp
+file
+
+
+
+add
+
+has_key_impl.hpp
+file
+
+
+
+add
+
+lambda_no_ctps.hpp
+file
+
+
+
+add
+
+iter_fold_if_impl.hpp
+file
+
+
+
+add
+
+has_tag.hpp
+file
+
+
+
+add
+
+na_spec.hpp
+file
+
+
+
+add
+
+filter_iter.hpp
+file
+
+
+
+add
+
+push_front_impl.hpp
+file
+
+
+
+add
+
+sequence_wrapper.hpp
+file
+
+
+
+add
+
+front_impl.hpp
+file
+
+
+
+add
+
+shift_op.hpp
+file
+
+
+
+add
+
+has_type.hpp
+file
+
+
+
+add
+
+lambda_support.hpp
+file
+
+
+
+add
+
+basic_bind.hpp
+file
+
+
+
+add
+
+reverse_fold_impl_body.hpp
+file
+
+
+
+add
+
+has_apply.hpp
+file
+
+
+
+add
+
+back_impl.hpp
+file
+
+
+
+add
+
+fold_impl_body.hpp
+file
+
+
+
+add
+
+advance_forward.hpp
+file
+
+
+
+add
+
+at_impl.hpp
+file
+
+
+
+add
+
+arithmetic_op.hpp
+file
+
+
+
+add
+
+erase_key_impl.hpp
+file
+
+
+
+add
+

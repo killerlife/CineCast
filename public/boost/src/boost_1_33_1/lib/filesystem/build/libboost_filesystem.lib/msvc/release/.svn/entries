@@ -1,0 +1,49 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/src/boost_1_33_1/lib/filesystem/build/libboost_filesystem.lib/msvc/release
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+runtime-link-static
+dir
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+threading-multi
+dir
+
+
+
+add
+

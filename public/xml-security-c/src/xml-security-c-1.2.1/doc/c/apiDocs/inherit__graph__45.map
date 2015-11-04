@@ -1,0 +1,4 @@
+base referer
+rect $classXSECCryptoX509.html 8,32 138,56
+rect $classOpenSSLCryptoX509.html 188,8 337,32
+rect $classWinCAPICryptoX509.html 189,56 336,80

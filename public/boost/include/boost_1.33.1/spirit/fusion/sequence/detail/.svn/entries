@@ -1,0 +1,224 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/spirit/fusion/sequence/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+tuple10.hpp
+file
+
+
+
+add
+
+generate.hpp
+file
+
+
+
+add
+
+joint_view_begin_end_traits.hpp
+file
+
+
+
+add
+
+sequence_less.hpp
+file
+
+
+
+add
+
+tuple_value_at_traits.hpp
+file
+
+
+
+add
+
+tuple_builder.hpp
+file
+
+
+
+add
+
+type_seq_begin_end_trts.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+sequence_equal_to.hpp
+file
+
+
+
+add
+
+sequence_base.hpp
+file
+
+
+
+add
+
+tuple_at_traits.hpp
+file
+
+
+
+add
+
+manip.hpp
+file
+
+
+
+add
+
+tuple_body.hpp
+file
+
+
+
+add
+
+io.hpp
+file
+
+
+
+add
+
+sequence_greater_equal.hpp
+file
+
+
+
+add
+
+tuple_access_result.hpp
+file
+
+
+
+add
+
+tuple_begin_end_traits.hpp
+file
+
+
+
+add
+
+tuple_size_traits.hpp
+file
+
+
+
+add
+
+tuple_macro.hpp
+file
+
+
+
+add
+
+range_begin_end_traits.hpp
+file
+
+
+
+add
+
+trsfrm_view_begin_end_trts.hpp
+file
+
+
+
+add
+
+sequence_greater.hpp
+file
+
+
+
+add
+
+single_view_begin_end_trts.hpp
+file
+
+
+
+add
+
+sequence_not_equal_to.hpp
+file
+
+
+
+add
+
+cons_begin_end_traits.hpp
+file
+
+
+
+add
+
+filter_view_begin_end_trts.hpp
+file
+
+
+
+add
+
+as_tuple_element.hpp
+file
+
+
+
+add
+
+sequence_less_equal.hpp
+file
+
+
+
+add
+

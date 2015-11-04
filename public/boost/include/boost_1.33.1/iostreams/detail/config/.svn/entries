@@ -1,0 +1,119 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/iostreams/detail/config
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+disable_warnings.hpp
+file
+
+
+
+add
+
+gcc.hpp
+file
+
+
+
+add
+
+windows_posix.hpp
+file
+
+
+
+add
+
+enable_warnings.hpp
+file
+
+
+
+add
+
+overload_resolution.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+zlib.hpp
+file
+
+
+
+add
+
+limits.hpp
+file
+
+
+
+add
+
+auto_link.hpp
+file
+
+
+
+add
+
+bzip2.hpp
+file
+
+
+
+add
+
+wide_streams.hpp
+file
+
+
+
+add
+
+codecvt.hpp
+file
+
+
+
+add
+
+dyn_link.hpp
+file
+
+
+
+add
+

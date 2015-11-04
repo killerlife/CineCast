@@ -1,0 +1,105 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/spirit/fusion/iterator/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+adapt_value_traits.hpp
+file
+
+
+
+add
+
+tuple_iterator
+dir
+
+
+
+add
+
+type_sequence_iterator
+dir
+
+
+
+add
+
+single_view_iterator
+dir
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+joint_view_iterator
+dir
+
+
+
+add
+
+filter_view_iterator
+dir
+
+
+
+add
+
+iterator_base.hpp
+file
+
+
+
+add
+
+adapt_deref_traits.hpp
+file
+
+
+
+add
+
+cons_iterator
+dir
+
+
+
+add
+
+transform_view_iterator
+dir
+
+
+
+add
+

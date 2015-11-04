@@ -1,0 +1,43 @@
+#ifndef _CONFIG_H_200812151005__
+#define _CONFIG_H_200812151005__
+
+#ifdef  _WIN32
+#ifdef CONFIG_EXPORTS
+#define CONFIG_API __declspec(dllexport)
+#else
+#define CONFIG_API __declspec(dllimport)
+#endif
+#else
+#define CONFIG_API 
+#endif//_WIN32
+
+#include <string>
+#include <vector>
+using namespace std;
+
+class IConfig
+{
+public:
+	virtual const string getProgramRootPath() = 0;
+	virtual const string getImportRootPath() = 0;
+	virtual const string getUsbRootPath() = 0;
+	virtual const string getBinRootPath() = 0;
+	virtual const string getKdmKeyPath() = 0;
+	virtual const bool getHdcpEnable() = 0;
+	virtual const string getVideoDecGUID() = 0;
+	virtual const string getImportKdmKeyPath() = 0;
+	virtual const string getLogPath() = 0;
+	virtual const string getLogOutPath() = 0;
+	virtual bool getCheckLicenseDate() = 0;
+	virtual const string getBreakPointPath() = 0;
+	virtual const void getImportRootPath(vector<string>& pathlist) = 0;
+	virtual const string getSplPath() = 0;
+	virtual ~IConfig(){};
+};
+
+
+CONFIG_API IConfig& getConfig();
+
+
+#endif//_CONFIG_H_200812151005__
+

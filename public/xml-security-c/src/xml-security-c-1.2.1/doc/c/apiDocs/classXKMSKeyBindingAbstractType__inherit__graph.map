@@ -1,0 +1,5 @@
+base referer
+rect $classXKMSKeyBinding.html 8,83 136,107
+rect $classXKMSPrototypeKeyBinding.html 160,83 346,107
+rect $classXKMSQueryKeyBinding.html 370,83 536,107
+rect $classXKMSUnverifiedKeyBinding.html 560,83 746,107

@@ -1,0 +1,3 @@
+base referer
+rect $classXSECSOAPRequestor.html 9,8 166,32
+rect $classXSECSOAPRequestorSimple.html 216,8 416,32

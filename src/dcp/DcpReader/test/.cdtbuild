@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?fileVersion 3.0.0?>
+
+<ManagedProjectBuildInfo>
+<project id="testDcpReader.cdt.managedbuild.target.gnu.exe.506669253" name="Executable (Gnu)" projectType="cdt.managedbuild.target.gnu.exe">
+<configuration id="cdt.managedbuild.config.gnu.exe.debug.140918531" name="Debug" description="" parent="cdt.managedbuild.config.gnu.exe.debug" artifactName="testDcpReaderd" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" cleanCommand="rm -rf" postbuildStep="cp testDcpReaderd ../../../../bin" preannouncebuildStep="">
+<toolChain superClass="cdt.managedbuild.toolchain.gnu.exe.debug" id="cdt.managedbuild.toolchain.gnu.exe.debug.554248692" name="GCC Tool Chain">
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1659835448" name="GCC C Compiler" command="gcc"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1239072456" name="GCC C++ Compiler" command="g++">
+<option superClass="gnu.cpp.compiler.option.include.paths" id="gnu.cpp.compiler.option.include.paths.847703062" valueType="includePath">
+<listOptionValue value="../../../../../../public/cppunit-1.10.2/include" builtIn="false"/>
+<listOptionValue value="../../../../../../public/brunt/include" builtIn="false"/>
+<listOptionValue value="../../../../../../public/openssl/openssl-0.9.7i/include" builtIn="false"/>
+<listOptionValue value="../../../../../../dciproject/mxf/include" builtIn="false"/>
+</option>
+<option superClass="gnu.cpp.compiler.option.preprocessor.def" id="gnu.cpp.compiler.option.preprocessor.def.714372825" valueType="definedSymbols">
+<listOptionValue value="_LARGEFILE_SOURCE" builtIn="false"/>
+<listOptionValue value="_FILE_OFFSET_BITS=64" builtIn="false"/>
+<listOptionValue value="_LARGEFILE64_SOURCE" builtIn="false"/>
+</option>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.542763362" name="GCC C Linker" command="gcc"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.481802642" name="GCC C++ Linker" command="g++">
+<option superClass="gnu.cpp.link.option.libs" id="gnu.cpp.link.option.libs.334779231" valueType="libs">
+<listOptionValue value="iniFiled" builtIn="false"/>
+<listOptionValue value="dcpReaderd" builtIn="false"/>
+<listOptionValue value="crypto" builtIn="false"/>
+<listOptionValue value="cppunit" builtIn="false"/>
+</option>
+<option superClass="gnu.cpp.link.option.flags" id="gnu.cpp.link.option.flags.69749426" value="-ldl /usr/lib/libcppunit.so" valueType="string"/>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1382207218" name="GCC Assembler" command="as"/>
+<macros/>
+</toolChain>
+</configuration>
+<configuration id="cdt.managedbuild.config.gnu.exe.release.738459304" name="Release" description="" parent="cdt.managedbuild.config.gnu.exe.release" artifactName="testDcpReader" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" cleanCommand="rm -rf" postbuildStep="cp testDcpReader ../../../../bin" preannouncebuildStep="">
+<toolChain superClass="cdt.managedbuild.toolchain.gnu.exe.release" id="cdt.managedbuild.toolchain.gnu.exe.release.1225778633" name="GCC Tool Chain">
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release" id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.121559953" name="GCC C Compiler" command="gcc"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1072062759" name="GCC C++ Compiler" command="g++">
+<option superClass="gnu.cpp.compiler.option.include.paths" id="gnu.cpp.compiler.option.include.paths.982661946" valueType="includePath">
+<listOptionValue value="../../../../../../dciproject/mxf/include" builtIn="false"/>
+<listOptionValue value="../../../../../../public/brunt/include" builtIn="false"/>
+<listOptionValue value="../../../../../../public/openssl/openssl-0.9.7i/include" builtIn="false"/>
+<listOptionValue value="../../../../../../public/cppunit-1.10.2/include" builtIn="false"/>
+</option>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release" id="cdt.managedbuild.tool.gnu.c.linker.exe.release.1641801205" name="GCC C Linker" command="gcc"/>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1218818015" name="GCC C++ Linker" command="g++">
+<option superClass="gnu.cpp.link.option.libs" id="gnu.cpp.link.option.libs.603698150" valueType="libs">
+<listOptionValue value="dcpReader" builtIn="false"/>
+<listOptionValue value="iniFile" builtIn="false"/>
+<listOptionValue value="crypto" builtIn="false"/>
+<listOptionValue value="dcpXmlCore" builtIn="false"/>
+<listOptionValue value="dcpXmlWrap" builtIn="false"/>
+</option>
+<option superClass="gnu.cpp.link.option.flags" id="gnu.cpp.link.option.flags.339952805" value="-ldl /usr/lib/libcppunit.so" valueType="string"/>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.assembler.exe.release" id="cdt.managedbuild.tool.gnu.assembler.exe.release.1797996639" name="GCC Assembler" command="as"/>
+<macros/>
+</toolChain>
+</configuration>
+</project>
+</ManagedProjectBuildInfo>

@@ -1,0 +1,4 @@
+base referer
+rect $classXSECCryptoProvider.html 8,32 157,56
+rect $classOpenSSLCryptoProvider.html 206,8 374,32
+rect $classWinCAPICryptoProvider.html 208,56 373,80

@@ -1,0 +1,308 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/iostreams
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+checked_operations.hpp
+file
+
+
+
+add
+
+filtering_streambuf.hpp
+file
+
+
+
+add
+
+stream.hpp
+file
+
+
+
+add
+
+filtering_stream.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+code_converter.hpp
+file
+
+
+
+add
+
+imbue.hpp
+file
+
+
+
+add
+
+positioning.hpp
+file
+
+
+
+add
+
+pipeline.hpp
+file
+
+
+
+add
+
+traits_fwd.hpp
+file
+
+
+
+add
+
+device
+dir
+
+
+
+add
+
+copy.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+tee.hpp
+file
+
+
+
+add
+
+concepts.hpp
+file
+
+
+
+add
+
+get.hpp
+file
+
+
+
+add
+
+chain.hpp
+file
+
+
+
+add
+
+operations_fwd.hpp
+file
+
+
+
+add
+
+seek.hpp
+file
+
+
+
+add
+
+putback.hpp
+file
+
+
+
+add
+
+write.hpp
+file
+
+
+
+add
+
+filter
+dir
+
+
+
+add
+
+restrict.hpp
+file
+
+
+
+add
+
+char_traits.hpp
+file
+
+
+
+add
+
+compose.hpp
+file
+
+
+
+add
+
+close.hpp
+file
+
+
+
+add
+
+skip.hpp
+file
+
+
+
+add
+
+traits.hpp
+file
+
+
+
+add
+
+invert.hpp
+file
+
+
+
+add
+
+put.hpp
+file
+
+
+
+add
+
+read.hpp
+file
+
+
+
+add
+
+combine.hpp
+file
+
+
+
+add
+
+constants.hpp
+file
+
+
+
+add
+
+flush.hpp
+file
+
+
+
+add
+
+operations.hpp
+file
+
+
+
+add
+
+stream_buffer.hpp
+file
+
+
+
+add
+
+categories.hpp
+file
+
+
+
+add
+
+input_sequence.hpp
+file
+
+
+
+add
+
+optimal_buffer_size.hpp
+file
+
+
+
+add
+
+output_sequence.hpp
+file
+
+
+
+add
+

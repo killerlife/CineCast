@@ -1,0 +1,123 @@
+#ifndef _PROGRAM_QUERY_H_200812021419__
+#define _PROGRAM_QUERY_H_200812021419__
+
+#include <vector>
+#include <string>
+
+#ifdef _WIN32
+#ifdef PROGRAM_QUERY_EXPORTS
+#define PROGRAMQUERY_API __declspec(dllexport)
+#else
+#define PROGRAMQUERY_API __declspec(dllimport)
+#endif
+
+#else 
+#define PROGRAMQUERY_API
+#endif
+
+
+struct TAudioInfo
+{
+	std::string type;
+	std::string keyIdStr;
+	std::string fileName;
+	long        entryPoint;
+	long        duration;
+	std::string sampleRate;
+	std::string bitIndeepness;
+	std::string channel;
+	//Add by Jaontolt
+	long        iduration;
+	//End
+};
+
+struct TVideoInfo
+{
+	std::string type;
+	std::string keyIdStr;
+	std::string fileName;
+	long        entryPoint;
+	long        duration;
+	std::string frameRate;
+	std::string aspectRatio;
+	//Add by Jaontolt
+	long        iduration;
+	//End
+};
+
+struct TProgramInfo
+{
+	std::string id;			// 影片ID
+	std::string title;		// 影片名称
+	std::string type;			// 影片类型
+	std::string contentType; 
+	std::string duration;	// 影片时长(分钟)
+	std::string issuer;		// 发行者
+	std::string issueDate;	// 发行时间
+	std::string creator;
+	std::string country;		// 国家
+	std::string language;	// 语言
+	std::string subtitle;	// 字幕
+	std::string rootpath;	// 节目所在目录
+	std::string license;	// 授权方式
+	std::vector<TVideoInfo> videoInfo;		// 视频信息
+	std::vector<TAudioInfo> audioInfo;		// 音频信息
+};
+
+struct CHashInfo
+{
+	std::string fileName;
+	std::string hashValue;
+};
+//{
+//	std::string startDate;			// 档期开始日期
+//	std::string endDate;			// 档期结束日期
+//	std::string authorizationedTimes;	// 授权场次
+//	std::string playedTimes;		// 已播放场次
+//	std::string remainedTimes;		// 剩余场次
+//	int hashVerify;			// 哈希验证,-1:验证失败;0:未验证;1:验证成功
+//	int authorizationVerify;		// 授权验证,-1:验证失败;0:未验证;1:验证成功
+//};
+
+// TODO: will be removed ->
+/*
+struct ReelFileInfo
+{
+	std::string    keyIdStr;
+	std::string    fileName;
+	long    		 entryPoint;
+	long			 dur;
+	ReelFileInfo():entryPoint(0), dur(24*60*60*100)
+	{
+	}
+};
+struct ReelInfo
+{
+	ReelFileInfo  viedoInfo;
+	ReelFileInfo  audioInfo;
+//	subtitle;
+};
+*/
+// <-
+
+class PROGRAMQUERY_API IProgramQuery 
+{
+public:
+	virtual ~IProgramQuery(){};
+	virtual int open(const std::string& root, bool usePath = false) = 0;
+//	virtual int getProgramList(std::vector<std::string>& programList) = 0;
+//	virtual int getProgramPath(const std::string& programId, std::string& programPath) = 0;
+	virtual int getProgramCount() = 0;
+	virtual int getProgramIndex(const std::string& programId) = 0;
+	virtual int getProgramInfo(int index, TProgramInfo& info) = 0;
+	virtual int getProgramFiles(int index, std::vector<std::string>& filesList) = 0;	// get all files of one program, for import
+	virtual int getProgramPath(int index, std::string& path) = 0;	// get the program root path
+	virtual int getProgramPath(const std::string& programId, std::string& path) = 0;	// get the program root path
+	virtual int getHashValue(int index, std::vector<CHashInfo>& hashInfo) = 0;
+};
+
+PROGRAMQUERY_API IProgramQuery* createProgramQuery();
+PROGRAMQUERY_API void releaseProgramQuery(IProgramQuery*& programQuery);
+
+#endif//_PROGRAM_QUERY_H_200812021419__
+

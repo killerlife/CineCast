@@ -1,0 +1,168 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/type_traits/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+is_function_ptr_tester.hpp
+file
+
+
+
+add
+
+template_arity_spec.hpp
+file
+
+
+
+add
+
+yes_no_type.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+ice_or.hpp
+file
+
+
+
+add
+
+type_trait_def.hpp
+file
+
+
+
+add
+
+is_mem_fun_pointer_impl.hpp
+file
+
+
+
+add
+
+is_function_ptr_helper.hpp
+file
+
+
+
+add
+
+type_trait_undef.hpp
+file
+
+
+
+add
+
+is_mem_fun_pointer_tester.hpp
+file
+
+
+
+add
+
+wrap.hpp
+file
+
+
+
+add
+
+bool_trait_def.hpp
+file
+
+
+
+add
+
+size_t_trait_def.hpp
+file
+
+
+
+add
+
+bool_trait_undef.hpp
+file
+
+
+
+add
+
+cv_traits_impl.hpp
+file
+
+
+
+add
+
+ice_not.hpp
+file
+
+
+
+add
+
+size_t_trait_undef.hpp
+file
+
+
+
+add
+
+ice_and.hpp
+file
+
+
+
+add
+
+ice_eq.hpp
+file
+
+
+
+add
+
+false_result.hpp
+file
+
+
+
+add
+

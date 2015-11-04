@@ -1,0 +1,161 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/iterator
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+interoperable.hpp
+file
+
+
+
+add
+
+is_lvalue_iterator.hpp
+file
+
+
+
+add
+
+iterator_categories.hpp
+file
+
+
+
+add
+
+filter_iterator.hpp
+file
+
+
+
+add
+
+counting_iterator.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+iterator_adaptor.hpp
+file
+
+
+
+add
+
+is_readable_iterator.hpp
+file
+
+
+
+add
+
+indirect_iterator.hpp
+file
+
+
+
+add
+
+zip_iterator.hpp
+file
+
+
+
+add
+
+iterator_facade.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+iterator_traits.hpp
+file
+
+
+
+add
+
+permutation_iterator.hpp
+file
+
+
+
+add
+
+iterator_archetypes.hpp
+file
+
+
+
+add
+
+new_iterator_tests.hpp
+file
+
+
+
+add
+
+reverse_iterator.hpp
+file
+
+
+
+add
+
+transform_iterator.hpp
+file
+
+
+
+add
+
+iterator_concepts.hpp
+file
+
+
+
+add
+

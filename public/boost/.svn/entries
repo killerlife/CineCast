@@ -1,0 +1,63 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+include
+dir
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+lib
+dir
+
+
+
+add
+
+src
+dir
+
+
+
+add
+
+bin
+dir
+
+
+
+add
+

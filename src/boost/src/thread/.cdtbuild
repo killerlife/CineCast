@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?fileVersion 3.1.0?>
+
+<ManagedProjectBuildInfo>
+<project id="bthread.cdt.managedbuild.target.gnu.so.774501409" name="Shared Library (Gnu)" projectType="cdt.managedbuild.target.gnu.so">
+<configuration artifactExtension="so" artifactName="mips-boost-threadd" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.so.debug.55481351" name="Debug" parent="cdt.managedbuild.config.gnu.so.debug" postbuildStep="cp libmips-boost-threadd.so ../../../lib &amp; cp makefile ../Make_Debug &amp; cp *.mk ../Make_Debug">
+<toolChain id="cdt.managedbuild.toolchain.gnu.so.debug.1023730570" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.so.debug">
+<tool command="${CC}" id="cdt.managedbuild.tool.gnu.cpp.compiler.so.debug.613977494" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.so.debug">
+<option id="gnu.cpp.compiler.option.include.paths.395897535" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="../../../../boost/include"/>
+</option>
+<option id="gnu.cpp.compiler.option.preprocessor.def.529464997" superClass="gnu.cpp.compiler.option.preprocessor.def"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.so.debug.1894117215" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.so.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.so.debug.1781574044" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.so.debug"/>
+<tool command="${CC}" id="cdt.managedbuild.tool.gnu.cpp.linker.so.debug.1550852180" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.so.debug">
+<option id="gnu.cpp.link.option.libs.594349876" superClass="gnu.cpp.link.option.libs"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.assembler.so.debug.815674055" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.so.debug"/>
+<macros/>
+</toolChain>
+</configuration>
+<configuration artifactExtension="so" artifactName="mips-boost-thread" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.so.release.920492498" name="Release" parent="cdt.managedbuild.config.gnu.so.release" postbuildStep="cp libmips-boost-thread.so ../../../lib &amp; cp makefile ../Make_Release &amp; cp *.mk ../Make_Release">
+<toolChain id="cdt.managedbuild.toolchain.gnu.so.release.118307676" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.so.release">
+<tool command="${CC}" id="cdt.managedbuild.tool.gnu.cpp.compiler.so.release.1609925493" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.so.release">
+<option id="gnu.cpp.compiler.option.include.paths.1564378938" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="../../../../boost/include"/>
+</option>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.so.release.1786967700" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.so.release"/>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.so.release.183657197" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.so.release"/>
+<tool command="${CC}" id="cdt.managedbuild.tool.gnu.cpp.linker.so.release.625417673" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.so.release"/>
+<tool id="cdt.managedbuild.tool.gnu.assembler.so.release.1161843746" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.so.release"/>
+<macros/>
+</toolChain>
+</configuration>
+<macros/>
+</project>
+</ManagedProjectBuildInfo>

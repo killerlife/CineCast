@@ -1,0 +1,4 @@
+#ifndef SUBTITLE_ERROR_CODE_H
+#define SUBTITLE_ERROR_CODE_H
+
+#endif

@@ -1,0 +1,4 @@
+
+#If you want to use this app,please goto dcp/bin and run it.
+#And it will use the default config file testDcpDump.txt
+#You can change the StartTime and EndTime in file ,which use second as unit

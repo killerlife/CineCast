@@ -1,0 +1,8 @@
+base referer
+rect $classXENCEncryptedType.html 7,372 157,396
+rect $classDSIGKeyInfo.html 181,372 279,396
+rect $classXSECEnv.html 189,281 271,305
+rect $classXSECSafeBufferFormatter.html 13,190 194,214
+rect $classsafeBuffer.html 90,9 173,33
+rect $classsbFormatTarget.html 181,100 298,124
+rect $classXSECURIResolver.html 218,190 354,214

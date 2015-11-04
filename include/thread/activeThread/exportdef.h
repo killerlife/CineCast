@@ -1,0 +1,16 @@
+#ifndef __BRUNT__EXPORT_DEF_ACTIVE_ITHREADMANAGER_H
+#define __BRUNT__EXPORT_DEF_ACTIVE_ITHREADMANAGER_H
+
+#ifdef _WIN32
+
+#ifdef ACTIVETHREADMANAGER_EXPORTS
+#define ACTIVETHREADMANAGER_API __declspec(dllexport)
+#else
+#define ACTIVETHREADMANAGER_API __declspec(dllimport)
+#endif
+
+#else
+#define ACTIVETHREADMANAGER_API 
+#endif
+
+#endif

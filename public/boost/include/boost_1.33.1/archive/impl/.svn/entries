@@ -1,0 +1,182 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/archive/impl
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+xml_woarchive_impl.ipp
+file
+
+
+
+add
+
+archive_pointer_oserializer.ipp
+file
+
+
+
+add
+
+xml_iarchive_impl.ipp
+file
+
+
+
+add
+
+basic_binary_oprimitive.ipp
+file
+
+
+
+add
+
+basic_text_oprimitive.ipp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+basic_binary_iarchive.ipp
+file
+
+
+
+add
+
+basic_text_iarchive.ipp
+file
+
+
+
+add
+
+xml_oarchive_impl.ipp
+file
+
+
+
+add
+
+basic_binary_oarchive.ipp
+file
+
+
+
+add
+
+basic_text_oarchive.ipp
+file
+
+
+
+add
+
+text_wiarchive_impl.ipp
+file
+
+
+
+add
+
+basic_xml_grammar.hpp
+file
+
+
+
+add
+
+basic_xml_iarchive.ipp
+file
+
+
+
+add
+
+text_woarchive_impl.ipp
+file
+
+
+
+add
+
+text_iarchive_impl.ipp
+file
+
+
+
+add
+
+basic_xml_oarchive.ipp
+file
+
+
+
+add
+
+xml_wiarchive_impl.ipp
+file
+
+
+
+add
+
+archive_pointer_iserializer.ipp
+file
+
+
+
+add
+
+text_oarchive_impl.ipp
+file
+
+
+
+add
+
+basic_binary_iprimitive.ipp
+file
+
+
+
+add
+
+basic_text_iprimitive.ipp
+file
+
+
+
+add
+

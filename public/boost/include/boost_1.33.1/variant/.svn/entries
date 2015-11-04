@@ -1,0 +1,112 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/variant
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+recursive_variant.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+get.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+apply_visitor.hpp
+file
+
+
+
+add
+
+bad_visit.hpp
+file
+
+
+
+add
+
+variant.hpp
+file
+
+
+
+add
+
+variant_fwd.hpp
+file
+
+
+
+add
+
+visitor_ptr.hpp
+file
+
+
+
+add
+
+static_visitor.hpp
+file
+
+
+
+add
+
+recursive_wrapper.hpp
+file
+
+
+
+add
+
+recursive_wrapper_fwd.hpp
+file
+
+
+
+add
+

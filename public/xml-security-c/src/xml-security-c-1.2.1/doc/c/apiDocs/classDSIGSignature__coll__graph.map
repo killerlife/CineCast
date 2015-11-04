@@ -1,0 +1,11 @@
+base referer
+rect $classsafeBuffer.html 114,9 197,33
+rect $classXSECSafeBufferFormatter.html 171,190 353,214
+rect $classsbFormatTarget.html 97,100 214,124
+rect $classXSECEnv.html 305,294 387,318
+rect $classDSIGSignedInfo.html 782,385 899,409
+rect $classDSIGKeyInfoList.html 310,385 430,409
+rect $classXSECURIResolver.html 469,190 605,214
+rect $classXSECKeyInfoResolver.html 454,385 611,409
+rect $classXSECCryptoKey.html 635,385 758,409
+rect $classDSIGReferenceList.html 773,294 909,318

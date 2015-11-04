@@ -1,0 +1,140 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/spirit/fusion/algorithm
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+remove.hpp
+file
+
+
+
+add
+
+find_if.hpp
+file
+
+
+
+add
+
+erase.hpp
+file
+
+
+
+add
+
+push_back.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+insert.hpp
+file
+
+
+
+add
+
+for_each.hpp
+file
+
+
+
+add
+
+remove_if.hpp
+file
+
+
+
+add
+
+replace.hpp
+file
+
+
+
+add
+
+transform.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+find.hpp
+file
+
+
+
+add
+
+fold.hpp
+file
+
+
+
+add
+
+filter.hpp
+file
+
+
+
+add
+
+any.hpp
+file
+
+
+
+add
+
+push_front.hpp
+file
+
+
+
+add
+

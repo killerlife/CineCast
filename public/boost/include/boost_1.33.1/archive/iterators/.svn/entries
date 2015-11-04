@@ -1,0 +1,161 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/archive/iterators
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+escape.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+dataflow.hpp
+file
+
+
+
+add
+
+xml_unescape_exception.hpp
+file
+
+
+
+add
+
+base64_exception.hpp
+file
+
+
+
+add
+
+unescape.hpp
+file
+
+
+
+add
+
+insert_linebreaks.hpp
+file
+
+
+
+add
+
+wchar_from_mb.hpp
+file
+
+
+
+add
+
+mb_from_wchar.hpp
+file
+
+
+
+add
+
+remove_whitespace.hpp
+file
+
+
+
+add
+
+transform_width.hpp
+file
+
+
+
+add
+
+head_iterator.hpp
+file
+
+
+
+add
+
+binary_from_base64.hpp
+file
+
+
+
+add
+
+base64_from_binary.hpp
+file
+
+
+
+add
+
+istream_iterator.hpp
+file
+
+
+
+add
+
+dataflow_exception.hpp
+file
+
+
+
+add
+
+xml_escape.hpp
+file
+
+
+
+add
+
+ostream_iterator.hpp
+file
+
+
+
+add
+
+xml_unescape.hpp
+file
+
+
+
+add
+

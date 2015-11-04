@@ -1,0 +1,224 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/numeric/ublas
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+exception.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+operation.hpp
+file
+
+
+
+add
+
+functional.hpp
+file
+
+
+
+add
+
+vector.hpp
+file
+
+
+
+add
+
+vector_proxy.hpp
+file
+
+
+
+add
+
+storage.hpp
+file
+
+
+
+add
+
+matrix.hpp
+file
+
+
+
+add
+
+matrix_proxy.hpp
+file
+
+
+
+add
+
+traits.hpp
+file
+
+
+
+add
+
+io.hpp
+file
+
+
+
+add
+
+triangular.hpp
+file
+
+
+
+add
+
+vector_of_vector.hpp
+file
+
+
+
+add
+
+symmetric.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+banded.hpp
+file
+
+
+
+add
+
+operation_sparse.hpp
+file
+
+
+
+add
+
+vector_sparse.hpp
+file
+
+
+
+add
+
+hermitian.hpp
+file
+
+
+
+add
+
+fwd.hpp
+file
+
+
+
+add
+
+lu.hpp
+file
+
+
+
+add
+
+matrix_sparse.hpp
+file
+
+
+
+add
+
+blas.hpp
+file
+
+
+
+add
+
+storage_sparse.hpp
+file
+
+
+
+add
+
+vector_expression.hpp
+file
+
+
+
+add
+
+expression_types.hpp
+file
+
+
+
+add
+
+matrix_expression.hpp
+file
+
+
+
+add
+
+operation_blocked.hpp
+file
+
+
+
+add
+

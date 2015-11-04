@@ -1,0 +1,77 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/math
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+common_factor_rt.hpp
+file
+
+
+
+add
+
+common_factor_ct.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+special_functions
+dir
+
+
+
+add
+
+quaternion.hpp
+file
+
+
+
+add
+
+common_factor.hpp
+file
+
+
+
+add
+
+octonion.hpp
+file
+
+
+
+add
+

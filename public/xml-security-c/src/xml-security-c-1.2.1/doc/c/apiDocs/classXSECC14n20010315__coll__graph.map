@@ -1,0 +1,7 @@
+base referer
+rect $classXSECCanon.html 132,152 230,176
+rect $classsafeBuffer.html 209,9 292,33
+rect $classXSECSafeBufferFormatter.html 218,213 400,237
+rect $classsbFormatTarget.html 349,100 466,124
+rect $structXSECNodeListElt.html 408,152 536,176
+rect $classXSECXPathNodeList.html 610,213 760,237

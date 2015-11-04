@@ -1,0 +1,147 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/test/utils
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+trivial_singleton.hpp
+file
+
+
+
+add
+
+callback.hpp
+file
+
+
+
+add
+
+runtime
+dir
+
+
+
+add
+
+custom_manip.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+iterator
+dir
+
+
+
+add
+
+xml_printer.hpp
+file
+
+
+
+add
+
+foreach.hpp
+file
+
+
+
+add
+
+fixed_mapping.hpp
+file
+
+
+
+add
+
+wrap_stringstream.hpp
+file
+
+
+
+add
+
+class_properties.hpp
+file
+
+
+
+add
+
+rtti.hpp
+file
+
+
+
+add
+
+assign_op.hpp
+file
+
+
+
+add
+
+basic_cstring
+dir
+
+
+
+add
+
+nullstream.hpp
+file
+
+
+
+add
+
+algorithm.hpp
+file
+
+
+
+add
+
+named_params.hpp
+file
+
+
+
+add
+

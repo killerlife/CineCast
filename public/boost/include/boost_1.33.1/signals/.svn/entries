@@ -1,0 +1,147 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/signals
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+signal0.hpp
+file
+
+
+
+add
+
+signal1.hpp
+file
+
+
+
+add
+
+signal2.hpp
+file
+
+
+
+add
+
+connection.hpp
+file
+
+
+
+add
+
+signal3.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+signal4.hpp
+file
+
+
+
+add
+
+signal5.hpp
+file
+
+
+
+add
+
+signal6.hpp
+file
+
+
+
+add
+
+signal7.hpp
+file
+
+
+
+add
+
+signal8.hpp
+file
+
+
+
+add
+
+signal9.hpp
+file
+
+
+
+add
+
+signal_template.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+signal10.hpp
+file
+
+
+
+add
+
+slot.hpp
+file
+
+
+
+add
+
+trackable.hpp
+file
+
+
+
+add
+

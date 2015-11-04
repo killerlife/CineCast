@@ -1,0 +1,224 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/mpl/aux_/config
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+workaround.hpp
+file
+
+
+
+add
+
+gcc.hpp
+file
+
+
+
+add
+
+overload_resolution.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+adl.hpp
+file
+
+
+
+add
+
+static_constant.hpp
+file
+
+
+
+add
+
+arrays.hpp
+file
+
+
+
+add
+
+forwarding.hpp
+file
+
+
+
+add
+
+integral.hpp
+file
+
+
+
+add
+
+typeof.hpp
+file
+
+
+
+add
+
+ttp.hpp
+file
+
+
+
+add
+
+dmc_ambiguous_ctps.hpp
+file
+
+
+
+add
+
+msvc.hpp
+file
+
+
+
+add
+
+ctps.hpp
+file
+
+
+
+add
+
+msvc_typename.hpp
+file
+
+
+
+add
+
+compiler.hpp
+file
+
+
+
+add
+
+use_preprocessed.hpp
+file
+
+
+
+add
+
+intel.hpp
+file
+
+
+
+add
+
+dependent_nttp.hpp
+file
+
+
+
+add
+
+bind.hpp
+file
+
+
+
+add
+
+operators.hpp
+file
+
+
+
+add
+
+has_apply.hpp
+file
+
+
+
+add
+
+lambda.hpp
+file
+
+
+
+add
+
+eti.hpp
+file
+
+
+
+add
+
+has_xxx.hpp
+file
+
+
+
+add
+
+nttp.hpp
+file
+
+
+
+add
+
+preprocessor.hpp
+file
+
+
+
+add
+
+dtp.hpp
+file
+
+
+
+add
+

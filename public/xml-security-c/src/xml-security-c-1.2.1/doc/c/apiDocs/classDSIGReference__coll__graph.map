@@ -1,0 +1,11 @@
+base referer
+rect $classDSIGTransformList.html 8,372 144,396
+rect $classXSECSafeBufferFormatter.html 241,190 422,214
+rect $classXSECEnv.html 624,281 706,305
+rect $classXSECNameSpaceExpander.html 237,281 426,305
+rect $classsafeBuffer.html 318,9 401,33
+rect $classsbFormatTarget.html 409,100 526,124
+rect $classXSECURIResolver.html 597,190 733,214
+rect $classTXFMBase.html 333,372 421,396
+rect $classXSECXPathNodeList.html 450,281 600,305
+rect $classDSIGReferenceList.html 669,372 805,396

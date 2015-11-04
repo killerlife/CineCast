@@ -1,0 +1,10 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+LIBS := -lmips-iniFile
+
+USER_OBJS := debugprint.o
+
+TEST_OBJS := testmain.o 
+

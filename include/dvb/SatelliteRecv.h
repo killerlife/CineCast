@@ -1,0 +1,205 @@
+#pragma once
+#include <string>
+#include "mytype.h"
+
+#include <linux/dvb/frontend.h>
+#include <linux/dvb/dmx.h>
+#include <linux/dvb/audio.h>
+#include <linux/dvb/version.h>
+
+#if DVB_API_VERSION < 5
+#error szap-s2 requires Linux DVB driver API version 5.0 or newer!
+#endif 
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// Remember redefine this function
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+#define STORAGE_PATH "/storage/"
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// These codes are part of TUNER
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+struct t_channel_parameter_map {
+	int user_value;
+	int driver_value;
+	std::string user_string;
+}; 
+
+static struct t_channel_parameter_map coderate_values[] = {
+	{   0, FEC_NONE, "none" },
+	{  12, FEC_1_2,  "1/2" },
+	//  {  13, FEC_1_3,  "1/3" },
+	//  {  14, FEC_1_4,  "1/4" },
+	{  23, FEC_2_3,  "2/3" },
+	//  {  25, FEC_2_5,  "2/5" },
+	{  34, FEC_3_4,  "3/4" },
+	{  35, FEC_3_5,  "3/5" },
+	{  45, FEC_4_5,  "4/5" },
+	{  56, FEC_5_6,  "5/6" },
+	{  67, FEC_6_7,  "6/7" },
+	{  78, FEC_7_8,  "7/8" },
+	{  89, FEC_8_9,  "8/9" },
+	{ 910, FEC_9_10, "9/10" },
+	{ 999, FEC_AUTO, "auto" },
+	{ -1 }
+};
+
+static struct t_channel_parameter_map modulation_values[] = {
+	// {   0, NONE,    "none" },
+	// {   4, QAM_4,    "QAM4" },
+	{  16, QAM_16,   "QAM16" },
+	{  32, QAM_32,   "QAM32" },
+	{  64, QAM_64,   "QAM64" },
+	{ 128, QAM_128,  "QAM128" },
+	{ 256, QAM_256,  "QAM256" },
+	//  { 512, QAM_512,  "QAM512" },
+	//  {1024, QAM_1024, "QAM1024" },
+	//  {   1, BPSK,    "BPSK" },
+	{   2, QPSK,    "QPSK" },
+	//  {   3, OQPSK,   "OQPSK" },
+	{   5, PSK_8,    "8PSK" },
+	{   6, APSK_16,  "16APSK" },
+	//{   7, _32APSK,  "32APSK" },
+	//  {   8, OFDM,    "OFDM" },
+	//  {   9, COFDM,   "COFDM" },
+	{  10, VSB_8,    "VSB8" },
+	{  11, VSB_16,   "VSB16" },
+	{ 998, QAM_AUTO, "QAMAUTO" },
+	//  { 999, AUTO },
+	{ -1 }
+};
+
+static struct t_channel_parameter_map system_values[] = {
+	{   0, SYS_DVBS,  "DVB-S" },
+	{   1, SYS_DVBS2, "DVB-S2" },
+	{ -1 }
+};
+
+
+static struct t_channel_parameter_map rolloff_values[] = {
+	// {   0, ROLLOFF_AUTO, "auto"},
+	{  20, ROLLOFF_20, "0.20" },
+	{  25, ROLLOFF_25, "0.25" },
+	{  35, ROLLOFF_35, "0.35" },
+	{ -1 }
+}; 
+
+static struct t_channel_parameter_map polvert_values[] = {
+	{ 0, 0, "H"},
+	{ 1, 1, "V"},
+	{ -1 }
+};
+
+typedef struct tuner_conf {
+	std::string strDevName;		//Such as "/dev/dvb/adapter0/frontend0"
+	std::string strDelSys;		//Such as "DVB-S", "DVB-S2"
+	std::string strFec;			//Such as "1/2", "2/3", "3/4", "4/5", "5/6"
+	std::string strModulation;	//Such as "8PSK", "16APSK"
+	std::string strRollOff;		//Such as "0.20", "0.25", "0.35"
+	std::string strPolVert;		//Such as "V", "H"
+	unsigned int nFreq;
+	unsigned int nHiBand;
+	unsigned int nSR;
+
+	//for default
+	tuner_conf()
+	{
+		strDevName = "/dev/dvb/adapter0/frontend0";
+		strDelSys = "DVB-S2";
+		strFec = "3/4";
+		strModulation = "8PSK";
+		strRollOff = "0.25";
+		strPolVert = "V";
+		nFreq = 12500000;
+		nHiBand = 11300000;
+		nSR = 43200000;
+	};
+} TUNER_CONF;
+
+typedef struct tuner_info
+{
+	uint8 nStatus;
+	uint16 nAGC;
+	uint16 nSNR;
+	uint32 nBER;
+	uint32 nUNC;
+	uint8 nLock;
+	tuner_info()
+	{
+		nStatus = nAGC = nSNR = nBER = nUNC = nLock = 0;
+	};
+} TUNER_INFO;
+
+class ITuner
+{
+public:
+	virtual ~ITuner(){};
+	virtual bool SetTunerConf(TUNER_CONF conf) = 0;
+	virtual bool Zapto() = 0;
+	virtual bool Zapto(TUNER_CONF conf) = 0;
+	virtual TUNER_INFO GetTunerInfo() = 0;
+};
+
+ITuner * CreateTuner();
+void ReleaseTuner(ITuner* tuner);
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// End of TUNER codes
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// These codes are part of FILTER
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+class Filter
+{
+public:
+	Filter():fd(-1){};
+	~Filter();
+	bool SetStrDevName(std::string strDevName);
+	bool SetFilterID(uint16 pid, uint16 tid);
+	bool ReadFilter(uint8 *buf, uint16& count);
+	bool Stop();
+
+private:
+	int fd;
+	uint16 nPid;
+	uint16 nTid;
+};
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// End of FILTER codes
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+enum FILTER_RUN_STATUS
+{
+	IDLE = 0,
+	RUN,
+	STOP,
+};
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// Filter Processor
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+class IFilterProcessor
+{
+public:
+	virtual ~IFilterProcessor(){};
+	virtual bool Init(void *param1, void *param2) = 0;
+	virtual bool Start() = 0;
+	virtual bool Stop() = 0;
+	virtual int GetStatus() = 0; 
+	virtual uint64 ReciveLength() = 0;
+	virtual uint64 FileLength() = 0;
+};
+

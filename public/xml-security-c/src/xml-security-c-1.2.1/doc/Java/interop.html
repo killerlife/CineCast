@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="Apache Forrest" name="Generator">
+<meta name="Forrest-version" content="0.6">
+<meta name="Forrest-skin-name" content="pelt">
+<title>Java Interoperability</title>
+<link type="text/css" href="../skin/basic.css" rel="stylesheet">
+<link media="screen" type="text/css" href="../skin/screen.css" rel="stylesheet">
+<link media="print" type="text/css" href="../skin/print.css" rel="stylesheet">
+<link type="text/css" href="../skin/profile.css" rel="stylesheet">
+<script src="../skin/getBlank.js" language="javascript" type="text/javascript"></script><script src="../skin/getMenu.js" language="javascript" type="text/javascript"></script><script src="../skin/fontsize.js" language="javascript" type="text/javascript"></script>
+</head>
+<body onload="init()">
+<script type="text/javascript">ndeSetTextSize();</script>
+<div id="top">
+<!--+
+    |breadtrail
+    +-->
+<div class="breadtrail">
+<a href="http://www.apache.org/">apache</a> &gt; <a href="http://xml.apache.org/">xml.apache</a><script src="../skin/breadcrumbs.js" language="JavaScript" type="text/javascript"></script>
+</div>
+<!--+
+    |header
+    +-->
+<div class="header">
+<!--+
+    |start group logo
+    +-->
+<div class="grouplogo">
+<a href="http:///xml.apache.org"><img class="logoImage" alt="Apache XML" src="../images/group-logo.gif"></a>
+</div>
+<!--+
+    |end group logo
+    +-->
+<!--+
+    |start Project Logo
+    +-->
+<div class="projectlogo">
+<a href="http://xml.apache.org/security"><img class="logoImage" alt="Apache XML Security" src="../images/project-logo.gif"></a>
+</div>
+<!--+
+    |end Project Logo
+    +-->
+<!--+
+    |start Search
+    +-->
+<div class="searchbox">
+<form action="http://www.google.com/search" method="get" class="roundtopsmall">
+<input value="xml.apache.org/security" name="sitesearch" type="hidden"><input onFocus="getBlank (this, 'Search the site with google:');" value="Search the site with google:" size="25" name="q" id="query" type="text">&nbsp; 
+                    <input name="Search" value="Search" type="submit">
+</form>
+</div>
+<!--+
+    |end search
+    +-->
+<!--+
+    |start Tabs
+    +-->
+<ul id="tabs">
+<li>
+<a class="base-not-selected" href="../index.html">Home</a>
+</li>
+<li class="current">
+<a class="base-selected" href="../Java/index.html">Java</a>
+</li>
+<li>
+<a class="base-not-selected" href="../c/index.html">C++</a>
+</li>
+</ul>
+<!--+
+    |end Tabs
+    +-->
+</div>
+</div>
+<div id="main">
+<div id="publishedStrip">
+<!--+
+    |start Subtabs
+    +-->
+<div id="level2tabs"></div>
+<!--+
+    |end Endtabs
+    +-->
+<script type="text/javascript" language="JavaScript"><!--
+              document.write("Published: " + document.lastModified);
+              //  --></script>
+</div>
+<!--+
+    |breadtrail
+    +-->
+<div class="breadtrail">
+             
+             &nbsp;
+           </div>
+<!--+
+    |start Menu, mainarea
+    +-->
+<!--+
+    |start Menu
+    +-->
+<div id="menu">
+<div onclick="SwitchMenu('menu_selected_1.1', '../skin/')" id="menu_selected_1.1Title" class="menutitle" style="background-image: url('../skin/images/chapter_open.gif');">Java</div>
+<div id="menu_selected_1.1" class="selectedmenuitemgroup" style="display: block;">
+<div class="menuitem">
+<a title="" href="../Java/index.html">Index</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/installation.html">Installation</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/examples.html">Examples</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/faq.html">FAQs</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/api.html">API Docs</a>
+</div>
+<div class="menupage">
+<div class="menupagetitle">Interoperability</div>
+</div>
+<div class="menuitem">
+<a title="" href="http://lsd.student.utwente.nl/gump/xml-security/xml-security.html">Gump results</a>
+</div>
+<div class="menuitem">
+<a title="" href="../Java/resolver.html">Resolvermania</a>
+</div>
+</div>
+<div id="credit"></div>
+<div id="roundbottom">
+<img style="display: none" class="corner" height="15" width="15" alt="" src="../skin/images/rc-b-l-15-1body-2menu-3menu.png"></div>
+<!--+
+  |alternative credits
+  +-->
+</div>
+<!--+
+    |end Menu
+    +-->
+<!--+
+    |start content
+    +-->
+<div id="content">
+<div id="skinconf-txtlink"></div>
+<h1>Java Interoperability</h1> 
+    
+<a name="N1000D"></a><a name="Problems"></a>
+<h2 class="h3">Problems</h2>
+<div class="section">
+<p>In Version v1.0.4, there is one test case which fails (interop test
+	for exclusive c14n). This is related to very esoteric node sets (The Y4
+	test vector from 
+	<a class="external" href="http://www.w3.org/Signature/2002/02/01-exc-c14n-interop.html">
+	  the interop matrix
+	</a>). 
+      </p>
+</div>
+    
+<a name="N1001B"></a><a name="Interoperability+issues"></a>
+<h2 class="h3">Interoperability issues</h2>
+<div class="section">
+<p>
+	As it can be seen on the 
+	<a class="external" href="http://www.w3c.org/Signature">working group homepage</a>,
+	there are some interoperability reports, namely for 
+	<a class="external" href="http://www.w3.org/Signature/2000/10/10-c14n-interop.html">
+	  Canonical XML
+	</a>, 
+	<a class="external" href="http://www.w3.org/Signature/2002/02/01-exc-c14n-interop.html">
+	  Exclusive Canonical XML
+	</a> 
+	and 
+	<a class="external" href="http://www.w3.org/TR/xmldsig-core/2001/04/05-xmldsig-interop.html">
+	  XML Signature
+	</a>.
+      </p>
+<p>
+	Interoperability depends heavily on test vectors, this means that
+	implementation A has to check whether the signatures from
+	implementation B can be verified. For this purpose, we have a
+	collection of different test vectors in our <span class="codefrag">data/</span>
+	directory. The directory includes test vectors from   
+      </p>
+<ul>
+	
+<li>
+<a class="external" href="http://www.baltimore.com/keytools/xml/index.html">
+	    Baltimore KeyTools XML</a>
+	
+</li>
+	
+<li>
+<a class="external" href="http://jcewww.iaik.at/products/ixsil/index.php">IAIK IXSIL</a>
+</li>
+	
+<li>
+<a class="external" href="http://www.rsasecurity.com/products/bsafe/certj.html">
+	    RSA Security Cert-J</a>
+	
+</li>
+	
+<li>The vectors from the 
+	  <a class="external" href="http://www.alphaworks.ibm.com/tech/xmlsecuritysuite">
+	    IBM alphaWorks XML Security suite
+	  </a> could not been included in this distribution because of
+	  licensing issues. For some reasons which I do not understand, they
+	  copyrighted their test signatures which they have bundled with
+	  xss4j. If you want to include interop testing against IBM in your
+	  unit tests, simply do the following:
+	  Download <span class="codefrag">xss4j-20030127.zip</span> from the 
+	  <a class="external" href="http://www.alphaworks.ibm.com/aw.nsf/download/xmlsecuritysuite">
+	    alphaWorks download page
+	  </a>. 
+	  Copy all files from the <span class="codefrag">xss4j-20030127.zip#/xss4j/data</span>
+	  directory into the
+	  <span class="codefrag">xml-security/data/com/ibm/xss4j-20030127/</span>
+	  directory. If the 
+	  <a target="_top" href="api/org/apache/xml/security/test/InteropTest.html">
+	    Interop
+	  </a> class finds these files, the 
+	  <span class="codefrag">org.apache.xml.security.test.interop.IBMTest</span> class is
+	  also executed during unit interop tests. 
+	</li>
+      
+</ul>
+</div>
+  
+</div>
+<!--+
+    |end content
+    +-->
+<div class="clearboth">&nbsp;</div>
+</div>
+<div id="footer">
+<!--+
+    |start bottomstrip
+    +-->
+<div class="lastmodified">
+<script type="text/javascript"><!--
+document.write("Last Published: " + document.lastModified);
+//  --></script>
+</div>
+<div class="copyright">
+ Copyright &copy; 2002-2005 The Apache Software Foundation.</div>
+<!--+
+    |end bottomstrip
+    +-->
+</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/LEC13/!svn/ver/2/include/mxf/mxfEssenceReader
+END
+dataType.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/LEC13/!svn/ver/2/include/mxf/mxfEssenceReader/dataType.h
+END
+exportdef.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/LEC13/!svn/ver/2/include/mxf/mxfEssenceReader/exportdef.h
+END
+IEssenceReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/LEC13/!svn/ver/2/include/mxf/mxfEssenceReader/IEssenceReader.h
+END
+mxfEssenceReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/LEC13/!svn/ver/2/include/mxf/mxfEssenceReader/mxfEssenceReader.h
+END
+IMetaDataParse.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/LEC13/!svn/ver/2/include/mxf/mxfEssenceReader/IMetaDataParse.h
+END

@@ -1,0 +1,259 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/test/utils/runtime/cla
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+validation.hpp
+file
+
+
+
+add
+
+validation.ipp
+file
+
+
+
+add
+
+modifier.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+id_policy.cpp
+file
+
+
+
+add
+
+char_parameter.cpp
+file
+
+
+
+add
+
+argument_factory.hpp
+file
+
+
+
+add
+
+id_policy.hpp
+file
+
+
+
+add
+
+id_policy.ipp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+char_parameter.hpp
+file
+
+
+
+add
+
+char_parameter.ipp
+file
+
+
+
+add
+
+dual_name_parameter.cpp
+file
+
+
+
+add
+
+fwd.hpp
+file
+
+
+
+add
+
+positional_parameter.hpp
+file
+
+
+
+add
+
+iface
+dir
+
+
+
+add
+
+value_generator.hpp
+file
+
+
+
+add
+
+typed_parameter.hpp
+file
+
+
+
+add
+
+dual_name_parameter.hpp
+file
+
+
+
+add
+
+dual_name_parameter.ipp
+file
+
+
+
+add
+
+parser.cpp
+file
+
+
+
+add
+
+argv_traverser.cpp
+file
+
+
+
+add
+
+parser.hpp
+file
+
+
+
+add
+
+argv_traverser.hpp
+file
+
+
+
+add
+
+argv_traverser.ipp
+file
+
+
+
+add
+
+parser.ipp
+file
+
+
+
+add
+
+value_handler.hpp
+file
+
+
+
+add
+
+named_parameter.cpp
+file
+
+
+
+add
+
+parameter.hpp
+file
+
+
+
+add
+
+basic_parameter.hpp
+file
+
+
+
+add
+
+named_parameter.hpp
+file
+
+
+
+add
+
+named_parameter.ipp
+file
+
+
+
+add
+
+validation.cpp
+file
+
+
+
+add
+

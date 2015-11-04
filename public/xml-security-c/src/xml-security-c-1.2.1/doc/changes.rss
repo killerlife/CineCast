@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><!DOCTYPE rss PUBLIC "-//Netscape Communications//DTD RSS 0.91//EN" "http://my.netscape.com/publish/formats/rss-0.91.dtd">
+<rss version="0.91"><channel><title> Changes</title><link>changes.html</link><description> Changes</description><language>en-us</language><item><title>c_rel fix</title><link>changes.html</link><description>c_rel fix
+              by 
+              BL
+              :
+               
+        Add xklient "No Xalan" builds in VC 6.0 project files
+      </description></item><item><title>c_rel fix</title><link>changes.html</link><description>c_rel fix
+              by 
+              BL
+              :
+               
+        Fix version suffixes on DLL files in VC 6.0 "No Xalan" build.
+      </description></item><item><title>c_rel fix</title><link>changes.html</link><description>c_rel fix
+              by 
+              BL
+              :
+               
+        Add "No Xalan" support into VC 7.0 project files.
+      </description></item></channel></rss>

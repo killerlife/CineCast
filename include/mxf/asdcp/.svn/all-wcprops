@@ -1,0 +1,137 @@
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp
+END
+KM_mutex.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KM_mutex.h
+END
+AS_DCP.h
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/AS_DCP.h
+END
+MXF.h
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/MXF.h
+END
+WavFileWriter.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/WavFileWriter.h
+END
+KLV.h
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KLV.h
+END
+S12MTimecode.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/S12MTimecode.h
+END
+KM_prng.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KM_prng.h
+END
+KM_memio.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KM_memio.h
+END
+Wav.h
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/Wav.h
+END
+KM_fileio.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KM_fileio.h
+END
+MDD.h
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/MDD.h
+END
+KM_util.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KM_util.h
+END
+JP2K.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/JP2K.h
+END
+KM_log.h
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KM_log.h
+END
+KM_platform.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KM_platform.h
+END
+MXFTypes.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/MXFTypes.h
+END
+KM_error.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KM_error.h
+END
+Metadata.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/Metadata.h
+END
+AS_DCP_internal.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/AS_DCP_internal.h
+END
+KM_xml.h
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/KM_xml.h
+END
+MPEG.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/MPEG.h
+END
+PCMParserList.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/LEC13/!svn/ver/2/include/mxf/asdcp/PCMParserList.h
+END

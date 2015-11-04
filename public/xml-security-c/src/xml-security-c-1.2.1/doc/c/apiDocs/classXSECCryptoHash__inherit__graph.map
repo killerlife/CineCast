@@ -1,0 +1,5 @@
+base referer
+rect $classOpenSSLCryptoHash.html 8,83 157,107
+rect $classOpenSSLCryptoHashHMAC.html 181,83 370,107
+rect $classWinCAPICryptoHash.html 394,83 541,107
+rect $classWinCAPICryptoHashHMAC.html 565,83 752,107

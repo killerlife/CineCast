@@ -1,0 +1,173 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib
+END
+Composition_AssetList.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_AssetList.h
+END
+Composition_GenericAsset.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_GenericAsset.h
+END
+Composition_SoundTrackFileAsset.h
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_SoundTrackFileAsset.h
+END
+Composition_MarkerList.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_MarkerList.h
+END
+DCIProjectElement.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/DCIProjectElement.h
+END
+MakeComposition.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/MakeComposition.h
+END
+Make_Track.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Make_Track.h
+END
+Composition_RatingList.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_RatingList.h
+END
+Composition_ContentVersion.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_ContentVersion.h
+END
+Composition_MarkerAsset.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_MarkerAsset.h
+END
+Composition_Marker.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_Marker.h
+END
+Composition_ReelList.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_ReelList.h
+END
+Composition_Rating.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_Rating.h
+END
+PackingList.h
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/PackingList.h
+END
+Pack_AssetList.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Pack_AssetList.h
+END
+Composition_Reel.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_Reel.h
+END
+Make_Asset.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Make_Asset.h
+END
+Pack_Asset.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Pack_Asset.h
+END
+Composition_MakerList.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_MakerList.h
+END
+Composition_AuxSoundTrackFileAsset.h
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_AuxSoundTrackFileAsset.h
+END
+Composition_PictureTrackFileAsset.h
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_PictureTrackFileAsset.h
+END
+IssuerElement.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/IssuerElement.h
+END
+Make_Reel.h
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Make_Reel.h
+END
+CompositionPlayList.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/CompositionPlayList.h
+END
+DCPMaker.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/DCPMaker.h
+END
+MyUUIDElement.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/MyUUIDElement.h
+END
+Composition_TrackFileAsset.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/Composition_TrackFileAsset.h
+END
+dcpwraplib.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/LEC13/!svn/ver/2/include/xml/DCPWrapLib/dcpwraplib.h
+END

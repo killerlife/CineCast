@@ -1,0 +1,189 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/variant/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+variant_io.hpp
+file
+
+
+
+add
+
+has_trivial_move.hpp
+file
+
+
+
+add
+
+apply_visitor_delayed.hpp
+file
+
+
+
+add
+
+make_variant_list.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+forced_return.hpp
+file
+
+
+
+add
+
+backup_holder.hpp
+file
+
+
+
+add
+
+over_sequence.hpp
+file
+
+
+
+add
+
+config.hpp
+file
+
+
+
+add
+
+move.hpp
+file
+
+
+
+add
+
+apply_visitor_binary.hpp
+file
+
+
+
+add
+
+visitation_impl.hpp
+file
+
+
+
+add
+
+substitute.hpp
+file
+
+
+
+add
+
+generic_result_type.hpp
+file
+
+
+
+add
+
+substitute_fwd.hpp
+file
+
+
+
+add
+
+bool_trait_def.hpp
+file
+
+
+
+add
+
+enable_recursive_fwd.hpp
+file
+
+
+
+add
+
+enable_recursive.hpp
+file
+
+
+
+add
+
+cast_storage.hpp
+file
+
+
+
+add
+
+bool_trait_undef.hpp
+file
+
+
+
+add
+
+has_nothrow_move.hpp
+file
+
+
+
+add
+
+apply_visitor_unary.hpp
+file
+
+
+
+add
+
+initializer.hpp
+file
+
+
+
+add
+

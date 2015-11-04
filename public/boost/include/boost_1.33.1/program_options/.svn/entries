@@ -1,0 +1,126 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/program_options
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+cmdline.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+errors.hpp
+file
+
+
+
+add
+
+positional_options.hpp
+file
+
+
+
+add
+
+environment_iterator.hpp
+file
+
+
+
+add
+
+options_description.hpp
+file
+
+
+
+add
+
+parsers.hpp
+file
+
+
+
+add
+
+value_semantic.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+eof_iterator.hpp
+file
+
+
+
+add
+
+config.hpp
+file
+
+
+
+add
+
+variables_map.hpp
+file
+
+
+
+add
+
+version.hpp
+file
+
+
+
+add
+
+option.hpp
+file
+
+
+
+add
+

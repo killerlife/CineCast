@@ -1,0 +1,11 @@
+base referer
+rect $classDSIGKeyInfo.html 34,152 133,176
+rect $classDSIGKeyInfoMgmtData.html 208,8 370,32
+rect $classDSIGKeyInfoName.html 221,56 357,80
+rect $classDSIGKeyInfoPGPData.html 210,104 368,128
+rect $classDSIGKeyInfoSPKIData.html 209,152 369,176
+rect $classDSIGKeyInfoValue.html 222,200 356,224
+rect $classDSIGKeyInfoX509.html 224,248 354,272
+rect $classXENCEncryptedKey.html 217,296 361,320
+rect $classXENCEncryptedType.html 9,320 158,344
+rect $classXENCEncryptedData.html 214,344 364,368

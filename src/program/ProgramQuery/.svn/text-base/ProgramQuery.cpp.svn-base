@@ -1,0 +1,353 @@
+#include "ProgramQuery.h"
+//#include "ProgramParse.h"
+#include "ProgramError.h"
+#include <DcpParser/DcpParser.h>
+#include <DcpParser/AssistReel.h>
+#include <DcpParser/AssistHash.h>
+#include <DcpParser/AssistComposition.h>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/exception.hpp>
+#include <iostream>
+#include <list>
+#include "debugprint.h"
+#include "v15common.h"
+#include "config/config.h"
+
+using namespace std;
+namespace fs = boost::filesystem;
+
+#define DISKROOT	getConfig().getProgramRootPath()	// "/hdisk/program/"
+#define USBROOT		getConfig().getUsbRootPath()		// "/usb/DMS_HDD/"
+#define ASSETMAP	"ASSETMAP"
+
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN		
+#include <windows.h>
+
+BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+{
+    switch (ul_reason_for_call)
+	{
+		case DLL_PROCESS_ATTACH:
+		case DLL_THREAD_ATTACH:
+		case DLL_THREAD_DETACH:
+		case DLL_PROCESS_DETACH:
+			break;
+    }
+    return TRUE;
+}
+#endif
+
+struct CMyProgrameInfo
+{
+	std::string id;
+	std::string type;
+	std::string path;
+};
+
+
+class CProgramQuery : public IProgramQuery 
+{
+public:
+	virtual ~CProgramQuery();
+	CProgramQuery();
+	virtual int open(const std::string& root, bool usePath = false);
+	virtual int getProgramCount();
+	virtual int getProgramIndex(const std::string& programId);
+	virtual int getProgramInfo(int index, TProgramInfo& info);
+	virtual int getProgramFiles(int index, std::vector<std::string>& filesList);	// get all files of one program, for import
+	virtual int getProgramPath(int index, std::string& path);	// get the program root path
+	virtual int getProgramPath(const std::string& programId, std::string& path);	// get the program root path
+	virtual int getHashValue(int index, std::vector<CHashInfo>& hashInfo);
+
+private:
+	int init(const string& root);
+	void findPath(const fs::path& root , std::vector<std::string>& pathlist);
+
+	std::string m_root;
+//	std::list<CMyProgrameInfo> m_programInfoList;
+	std::vector<TProgramInfo> m_programInfoList;
+
+typedef std::vector<std::string> TPaths;
+	std::vector<TPaths> m_programFiles;
+//	std::vector<std::string> m_programList;
+};
+
+
+IProgramQuery* createProgramQuery()
+{
+	return new CProgramQuery;
+}
+
+void releaseProgramQuery(IProgramQuery*& programQuery)
+{
+	delete programQuery;
+	programQuery = NULL;
+}
+
+
+CProgramQuery::CProgramQuery()
+{
+}
+
+CProgramQuery::~CProgramQuery()
+{
+	m_root = "";
+}
+
+int CProgramQuery::open(const std::string& root, bool usePath )
+{
+	std::string diskRoot = DISKROOT;
+	std::string usbRoot = USBROOT;		// "/usb/" -> "/hdisk/usb/" : liang changed 2008.06.26 
+
+	m_root = root;
+
+	if(!usePath)
+	{
+		if(root == "hdisk")
+			m_root = diskRoot;
+		else if(root == "usb")
+			m_root = usbRoot;
+		else
+			return init_root_path_error;
+	}
+
+
+	return init(m_root);
+}
+
+int CProgramQuery::getProgramCount()
+{
+	return (int)m_programInfoList.size();
+}
+
+int CProgramQuery::getProgramIndex(const std::string& programId)
+{
+	for(int index=0 ; index<(int)m_programInfoList.size() ; index++)
+	{
+		if(programId==m_programInfoList[index].id)
+			return index;
+	}
+	return -1;
+}
+
+int CProgramQuery::getProgramInfo(int index, TProgramInfo& info)
+{
+	if(index>=0 && index<(int)m_programInfoList.size())
+	{
+		info = m_programInfoList[index];
+		return 0;
+	}
+	return -1;
+}
+
+int CProgramQuery::getHashValue(int index, std::vector<CHashInfo>& hashInfo)
+{
+	DPRINT((DP_Trace, "CProgramQuery", "getHashValue had not been implemented!"));
+	return 0;
+}
+
+int CProgramQuery::getProgramFiles(int index, std::vector<std::string>& filesList)
+{
+	if(index>=0 && index<(int)m_programFiles.size())
+	{
+		filesList = m_programFiles[index];
+		return 0;
+	}
+	return -1;
+}
+
+int CProgramQuery::getProgramPath(int index, std::string& path)
+{
+	if(index>=0 && index<(int)m_programInfoList.size())
+	{
+		path = m_programInfoList[index].rootpath;
+		return 0;
+	}
+	return -1;
+}
+
+int CProgramQuery::getProgramPath(const std::string& programId, std::string& path)
+{
+	int index = getProgramIndex(programId);
+	if(index<0) return -1;
+
+	path = m_programInfoList[index].rootpath;
+	return 0;
+}
+
+
+bool is_dcp_directory(const fs::path& path)
+{
+	return true;
+}
+
+void CProgramQuery::findPath(const fs::path& root , std::vector<std::string>& programList)
+{
+	try
+	{
+		// find the ASSETMAP file whether is exist in root path
+		if(is_dcp_directory(root))
+			programList.push_back(root.native_file_string());
+
+		fs::directory_iterator end_itr;
+		for(fs::directory_iterator itr(root); itr != end_itr; ++itr)
+		{
+			try
+			{
+				boost::filesystem::path* dir_name = NULL;
+				if(fs::is_directory(*itr) && is_dcp_directory(*itr))
+				{
+					programList.push_back(itr->native_file_string());
+				}
+			}
+			catch(const fs::filesystem_error& e)
+			{
+				DPRINT((DP_Warning, "CProgramQuery", "findPath: Skip the IO error, except: %s.", e.what()));
+			}
+		}
+	}
+	catch(const fs::filesystem_error& )
+	{
+		//run on 8634, when last ++itr, always throw exception, so omit this exception.
+		//return get_program_list_catch_exception_error;
+		//cout << "CProgramQuery::getProgramList, except:" << e.what() << endl;
+	}
+}
+
+int CProgramQuery::init(const string& root)
+{
+	DPRINT((DP_Trace, "CProgramQuery", "init root path: %s", root.c_str()));
+
+	int result = no_error;
+	std::vector<std::string> pathlist;
+
+	try
+	{
+		fs::path path(root, fs::native);
+		if(!fs::exists(path))
+			return init_root_path_error;
+		
+		findPath(path, pathlist);
+
+		if(pathlist.size()==0)
+		{
+			DPRINT((DP_Error, "CProgramQuery", "program path list is null."));
+			return 0;
+		}
+
+		for(unsigned int i = 0; i<pathlist.size() && result==no_error; ++i)
+		{
+			IDcpParser* pParser = CreateDcpParser();
+			if(pParser)	
+			{
+				if(!pParser->open(pathlist[i]))
+				{
+					DPRINT((DP_Warning, "CProgramQuery", "'%s' is not valid program path.", pathlist[i].c_str()));
+					continue;
+				}
+
+				// may be more one program in one path
+				for(unsigned int k = 0; k < pParser->packingListCount(); ++k)
+				{
+					const CPackingList* packing = pParser->packingList(k);
+					if(!packing)
+					{
+						result = pParser->getLastError();
+						break;
+					}
+
+					TProgramInfo programInfo;
+					programInfo.type = "DCP";
+					programInfo.rootpath = pathlist[i];
+					std::vector<std::string> paths;
+					for(unsigned int j=0; j<pParser->compositionCount(k); ++j)
+					{
+						const CCompositionPlayList* pcomtmp = pParser->composition(k, j);
+						if(pcomtmp)
+						{
+							CAssistReel assistReel(*pcomtmp, *packing, pathlist[i]);
+							CAssistComposition assistComp(pcomtmp);
+
+							if(assistComp.GetKind()=="feature")
+							{
+								programInfo.id = assistComp.GetUUID().substr(strlen("urn:uuid:"));
+								programInfo.title = assistComp.GetTitle();
+								programInfo.contentType = assistComp.GetKind();
+								programInfo.issuer = assistComp.GetIsssuer();
+								programInfo.issueDate = assistComp.GetIssueDate();
+								programInfo.creator = assistComp.GetCreator();
+								programInfo.country = "";
+								programInfo.language = assistComp.GetAudioInfo().strLanguage;
+								programInfo.subtitle = "";
+								char buf[20];
+								sprintf(buf, "%ld", assistComp.GetPlayDuration(true));
+								programInfo.duration = buf;
+							}
+							
+							unsigned int reelNum = assistReel.GetReelCount();
+							for(unsigned int i = 0; i < reelNum; ++i)
+							{
+								_reel_info info;
+								if(!assistReel.GetReelInfo(i,info))
+									break;
+
+								TVideoInfo vinfo;
+								TAudioInfo ainfo;
+
+								vinfo.fileName = info.m_videoInfo.fileName;
+								vinfo.entryPoint = info.m_videoInfo.entryPoint;
+								vinfo.duration = info.m_videoInfo.duration;
+								vinfo.keyIdStr = info.m_videoInfo.keyIdStr;
+								vinfo.aspectRatio = info.m_videoInfo.aspectRatio.GetString();
+								vinfo.frameRate = info.m_videoInfo.frameRate.GetString();
+								vinfo.type = "MPEG2";
+
+								ainfo.fileName = info.m_audioInfo.fileName;
+								ainfo.entryPoint = info.m_audioInfo.entryPoint;
+								ainfo.duration = info.m_audioInfo.duration;
+								ainfo.keyIdStr = info.m_audioInfo.keyIdStr;
+								ainfo.type = "PCM";
+								ainfo.sampleRate = "48000";
+								ainfo.bitIndeepness = "24";
+								ainfo.channel = "6";
+
+								programInfo.videoInfo.push_back(vinfo);
+								programInfo.audioInfo.push_back(ainfo);
+
+								if(!vinfo.keyIdStr.empty())
+									programInfo.license = "KEY";
+							}
+
+							// get paths of a composition
+							assistReel.GetReelPaths(paths);
+						}
+					}
+
+					paths.push_back(pParser->packingListFile(k));
+					m_programFiles.push_back(paths);
+					m_programInfoList.push_back(programInfo);
+				}
+
+				ReleaseDcpParser(&pParser);
+			}
+		}
+//		DPRINT((DP_Trace, "CProgramQuery", "'init m_programInfoList ... ok"));
+
+		if(result!=no_error)
+			DPRINT((DP_Error, "CProgramQuery", "program parse error: %d.", result));
+
+	}
+	catch(const fs::filesystem_error& e)
+	{
+		//run on 8634, when last ++itr, always throw exception, so omit this exception.
+		//return get_program_list_catch_exception_error;
+		//cout << "CProgramQuery::getProgramList, except:" << e.what() << endl;
+		DPRINT((DP_Error, "CProgramQuery", "init unknown error: %s.", e.what()));
+	}
+	
+	return result;
+}
+

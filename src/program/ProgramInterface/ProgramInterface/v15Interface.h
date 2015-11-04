@@ -1,0 +1,642 @@
+/**
+ @file     v15Interface.h
+ @brief    v15 GUI与功能模块之间的接口
+ @author   崔海军
+ @version  1.0    2008-10-13 崔海军 建立
+ @version  1.1    2008-11-21 崔海军 更改节目链表，及其日志的详细信息
+ 
+*/
+
+#ifndef V15INTERFACE_H
+#define V15INTERFACE_H
+#include <string>
+#include <map>
+#include <list>
+#include <vector>
+using namespace std;
+
+#ifdef _WIN32
+#ifdef PROGRAM_INTERFACE_EXPORTS
+#define PROGRAM_INTERFACE_API __declspec(dllexport)
+#else
+#define PROGRAM_INTERFACE_API __declspec(dllimport)
+#endif
+
+#else 
+#define PROGRAM_INTERFACE_API
+#endif
+
+
+typedef long long int int64;
+
+/**
+ * @brief ProgramType 表示节目类型: 影片公益广告 商业广告
+ */
+typedef enum  ProgramType
+{
+    TYPE_MOVIE = 0, 
+    TYPE_PUBLICAD,
+    TYPE_BUSINESSAD,
+    TYPE_FILE_LIST
+} ;
+/**
+ * @brief AccreditType 表示节目授权方式
+ */
+typedef enum AccreditType
+{
+    TYPE_KDM,
+    TYPE_DMS
+};
+
+/**
+ * @brief StorageSource 表示存储介质: 硬盘或U盘
+ */
+typedef enum StorageSource
+{
+    V15S_HDD = 0,
+    V15S_USB,
+	V15S_SIZEOF
+} ;
+
+/**
+ * @brief ProgramInfo 节目详细信息结构
+ */
+struct _ProgramInfo
+{
+    string programId;		    ///< 节目ID
+    string programName;	        ///< 节目名称
+    ProgramType programType;	///< 节目类型: 影片、广告
+    AccreditType accreditType;  ///< 授权方式
+    string videoFormat;	        ///< 视频格式: MPEG2/MPEG4
+    string packetType ;
+    int    programSize;	        ///< 节目文件大小，以MB为单位
+    int    programLength;	    ///< 节目长度
+    string issuer;			    ///< 发行商
+    string issueDate; 	        ///< 发行日期
+    string startDate;           ///< 档期的开始时间  (20081013)
+    string endDate;             ///< 档期的结束时间
+    string resCountry;		    ///< 国家
+    string destCountry;	        ///< 发行国家、区域
+    string dubLanguage;	        ///< 配音语言
+};
+/**
+ * @brief InfoData节目详细信息中显示的内容
+ */
+#ifndef INFODATA
+#define INFODATA
+struct InfoData 
+{
+	std::string  pData[16];
+/*    显示在界面上的详细信息内容
+	"节目ID:",
+	"节目名称:",
+	"节目类型:",
+	"授权方式:",
+	"视频格式:",
+	"打包方式:",
+	"节目长度:",
+	"分辨率:",
+	"发行商:",
+	"发行日期:",
+	"档期的开始时间:"T"档期的结束时间:",
+	"国家:",
+	"发行国家、区域:",
+	"配音语言:",
+	"是否加密",
+*/
+};
+#endif
+
+/**
+ * @brief ItemData 链表中的显示内容
+ */
+struct ItemData 
+{
+	std::string  pData[5];
+	
+	//string programId;		pData[0]///< 节目ID
+	//string programName;	       pData[1]///< 节目名称
+	//string programLength;	pData[2]///< 节目长度
+	//string accreditType;  		pData[3]///< 授权方式
+	//string date;           		pData[4]///< 档期11/21-12/30
+};
+typedef std::vector<InfoData> List; 
+
+
+/**
+ * @brief LogType 日志事件
+ */
+typedef enum LogEvent
+{
+    SENDER = 0,               ///< 回传日志
+    LOCAL                     ///< 本地日志
+};
+
+/**
+* @brief LogSelectMode 日志查询方式
+*/
+typedef enum LogSelectMode
+{
+    M_TIME = 0,               ///< 时间
+    M_SENDER,                 ///< 回传
+    M_LOCAL                   ///< 本地
+}L_Mode;
+
+
+/**
+* @brief Log 日志详细信息结构
+*/
+typedef struct Log
+{
+       //LogEvent oEvent;           ///< 日志事件 ( 梁鹏建议不现实)
+	std::string  pData[2];
+
+    //string sTime;   pData[0]           ///< 日志时间
+    //string sText;    pData[1]           ///< 日志内容
+}V_LOG;
+
+/**
+* @brief Log 日志查询结构
+*/
+typedef struct LogSelect
+{
+	LogSelectMode  oMode;  ///< 类型
+	int nYear;                 	  ///< 年
+	int nMonth ;                  ///< 月
+}V_LOG_SELECT;
+
+/**
+ * @brief Log 日志导出的形式
+ */
+typedef enum LogExport
+{
+    TEXT,
+    GDC,
+    EXCEL
+}; 
+
+///< 类型定义
+typedef list<Log> list_t; 
+
+struct CV15ProgramBaseInfo
+{
+	std::string id;
+	std::string type;
+	std::string path;
+	unsigned int dur;
+};
+
+PROGRAM_INTERFACE_API std::string v15FormatErrorMsg(int error);
+
+PROGRAM_INTERFACE_API bool v15ProgramIsReady(int nSrc);
+
+/**
+ * @brief v15ProgramUpdate 函数说明
+ *
+ *        v15ProgramUpdate(int nSrc): 更新节目内容
+ *
+ * @param nSrc: 存储介质: 硬盘(V15S_HDD)或U盘(V15S_USB), 如果为-1则表示全部。
+ * @return 0: 成功
+ * @return <0: 错误码
+ */
+PROGRAM_INTERFACE_API int v15ProgramUpdate(const vector<int> srcList);
+
+/**
+ * @brief v15GetProgramList 函数说明
+ *
+ *        v15GetProgramList(): 获取指定类型节目的列表
+ *
+ * @param nSrc: 存储介质: 硬盘或U盘
+ * @param type: 节目类型: 电影或广告
+ * @param mapProgramList: MAP容器，返回指定类型的节目列表
+ * @return 0: 无节目
+ * @return >0: 节目数
+ * @return <0: 错误码
+ */
+//int v15GetProgramList(StorageSource nSrc, ProgramType type, list<CV15ProgramBaseInfo>& mapProgramList);
+//int v15GetProgramList(StorageSource nSrc, ProgramType type, list<struct InfoData>& ProgramList);
+PROGRAM_INTERFACE_API int v15GetProgramList(StorageSource nSrc, ProgramType type, vector<InfoData>& ProgramList);
+
+
+/**
+ * @brief v15GetProgramsCount 函数说明
+ *
+ *        v15GetProgramsCount(): 获取指定类型节目的数量
+ *
+ * @param nSrc: 存储介质
+ * @param type: 节目类型: 电影或广告
+ * @return 0: 无电影
+ * @return >0: 电影数
+ * @return <0: 错误码
+ */
+PROGRAM_INTERFACE_API int v15GetProgramsCount(StorageSource nSrc, ProgramType type);
+
+/**
+ * @brief v15GetProgramDetail 函数说明
+ *
+ *        v15GetProgramDetail(): 获取节目的详细信息
+ *
+ * @param nSrc: 存储介质
+ * @param type: 节目类型: 电影、公益广告或商业广告
+ * @param programId: 节目ID
+ * @param info: 节目信息结构，得到节目详细信息
+ * @return 0: 成功
+ * @return 其他: 错误码
+ */
+PROGRAM_INTERFACE_API int v15GetProgramDetail(StorageSource nSrc, ProgramType type, string& programId, InfoData& info);
+
+
+/**
+ * @brief v15StartImportProgram 函数说明
+ *
+ *        v15StartImportProgram(): 启动节目复制线程，并且得到节目文件的大小。
+ *
+ * @param type: 要导入的节目类型
+ * @param programId: 要导入的节目ID
+ * @param programSize: 得到节目文件的大小(以MB为单位)
+ * @return 0: 成功
+ * @return 其他值: 错误码
+ */
+PROGRAM_INTERFACE_API int v15StartImportProgram(ProgramType type, const string& programId, long long int& programSize);
+
+/**
+ * @brief v15StopImportProgram 函数说明
+ *
+ *        v15StopImportProgram(): 停止节目复制线程，并且删除已经复制的节目文件
+ *
+ * @return =0: 成功
+ * @return <0: 错误码
+ */
+PROGRAM_INTERFACE_API int v15StopImportProgram();
+
+/**
+ * @brief v15GetCopySize 函数说明
+ *
+ *        v15GetCopySize(): 查询得到已经复制的数据量的大小。
+ *        UI程序应当在一个TIMER消息中调用这个函数，以便随时查询已复制的数据量，并
+ *        根据这个数据量计算进度和剩余时间，同时可以查询节目复制的状态，是:
+ *        出错、完成或复制中...
+ *
+ * @param pSize : 已复制的数据量的大小(以MB为单位)
+ * @return =0: 节目导入线程状态正常，正在复制节目
+ * @return >0: 节目复制完成
+ * @return <0: 错误码
+*/
+PROGRAM_INTERFACE_API int v15GetCopySize(long long int& pSize);
+
+/**
+ * @brief v15DeleteProgram 函数说明
+ *
+ * v15DeleteProgram(): 删除指定的节目。而且只能删除硬盘上的节目。
+ *
+ * @param type: 节目类型: 电影、公益广告或商业广告
+ * @param programId: 节目ID
+ * @return =0: 删除成功
+ * @return <0: 错误码
+ */
+PROGRAM_INTERFACE_API int v15DeleteProgram(ProgramType type, string& programId);
+
+/**
+ * @brief v15IsBreakPointImport 函数说明
+ *
+ *        v15IsBreakPointImport():判断是否有断点导入
+ *
+ * @param id: 断点节目的ID
+ * @param size:断点节目的大小
+ * @return :true  有断点
+ * @return :false 无断点
+ */
+PROGRAM_INTERFACE_API int v15IsBreakPointImport(string& id,unsigned int& nSize,int& nType);
+
+/**
+ * @brief v15DelBreakPointImport 函数说明
+ *
+ *        v15DelBreakPointImport(): 删除断点文件和节目文件
+ *
+ * @return :true  成功
+ * @return :false 失败
+*/
+PROGRAM_INTERFACE_API int v15DelBreakPointImport();
+
+/**
+* @brief v15DelBreakPointImportFile 函数说明
+*
+*        v15DelBreakPointImportFile(): 删除断点文件
+*
+*/
+PROGRAM_INTERFACE_API void v15DelBreakPointImportFile();
+
+/**??????
+* @brief v15ImportAccredit 函数说明
+*
+*        v15ImportAccredit(): 导入节目列表中当前节目的授权信息。
+*
+* @param type: 要导入的节目类型
+* @param programId: 要导入的节目ID
+* @return 0: 成功
+* @return 其他值: 错误码
+*/
+int v15ImportAccredit(ProgramType type, string& programId);
+
+/**??????
+* @brief v15DeleteAccredit 函数说明
+*
+*        v15DeleteAccredit (): 删除节目列表中某一个节目的授权。
+*
+* @param type: 要导入的节目类型
+* @param programId: 要导入的节目ID
+* @return 0: 成功
+* @return 其他值: 错误码
+*/
+int v15ImportAccredit(ProgramType type, string& programId);
+
+
+/**
+ * @brief v15GetLogList 函数说明
+ *
+ *        v15GetLogList(): 得到日志列表
+ *
+ * @param list  传递引用，等到日志列表
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15GetLogList(list_t& list);
+
+/**
+ * @brief v15GetLogList 函数说明
+ *
+ *        v15GetLogList():停止播放影片，或者影片列表
+ *
+ * @param mode  查询方法，时间、回传或本地的
+ * @param startTime  开始时间 
+ * @param endTime    结束时间
+ * @return :=0  播放成功
+ * @return :<0  错误码
+ */
+int v15SelectLog(L_Mode mode, string startTime, string endTime);
+
+/**
+ * @brief v15ExportLog 函数说明
+ *
+ *        v15ExportLog():
+ *
+ * @param exp   日志导出的形式文本、GDC兼容或者excel
+ * @return :=0  导出成功
+ * @return :<0  错误码
+ */
+int v15ExportLog(LogExport exp);
+
+/**
+* @brief v15GetSoundChannel 函数说明
+*
+*        v15GetSoundChannel():得到声道参数(2声道5声道)
+*
+* @param channel   5.1声道或两声道
+* @return :=0  得到参数
+* @return :<0  错误码
+*/
+int v15GetSoundChannel(int& channel);
+
+/**
+ * @brief v15SetSoundChannel 函数说明
+ *
+ *        v15SetSoundChannel():设置声道参数(2声道5声道)
+ *
+ * @param channel   5.1声道或两声道
+ * @return :=0  设置成功
+ * @return :<0  错误码
+ */
+int v15SetSoundChannel(int& channel);
+
+/**
+* @brief v15GetVideoChannel 函数说明
+*
+*        v15GetVideoChannel ():得到1080i50，1080i60，1080p30
+*
+* @param channel   1080i50，1080i60，1080p30
+* @return :=0  得到参数
+* @return :<0  错误码
+*/
+int v15GetVideoChannel (int& channel);
+
+/**
+ * @brief v15SetVideoChannel 函数说明
+ *
+ *        v15SetVideoChannel():设置1080i50，1080i60，1080p30
+ *
+ * @param channel   1080i50，1080i60，1080p30
+ * @return :=0  设置成功
+ * @return :<0  错误码
+ */
+int v15SetSoundChannel(int& channel);
+
+/**
+ * @brief v15SetVideoColor 函数说明
+ *
+ *        v15SetVideoColor():设置色彩空间
+ *
+ * @param Color   色彩空间
+ * @return :=0  设置成功
+ * @return :<0  错误码
+ */
+int v15SetVideoColor(int color);
+
+/**
+ * @brief v15GetVideoColor 函数说明
+ *
+ *        v15GetVideoColor():得到色彩空间
+ *
+ * @param Color   色彩空间
+ * @return :=0  设置成功
+ * @return :<0  错误码
+ */
+int v15GetVideoColor(int color);
+
+
+
+/**
+ * @brief v15SetVideoWidthHighScale 函数说明
+ *
+ *        v15SetVideoWidthHighScale():设置视频的宽高比
+ *
+ * @param Scale 宽高比
+ * @return :=0  设置成功
+ * @return :<0  错误码
+ */
+int v15SetVideoWidthHighScale(int scale);
+
+/**
+ * @brief v15GetVideoWidthHighScale 函数说明
+ *
+ *        v15GetVideoWidthHighScale():得到视频的宽高比
+ *
+ * @param Scale 宽高比
+ * @return :=0  设置成功
+ * @return :<0  错误码
+ */
+int v15GetVideoWidthHighScale(int scale);
+
+
+/**
+ * @brief v15GetLogIP 函数说明
+ *
+ *        v15GetLogIP():得到log服务器IP
+ *
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15GetLogIP(string& ip);
+
+/**
+ * @brief v15SetLogIP 函数说明
+ *
+ *        v15SetLogIP():设置log服务器IP
+ *
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15SetLogIP(string& ip);
+
+/**
+ * @brief v15GetLogPort 函数说明
+ *
+ *        v15GetLogPort():得到log服务器端口
+ *
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15GetLogPort(int&  port);
+
+/**
+ * @brief v15SetLogPort 函数说明
+ *
+ *        v15SetLogPort():设置log服务器端口
+ *
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15SetLogPort(int & port);
+
+/**
+ * @brief v15GetLocalIP 函数说明
+ *
+ *        v15GetLocalIP():得到本地IP
+ * 
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+*/
+int v15GetLocalIP(string& ip);
+
+/**
+ * @brief v15SetLocalIP 函数说明
+ *
+ *        v15SetLocalIP():设置本地IP
+ * 
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15SetLocalIP(string ip);
+
+/**
+ * @brief v15GetNetMaskCode 函数说明
+ *
+ *        v15GetNetMaskCode():得到子网掩码
+ * 
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15GetNetMaskCode(string& code);
+
+/**
+ * @brief v15SetNetMaskCode 函数说明
+ *
+ *        v15SetNetMaskCode():设置子网掩码
+ * 
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15SetNetMaskCode(string code);
+
+/**
+ * @brief v15GetGateway 函数说明
+ *
+ *        v15GetGateway():得到网关
+ * 
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15GetGateway(string& ip);
+
+/**
+ * @brief v15SetGateway 函数说明
+ *
+ *        v15SetGateway():设置网关
+ * 
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15SetGateway(string ip);
+
+/**
+ * @brief v15IsIpValid 函数说明
+ *
+ *        v15IsIpValid():验证字符串是否是一个合法的ip地址
+ * 
+ * @param ip    IP地址
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15IsIpValid(string ip);
+
+/**
+ * @brief v15SystemUpdate 函数说明
+ *
+ *        v15SystemUpdate():系统升级
+ * 
+ * @return :=0  成功
+ * @return :<0  错误码
+ */
+int v15SystemUpdate();
+
+
+/**
+ * @brief v15GetLastError 函数说明
+ *
+ *        v15GetLastError():各个模块的错误信息
+ *
+ * @param nError    错误编码
+ * @return :错误信息的文本
+ */
+ string v15GetLastError(int nError);
+
+ 
+/////////////////////////////////////////////////////////////////////////////////////
+#define CONTENT_DATA_ERROR   	-10001
+#define ZERO_PLAYNUM   			-10002
+#define NO_ENOUGHT_PLAYNUM   	-10003
+#define GETSHOWPLAYLIST_ERROR   -10004
+#define GETPROGRAMLIST_ERROR    -10010
+
+#define INVALID_PROGRAM_ID		-10100
+#define PROGRAM_NOT_FOUND		-10101
+#define COUND_NOT_INITIALIZED	-10102
+
+//TODO: status code define.
+#define PROGRAM_COPY_COMPLETED	10000
+
+
+#define LICENSE_MACHINEID_CARDID_ALIKE   -9000
+#define LICENSE_AUTH_DATE_ERR                    -9001
+#define LICENSE_REMAIN_NUM_ERR                  -9002
+
+#endif

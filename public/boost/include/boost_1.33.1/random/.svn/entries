@@ -1,0 +1,238 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/random
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+uniform_int.hpp
+file
+
+
+
+add
+
+binomial_distribution.hpp
+file
+
+
+
+add
+
+lognormal_distribution.hpp
+file
+
+
+
+add
+
+poisson_distribution.hpp
+file
+
+
+
+add
+
+bernoulli_distribution.hpp
+file
+
+
+
+add
+
+mersenne_twister.hpp
+file
+
+
+
+add
+
+random_number_generator.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+variate_generator.hpp
+file
+
+
+
+add
+
+triangle_distribution.hpp
+file
+
+
+
+add
+
+xor_combine.hpp
+file
+
+
+
+add
+
+ranlux.hpp
+file
+
+
+
+add
+
+cauchy_distribution.hpp
+file
+
+
+
+add
+
+linear_feedback_shift.hpp
+file
+
+
+
+add
+
+shuffle_output.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+geometric_distribution.hpp
+file
+
+
+
+add
+
+uniform_01.hpp
+file
+
+
+
+add
+
+lagged_fibonacci.hpp
+file
+
+
+
+add
+
+gamma_distribution.hpp
+file
+
+
+
+add
+
+uniform_on_sphere.hpp
+file
+
+
+
+add
+
+subtract_with_carry.hpp
+file
+
+
+
+add
+
+uniform_real.hpp
+file
+
+
+
+add
+
+uniform_smallint.hpp
+file
+
+
+
+add
+
+discard_block.hpp
+file
+
+
+
+add
+
+linear_congruential.hpp
+file
+
+
+
+add
+
+inversive_congruential.hpp
+file
+
+
+
+add
+
+additive_combine.hpp
+file
+
+
+
+add
+
+exponential_distribution.hpp
+file
+
+
+
+add
+
+normal_distribution.hpp
+file
+
+
+
+add
+

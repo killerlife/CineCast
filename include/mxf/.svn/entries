@@ -1,0 +1,40 @@
+10
+
+dir
+2
+https://leoserver:8443/svn/LEC13/include/mxf
+https://leoserver:8443/svn/LEC13
+
+
+
+2012-11-28T10:07:15.953125Z
+2
+zhangtao
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+mxflib
+dir
+
+mxfEssenceReader
+dir
+
+asdcp
+dir
+
+mxfReader
+dir
+

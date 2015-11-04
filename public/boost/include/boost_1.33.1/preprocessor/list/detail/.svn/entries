@@ -1,0 +1,63 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/preprocessor/list/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+edg
+dir
+
+
+
+add
+
+dmc
+dir
+
+
+
+add
+
+fold_left.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+fold_right.hpp
+file
+
+
+
+add
+

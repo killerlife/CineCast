@@ -1,0 +1,4 @@
+base referer
+rect $classOpenSSLCryptoKeyHMAC.html 8,158 189,182
+rect $classWinCAPICryptoKeyHMAC.html 213,158 392,182
+rect $classXSECCryptoKey.html 138,9 261,33

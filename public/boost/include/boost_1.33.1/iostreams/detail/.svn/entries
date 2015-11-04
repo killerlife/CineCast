@@ -1,0 +1,308 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/iostreams/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+error.hpp
+file
+
+
+
+add
+
+adapter
+dir
+
+
+
+add
+
+system_failure.hpp
+file
+
+
+
+add
+
+is_iterator_range.hpp
+file
+
+
+
+add
+
+double_object.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+access_control.hpp
+file
+
+
+
+add
+
+call_traits.hpp
+file
+
+
+
+add
+
+newline.hpp
+file
+
+
+
+add
+
+param_type.hpp
+file
+
+
+
+add
+
+wrap_unwrap.hpp
+file
+
+
+
+add
+
+buffer.hpp
+file
+
+
+
+add
+
+bool_trait_def.hpp
+file
+
+
+
+add
+
+default_arg.hpp
+file
+
+
+
+add
+
+push.hpp
+file
+
+
+
+add
+
+enable_if_stream.hpp
+file
+
+
+
+add
+
+push_params.hpp
+file
+
+
+
+add
+
+codecvt_holder.hpp
+file
+
+
+
+add
+
+codecvt_helper.hpp
+file
+
+
+
+add
+
+closer.hpp
+file
+
+
+
+add
+
+streambuf.hpp
+file
+
+
+
+add
+
+ios.hpp
+file
+
+
+
+add
+
+add_facet.hpp
+file
+
+
+
+add
+
+dispatch.hpp
+file
+
+
+
+add
+
+counted_array.hpp
+file
+
+
+
+add
+
+fstream.hpp
+file
+
+
+
+add
+
+streambuf
+dir
+
+
+
+add
+
+select_by_size.hpp
+file
+
+
+
+add
+
+char_traits.hpp
+file
+
+
+
+add
+
+forward.hpp
+file
+
+
+
+add
+
+broken_overload_resolution
+dir
+
+
+
+add
+
+translate_int_type.hpp
+file
+
+
+
+add
+
+vc6
+dir
+
+
+
+add
+
+template_params.hpp
+file
+
+
+
+add
+
+resolve.hpp
+file
+
+
+
+add
+
+select.hpp
+file
+
+
+
+add
+
+config
+dir
+
+
+
+add
+
+iostream.hpp
+file
+
+
+
+add
+
+optional.hpp
+file
+
+
+
+add
+
+is_dereferenceable.hpp
+file
+
+
+
+add
+

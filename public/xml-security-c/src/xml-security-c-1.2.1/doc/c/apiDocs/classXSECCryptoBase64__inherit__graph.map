@@ -1,0 +1,3 @@
+base referer
+rect $classOpenSSLCryptoBase64.html 8,83 170,107
+rect $classXSCryptCryptoBase64.html 194,83 352,107

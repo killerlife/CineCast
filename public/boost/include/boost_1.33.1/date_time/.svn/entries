@@ -1,0 +1,476 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/date_time
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+posix_time
+dir
+
+
+
+add
+
+tz_db_base.hpp
+file
+
+
+
+add
+
+date_format_simple.hpp
+file
+
+
+
+add
+
+period_parser.hpp
+file
+
+
+
+add
+
+compiler_config.hpp
+file
+
+
+
+add
+
+time_facet.hpp
+file
+
+
+
+add
+
+format_date_parser.hpp
+file
+
+
+
+add
+
+time_duration.hpp
+file
+
+
+
+add
+
+dst_rules.hpp
+file
+
+
+
+add
+
+gregorian_calendar.hpp
+file
+
+
+
+add
+
+date_formatting.hpp
+file
+
+
+
+add
+
+time_zone_names.hpp
+file
+
+
+
+add
+
+date.hpp
+file
+
+
+
+add
+
+time_system_split.hpp
+file
+
+
+
+add
+
+date_formatting_limited.hpp
+file
+
+
+
+add
+
+string_parse_tree.hpp
+file
+
+
+
+add
+
+date_facet.hpp
+file
+
+
+
+add
+
+period.hpp
+file
+
+
+
+add
+
+time_zone_base.hpp
+file
+
+
+
+add
+
+local_time_adjustor.hpp
+file
+
+
+
+add
+
+time_formatting_streams.hpp
+file
+
+
+
+add
+
+testfrmwk.hpp
+file
+
+
+
+add
+
+date_names_put.hpp
+file
+
+
+
+add
+
+dst_transition_generators.hpp
+file
+
+
+
+add
+
+time_defs.hpp
+file
+
+
+
+add
+
+date_generator_parser.hpp
+file
+
+
+
+add
+
+wrapping_int.hpp
+file
+
+
+
+add
+
+local_timezone_defs.hpp
+file
+
+
+
+add
+
+constrained_value.hpp
+file
+
+
+
+add
+
+time_resolution_traits.hpp
+file
+
+
+
+add
+
+time_iterator.hpp
+file
+
+
+
+add
+
+adjust_functors.hpp
+file
+
+
+
+add
+
+date_duration.hpp
+file
+
+
+
+add
+
+time_system_counted.hpp
+file
+
+
+
+add
+
+gregorian
+dir
+
+
+
+add
+
+int_adapter.hpp
+file
+
+
+
+add
+
+microsec_time_clock.hpp
+file
+
+
+
+add
+
+time.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+date_parsing.hpp
+file
+
+
+
+add
+
+iso_format.hpp
+file
+
+
+
+add
+
+year_month_day.hpp
+file
+
+
+
+add
+
+period_formatter.hpp
+file
+
+
+
+add
+
+date_generators.hpp
+file
+
+
+
+add
+
+date_generator_formatter.hpp
+file
+
+
+
+add
+
+string_convert.hpp
+file
+
+
+
+add
+
+gregorian_calendar.ipp
+file
+
+
+
+add
+
+date_clock_device.hpp
+file
+
+
+
+add
+
+date_formatting_locales.hpp
+file
+
+
+
+add
+
+special_values_parser.hpp
+file
+
+
+
+add
+
+date_defs.hpp
+file
+
+
+
+add
+
+local_time
+dir
+
+
+
+add
+
+locale_config.hpp
+file
+
+
+
+add
+
+date_iterator.hpp
+file
+
+
+
+add
+
+filetime_functions.hpp
+file
+
+
+
+add
+
+c_time.hpp
+file
+
+
+
+add
+
+date_duration_types.hpp
+file
+
+
+
+add
+
+time_clock.hpp
+file
+
+
+
+add
+
+parse_format_base.hpp
+file
+
+
+
+add
+
+strings_from_facet.hpp
+file
+
+
+
+add
+
+special_defs.hpp
+file
+
+
+
+add
+
+time_parsing.hpp
+file
+
+
+
+add
+
+special_values_formatter.hpp
+file
+
+
+
+add
+
+c_local_time_adjustor.hpp
+file
+
+
+
+add
+

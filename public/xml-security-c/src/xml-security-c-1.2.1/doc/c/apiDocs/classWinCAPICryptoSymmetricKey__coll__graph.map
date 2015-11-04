@@ -1,0 +1,4 @@
+base referer
+rect $classXSECCryptoSymmetricKey.html 8,86 192,110
+rect $classXSECCryptoKey.html 38,9 161,33
+rect $classsafeBuffer.html 216,86 298,110

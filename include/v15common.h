@@ -1,0 +1,10 @@
+#ifndef __V15COMMON_H_200812151338__
+#define __V15COMMON_H_200812151338__
+
+#ifdef _WIN32
+#define PATHSEPARATOR	"\\"
+#else
+#define PATHSEPARATOR	"/"
+#endif
+
+#endif//__V15COMMON_H_200812151338__

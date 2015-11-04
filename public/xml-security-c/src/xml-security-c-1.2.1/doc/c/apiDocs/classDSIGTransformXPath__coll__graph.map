@@ -1,0 +1,7 @@
+base referer
+rect $classDSIGTransform.html 96,372 210,396
+rect $classXSECEnv.html 137,281 220,305
+rect $classXSECSafeBufferFormatter.html 88,190 269,214
+rect $classsafeBuffer.html 70,9 153,33
+rect $classsbFormatTarget.html 210,100 328,124
+rect $classXSECURIResolver.html 293,190 429,214

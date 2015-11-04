@@ -1,0 +1,4 @@
+base referer
+rect $classXSECCryptoKeyHMAC.html 7,86 167,110
+rect $classXSECCryptoKey.html 26,9 149,33
+rect $classsafeBuffer.html 191,86 274,110

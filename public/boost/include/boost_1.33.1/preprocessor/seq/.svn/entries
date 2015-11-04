@@ -1,0 +1,217 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/preprocessor/seq
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+rest_n.hpp
+file
+
+
+
+add
+
+to_tuple.hpp
+file
+
+
+
+add
+
+remove.hpp
+file
+
+
+
+add
+
+fold_left.hpp
+file
+
+
+
+add
+
+push_back.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+subseq.hpp
+file
+
+
+
+add
+
+insert.hpp
+file
+
+
+
+add
+
+first_n.hpp
+file
+
+
+
+add
+
+enum.hpp
+file
+
+
+
+add
+
+pop_front.hpp
+file
+
+
+
+add
+
+for_each_product.hpp
+file
+
+
+
+add
+
+for_each.hpp
+file
+
+
+
+add
+
+cat.hpp
+file
+
+
+
+add
+
+size.hpp
+file
+
+
+
+add
+
+reverse.hpp
+file
+
+
+
+add
+
+replace.hpp
+file
+
+
+
+add
+
+transform.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+for_each_i.hpp
+file
+
+
+
+add
+
+pop_back.hpp
+file
+
+
+
+add
+
+to_array.hpp
+file
+
+
+
+add
+
+fold_right.hpp
+file
+
+
+
+add
+
+elem.hpp
+file
+
+
+
+add
+
+filter.hpp
+file
+
+
+
+add
+
+push_front.hpp
+file
+
+
+
+add
+
+seq.hpp
+file
+
+
+
+add
+

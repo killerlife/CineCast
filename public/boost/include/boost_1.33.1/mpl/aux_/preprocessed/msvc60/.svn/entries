@@ -1,0 +1,364 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/mpl/aux_/preprocessed/msvc60
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+not_equal_to.hpp
+file
+
+
+
+add
+
+quote.hpp
+file
+
+
+
+add
+
+set_c.hpp
+file
+
+
+
+add
+
+unpack_args.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+reverse_fold_impl.hpp
+file
+
+
+
+add
+
+vector.hpp
+file
+
+
+
+add
+
+deque.hpp
+file
+
+
+
+add
+
+placeholders.hpp
+file
+
+
+
+add
+
+less.hpp
+file
+
+
+
+add
+
+equal_to.hpp
+file
+
+
+
+add
+
+shift_right.hpp
+file
+
+
+
+add
+
+list.hpp
+file
+
+
+
+add
+
+bind.hpp
+file
+
+
+
+add
+
+map.hpp
+file
+
+
+
+add
+
+bitor.hpp
+file
+
+
+
+add
+
+times.hpp
+file
+
+
+
+add
+
+reverse_iter_fold_impl.hpp
+file
+
+
+
+add
+
+plus.hpp
+file
+
+
+
+add
+
+template_arity.hpp
+file
+
+
+
+add
+
+apply.hpp
+file
+
+
+
+add
+
+shift_left.hpp
+file
+
+
+
+add
+
+iter_fold_impl.hpp
+file
+
+
+
+add
+
+modulus.hpp
+file
+
+
+
+add
+
+greater.hpp
+file
+
+
+
+add
+
+minus.hpp
+file
+
+
+
+add
+
+set.hpp
+file
+
+
+
+add
+
+less_equal.hpp
+file
+
+
+
+add
+
+advance_backward.hpp
+file
+
+
+
+add
+
+bitand.hpp
+file
+
+
+
+add
+
+and.hpp
+file
+
+
+
+add
+
+inherit.hpp
+file
+
+
+
+add
+
+full_lambda.hpp
+file
+
+
+
+add
+
+vector_c.hpp
+file
+
+
+
+add
+
+fold_impl.hpp
+file
+
+
+
+add
+
+lambda_no_ctps.hpp
+file
+
+
+
+add
+
+iter_fold_if_impl.hpp
+file
+
+
+
+add
+
+bitxor.hpp
+file
+
+
+
+add
+
+arg.hpp
+file
+
+
+
+add
+
+bind_fwd.hpp
+file
+
+
+
+add
+
+basic_bind.hpp
+file
+
+
+
+add
+
+list_c.hpp
+file
+
+
+
+add
+
+apply_wrap.hpp
+file
+
+
+
+add
+
+or.hpp
+file
+
+
+
+add
+
+greater_equal.hpp
+file
+
+
+
+add
+
+advance_forward.hpp
+file
+
+
+
+add
+
+apply_fwd.hpp
+file
+
+
+
+add
+
+divides.hpp
+file
+
+
+
+add
+

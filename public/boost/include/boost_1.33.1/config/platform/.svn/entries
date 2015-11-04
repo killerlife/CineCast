@@ -1,0 +1,112 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/config/platform
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+irix.hpp
+file
+
+
+
+add
+
+solaris.hpp
+file
+
+
+
+add
+
+linux.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+amigaos.hpp
+file
+
+
+
+add
+
+cygwin.hpp
+file
+
+
+
+add
+
+aix.hpp
+file
+
+
+
+add
+
+macos.hpp
+file
+
+
+
+add
+
+win32.hpp
+file
+
+
+
+add
+
+hpux.hpp
+file
+
+
+
+add
+
+beos.hpp
+file
+
+
+
+add
+
+bsd.hpp
+file
+
+
+
+add
+

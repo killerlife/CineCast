@@ -1,0 +1,5 @@
+base referer
+rect $classXSECKeyInfoResolver.html 7,190 165,214
+rect $classXSECSafeBufferFormatter.html 189,190 370,214
+rect $classsafeBuffer.html 209,9 291,33
+rect $classsbFormatTarget.html 299,100 417,124

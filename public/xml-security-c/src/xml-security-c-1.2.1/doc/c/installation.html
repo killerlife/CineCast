@@ -1,0 +1,456 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="Apache Forrest" name="Generator">
+<meta name="Forrest-version" content="0.6">
+<meta name="Forrest-skin-name" content="pelt">
+<title>Installing the C++ Library</title>
+<link type="text/css" href="../skin/basic.css" rel="stylesheet">
+<link media="screen" type="text/css" href="../skin/screen.css" rel="stylesheet">
+<link media="print" type="text/css" href="../skin/print.css" rel="stylesheet">
+<link type="text/css" href="../skin/profile.css" rel="stylesheet">
+<script src="../skin/getBlank.js" language="javascript" type="text/javascript"></script><script src="../skin/getMenu.js" language="javascript" type="text/javascript"></script><script src="../skin/fontsize.js" language="javascript" type="text/javascript"></script>
+</head>
+<body onload="init()">
+<script type="text/javascript">ndeSetTextSize();</script>
+<div id="top">
+<!--+
+    |breadtrail
+    +-->
+<div class="breadtrail">
+<a href="http://www.apache.org/">apache</a> &gt; <a href="http://xml.apache.org/">xml.apache</a><script src="../skin/breadcrumbs.js" language="JavaScript" type="text/javascript"></script>
+</div>
+<!--+
+    |header
+    +-->
+<div class="header">
+<!--+
+    |start group logo
+    +-->
+<div class="grouplogo">
+<a href="http:///xml.apache.org"><img class="logoImage" alt="Apache XML" src="../images/group-logo.gif"></a>
+</div>
+<!--+
+    |end group logo
+    +-->
+<!--+
+    |start Project Logo
+    +-->
+<div class="projectlogo">
+<a href="http://xml.apache.org/security"><img class="logoImage" alt="Apache XML Security" src="../images/project-logo.gif"></a>
+</div>
+<!--+
+    |end Project Logo
+    +-->
+<!--+
+    |start Search
+    +-->
+<div class="searchbox">
+<form action="http://www.google.com/search" method="get" class="roundtopsmall">
+<input value="xml.apache.org/security" name="sitesearch" type="hidden"><input onFocus="getBlank (this, 'Search the site with google:');" value="Search the site with google:" size="25" name="q" id="query" type="text">&nbsp; 
+                    <input name="Search" value="Search" type="submit">
+</form>
+</div>
+<!--+
+    |end search
+    +-->
+<!--+
+    |start Tabs
+    +-->
+<ul id="tabs">
+<li>
+<a class="base-not-selected" href="../index.html">Home</a>
+</li>
+<li>
+<a class="base-not-selected" href="../Java/index.html">Java</a>
+</li>
+<li class="current">
+<a class="base-selected" href="../c/index.html">C++</a>
+</li>
+</ul>
+<!--+
+    |end Tabs
+    +-->
+</div>
+</div>
+<div id="main">
+<div id="publishedStrip">
+<!--+
+    |start Subtabs
+    +-->
+<div id="level2tabs"></div>
+<!--+
+    |end Endtabs
+    +-->
+<script type="text/javascript" language="JavaScript"><!--
+              document.write("Published: " + document.lastModified);
+              //  --></script>
+</div>
+<!--+
+    |breadtrail
+    +-->
+<div class="breadtrail">
+             
+             &nbsp;
+           </div>
+<!--+
+    |start Menu, mainarea
+    +-->
+<!--+
+    |start Menu
+    +-->
+<div id="menu">
+<div onclick="SwitchMenu('menu_selected_1.1', '../skin/')" id="menu_selected_1.1Title" class="menutitle" style="background-image: url('../skin/images/chapter_open.gif');">C++</div>
+<div id="menu_selected_1.1" class="selectedmenuitemgroup" style="display: block;">
+<div class="menuitem">
+<a title="" href="../c/index.html">Index</a>
+</div>
+<div class="menupage">
+<div class="menupagetitle">Installation</div>
+</div>
+<div class="menuitem">
+<a title="" href="../c/faq.html">FAQs</a>
+</div>
+<div class="menuitem">
+<a title="" href="../c/apiDocs/index.html">API Docs</a>
+</div>
+<div class="menuitem">
+<a title="" href="http://nagoya.apache.org/~blautenb/xml-security-c/apiDocs/">Nightly API build</a>
+</div>
+<div class="menuitem">
+<a title="" href="../c/tools.html">Tools</a>
+</div>
+<div class="menuitem">
+<a title="" href="../c/releases.html">Release Information</a>
+</div>
+<div class="menuitem">
+<a title="" href="../c/credits.html">Credits</a>
+</div>
+<div class="menuitem">
+<a title="" href="../c/interop.html">Interoperability</a>
+</div>
+</div>
+<div onclick="SwitchMenu('menu_1.2', '../skin/')" id="menu_1.2Title" class="menutitle">Programming</div>
+<div id="menu_1.2" class="menuitemgroup">
+<div class="menuitem">
+<a title="" href="../c/programming.html">Signatures</a>
+</div>
+<div class="menuitem">
+<a title="" href="../c/prog_enc.html">Encryption</a>
+</div>
+</div>
+<div id="credit"></div>
+<div id="roundbottom">
+<img style="display: none" class="corner" height="15" width="15" alt="" src="../skin/images/rc-b-l-15-1body-2menu-3menu.png"></div>
+<!--+
+  |alternative credits
+  +-->
+</div>
+<!--+
+    |end Menu
+    +-->
+<!--+
+    |start content
+    +-->
+<div id="content">
+<div id="skinconf-txtlink"></div>
+<h1>Installing the C++ Library</h1> 
+    
+<a name="N1000D"></a><a name="Prerequisites"></a>
+<h2 class="h3">Prerequisites</h2>
+<div class="section">
+<p>
+		The library requires OpenSSL for cryptographic support.  Xalan-C
+		is also required if XPath and/or XSLT transformations are required.
+      </p>
+<p>
+		Version 1.2.0 of the library has been tested with version 2.5 and 2.6 
+        of Xerces-C, version 1.9 of Xalan-C and Version 0.9.6 (and above) of
+		OpenSSL.
+	  </p>
+</div>
+
+    
+<a name="N1001A"></a><a name="Getting+the+source"></a>
+<h2 class="h3">Getting the source</h2>
+<div class="section">
+<p>
+		You can download the sources via WWW in the distribution directory
+		from one of the Apache  
+		<a target="_top" href="../download.html">
+		  mirrors
+		</a>.
+      </p>
+<p>
+		This project's CVS repository can be checked out through anonymous
+		(pserver) CVS with the following instruction set. The module you wish
+		to check out must be specified as the modulename. When prompted for a
+		password for anonymous, simply enter "anoncvs" without quotes: 
+      </p>
+<pre class="code">cvs -d :pserver:anoncvs@cvs.apache.org:/home/cvspublic login
+	password: anoncvs
+	cvs -d :pserver:anoncvs@cvs.apache.org:/home/cvspublic checkout
+	xml-security
+      </pre>
+<p>
+		A HTTP interface to browse the sources online is available via 
+		<a class="external" href="http://cvs.apache.org/viewcvs/xml-security/">http://cvs.apache.org/viewcvs.cgi/xml-security/</a>
+      
+</p>
+</div>
+    
+    
+<a name="N10036"></a><a name="Building+for+UNIX"></a>
+<h2 class="h3">Building for UNIX</h2>
+<div class="section">
+<p>
+		XML-Security-C is currently fully supported on Linux, FreeBSD and 
+		Solaris.  It is partially supported (in cases where Xalan is not 
+		required) on NetBSD and Cygwin.  It has been built and 
+		tested using GNU gcc 3.x, gcc 2.95.4, Forte C++ 5.4 (Solaris) and 
+		GNU make.
+	  </p>
+<div class="frame note">
+<div class="label">Note</div>
+<div class="content">
+		The UNIX XML-Security-C build process has changed radically since
+		beta 0.0.2 as the Makefiles and configure scripts have been completely
+		rewritten.
+	  </div>
+</div>
+<a name="N10042"></a><a name="Set+up+the+Environment"></a>
+<h3 class="h4">Set up the Environment</h3>
+<p>
+		  The build process has been automated as much as possible.  To
+		  start the process, three environment variables <em>can</em> be set :
+		</p>
+<ul>
+		  
+<li>
+<em>XERCESCROOT</em> - points to the base of your Xerces distribution</li>
+		  
+<li>
+<em>XALANCROOT</em> - points to the base of your Xalan distribution</li>
+		  
+<li>
+<em>OPENSSL</em> - points to the base of your OpenSSL distribution</li>
+		
+</ul>
+<p>
+		  For example (on my Debian Linux box under Bash) :
+		</p>
+<pre class="code">
+export XERCESCROOT=~/prog/extlibs/xerces-c-src2_6_0
+export XALANCROOT=~/prog/extlibs/xalan-c-src1_9/c
+export OPENSSL=~/prog/extlibs/openssl-0.9.7g
+		  </pre>
+<p>
+		  If these environment variables are not set, configure will try to
+		  find the necessary include and library files in the system directories.
+		  The configure script is created through <em>autoconf</em> so you
+		  can also tell your compiler where to find these things via
+		  the <em>CXXFLAGS</em> and <em>LDFLAGS</em> environment variables.
+		</p>
+<p>
+		  If configure cannot find anything for Xalan, it will assume that
+		  you are not interested in XPath or XSLT support and will compile
+		  XSEC without linking to Xalan.  Any attempt to use these features
+		  will raise an exception in the library.
+		</p>
+<a name="N10077"></a><a name="Configure"></a>
+<h3 class="h4">Configure</h3>
+<p>
+		  Now go to the $XSECCROOT/src directory and run the command
+		  <em>./configure</em>.  This will create the necessary makefiles
+		  and header files necessary to build the package.
+		</p>
+<p>
+		  In addition to the standard options, <em>configure</em> can be 
+		  passed a number of XSEC specific options :
+		</p>
+<ul>
+		  
+<li>
+<em>--without-xalan</em> disable linkage to Xalan.</li>
+		  
+<li>
+<em>--enable-debug</em> cause the library to be built with symbols</li>
+		
+</ul>
+<div class="frame note">
+<div class="label">Note</div>
+<div class="content">
+		  Using the <em>--without-xalan</em> option will automatically mean
+		  that the library does not support XPath or XSLT transformations
+		  (although envelope transforms will work as the library can now
+		  perform these without going through an XPath transform).
+		</div>
+</div>
+<a name="N1009D"></a><a name="Compile"></a>
+<h3 class="h4">Compile</h3>
+<p>
+		  Assuming the output of the above command looks reasonable simply
+		  type <em>make</em> (or <em>gmake</em> - you must use the GNU
+		  make utility) in the <em>src</em> directory.  This
+		  will make the shared library.  In addition,  <em>make tools</em>
+		  will make the tools (or examples) in the src/tools directory.
+		</p>
+<p>
+		  The make process will create three directories in the distribution
+		  directory:
+		</p>
+<ol>
+		  
+<li>
+<em>include</em> - All public header files are copied here</li>
+		  
+<li>
+<em>bin</em> - Where the tools are placed once compiles </li>
+		  
+<li>
+<em>lib</em> - Where the shared library is place</li>
+		
+</ol>
+<p>
+		  You will need to set up your <em>LD_LIBRARY_PATH</em> environment
+		  variable to ensure ld.so will find the new shared libraries.
+		</p>
+<p>
+		  Finally - you can use <em>make clean</em> and <em>make distclean</em>
+		  to remove all binaries and libraries (former) and build scripts (latter)
+		</p>
+<a name="N100D7"></a><a name="Install"></a>
+<h3 class="h4">Install</h3>
+<p>
+		  
+<em>make install</em> can be used to install the library and the
+		  include files into the relevant directories (which can be set via
+		  the <em>configure</em> script using the various <em>--prefix=</em>
+		  options.
+		</p>
+</div>
+	
+<a name="N100EB"></a><a name="Building+for+Windows"></a>
+<h2 class="h3">Building for Windows</h2>
+<div class="section">
+<p>
+		XML-Security-C has been built and tested on Microsoft's Visual C++ 6.0
+		compiler only.  (VC++ .NET support is currently being worked on.)  
+		The following subsections briefly describe how to 
+		rebuild the library, tools and samples using the supplied workspaces.
+	  </p>
+<div class="frame note">
+<div class="label">Note</div>
+<div class="content">
+		As of version 0.2, the library can be built without OpenSSL on a
+		Windows platform.  (The WinCAPI provider will be used instead).
+		See below for details on how to do this.  This is still experimental,
+		but should work.
+	  </div>
+</div>
+<a name="N100F7"></a><a name="Setup+Directories"></a>
+<h3 class="h4">Setup Directories</h3>
+<p>
+		  The workspace and project files provided do not make any assumptions
+		  about where Xerces, Xalan or OpenSSL might be on the system.  The
+		  first step is therefore to configure VC directories under 
+		  Tools-&gt;Options (Directories).
+		</p>
+<p>
+		  For the Include directories you will need something similar to my
+		  setup below (replacing D:\PROG\CLIB\.. with the appropriate path
+		  on your system).
+		</p>
+<div style="text-align: center;">
+<img class="figure" alt="Include Directories" src="images/vc6a.gif"></div>
+<p>
+		  Similarly the library directories will need to be added to.  Note
+		  that in the example below, I use both Debug and Release libraries
+		  for Xalan and Xerces.  As provided, the workspace projects link to
+		  the debug libraries for XSEC Debug and Release for XSEC Release.
+		</p>
+<div style="text-align: center;">
+<img class="figure" alt="Link Directories" src="images/vc6b.gif"></div>
+<a name="N1010F"></a><a name="Configure-N1010F"></a>
+<h3 class="h4">Configure</h3>
+<p>
+		  If you are using Xalan and OpenSSL, no configuration is required when
+		  building from the Visual C++ v6.0 workspace.
+		</p>
+<p>
+		  If you wish to disable OpenSSL, you should edit the file 
+		  <em>.../src/framework/XSECW32Config.hpp</em> and comment out the 
+		  line <span class="codefrag">#define HAVE_OPENSSL 1</span>.  This will effectively remove
+		  support for OpenSSL from the library as it is being compiled.
+		</p>
+<p>
+		  You will also need to remove the library module <span class="codefrag">libeay32.lib</span>
+		  from the link-&gt;General settings in each of the projects in the
+		  XSEC workspace.
+		</p>
+<p>
+		  To enable support for the Windows Crypto API, edit the 
+		  XSECW32Config.hpp file and uncomment the line 
+		  <span class="codefrag">#define HAVE_WINCAPI 1</span>
+		
+</p>
+<p>
+		  To disable support for Xalan, a similar process is followed.  Edit
+		  the XSECW32Config.hpp file, and <strong>uncomment</strong> the XSEC_NO_XALAN
+		  line.  This will remove all support for Xalan from the various
+		  source code files.
+		</p>
+<p>
+		  When compiling, using the "...No Xalan configurations for each
+		  project.  These are the same as the normal debug or release builds,
+		  but the Xalan library is not linked in.
+		</p>
+<a name="N10137"></a><a name="Build+Library+and+Tools"></a>
+<h3 class="h4">Build Library and Tools</h3>
+<p>
+		  The main workspace is found in :
+		</p>
+<p>
+<em>.../Projects/VC6.0/xsec/xsec.dsw</em>
+</p>
+<p>
+		  You can load this to build the tools or the library using the relevant
+		  project.  (The library is xsec_lib.)
+		</p>
+<p>
+		  Samples can be built using the workspace found in :
+		</p>
+<p>
+<em>.../src/Projects/VC6.0/Samples/Samples.dsw</em>
+</p>
+<p>All output will be sent to</p>
+<p>
+<em>.../Build/Win32/VC6/Debug</em>
+</p>
+<p>for the debug builds and Release for the release.</p>
+</div>
+  
+</div>
+<!--+
+    |end content
+    +-->
+<div class="clearboth">&nbsp;</div>
+</div>
+<div id="footer">
+<!--+
+    |start bottomstrip
+    +-->
+<div class="lastmodified">
+<script type="text/javascript"><!--
+document.write("Last Published: " + document.lastModified);
+//  --></script>
+</div>
+<div class="copyright">
+ Copyright &copy; 2002-2005 The Apache Software Foundation.</div>
+<!--+
+    |end bottomstrip
+    +-->
+</div>
+</body>
+</html>

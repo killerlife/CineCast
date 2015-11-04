@@ -1,0 +1,350 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/archive
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+basic_binary_oprimitive.hpp
+file
+
+
+
+add
+
+basic_text_oprimitive.hpp
+file
+
+
+
+add
+
+polymorphic_xml_woarchive.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+xml_wiarchive.hpp
+file
+
+
+
+add
+
+basic_xml_archive.hpp
+file
+
+
+
+add
+
+xml_woarchive.hpp
+file
+
+
+
+add
+
+xml_iarchive.hpp
+file
+
+
+
+add
+
+impl
+dir
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+xml_oarchive.hpp
+file
+
+
+
+add
+
+basic_archive.hpp
+file
+
+
+
+add
+
+polymorphic_text_iarchive.hpp
+file
+
+
+
+add
+
+polymorphic_binary_iarchive.hpp
+file
+
+
+
+add
+
+binary_wiarchive.hpp
+file
+
+
+
+add
+
+text_wiarchive.hpp
+file
+
+
+
+add
+
+iterators
+dir
+
+
+
+add
+
+polymorphic_text_oarchive.hpp
+file
+
+
+
+add
+
+polymorphic_binary_oarchive.hpp
+file
+
+
+
+add
+
+add_facet.hpp
+file
+
+
+
+add
+
+binary_woarchive.hpp
+file
+
+
+
+add
+
+text_woarchive.hpp
+file
+
+
+
+add
+
+wcslen.hpp
+file
+
+
+
+add
+
+text_iarchive.hpp
+file
+
+
+
+add
+
+binary_iarchive.hpp
+file
+
+
+
+add
+
+tmpdir.hpp
+file
+
+
+
+add
+
+polymorphic_xml_iarchive.hpp
+file
+
+
+
+add
+
+basic_text_iarchive.hpp
+file
+
+
+
+add
+
+basic_binary_iarchive.hpp
+file
+
+
+
+add
+
+archive_exception.hpp
+file
+
+
+
+add
+
+binary_oarchive.hpp
+file
+
+
+
+add
+
+text_oarchive.hpp
+file
+
+
+
+add
+
+basic_binary_oarchive.hpp
+file
+
+
+
+add
+
+polymorphic_xml_oarchive.hpp
+file
+
+
+
+add
+
+basic_text_oarchive.hpp
+file
+
+
+
+add
+
+dinkumware.hpp
+file
+
+
+
+add
+
+polymorphic_text_wiarchive.hpp
+file
+
+
+
+add
+
+basic_xml_iarchive.hpp
+file
+
+
+
+add
+
+polymorphic_iarchive.hpp
+file
+
+
+
+add
+
+polymorphic_text_woarchive.hpp
+file
+
+
+
+add
+
+basic_xml_oarchive.hpp
+file
+
+
+
+add
+
+codecvt_null.hpp
+file
+
+
+
+add
+
+polymorphic_oarchive.hpp
+file
+
+
+
+add
+
+basic_binary_iprimitive.hpp
+file
+
+
+
+add
+
+basic_text_iprimitive.hpp
+file
+
+
+
+add
+
+polymorphic_xml_wiarchive.hpp
+file
+
+
+
+add
+

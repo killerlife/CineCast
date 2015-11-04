@@ -1,0 +1,168 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/date_time/gregorian
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+greg_duration.hpp
+file
+
+
+
+add
+
+greg_month.hpp
+file
+
+
+
+add
+
+greg_serialize.hpp
+file
+
+
+
+add
+
+formatters_limited.hpp
+file
+
+
+
+add
+
+greg_weekday.hpp
+file
+
+
+
+add
+
+greg_ymd.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+gregorian_types.hpp
+file
+
+
+
+add
+
+greg_year.hpp
+file
+
+
+
+add
+
+gregorian_io.hpp
+file
+
+
+
+add
+
+gregorian.hpp
+file
+
+
+
+add
+
+greg_calendar.hpp
+file
+
+
+
+add
+
+greg_duration_types.hpp
+file
+
+
+
+add
+
+parsers.hpp
+file
+
+
+
+add
+
+greg_date.hpp
+file
+
+
+
+add
+
+greg_day.hpp
+file
+
+
+
+add
+
+conversion.hpp
+file
+
+
+
+add
+
+greg_day_of_year.hpp
+file
+
+
+
+add
+
+formatters.hpp
+file
+
+
+
+add
+
+greg_facet.hpp
+file
+
+
+
+add
+

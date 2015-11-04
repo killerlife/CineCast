@@ -1,0 +1,336 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/serialization
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+is_abstract.hpp
+file
+
+
+
+add
+
+slist.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+access.hpp
+file
+
+
+
+add
+
+type_info_implementation.hpp
+file
+
+
+
+add
+
+tracking.hpp
+file
+
+
+
+add
+
+vector.hpp
+file
+
+
+
+add
+
+nvp.hpp
+file
+
+
+
+add
+
+deque.hpp
+file
+
+
+
+add
+
+utility.hpp
+file
+
+
+
+add
+
+level.hpp
+file
+
+
+
+add
+
+extended_type_info_no_rtti.hpp
+file
+
+
+
+add
+
+list.hpp
+file
+
+
+
+add
+
+void_cast.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+serialization.hpp
+file
+
+
+
+add
+
+map.hpp
+file
+
+
+
+add
+
+hash_map.hpp
+file
+
+
+
+add
+
+shared_ptr_132.hpp
+file
+
+
+
+add
+
+collection_traits.hpp
+file
+
+
+
+add
+
+collections_load_imp.hpp
+file
+
+
+
+add
+
+version.hpp
+file
+
+
+
+add
+
+extended_type_info_typeid.hpp
+file
+
+
+
+add
+
+shared_ptr.hpp
+file
+
+
+
+add
+
+level_enum.hpp
+file
+
+
+
+add
+
+set.hpp
+file
+
+
+
+add
+
+split_free.hpp
+file
+
+
+
+add
+
+hash_set.hpp
+file
+
+
+
+add
+
+base_object.hpp
+file
+
+
+
+add
+
+force_include.hpp
+file
+
+
+
+add
+
+collections_save_imp.hpp
+file
+
+
+
+add
+
+scoped_ptr.hpp
+file
+
+
+
+add
+
+variant.hpp
+file
+
+
+
+add
+
+config.hpp
+file
+
+
+
+add
+
+string.hpp
+file
+
+
+
+add
+
+traits.hpp
+file
+
+
+
+add
+
+binary_object.hpp
+file
+
+
+
+add
+
+void_cast_fwd.hpp
+file
+
+
+
+add
+
+extended_type_info.hpp
+file
+
+
+
+add
+
+weak_ptr.hpp
+file
+
+
+
+add
+
+export.hpp
+file
+
+
+
+add
+
+split_member.hpp
+file
+
+
+
+add
+
+optional.hpp
+file
+
+
+
+add
+
+tracking_enum.hpp
+file
+
+
+
+add
+

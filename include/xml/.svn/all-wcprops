@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/LEC13/!svn/ver/2/include/xml
+END
+myuuid.h
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/LEC13/!svn/ver/2/include/xml/myuuid.h
+END
+xmldatetime.h
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/LEC13/!svn/ver/2/include/xml/xmldatetime.h
+END
+dcpwrapinclude.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/LEC13/!svn/ver/2/include/xml/dcpwrapinclude.h
+END
+MyXMLException.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/LEC13/!svn/ver/2/include/xml/MyXMLException.h
+END
+errordef.h
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/LEC13/!svn/ver/2/include/xml/errordef.h
+END

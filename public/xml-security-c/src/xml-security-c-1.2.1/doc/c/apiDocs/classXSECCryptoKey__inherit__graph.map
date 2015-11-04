@@ -1,0 +1,5 @@
+base referer
+rect $classXSECCryptoKeyDSA.html 8,83 157,107
+rect $classXSECCryptoKeyHMAC.html 181,83 341,107
+rect $classXSECCryptoKeyRSA.html 365,83 514,107
+rect $classXSECCryptoSymmetricKey.html 538,83 722,107

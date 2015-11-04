@@ -1,0 +1,210 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/python/object
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+inheritance.hpp
+file
+
+
+
+add
+
+iterator.hpp
+file
+
+
+
+add
+
+py_function.hpp
+file
+
+
+
+add
+
+enum_base.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+function_handle.hpp
+file
+
+
+
+add
+
+iterator_core.hpp
+file
+
+
+
+add
+
+make_instance.hpp
+file
+
+
+
+add
+
+pickle_support.hpp
+file
+
+
+
+add
+
+find_instance.hpp
+file
+
+
+
+add
+
+forward.hpp
+file
+
+
+
+add
+
+instance.hpp
+file
+
+
+
+add
+
+class.hpp
+file
+
+
+
+add
+
+class_metadata.hpp
+file
+
+
+
+add
+
+class_wrapper.hpp
+file
+
+
+
+add
+
+add_to_namespace.hpp
+file
+
+
+
+add
+
+value_holder.hpp
+file
+
+
+
+add
+
+value_holder_fwd.hpp
+file
+
+
+
+add
+
+make_holder.hpp
+file
+
+
+
+add
+
+life_support.hpp
+file
+
+
+
+add
+
+function_object.hpp
+file
+
+
+
+add
+
+pointer_holder.hpp
+file
+
+
+
+add
+
+inheritance_query.hpp
+file
+
+
+
+add
+
+function.hpp
+file
+
+
+
+add
+
+make_ptr_instance.hpp
+file
+
+
+
+add
+
+class_detail.hpp
+file
+
+
+
+add
+

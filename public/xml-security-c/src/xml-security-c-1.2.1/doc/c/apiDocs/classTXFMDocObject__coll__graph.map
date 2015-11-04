@@ -1,0 +1,9 @@
+base referer
+rect $classTXFMBase.html 276,372 364,396
+rect $classXSECNameSpaceExpander.html 225,281 414,305
+rect $classXSECSafeBufferFormatter.html 198,190 380,214
+rect $classXSECEnv.html 118,281 201,305
+rect $classsafeBuffer.html 218,9 301,33
+rect $classsbFormatTarget.html 309,100 426,124
+rect $classXSECXPathNodeList.html 438,281 588,305
+rect $classXSECURIResolver.html 8,190 144,214

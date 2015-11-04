@@ -1,0 +1,1365 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/mpl
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+key_type_fwd.hpp
+file
+
+
+
+add
+
+next_prior.hpp
+file
+
+
+
+add
+
+distance_fwd.hpp
+file
+
+
+
+add
+
+index_of.hpp
+file
+
+
+
+add
+
+set_c.hpp
+file
+
+
+
+add
+
+long_fwd.hpp
+file
+
+
+
+add
+
+advance.hpp
+file
+
+
+
+add
+
+assert.hpp
+file
+
+
+
+add
+
+reverse_iter_fold.hpp
+file
+
+
+
+add
+
+vector.hpp
+file
+
+
+
+add
+
+insert.hpp
+file
+
+
+
+add
+
+less.hpp
+file
+
+
+
+add
+
+equal.hpp
+file
+
+
+
+add
+
+arg_fwd.hpp
+file
+
+
+
+add
+
+tag.hpp
+file
+
+
+
+add
+
+reverse.hpp
+file
+
+
+
+add
+
+single_view.hpp
+file
+
+
+
+add
+
+lower_bound.hpp
+file
+
+
+
+add
+
+bitor.hpp
+file
+
+
+
+add
+
+filter_view.hpp
+file
+
+
+
+add
+
+protect.hpp
+file
+
+
+
+add
+
+find.hpp
+file
+
+
+
+add
+
+times.hpp
+file
+
+
+
+add
+
+plus.hpp
+file
+
+
+
+add
+
+empty_sequence.hpp
+file
+
+
+
+add
+
+shift_left.hpp
+file
+
+
+
+add
+
+multiplies.hpp
+file
+
+
+
+add
+
+alias.hpp
+file
+
+
+
+add
+
+as_sequence.hpp
+file
+
+
+
+add
+
+print.hpp
+file
+
+
+
+add
+
+size_t_fwd.hpp
+file
+
+
+
+add
+
+if.hpp
+file
+
+
+
+add
+
+back.hpp
+file
+
+
+
+add
+
+void_fwd.hpp
+file
+
+
+
+add
+
+inherit.hpp
+file
+
+
+
+add
+
+sequence_tag.hpp
+file
+
+
+
+add
+
+front_inserter.hpp
+file
+
+
+
+add
+
+is_sequence.hpp
+file
+
+
+
+add
+
+insert_fwd.hpp
+file
+
+
+
+add
+
+at.hpp
+file
+
+
+
+add
+
+for_each.hpp
+file
+
+
+
+add
+
+unique.hpp
+file
+
+
+
+add
+
+same_as.hpp
+file
+
+
+
+add
+
+logical.hpp
+file
+
+
+
+add
+
+base.hpp
+file
+
+
+
+add
+
+limits
+dir
+
+
+
+add
+
+list_c.hpp
+file
+
+
+
+add
+
+accumulate.hpp
+file
+
+
+
+add
+
+index_if.hpp
+file
+
+
+
+add
+
+divides.hpp
+file
+
+
+
+add
+
+push_front.hpp
+file
+
+
+
+add
+
+inserter.hpp
+file
+
+
+
+add
+
+empty.hpp
+file
+
+
+
+add
+
+erase_fwd.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+back_fwd.hpp
+file
+
+
+
+add
+
+math
+dir
+
+
+
+add
+
+stable_partition.hpp
+file
+
+
+
+add
+
+at_fwd.hpp
+file
+
+
+
+add
+
+aux_
+dir
+
+
+
+add
+
+erase_key.hpp
+file
+
+
+
+add
+
+O1_size.hpp
+file
+
+
+
+add
+
+shift_right.hpp
+file
+
+
+
+add
+
+order_fwd.hpp
+file
+
+
+
+add
+
+replace.hpp
+file
+
+
+
+add
+
+value_type.hpp
+file
+
+
+
+add
+
+map.hpp
+file
+
+
+
+add
+
+insert_range.hpp
+file
+
+
+
+add
+
+min.hpp
+file
+
+
+
+add
+
+has_key_fwd.hpp
+file
+
+
+
+add
+
+fold.hpp
+file
+
+
+
+add
+
+max.hpp
+file
+
+
+
+add
+
+identity.hpp
+file
+
+
+
+add
+
+key_type.hpp
+file
+
+
+
+add
+
+arithmetic.hpp
+file
+
+
+
+add
+
+set.hpp
+file
+
+
+
+add
+
+bool_fwd.hpp
+file
+
+
+
+add
+
+remove.hpp
+file
+
+
+
+add
+
+empty_fwd.hpp
+file
+
+
+
+add
+
+long.hpp
+file
+
+
+
+add
+
+always.hpp
+file
+
+
+
+add
+
+switch.hpp
+file
+
+
+
+add
+
+bitand.hpp
+file
+
+
+
+add
+
+and.hpp
+file
+
+
+
+add
+
+vector_c.hpp
+file
+
+
+
+add
+
+iterator_range.hpp
+file
+
+
+
+add
+
+end.hpp
+file
+
+
+
+add
+
+bitxor.hpp
+file
+
+
+
+add
+
+integral_c_fwd.hpp
+file
+
+
+
+add
+
+arg.hpp
+file
+
+
+
+add
+
+next.hpp
+file
+
+
+
+add
+
+lambda.hpp
+file
+
+
+
+add
+
+insert_range_fwd.hpp
+file
+
+
+
+add
+
+apply_fwd.hpp
+file
+
+
+
+add
+
+min_max.hpp
+file
+
+
+
+add
+
+empty_base.hpp
+file
+
+
+
+add
+
+count.hpp
+file
+
+
+
+add
+
+int.hpp
+file
+
+
+
+add
+
+unpack_args.hpp
+file
+
+
+
+add
+
+quote.hpp
+file
+
+
+
+add
+
+size_t.hpp
+file
+
+
+
+add
+
+find_if.hpp
+file
+
+
+
+add
+
+push_back_fwd.hpp
+file
+
+
+
+add
+
+sizeof.hpp
+file
+
+
+
+add
+
+void.hpp
+file
+
+
+
+add
+
+deque.hpp
+file
+
+
+
+add
+
+placeholders.hpp
+file
+
+
+
+add
+
+bitwise.hpp
+file
+
+
+
+add
+
+equal_to.hpp
+file
+
+
+
+add
+
+partition.hpp
+file
+
+
+
+add
+
+size.hpp
+file
+
+
+
+add
+
+list.hpp
+file
+
+
+
+add
+
+transform.hpp
+file
+
+
+
+add
+
+bind.hpp
+file
+
+
+
+add
+
+pop_back.hpp
+file
+
+
+
+add
+
+contains.hpp
+file
+
+
+
+add
+
+reverse_fold.hpp
+file
+
+
+
+add
+
+lambda_fwd.hpp
+file
+
+
+
+add
+
+clear.hpp
+file
+
+
+
+add
+
+sort.hpp
+file
+
+
+
+add
+
+map
+dir
+
+
+
+add
+
+front.hpp
+file
+
+
+
+add
+
+count_fwd.hpp
+file
+
+
+
+add
+
+greater.hpp
+file
+
+
+
+add
+
+int_fwd.hpp
+file
+
+
+
+add
+
+erase.hpp
+file
+
+
+
+add
+
+advance_fwd.hpp
+file
+
+
+
+add
+
+inherit_linearly.hpp
+file
+
+
+
+add
+
+integral_c_tag.hpp
+file
+
+
+
+add
+
+set
+dir
+
+
+
+add
+
+begin_end.hpp
+file
+
+
+
+add
+
+size_fwd.hpp
+file
+
+
+
+add
+
+remove_if.hpp
+file
+
+
+
+add
+
+back_inserter.hpp
+file
+
+
+
+add
+
+order.hpp
+file
+
+
+
+add
+
+bind_fwd.hpp
+file
+
+
+
+add
+
+is_placeholder.hpp
+file
+
+
+
+add
+
+joint_view.hpp
+file
+
+
+
+add
+
+pop_back_fwd.hpp
+file
+
+
+
+add
+
+contains_fwd.hpp
+file
+
+
+
+add
+
+greater_equal.hpp
+file
+
+
+
+add
+
+has_key.hpp
+file
+
+
+
+add
+
+deref.hpp
+file
+
+
+
+add
+
+clear_fwd.hpp
+file
+
+
+
+add
+
+front_fwd.hpp
+file
+
+
+
+add
+
+not_equal_to.hpp
+file
+
+
+
+add
+
+pair.hpp
+file
+
+
+
+add
+
+bool.hpp
+file
+
+
+
+add
+
+prior.hpp
+file
+
+
+
+add
+
+zip_view.hpp
+file
+
+
+
+add
+
+sequence_tag_fwd.hpp
+file
+
+
+
+add
+
+negate.hpp
+file
+
+
+
+add
+
+transform_view.hpp
+file
+
+
+
+add
+
+pop_front.hpp
+file
+
+
+
+add
+
+iterator_tags.hpp
+file
+
+
+
+add
+
+integral_c.hpp
+file
+
+
+
+add
+
+comparison.hpp
+file
+
+
+
+add
+
+copy.hpp
+file
+
+
+
+add
+
+begin_end_fwd.hpp
+file
+
+
+
+add
+
+vector
+dir
+
+
+
+add
+
+multiset
+dir
+
+
+
+add
+
+list
+dir
+
+
+
+add
+
+apply.hpp
+file
+
+
+
+add
+
+iterator_category.hpp
+file
+
+
+
+add
+
+push_front_fwd.hpp
+file
+
+
+
+add
+
+modulus.hpp
+file
+
+
+
+add
+
+replace_if.hpp
+file
+
+
+
+add
+
+distance.hpp
+file
+
+
+
+add
+
+minus.hpp
+file
+
+
+
+add
+
+min_element.hpp
+file
+
+
+
+add
+
+less_equal.hpp
+file
+
+
+
+add
+
+max_element.hpp
+file
+
+
+
+add
+
+range_c.hpp
+file
+
+
+
+add
+
+push_back.hpp
+file
+
+
+
+add
+
+not.hpp
+file
+
+
+
+add
+
+eval_if.hpp
+file
+
+
+
+add
+
+count_if.hpp
+file
+
+
+
+add
+
+pop_front_fwd.hpp
+file
+
+
+
+add
+
+iter_fold.hpp
+file
+
+
+
+add
+
+erase_key_fwd.hpp
+file
+
+
+
+add
+
+O1_size_fwd.hpp
+file
+
+
+
+add
+
+numeric_cast.hpp
+file
+
+
+
+add
+
+value_type_fwd.hpp
+file
+
+
+
+add
+
+apply_wrap.hpp
+file
+
+
+
+add
+
+or.hpp
+file
+
+
+
+add
+
+has_xxx.hpp
+file
+
+
+
+add
+
+upper_bound.hpp
+file
+
+
+
+add
+
+begin.hpp
+file
+
+
+
+add
+
+iter_fold_if.hpp
+file
+
+
+
+add
+
+pair_view.hpp
+file
+
+
+
+add
+
+copy_if.hpp
+file
+
+
+
+add
+

@@ -1,0 +1,4 @@
+base referer
+rect $classOpenSSLCryptoSymmetricKey.html 8,158 213,182
+rect $classWinCAPICryptoSymmetricKey.html 237,158 440,182
+rect $classXSECCryptoKey.html 162,9 285,33

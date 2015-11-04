@@ -1,0 +1,581 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/type_traits
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+is_empty.hpp
+file
+
+
+
+add
+
+is_abstract.hpp
+file
+
+
+
+add
+
+remove_all_extents.hpp
+file
+
+
+
+add
+
+is_integral.hpp
+file
+
+
+
+add
+
+ice.hpp
+file
+
+
+
+add
+
+is_object.hpp
+file
+
+
+
+add
+
+add_reference.hpp
+file
+
+
+
+add
+
+is_convertible.hpp
+file
+
+
+
+add
+
+remove_reference.hpp
+file
+
+
+
+add
+
+conversion_traits.hpp
+file
+
+
+
+add
+
+function_traits.hpp
+file
+
+
+
+add
+
+is_compound.hpp
+file
+
+
+
+add
+
+is_const.hpp
+file
+
+
+
+add
+
+reference_traits.hpp
+file
+
+
+
+add
+
+aligned_storage.hpp
+file
+
+
+
+add
+
+is_member_object_pointer.hpp
+file
+
+
+
+add
+
+is_fundamental.hpp
+file
+
+
+
+add
+
+is_base_of.hpp
+file
+
+
+
+add
+
+rank.hpp
+file
+
+
+
+add
+
+remove_volatile.hpp
+file
+
+
+
+add
+
+remove_pointer.hpp
+file
+
+
+
+add
+
+cv_traits.hpp
+file
+
+
+
+add
+
+has_trivial_copy.hpp
+file
+
+
+
+add
+
+has_virtual_destructor.hpp
+file
+
+
+
+add
+
+is_scalar.hpp
+file
+
+
+
+add
+
+is_class.hpp
+file
+
+
+
+add
+
+has_nothrow_constructor.hpp
+file
+
+
+
+add
+
+is_stateless.hpp
+file
+
+
+
+add
+
+is_member_pointer.hpp
+file
+
+
+
+add
+
+array_traits.hpp
+file
+
+
+
+add
+
+is_member_function_pointer.hpp
+file
+
+
+
+add
+
+has_trivial_assign.hpp
+file
+
+
+
+add
+
+has_nothrow_destructor.hpp
+file
+
+
+
+add
+
+is_volatile.hpp
+file
+
+
+
+add
+
+has_trivial_constructor.hpp
+file
+
+
+
+add
+
+type_with_alignment.hpp
+file
+
+
+
+add
+
+is_same.hpp
+file
+
+
+
+add
+
+add_volatile.hpp
+file
+
+
+
+add
+
+composite_traits.hpp
+file
+
+
+
+add
+
+is_base_and_derived.hpp
+file
+
+
+
+add
+
+add_const.hpp
+file
+
+
+
+add
+
+is_enum.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+remove_const.hpp
+file
+
+
+
+add
+
+is_floating_point.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+is_pod.hpp
+file
+
+
+
+add
+
+integral_constant.hpp
+file
+
+
+
+add
+
+add_cv.hpp
+file
+
+
+
+add
+
+is_function.hpp
+file
+
+
+
+add
+
+has_nothrow_copy.hpp
+file
+
+
+
+add
+
+add_pointer.hpp
+file
+
+
+
+add
+
+is_reference.hpp
+file
+
+
+
+add
+
+is_void.hpp
+file
+
+
+
+add
+
+object_traits.hpp
+file
+
+
+
+add
+
+has_nothrow_assign.hpp
+file
+
+
+
+add
+
+is_polymorphic.hpp
+file
+
+
+
+add
+
+is_float.hpp
+file
+
+
+
+add
+
+transform_traits.hpp
+file
+
+
+
+add
+
+alignment_of.hpp
+file
+
+
+
+add
+
+is_signed.hpp
+file
+
+
+
+add
+
+alignment_traits.hpp
+file
+
+
+
+add
+
+config.hpp
+file
+
+
+
+add
+
+is_unsigned.hpp
+file
+
+
+
+add
+
+extent.hpp
+file
+
+
+
+add
+
+remove_bounds.hpp
+file
+
+
+
+add
+
+is_array.hpp
+file
+
+
+
+add
+
+is_pointer.hpp
+file
+
+
+
+add
+
+same_traits.hpp
+file
+
+
+
+add
+
+transform_traits_spec.hpp
+file
+
+
+
+add
+
+arithmetic_traits.hpp
+file
+
+
+
+add
+
+has_trivial_destructor.hpp
+file
+
+
+
+add
+
+is_union.hpp
+file
+
+
+
+add
+
+broken_compiler_spec.hpp
+file
+
+
+
+add
+
+is_arithmetic.hpp
+file
+
+
+
+add
+
+remove_extent.hpp
+file
+
+
+
+add
+
+decay.hpp
+file
+
+
+
+add
+
+intrinsics.hpp
+file
+
+
+
+add
+
+remove_cv.hpp
+file
+
+
+
+add
+

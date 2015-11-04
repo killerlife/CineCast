@@ -1,0 +1,73 @@
+8
+
+dir
+5645
+svn://192.168.0.206/v15pc/src/program/ProgramQuery
+svn://192.168.0.206
+
+
+
+2009-07-16T11:08:16.890625Z
+5613
+liangpeng
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+7e3e5d03-2a0f-7348-b49d-7352a301eb2e
+
+ProgramQuery.vcproj
+file
+
+
+
+
+2009-07-28T09:20:19.562500Z
+abd639690198666af70059970b3df322
+2009-07-10T10:55:34.796875Z
+5567
+liangpeng
+
+Make_Debug
+dir
+
+ProgramQuery.h
+file
+
+
+
+
+2009-07-28T09:20:19.578125Z
+20def83b795e0543bc096ba5ec5de55d
+2009-07-16T11:08:16.890625Z
+5613
+liangpeng
+
+Debug
+dir
+
+Make_Release
+dir
+
+ProgramQuery.cpp
+file
+
+
+
+
+2009-07-28T09:20:19.578125Z
+e19399e34c4fa1824f77f6337ae57ea1
+2009-07-16T11:08:16.890625Z
+5613
+liangpeng
+

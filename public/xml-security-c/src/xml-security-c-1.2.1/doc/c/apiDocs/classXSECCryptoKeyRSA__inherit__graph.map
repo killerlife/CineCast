@@ -1,0 +1,4 @@
+base referer
+rect $classOpenSSLCryptoKeyRSA.html 8,158 178,182
+rect $classWinCAPICryptoKeyRSA.html 202,158 370,182
+rect $classXSECCryptoKey.html 128,9 250,33

@@ -1,0 +1,8 @@
+base referer
+rect $classDSIGTransform.html 9,128 123,152
+rect $classDSIGTransformBase64.html 185,8 345,32
+rect $classDSIGTransformC14n.html 191,56 338,80
+rect $classDSIGTransformEnvelope.html 179,104 350,128
+rect $classDSIGTransformXPath.html 189,152 341,176
+rect $classDSIGTransformXPathFilter.html 174,200 355,224
+rect $classDSIGTransformXSL.html 194,248 335,272

@@ -1,0 +1,630 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/python
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+handle_fwd.hpp
+file
+
+
+
+add
+
+bases.hpp
+file
+
+
+
+add
+
+type_id.hpp
+file
+
+
+
+add
+
+reference_existing_object.hpp
+file
+
+
+
+add
+
+def.hpp
+file
+
+
+
+add
+
+raw_function.hpp
+file
+
+
+
+add
+
+class_fwd.hpp
+file
+
+
+
+add
+
+ptr.hpp
+file
+
+
+
+add
+
+object_fwd.hpp
+file
+
+
+
+add
+
+exception_translator.hpp
+file
+
+
+
+add
+
+copy_non_const_reference.hpp
+file
+
+
+
+add
+
+has_back_reference.hpp
+file
+
+
+
+add
+
+tag.hpp
+file
+
+
+
+add
+
+list.hpp
+file
+
+
+
+add
+
+back_reference.hpp
+file
+
+
+
+add
+
+operators.hpp
+file
+
+
+
+add
+
+converter
+dir
+
+
+
+add
+
+make_constructor.hpp
+file
+
+
+
+add
+
+data_members.hpp
+file
+
+
+
+add
+
+with_custodian_and_ward.hpp
+file
+
+
+
+add
+
+lvalue_from_pytype.hpp
+file
+
+
+
+add
+
+module.hpp
+file
+
+
+
+add
+
+manage_new_object.hpp
+file
+
+
+
+add
+
+return_opaque_pointer.hpp
+file
+
+
+
+add
+
+cast.hpp
+file
+
+
+
+add
+
+args.hpp
+file
+
+
+
+add
+
+overloads.hpp
+file
+
+
+
+add
+
+object_call.hpp
+file
+
+
+
+add
+
+instance_holder.hpp
+file
+
+
+
+add
+
+return_by_value.hpp
+file
+
+
+
+add
+
+scope.hpp
+file
+
+
+
+add
+
+to_python_converter.hpp
+file
+
+
+
+add
+
+call.hpp
+file
+
+
+
+add
+
+errors.hpp
+file
+
+
+
+add
+
+object_attributes.hpp
+file
+
+
+
+add
+
+to_python_value.hpp
+file
+
+
+
+add
+
+object
+dir
+
+
+
+add
+
+opaque_pointer_converter.hpp
+file
+
+
+
+add
+
+make_function.hpp
+file
+
+
+
+add
+
+object_protocol.hpp
+file
+
+
+
+add
+
+tuple.hpp
+file
+
+
+
+add
+
+self.hpp
+file
+
+
+
+add
+
+return_internal_reference.hpp
+file
+
+
+
+add
+
+return_value_policy.hpp
+file
+
+
+
+add
+
+args_fwd.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+base_type_traits.hpp
+file
+
+
+
+add
+
+slice_nil.hpp
+file
+
+
+
+add
+
+numeric.hpp
+file
+
+
+
+add
+
+suite
+dir
+
+
+
+add
+
+to_python_indirect.hpp
+file
+
+
+
+add
+
+object_operators.hpp
+file
+
+
+
+add
+
+default_call_policies.hpp
+file
+
+
+
+add
+
+str.hpp
+file
+
+
+
+add
+
+return_arg.hpp
+file
+
+
+
+add
+
+object_slices.hpp
+file
+
+
+
+add
+
+extract.hpp
+file
+
+
+
+add
+
+call_method.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+override.hpp
+file
+
+
+
+add
+
+wrapper.hpp
+file
+
+
+
+add
+
+borrowed.hpp
+file
+
+
+
+add
+
+iterator.hpp
+file
+
+
+
+add
+
+handle.hpp
+file
+
+
+
+add
+
+arg_from_python.hpp
+file
+
+
+
+add
+
+copy_const_reference.hpp
+file
+
+
+
+add
+
+long.hpp
+file
+
+
+
+add
+
+object_protocol_core.hpp
+file
+
+
+
+add
+
+slice.hpp
+file
+
+
+
+add
+
+signature.hpp
+file
+
+
+
+add
+
+init.hpp
+file
+
+
+
+add
+
+pointee.hpp
+file
+
+
+
+add
+
+enum.hpp
+file
+
+
+
+add
+
+class.hpp
+file
+
+
+
+add
+
+object.hpp
+file
+
+
+
+add
+
+object_items.hpp
+file
+
+
+
+add
+
+module_init.hpp
+file
+
+
+
+add
+
+implicit.hpp
+file
+
+
+
+add
+
+register_ptr_to_python.hpp
+file
+
+
+
+add
+
+def_visitor.hpp
+file
+
+
+
+add
+
+object_core.hpp
+file
+
+
+
+add
+
+proxy.hpp
+file
+
+
+
+add
+
+other.hpp
+file
+
+
+
+add
+
+pure_virtual.hpp
+file
+
+
+
+add
+
+dict.hpp
+file
+
+
+
+add
+
+refcount.hpp
+file
+
+
+
+add
+

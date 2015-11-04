@@ -1,0 +1,168 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/numeric/interval
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+arith2.hpp
+file
+
+
+
+add
+
+transc.hpp
+file
+
+
+
+add
+
+arith3.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+compare
+dir
+
+
+
+add
+
+limits.hpp
+file
+
+
+
+add
+
+utility.hpp
+file
+
+
+
+add
+
+arith.hpp
+file
+
+
+
+add
+
+io.hpp
+file
+
+
+
+add
+
+policies.hpp
+file
+
+
+
+add
+
+rounded_transc.hpp
+file
+
+
+
+add
+
+ext
+dir
+
+
+
+add
+
+checking.hpp
+file
+
+
+
+add
+
+constants.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+hw_rounding.hpp
+file
+
+
+
+add
+
+interval.hpp
+file
+
+
+
+add
+
+rounding.hpp
+file
+
+
+
+add
+
+compare.hpp
+file
+
+
+
+add
+
+rounded_arith.hpp
+file
+
+
+
+add
+

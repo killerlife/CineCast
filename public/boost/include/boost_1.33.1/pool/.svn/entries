@@ -1,0 +1,84 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/pool
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+pool.hpp
+file
+
+
+
+add
+
+poolfwd.hpp
+file
+
+
+
+add
+
+singleton_pool.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+object_pool.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+pool_alloc.hpp
+file
+
+
+
+add
+
+simple_segregated_storage.hpp
+file
+
+
+
+add
+

@@ -1,0 +1,231 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/archive/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+basic_pointer_oserializer.hpp
+file
+
+
+
+add
+
+basic_oserializer.hpp
+file
+
+
+
+add
+
+archive_pointer_oserializer.hpp
+file
+
+
+
+add
+
+basic_iarchive.hpp
+file
+
+
+
+add
+
+utf8_codecvt_facet.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+polymorphic_iarchive_impl.hpp
+file
+
+
+
+add
+
+basic_oarchive.hpp
+file
+
+
+
+add
+
+common_iarchive.hpp
+file
+
+
+
+add
+
+basic_archive_impl.hpp
+file
+
+
+
+add
+
+polymorphic_oarchive_impl.hpp
+file
+
+
+
+add
+
+basic_config.hpp
+file
+
+
+
+add
+
+decl.hpp
+file
+
+
+
+add
+
+basic_serializer_map.hpp
+file
+
+
+
+add
+
+abi_prefix.hpp
+file
+
+
+
+add
+
+common_oarchive.hpp
+file
+
+
+
+add
+
+basic_serializer.hpp
+file
+
+
+
+add
+
+interface_iarchive.hpp
+file
+
+
+
+add
+
+auto_link_warchive.hpp
+file
+
+
+
+add
+
+abi_suffix.hpp
+file
+
+
+
+add
+
+interface_oarchive.hpp
+file
+
+
+
+add
+
+known_archive_types.hpp
+file
+
+
+
+add
+
+known_archive_types_fwd.hpp
+file
+
+
+
+add
+
+iserializer.hpp
+file
+
+
+
+add
+
+basic_iserializer.hpp
+file
+
+
+
+add
+
+basic_pointer_iserializer.hpp
+file
+
+
+
+add
+
+archive_pointer_iserializer.hpp
+file
+
+
+
+add
+
+auto_link_archive.hpp
+file
+
+
+
+add
+
+oserializer.hpp
+file
+
+
+
+add
+

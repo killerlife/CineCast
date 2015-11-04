@@ -1,0 +1,8 @@
+base referer
+rect $classXKMSCompoundRequest.html 490,8 666,32
+rect $classXKMSLocateRequest.html 504,56 653,80
+rect $classXKMSPendingRequest.html 498,104 658,128
+rect $classXKMSRegisterRequest.html 498,152 658,176
+rect $classXKMSStatusRequest.html 504,200 653,224
+rect $classXKMSValidateRequest.html 500,248 657,272
+rect $classXKMSMessageAbstractType.html 8,128 202,152

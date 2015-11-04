@@ -1,0 +1,154 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/compatibility/cpp_c_headers
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+csignal
+file
+
+
+
+add
+
+cstdlib
+file
+
+
+
+add
+
+cstdio
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+cctype
+file
+
+
+
+add
+
+cstdarg
+file
+
+
+
+add
+
+cerrno
+file
+
+
+
+add
+
+cmath
+file
+
+
+
+add
+
+ctime
+file
+
+
+
+add
+
+clocale
+file
+
+
+
+add
+
+cassert
+file
+
+
+
+add
+
+climits
+file
+
+
+
+add
+
+csetjmp
+file
+
+
+
+add
+
+cwchar
+file
+
+
+
+add
+
+cfloat
+file
+
+
+
+add
+
+cstring
+file
+
+
+
+add
+
+cstddef
+file
+
+
+
+add
+
+cwctype
+file
+
+
+
+add
+

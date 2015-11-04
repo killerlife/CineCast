@@ -1,0 +1,91 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/preprocessor/facilities
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+identity.hpp
+file
+
+
+
+add
+
+is_empty.hpp
+file
+
+
+
+add
+
+is_empty_or_1.hpp
+file
+
+
+
+add
+
+is_1.hpp
+file
+
+
+
+add
+
+intercept.hpp
+file
+
+
+
+add
+
+empty.hpp
+file
+
+
+
+add
+
+expand.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+apply.hpp
+file
+
+
+
+add
+

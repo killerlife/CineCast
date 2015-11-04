@@ -1,0 +1,476 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/python/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+unwrap_type_id.hpp
+file
+
+
+
+add
+
+def_helper_fwd.hpp
+file
+
+
+
+add
+
+type_list_impl.hpp
+file
+
+
+
+add
+
+defaults_gen.hpp
+file
+
+
+
+add
+
+force_instantiate.hpp
+file
+
+
+
+add
+
+dealloc.hpp
+file
+
+
+
+add
+
+python22_fixed.h
+file
+
+
+
+add
+
+value_arg.hpp
+file
+
+
+
+add
+
+sfinae.hpp
+file
+
+
+
+add
+
+aix_init_module.hpp
+file
+
+
+
+add
+
+wrap_python.hpp
+file
+
+
+
+add
+
+translate_exception.hpp
+file
+
+
+
+add
+
+convertible.hpp
+file
+
+
+
+add
+
+is_xxx.hpp
+file
+
+
+
+add
+
+value_is_shared_ptr.hpp
+file
+
+
+
+add
+
+msvc_typeinfo.hpp
+file
+
+
+
+add
+
+preprocessor.hpp
+file
+
+
+
+add
+
+make_tuple.hpp
+file
+
+
+
+add
+
+raw_pyobject.hpp
+file
+
+
+
+add
+
+exception_handler.hpp
+file
+
+
+
+add
+
+referent_storage.hpp
+file
+
+
+
+add
+
+none.hpp
+file
+
+
+
+add
+
+caller.hpp
+file
+
+
+
+add
+
+operator_id.hpp
+file
+
+
+
+add
+
+decorated_type_id.hpp
+file
+
+
+
+add
+
+borrowed_ptr.hpp
+file
+
+
+
+add
+
+scope.hpp
+file
+
+
+
+add
+
+api_placeholder.hpp
+file
+
+
+
+add
+
+type_list.hpp
+file
+
+
+
+add
+
+value_is_xxx.hpp
+file
+
+
+
+add
+
+defaults_def.hpp
+file
+
+
+
+add
+
+is_auto_ptr.hpp
+file
+
+
+
+add
+
+destroy.hpp
+file
+
+
+
+add
+
+invoke.hpp
+file
+
+
+
+add
+
+prefix.hpp
+file
+
+
+
+add
+
+map_entry.hpp
+file
+
+
+
+add
+
+overloads_fwd.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+void_return.hpp
+file
+
+
+
+add
+
+enable_if.hpp
+file
+
+
+
+add
+
+cv_category.hpp
+file
+
+
+
+add
+
+if_else.hpp
+file
+
+
+
+add
+
+decref_guard.hpp
+file
+
+
+
+add
+
+wrapper_base.hpp
+file
+
+
+
+add
+
+is_wrapper.hpp
+file
+
+
+
+add
+
+not_specified.hpp
+file
+
+
+
+add
+
+unwrap_wrapper.hpp
+file
+
+
+
+add
+
+type_list_impl_no_pts.hpp
+file
+
+
+
+add
+
+make_keyword_range_fn.hpp
+file
+
+
+
+add
+
+target.hpp
+file
+
+
+
+add
+
+void_ptr.hpp
+file
+
+
+
+add
+
+indirect_traits.hpp
+file
+
+
+
+add
+
+def_helper.hpp
+file
+
+
+
+add
+
+signature.hpp
+file
+
+
+
+add
+
+pointee.hpp
+file
+
+
+
+add
+
+config.hpp
+file
+
+
+
+add
+
+nullary_function_adaptor.hpp
+file
+
+
+
+add
+
+dependent.hpp
+file
+
+
+
+add
+
+result.hpp
+file
+
+
+
+add
+
+copy_ctor_mutates_rhs.hpp
+file
+
+
+
+add
+
+string_literal.hpp
+file
+
+
+
+add
+
+construct.hpp
+file
+
+
+
+add
+
+is_shared_ptr.hpp
+file
+
+
+
+add
+
+mpl_lambda.hpp
+file
+
+
+
+add
+

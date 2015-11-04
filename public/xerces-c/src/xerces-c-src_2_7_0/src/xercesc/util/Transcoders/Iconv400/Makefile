@@ -1,0 +1,69 @@
+# Generated automatically from Makefile.in by configure.
+#
+# Copyright 1999-2000,2004 The Apache Software Foundation.
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+
+#
+# $Log$
+# Revision 1.3  2004/09/08 13:56:45  peiyongz
+# Apache License Version 2.0
+#
+# Revision 1.2  2002/07/26 16:49:29  tng
+# [Bug 2681] Can't build with gcc/g++ not named 'gcc'/'g++'.  Patch from Jonathan Lennox.
+#
+# Revision 1.1.1.1  2002/02/01 22:22:36  peiyongz
+# sane_include
+#
+# Revision 1.3  2001/07/06 17:12:09  tng
+# Automatic build of single-threaded library.  By Martin Kalen.
+#
+# Revision 1.2  2001/06/27 17:09:38  tng
+# [Bug 1147] Headers install in wrong directory.  By Murray Cumming.
+#
+# Revision 1.1  2000/02/10 18:08:28  abagchi
+# Initial checkin
+#
+#
+
+PLATFORM = LINUX
+COMPILER = @compiler@
+CC = yes
+CXX = yes
+CXXFLAGS =   -w -O -DNDEBUG -DPROJ_XMLPARSER  -DPROJ_XMLUTIL  -DPROJ_PARSERS  -DPROJ_SAX4C  -DPROJ_SAX2  -DPROJ_DOM -DPROJ_DEPRECATED_DOM -DPROJ_VALIDATORS -DXML_USE_NATIVE_TRANSCODER -DXML_USE_INMEM_MESSAGELOADER -DXML_USE_PTHREADS -DXML_USE_NETACCESSOR_SOCKET  
+CFLAGS =   -w -O -DNDEBUG -DPROJ_XMLPARSER  -DPROJ_XMLUTIL  -DPROJ_PARSERS  -DPROJ_SAX4C  -DPROJ_SAX2  -DPROJ_DOM -DPROJ_DEPRECATED_DOM -DPROJ_VALIDATORS -DXML_USE_NATIVE_TRANSCODER -DXML_USE_INMEM_MESSAGELOADER -DXML_USE_PTHREADS -DXML_USE_NETACCESSOR_SOCKET   
+PREFIX = /usr/local
+PREFIX_INCLUDE = ${PREFIX}/include/xercesc
+LDFLAGS =    
+LIBS =   -lpthread 
+OSVER = 
+USELIBWWW = 
+MESSAGELOADER = INMEM
+TRANSCODER = NATIVE
+THREADS = pthread
+
+MODULE = util
+SUBMODULE = Transcoders/Iconv400
+
+include ../../../Makefile.incl
+
+CPP_PUBHEADERS = Iconv400TransService.hpp
+
+CPP_OBJECTS = Iconv400TransService.$(TO) \
+	iconv_util.$(TO) \
+	iconv_cnv.$(TO) 
+
+
+include ../../Makefile.util.submodule

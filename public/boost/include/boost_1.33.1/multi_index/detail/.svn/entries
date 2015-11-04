@@ -1,0 +1,315 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/multi_index/detail
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+access_specifier.hpp
+file
+
+
+
+add
+
+ord_index_ops.hpp
+file
+
+
+
+add
+
+is_index_list.hpp
+file
+
+
+
+add
+
+index_loader.hpp
+file
+
+
+
+add
+
+archive_constructed.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+index_base.hpp
+file
+
+
+
+add
+
+duplicates_iterator.hpp
+file
+
+
+
+add
+
+index_saver.hpp
+file
+
+
+
+add
+
+converter.hpp
+file
+
+
+
+add
+
+modify_key_adaptor.hpp
+file
+
+
+
+add
+
+hash_index_node.hpp
+file
+
+
+
+add
+
+index_iterator_fwd.hpp
+file
+
+
+
+add
+
+def_ctor_tuple_cons.hpp
+file
+
+
+
+add
+
+value_compare.hpp
+file
+
+
+
+add
+
+hash_index_iterator.hpp
+file
+
+
+
+add
+
+seq_index_node.hpp
+file
+
+
+
+add
+
+no_duplicate_tags.hpp
+file
+
+
+
+add
+
+hash_index_args.hpp
+file
+
+
+
+add
+
+scope_guard.hpp
+file
+
+
+
+add
+
+seq_index_ops.hpp
+file
+
+
+
+add
+
+index_node_base.hpp
+file
+
+
+
+add
+
+has_tag.hpp
+file
+
+
+
+add
+
+copy_map.hpp
+file
+
+
+
+add
+
+index_proxy.hpp
+file
+
+
+
+add
+
+index_matcher.hpp
+file
+
+
+
+add
+
+base_type.hpp
+file
+
+
+
+add
+
+bucket_array.hpp
+file
+
+
+
+add
+
+hash_index_proxy.hpp
+file
+
+
+
+add
+
+invariant_assert.hpp
+file
+
+
+
+add
+
+index_iterator.hpp
+file
+
+
+
+add
+
+ord_index_node.hpp
+file
+
+
+
+add
+
+safe_mode.hpp
+file
+
+
+
+add
+
+hash_index_iterator_fwd.hpp
+file
+
+
+
+add
+
+auto_space.hpp
+file
+
+
+
+add
+
+unbounded.hpp
+file
+
+
+
+add
+
+prevent_eti.hpp
+file
+
+
+
+add
+
+header_holder.hpp
+file
+
+
+
+add
+
+node_type.hpp
+file
+
+
+
+add
+
+ord_index_args.hpp
+file
+
+
+
+add
+
+msvc_index_specifier.hpp
+file
+
+
+
+add
+

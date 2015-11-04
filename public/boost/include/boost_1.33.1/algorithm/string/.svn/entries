@@ -1,0 +1,210 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/public/boost/include/boost/algorithm/string
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+find_iterator.hpp
+file
+
+
+
+add
+
+classification.hpp
+file
+
+
+
+add
+
+concept.hpp
+file
+
+
+
+add
+
+split.hpp
+file
+
+
+
+add
+
+yes_no_type.hpp
+file
+
+
+
+add
+
+sequence_traits.hpp
+file
+
+
+
+add
+
+erase.hpp
+file
+
+
+
+add
+
+_desktop.ini
+file
+
+
+
+add
+
+case_conv.hpp
+file
+
+
+
+add
+
+predicate.hpp
+file
+
+
+
+add
+
+formatter.hpp
+file
+
+
+
+add
+
+iter_find.hpp
+file
+
+
+
+add
+
+std
+dir
+
+
+
+add
+
+config.hpp
+file
+
+
+
+add
+
+std_containers_traits.hpp
+file
+
+
+
+add
+
+finder.hpp
+file
+
+
+
+add
+
+regex.hpp
+file
+
+
+
+add
+
+replace.hpp
+file
+
+
+
+add
+
+trim.hpp
+file
+
+
+
+add
+
+detail
+dir
+
+
+
+add
+
+constants.hpp
+file
+
+
+
+add
+
+find.hpp
+file
+
+
+
+add
+
+regex_find_format.hpp
+file
+
+
+
+add
+
+predicate_facade.hpp
+file
+
+
+
+add
+
+compare.hpp
+file
+
+
+
+add
+
+find_format.hpp
+file
+
+
+
+add
+

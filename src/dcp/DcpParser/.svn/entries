@@ -1,0 +1,154 @@
+10
+
+dir
+0
+https://leoserver:8443/svn/LEC13/src/dcp/DcpParser
+https://leoserver:8443/svn/LEC13
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+509a4a47-6eb3-b147-ba0b-35a9477005fc
+
+DcpParse.plg
+file
+
+
+
+add
+
+DcpParse.dsp
+file
+
+
+
+add
+
+Debug
+dir
+
+
+
+add
+
+AssistHash.cpp
+file
+
+
+
+add
+
+DcpParse.sln
+file
+
+
+
+add
+
+DcpParse.dsw
+file
+
+
+
+add
+
+assetMap.cpp
+file
+
+
+
+add
+
+AssistReel.cpp
+file
+
+
+
+add
+
+DcpParse.ncb
+file
+
+
+
+add
+
+
+
+
+
+has-props
+has-prop-mods
+
+assetMap.h
+file
+
+
+
+add
+
+DcpParse.vcproj
+file
+
+
+
+add
+
+DcpParse.vcproj.7.10.old
+file
+
+
+
+add
+
+DcpParser.cpp
+file
+
+
+
+add
+
+DcpParse.suo
+file
+
+
+
+add
+
+
+
+
+
+has-props
+has-prop-mods
+
+DcpParse.vcproj.MICROSOF-3B251A.Administrator.user
+file
+
+
+
+add
+
+AssistComposition.cpp
+file
+
+
+
+add
+

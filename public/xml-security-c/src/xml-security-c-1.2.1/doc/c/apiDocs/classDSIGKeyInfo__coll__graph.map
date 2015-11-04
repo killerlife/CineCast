@@ -1,0 +1,6 @@
+base referer
+rect $classXSECEnv.html 184,281 266,305
+rect $classXSECSafeBufferFormatter.html 8,190 189,214
+rect $classsafeBuffer.html 85,9 168,33
+rect $classsbFormatTarget.html 176,99 293,123
+rect $classXSECURIResolver.html 213,190 349,214
