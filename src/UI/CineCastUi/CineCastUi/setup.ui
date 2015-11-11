@@ -1,0 +1,875 @@
+<ui version="4.0" >
+ <class>SetupClass</class>
+ <widget class="QWidget" name="SetupClass" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1111</width>
+    <height>487</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Setup</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_17" >
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" >
+     <item>
+      <spacer name="horizontalSpacer_7" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2" >
+       <property name="font" >
+        <font>
+         <family>Book Antiqua</family>
+         <pointsize>18</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="text" >
+        <string>Default</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labe_symbl_rate_10" >
+       <property name="font" >
+        <font>
+         <family>Book Antiqua</family>
+         <pointsize>18</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="text" >
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton" >
+       <property name="minimumSize" >
+        <size>
+         <width>90</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="font" >
+        <font>
+         <family>Book Antiqua</family>
+         <pointsize>18</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="text" >
+        <string>Save</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_staeliite" >
+     <property name="font" >
+      <font>
+       <family>Book Antiqua</family>
+       <pointsize>18</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <underline>false</underline>
+       <strikeout>false</strikeout>
+      </font>
+     </property>
+     <property name="title" >
+      <string>Satellite</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_11" >
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_14" >
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_5" >
+          <item>
+           <widget class="QLabel" name="label_frequency" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string>Frequency:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labe_symbl_rate" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string>Symbol Rate:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_frequency_2" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string>Delivery System:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout" >
+          <item>
+           <widget class="QLineEdit" name="lineEdit_Frequency" >
+            <property name="minimumSize" >
+             <size>
+              <width>180</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize" >
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineEdit_symbol_rate" >
+            <property name="minimumSize" >
+             <size>
+              <width>200</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize" >
+             <size>
+              <width>180</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_DVB" >
+            <property name="minimumSize" >
+             <size>
+              <width>180</width>
+              <height>0</height>
+             </size>
+            </property>
+            <item>
+             <property name="text" >
+              <string>DVB-S2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>DVB-S</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer" >
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0" >
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_6" >
+          <item>
+           <widget class="QLabel" name="labe_symbl_rate_4" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string>FEC:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labe_symbl_rate_5" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string>Polarization:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labe_symbl_rate_8" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string>Modulation:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_3" >
+          <item>
+           <widget class="QComboBox" name="comboBox_xy" >
+            <property name="minimumSize" >
+             <size>
+              <width>180</width>
+              <height>0</height>
+             </size>
+            </property>
+            <item>
+             <property name="text" >
+              <string>1/2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>2/3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>3/4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>3/5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>4/5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>5/6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>6/7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>7/8</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>8/9</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>9/10</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>auto</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_V" >
+            <property name="minimumSize" >
+             <size>
+              <width>180</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize" >
+             <size>
+              <width>180</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <item>
+             <property name="text" >
+              <string>V</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>H</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_SPK" >
+            <property name="minimumSize" >
+             <size>
+              <width>180</width>
+              <height>0</height>
+             </size>
+            </property>
+            <item>
+             <property name="text" >
+              <string>QPSK</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>8PSK</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>16APSK</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>VSB16</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>VSB8</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>QAM16</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>QAM32</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>QAM64</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>QAM128</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>QAM256</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>QAMAUTO</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2" >
+          <property name="orientation" >
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0" >
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_10" >
+          <item>
+           <widget class="QLabel" name="labe_symbl_rate_6" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string>Roll Off:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labe_symbl_rate_9" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_12" >
+          <item>
+           <widget class="QComboBox" name="comboBox_decimals" >
+            <property name="minimumSize" >
+             <size>
+              <width>180</width>
+              <height>0</height>
+             </size>
+            </property>
+            <item>
+             <property name="text" >
+              <string>0.20</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>0.25</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>0.35</string>
+             </property>
+            </item>
+            <item>
+             <property name="text" >
+              <string>auto</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labe_symbl_rate_12" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labe_symbl_rate_11" >
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_Network" >
+     <property name="font" >
+      <font>
+       <family>Book Antiqua</family>
+       <pointsize>18</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <underline>false</underline>
+       <strikeout>false</strikeout>
+      </font>
+     </property>
+     <property name="title" >
+      <string>Network Device</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2" >
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4" >
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3" >
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_20" >
+            <item>
+             <widget class="QComboBox" name="comboBox_ECHs" >
+              <property name="maximumSize" >
+               <size>
+                <width>120</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_21" >
+            <item>
+             <widget class="QCheckBox" name="checkBox_DHCP" >
+              <property name="maximumSize" >
+               <size>
+                <width>120</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text" >
+               <string>DHCP</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_3" >
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_8" >
+            <item>
+             <widget class="QLabel" name="label_ip" >
+              <property name="text" >
+               <string>IP Address:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_9" >
+            <item>
+             <widget class="QLineEdit" name="lineEdit_Ip" />
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_4" >
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_13" >
+            <item>
+             <widget class="QLabel" name="label_Netm_mask" >
+              <property name="text" >
+               <string>Netmask:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_14" >
+            <item>
+             <widget class="QLineEdit" name="lineEdit_Net_AsK" >
+              <property name="inputMask" >
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_6" >
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_15" >
+            <item>
+             <widget class="QLabel" name="label_Gateway" >
+              <property name="text" >
+               <string>Gateway:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_16" >
+            <item>
+             <widget class="QLineEdit" name="lineEdit_GateWay" >
+              <property name="inputMask" >
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_Network_2" >
+     <property name="font" >
+      <font>
+       <family>Book Antiqua</family>
+       <pointsize>18</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <underline>false</underline>
+       <strikeout>false</strikeout>
+      </font>
+     </property>
+     <property name="title" >
+      <string>Internet</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_22" >
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_17" >
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7" >
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_18" >
+            <item>
+             <widget class="QLabel" name="label_DNS" >
+              <property name="text" >
+               <string>DNS 1:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_19" >
+            <item>
+             <widget class="QLineEdit" name="lineEdit_DNS" />
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_5" >
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_7" >
+            <item>
+             <widget class="QLabel" name="label_DNS_2" >
+              <property name="text" >
+               <string>DNS 2:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_23" >
+            <item>
+             <widget class="QLineEdit" name="lineEdit_DNS_2" >
+              <property name="inputMask" >
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_8" >
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_26" >
+            <item>
+             <widget class="QLabel" name="label_Gateway_2" >
+              <property name="text" >
+               <string>Remote:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_27" >
+            <item>
+             <widget class="QLineEdit" name="lineEdit_Remote_2" />
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <resources/>
+ <connections/>
+</ui>

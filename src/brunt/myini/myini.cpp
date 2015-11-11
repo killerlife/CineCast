@@ -88,6 +88,7 @@ namespace brunt
 		pair<set<ini_index>::iterator, bool> currentindex;
 		ini_value curvalue;
 		
+		int flag = 0;
 		for(unsigned int i = 0; i < lines.size(); ++i)
 		{
 			
@@ -102,6 +103,13 @@ namespace brunt
 			else if(is_index(lines[i])) //is a index line
 			{
 				currentindex = m_indexset.insert(ini_index(lines[i].c_str()));
+			}
+			else if(is_key(lines[i], curvalue) && flag == 0)
+			{
+				currentindex = m_indexset.insert(ini_index(" "));
+				const ini_index& index = *currentindex.first;
+				index.m_valueset.insert(curvalue);
+				flag = 1;
 			}
 			else if(currentindex.second && is_key(lines[i], curvalue)) //key line 
 			{

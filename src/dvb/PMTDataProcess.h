@@ -26,7 +26,7 @@ public:
 	uint64 CRCError();
 	uint64 TotalSegment();
 
-	void GetLostSegment();
+	uint64 GetLostSegment();
 
 private:
 	virtual void doit();

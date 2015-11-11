@@ -12,12 +12,19 @@
 #include <signal.h> 
 #include <unistd.h>
 #include <netcomm/GuiServer.h>
+#include <netcomm/UiProtocal.h>
+#include <netcomm/BaseOperation.h>
+
+#include "ini.h"
 
 using namespace brunt;
 
 brunt::IThreadManager* m_pManager;
 
 TUNER_INFO gInfo;
+RECEIVE_INFO gRecv;
+TUNER_CONF gTuner;
+char bTunerChange = 0;
 
 NotifyDataThread *pNotify;
 StartDataThread *pStart;
@@ -87,6 +94,9 @@ static void handle_sigint(int sig)
 	exit(2);
 } 
 
+#define NETDEV_COUNT 2
+#define ETH "/etc/sysconfig/network-scripts/ifcfg-enp6s"
+
 int main(int argc, char **argv)
 {
 #if 1
@@ -95,16 +105,19 @@ int main(int argc, char **argv)
 #endif
 
 	ITuner *pTuner = CreateTuner();
-	TUNER_CONF conf;
-	printf("%s %s %s %s %s\n", conf.strDelSys.c_str(),
-	    conf.strFec.c_str(), conf.strModulation.c_str(),
-	    conf.strRollOff.c_str(), conf.strPolVert.c_str());
+	
+	SatelliteConfOperation sco;
+	sco.ReadConfig();
+
+	printf("%s %s %s %s %s\n", gTuner.strDelSys.c_str(),
+	    gTuner.strFec.c_str(), gTuner.strModulation.c_str(),
+	    gTuner.strRollOff.c_str(), gTuner.strPolVert.c_str());
 	//conf.strModulation = "QAMAUTO";
 	//conf.strFec = "auto";
 	//conf.strRollOff = "auto";
 
-	pTuner->SetTunerConf(conf);
-	pTuner->Zapto(conf);
+	pTuner->SetTunerConf(gTuner);
+	pTuner->Zapto(gTuner);
 
 #ifdef CAPTURE
 	pStart = new StartDataThread;
@@ -162,17 +175,39 @@ int main(int argc, char **argv)
 	while(1)
 	{
 		sleep(5);
+		if (bTunerChange)
+		{
+			pTuner->Zapto(gTuner);
+			bTunerChange = 0;
+		}
 		#if 1
 		gInfo = pTuner->GetTunerInfo();
 		printf("status = %02X | agc = %3u%% | snr = %3u%% | ber = %d | unc = %d | lock = %02X\n",
 			gInfo.nStatus, gInfo.nAGC, gInfo.nSNR, gInfo.nBER, gInfo.nUNC, gInfo.nLock);
 		#endif
+		gRecv.nCrcErrorSegment = pPat->CRCError();
+		gRecv.nFileID = pNotify->GetFilmId();
+		gRecv.nFileLength = pPat->FileLength();
+		gRecv.nLostSegment = pPat->GetLostSegment();
+		gRecv.nReceiveLength = pPat->ReciveLength();
+		gRecv.nReceiveSegment = pPat->ReciveSegment();
+		gRecv.nReceiveStatus = 7;
+		gRecv.nTotalSegment = pPat->TotalSegment();
+		gRecv.strCreator = "creator";
+		gRecv.strFilmName = "filmname";
+		gRecv.strIssueDate = "issue date";
+		gRecv.strIssuer = "issuer";
+		gRecv.strUuid = "uuid";
 		printf("FileLength = %lld, RecvLength = %lld TotalSegment = %lld RecvSegment = %lld CRCError %lld\n",
-		    pPat->FileLength(), pPat->ReciveLength(), pPat->TotalSegment(), pPat->ReciveSegment(), pPat->CRCError());
+		    gRecv.nFileLength, gRecv.nReceiveLength, gRecv.nTotalSegment, gRecv.nReceiveSegment, gRecv.nCrcErrorSegment);
 		if(pFinish->IsFinish())
 		{
 			pPat->GetLostSegment();
 		}
+		printf("%s %s %s %s\n", gRecv.strCreator.c_str(),
+			gRecv.strFilmName.c_str(),
+			gRecv.strIssueDate.c_str(),
+			gRecv.strIssuer.c_str());
 	}
 #endif
 #else

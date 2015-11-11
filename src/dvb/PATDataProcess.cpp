@@ -237,12 +237,14 @@ uint64 PATDataThread::TotalSegment()
 	return length;
 }
 
-void PATDataThread::GetLostSegment()
+uint64 PATDataThread::GetLostSegment()
 {
 	std::list<PMTDataThread*>::iterator itor;
+	uint64 nLostCount = 0;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
-		(*itor)->GetLostSegment();
+		nLostCount +=(*itor)->GetLostSegment();
 	}
+	return nLostCount;
 }
 

@@ -26,7 +26,7 @@ public:
 	
 	int GetStatus() { return m_status; };
 
-	void GetLostSegment();
+	uint64 GetLostSegment();
 
 private:
 	virtual void doit();

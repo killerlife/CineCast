@@ -1,0 +1,48 @@
+﻿生成启动时间为 2015-11-5 13:59:14。
+     1>项目“D:\work\CineCast\src\UI\LEONIS_CINEMA_CineCast\LEONIS_CINEMA_CineCast.vcxproj”在节点 2 上(build 个目标)。
+     1>InitializeBuildStatus:
+         正在创建“Win32\Debug\LEONIS_CINEMA_CineCast.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+       CustomBuild:
+         Uic'ing leoniscinemacinecast.ui...
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\Qt\Qt5.3.0\5.3\msvc2010_opengl\include /IC:\Qt\Qt5.3.0\5.3\msvc2010_opengl\include\QtWidgets /IC:\Qt\Qt5.3.0\5.3\msvc2010_opengl\include\QtGui /IC:\Qt\Qt5.3.0\5.3\msvc2010_opengl\include\QtCore /Idebug /I. /I"C:\Qt\Qt5.3.0\5.3\msvc2010_opengl\mkspecs\win32-msvc2010" /I.\GeneratedFiles /Zi /nologo /W3 /WX- /Od /Oy- /D _WINDOWS /D UNICODE /D WIN32 /D QT_WIDGETS_LIB /D QT_GUI_LIB /D QT_CORE_LIB /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"Win32\Debug\\" /Fd"Win32\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt leoniscinemacinecast.cpp -Zm200 -w34100 -w34189 
+         leoniscinemacinecast.cpp
+     1>d:\work\cinecast\src\ui\leonis_cinema_cinecast\UIControl/statuecontrol.h : warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+     1>leoniscinemacinecast.cpp(69): warning C4189: “control”: 局部变量已初始化但不引用
+     1>leoniscinemacinecast.cpp(85): warning C4189: “control”: 局部变量已初始化但不引用
+     1>leoniscinemacinecast.cpp(100): warning C4189: “control”: 局部变量已初始化但不引用
+     1>leoniscinemacinecast.cpp(119): warning C4189: “control”: 局部变量已初始化但不引用
+         所有输出均为最新。
+       Link:
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"debug\\LEONIS_CINEMA_CineCast.exe" /NOLOGO /LIBPATH:C:\Qt\Qt5.3.0\5.3\msvc2010_opengl\lib /LIBPATH:C:\Qt\Qt5.3.0\5.3\msvc2010_opengl\lib glu32.lib opengl32.lib gdi32.lib user32.lib qtmaind.lib C:\Qt\Qt5.3.0\5.3\msvc2010_opengl\lib\Qt5Widgetsd.lib C:\Qt\Qt5.3.0\5.3\msvc2010_opengl\lib\Qt5Guid.lib C:\Qt\Qt5.3.0\5.3\msvc2010_opengl\lib\Qt5Cored.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Win32\Debug\LEONIS_CINEMA_CineCast.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\work\CineCast\src\UI\LEONIS_CINEMA_CineCast\debug\LEONIS_CINEMA_CineCast.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X86 Win32\Debug\moc_contentmanagementcontrol.obj
+         Win32\Debug\moc_contentmanagementform.obj
+         Win32\Debug\moc_leoniscinemacinecast.obj
+         Win32\Debug\moc_maintaincontrol.obj
+         Win32\Debug\moc_maintainform.obj
+         Win32\Debug\moc_setupcontrol.obj
+         Win32\Debug\moc_setupform.obj
+         Win32\Debug\moc_statuecontrol.obj
+         Win32\Debug\moc_statueform.obj
+         Win32\Debug\qrc_Image.obj
+         Win32\Debug\contentmanagementcontrol.obj
+         Win32\Debug\contentmanagementform.obj
+         Win32\Debug\leoniscinemacinecast.obj
+         Win32\Debug\main.obj
+         Win32\Debug\maintaincontrol.obj
+         Win32\Debug\maintainform.obj
+         Win32\Debug\setupcontrol.obj
+         Win32\Debug\setupform.obj
+         Win32\Debug\statuecontrol.obj
+         Win32\Debug\statueform.obj "/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" 
+         LINK : 没有找到 debug\\LEONIS_CINEMA_CineCast.exe 或上一个增量链接没有生成它；正在执行完全链接
+         LEONIS_CINEMA_CineCast.vcxproj -> D:\work\CineCast\src\UI\LEONIS_CINEMA_CineCast\debug\LEONIS_CINEMA_CineCast.exe
+       Manifest:
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"debug\\LEONIS_CINEMA_CineCast.exe;#1" /manifest Win32\Debug\LEONIS_CINEMA_CineCast.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         正在删除文件“Win32\Debug\LEONIS_CINEMA_CineCast.unsuccessfulbuild”。
+         正在对“Win32\Debug\LEONIS_CINEMA_CineCast.lastbuildstate”执行 Touch 任务。
+     1>已完成生成项目“D:\work\CineCast\src\UI\LEONIS_CINEMA_CineCast\LEONIS_CINEMA_CineCast.vcxproj”(build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:01.93

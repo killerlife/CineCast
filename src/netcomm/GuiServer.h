@@ -49,7 +49,15 @@ public:
 private:
 	virtual void doit();
 
+	bool ErrorProtocol(char* buf);
 	bool S_GetSatellite(char* buf);
+	bool S_GetReceive(char* buf);
+	bool C_GetTuner(char* buf);
+	bool C_SetTuner(char* buf);
+	bool N_GetConfig(char* buf);
+	bool N_SetConfig(char* buf);
+	bool N_GetRemote(char* buf);
+	bool N_SetRemote(char* buf);
 
 private:
 	int m_status;

@@ -91,7 +91,7 @@ void NotifyDataThread::doit()
 				{
 					uint8 *pdata = m_buffer+10;
 					uint8 type = *pdata++;
-
+					m_filmId = getBits(m_buffer + 5, 0, 32);
 					if(type < 2)
 					{
 						bMatch = true;

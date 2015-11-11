@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/CineCastUi" >
+        <file>Resources/logobig.png</file>
+    </qresource>
+</RCC>

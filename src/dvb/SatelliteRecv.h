@@ -10,6 +10,7 @@
 #include <linux/dvb/dmx.h>
 #include <linux/dvb/audio.h>
 #include <linux/dvb/version.h>
+#include <netcomm/UiProtocal.h>
 
 #ifdef USE_POLL
 #include <sys/poll.h> 
@@ -111,18 +112,19 @@ static struct t_channel_parameter_map polvert_values[] = {
 	{ -1 }
 };
 
+#if 0
 typedef struct tuner_conf {
+	unsigned int nFreq;
+	unsigned int nHiBand;
+	unsigned int nSR;
+	unsigned int nMis;
+	unsigned int nSatNo;
 	std::string strDevName;		//Such as "/dev/dvb/adapter0/frontend0"
 	std::string strDelSys;		//Such as "DVB-S", "DVB-S2"
 	std::string strFec;			//Such as "1/2", "2/3", "3/4", "4/5", "5/6"
 	std::string strModulation;	//Such as "8PSK", "16APSK"
 	std::string strRollOff;		//Such as "0.20", "0.25", "0.35"
 	std::string strPolVert;		//Such as "V", "H"
-	unsigned int nFreq;
-	unsigned int nHiBand;
-	unsigned int nSR;
-	unsigned int nMis;
-	unsigned int nSatNo;
 
 	//for default
 	tuner_conf()
@@ -154,6 +156,7 @@ typedef struct tuner_info
 		nStatus = nAGC = nSNR = nBER = nUNC = nLock = 0;
 	};
 } TUNER_INFO;
+#endif
 
 //class ILog;
 

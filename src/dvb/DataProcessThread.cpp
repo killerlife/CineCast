@@ -25,7 +25,7 @@ DataProcessThread::~DataProcessThread()
 bool DataProcessThread::Init(void *param1, void *param2)
 {
 	pFilmThread = (FilmDataThread*)param1;
-	m_id = (int32)pFilmThread;
+	//m_id = (int32)pFilmThread;
 	return Start();
 }
 

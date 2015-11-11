@@ -545,6 +545,7 @@ uint64 PMTDataThread::ReciveSegment()
 	}
 	return length;
 }
+
 uint64 PMTDataThread::LostSegment()
 {
 	uint64 length = 0;
@@ -580,9 +581,10 @@ uint64 PMTDataThread::TotalSegment()
 	return length;
 }
 
-void PMTDataThread::GetLostSegment()
+uint64 PMTDataThread::GetLostSegment()
 {
 	std::list<FilmDataThread*>::iterator itor;
+	uint64 nLostCount = 0;
 	for(itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
 	{
 		FilmDataThread* thread = *itor;
@@ -590,4 +592,5 @@ void PMTDataThread::GetLostSegment()
 		//TODO: send lost report to remote
 		//--------------------------------
 	}
+	return nLostCount;
 }

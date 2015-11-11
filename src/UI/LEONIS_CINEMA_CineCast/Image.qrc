@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Image/1Format0.png</file>
+        <file>Image/Delete0.png</file>
+        <file>Image/delete1.png</file>
+        <file>Image/format0.png</file>
+        <file>Image/format1.png</file>
+        <file>Image/HDD2.png</file>
+        <file>Image/Leionis_logo.png</file>
+        <file>Image/logobig.png</file>
+        <file>Image/Mount0.png</file>
+        <file>Image/Mount1.png</file>
+        <file>Image/output.png</file>
+        <file>Image/output1.png</file>
+        <file>Image/Uninstall0.png</file>
+        <file>Image/Uninstall1.png</file>
+        <file>Image/USBd.png</file>
+    </qresource>
+</RCC>

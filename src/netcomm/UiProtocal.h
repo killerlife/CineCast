@@ -1,5 +1,9 @@
-#pragma once
+#ifndef _UI_PROTOCOL_H_
+#define _UI_PROTOCOL_H_
+
 #include <dvb/mytype.h>
+#include <string>
+
 #pragma pack(1)
 typedef enum
 {
@@ -46,3 +50,117 @@ public:
 		m_pkgHead = 0x7585;
 	}
 } KL;
+
+typedef struct _SL_
+{
+	uint16 m_sID;
+	uint16 m_length;
+} SL;
+
+typedef struct tuner_info
+{
+	uint8 nStatus;
+	uint16 nAGC;
+	uint16 nSNR;
+	uint32 nBER;
+	uint32 nUNC;
+	uint8 nLock;
+	tuner_info()
+	{
+		nStatus = nAGC = nSNR = nBER = nUNC = nLock = 0;
+	};
+} TUNER_INFO;
+
+//KLV
+typedef enum
+{
+	RECEIVE_STATUS = 0,
+	RECEIVE_FILM_NAME,
+	RECEIVE_FILM_UUID,
+	RECEIVE_FILM_ISSUE_DATE,
+	RECEIVE_FILM_ISSUER,
+	RECEIVE_FILM_CREATOR,
+
+	TUNER_CONFIG = 0x20,
+	TUNER_DEV_NAME,
+	TUNER_DEL_SYS,
+	TUNER_FEC,
+	TUNER_MOD,
+	TUNER_ROLL_OFF,
+	TUNER_POL,
+
+	NET_CONFIG = 0x40,
+	NET_DEV_NAME,
+	NET_DHCP,
+	NET_IP,
+	NET_NETMASK,
+	NET_GATEWAY,
+	
+	REMOTE_CONFIG = 0x60,
+	REMOTE_DNS,
+	REMOTE_SERVER,
+
+} ReceiveKey;
+
+typedef struct receive_info
+{
+	uint64 nFileLength;
+	uint64 nReceiveLength;
+	uint64 nTotalSegment;
+	uint64 nReceiveSegment;
+	uint64 nCrcErrorSegment;
+	uint64 nLostSegment; //Reserved
+	uint32 nFileID;
+	uint16 nReceiveStatus;
+	std::string strFilmName;
+	std::string strUuid;
+	std::string strIssueDate;
+	std::string strIssuer;
+	std::string strCreator;
+} RECEIVE_INFO;
+
+typedef struct tuner_conf {
+	unsigned int nFreq;
+	unsigned int nHiBand;
+	unsigned int nSR;
+	unsigned int nMis;
+	unsigned int nSatNo;
+	std::string strDevName;		//Such as "/dev/dvb/adapter0/frontend0"
+	std::string strDelSys;		//Such as "DVB-S", "DVB-S2"
+	std::string strFec;			//Such as "1/2", "2/3", "3/4", "4/5", "5/6"
+	std::string strModulation;	//Such as "8PSK", "16APSK"
+	std::string strRollOff;		//Such as "0.20", "0.25", "0.35"
+	std::string strPolVert;		//Such as "V", "H"
+
+	//for default
+	tuner_conf()
+	{
+		strDevName = "/dev/dvb/adapter0/frontend0";
+		strDelSys = "DVB-S2";
+		strFec = "3/4";
+		strModulation = "8PSK";
+		strRollOff = "0.25";
+		strPolVert = "V";
+		nFreq = 12500000;
+		nHiBand = 11300000;
+		nSR = 43200000;
+		nMis = -1;
+		nSatNo = 1;
+	};
+} TUNER_CONF;
+
+typedef struct network_conf {
+	uint8 nDhcp;
+	std::string strDevName;
+	std::string strIp;
+	std::string strNetmask;
+	std::string strGateway;
+} NETWORK_CONF;
+
+typedef struct remote_conf {
+	std::string strDns1;
+	std::string strDns2;
+	std::string strRemote;
+} REMOTE_CONF;
+
+#endif _UI_PROTOCOL_H_
