@@ -16,6 +16,7 @@ typedef enum {
 	LOG_SATELLITE,
 	LOG_BASIC,
 	LOG_CONFIG,
+	LOG_TMS,
 	LOG_END
 }LOGTYPE;
 

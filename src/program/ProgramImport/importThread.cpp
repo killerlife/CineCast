@@ -10,7 +10,13 @@
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/exception.hpp>
 #include <sleep.h>
+#ifdef DEBUGPRINT
 #include "brunt/debugprint.h"
+#else
+#define DP_Trace(arg...)
+#define DPRINT(arg...)
+#define DP_PrintS(arg...)
+#endif
 //#include <sys/time.h>
 //#include <sys/types.h>
 //#include <sys/stat.h>
@@ -69,7 +75,8 @@ int mytime(char* str)
 		(1900+p->tm_year),(1+p->tm_mon),(p->tm_mday),
 		p->tm_hour,p->tm_min,p->tm_sec);
 	
-	DPRINT((DP_Trace, "CImportThread", "%s %s",str,buft));
+//	DPRINT((DP_Trace, "CImportThread", "%s %s",str,buft));
+	DPRINT("CImportThread %s %s\n",str,buft);
 
 	return 0;
 	//return atoi(buft);
@@ -109,10 +116,12 @@ int CImportThread::importFile()
 
 		if (hSrcFile == NULL)
 		{
-			DPRINT((DP_Trace, "CImportThread", "Open source file %s failed!", m_src.c_str()));
+//			DPRINT((DP_Trace, "CImportThread", "Open source file %s failed!", m_src.c_str()));
+			DPRINT("CImportThread Open source file %s failed!\n", m_src.c_str());
 			return 0;
 		}
-		DPRINT((DP_Trace, "CImportThread", "Open source file %s succeeded!", m_src.c_str()));
+//		DPRINT((DP_Trace, "CImportThread", "Open source file %s succeeded!", m_src.c_str()));
+		DPRINT("CImportThread Open source file %s succeeded!\n", m_src.c_str());
 
 
 		HANDLE hDestFile = NULL;
@@ -121,11 +130,13 @@ int CImportThread::importFile()
 
 		if (hDestFile == NULL)
 		{
-			DPRINT((DP_Trace, "CImportThread", "Open dest file %s failed!", m_dest.c_str()));
+			DPRINT("CImportThread Open dest file %s failed!\n", m_dest.c_str());
+//			DPRINT((DP_Trace, "CImportThread", "Open dest file %s failed!", m_dest.c_str()));
 			CloseHandle(hDestFile);
 			return 0;
 		}
-		DPRINT((DP_Trace, "CImportThread", "Open dest file %s succeeded!", m_dest.c_str()));
+//		DPRINT((DP_Trace, "CImportThread", "Open dest file %s succeeded!", m_dest.c_str()));
+		DPRINT("CImportThread Open dest file %s succeeded!\n", m_dest.c_str());
 
 		LARGE_INTEGER   pSize;   
 		GetFileSizeEx(hDestFile,&pSize);
@@ -147,20 +158,22 @@ int CImportThread::importFile()
 		char * pBuf = new char[nSize];
 		unsigned long nBytesRead,nLongW = 0;
 		int n = 1;
-		DPRINT((DP_Trace, "CImportThread", "start copy"));
-		mytime("开始");
+//		DPRINT((DP_Trace, "CImportThread", "start copy"));
+		DPRINT("CImportThread start copy\n");
+		mytime("始");
 		BOOL bResult = TRUE;
 		while ((status() != thread_stoping) && (status() != thread_stopped))
 		{			
 			nBytesRead = 0;
 			bResult = TRUE;
 			bResult = ReadFile(hSrcFile,pBuf,nSize,&nBytesRead,NULL);
-			mytime("结束");
+			mytime("");
 			if (nBytesRead == 0) 
 			{   // this is the end of the file 
 				break;
 			}
-			DPRINT((DP_Trace, "CtestfileDlg", "[%d]read size %d", n, nBytesRead));
+//			DPRINT((DP_Trace, "CtestfileDlg", "[%d]read size %d", n, nBytesRead));
+			DPRINT("CImportThread [%d]read size %d\n", n, nBytesRead);
 
 			BOOL nBytesWrite = WriteFile(hDestFile,pBuf,nBytesRead,&nLongW,NULL);
 			if(!nBytesWrite)
@@ -168,15 +181,18 @@ int CImportThread::importFile()
 				break;
 			}
 			m_progress += nLongW;
-			DPRINT((DP_Trace, "CtestfileDlg", "[%d]write size %d", n, nLongW));
+//			DPRINT((DP_Trace, "CtestfileDlg", "[%d]write size %d", n, nLongW));
+			DPRINT("CImportThread [%d]write size %d\n", n, nLongW);
 
 			n++;
 		}
 
 		if(bResult)
-			DPRINT((DP_Trace, "CtestfileDlg", "end copy succeeded."));
+//			DPRINT((DP_Trace, "CtestfileDlg", "end copy succeeded."));
+			DPRINT("CImportThread end copy succeeded.\n");
 		else
-			DPRINT((DP_Trace, "CtestfileDlg", "end copy error: "));
+//			DPRINT((DP_Trace, "CtestfileDlg", "end copy error: "));
+			DPRINT("CImportThread end copy error: \n");
 
 		delete pBuf;
 
@@ -188,10 +204,12 @@ int CImportThread::importFile()
 
 		if (fpSrc == NULL)
 		{
-			DPRINT((DP_Trace, "CImportThread", "Open source file %s failed!", m_src.c_str()));
+//			DPRINT((DP_Trace, "CImportThread", "Open source file %s failed!", m_src.c_str()));
+			DPRINT("CImportThread Open source file %s failed!\n", m_src.c_str());
 			return 0;
 		}
-		DPRINT((DP_Trace, "CImportThread", "Open source file %s succeeded!", m_src.c_str()));
+//		DPRINT((DP_Trace, "CImportThread", "Open source file %s succeeded!", m_src.c_str()));
+		DPRINT("CImportThread Open source file %s succeeded!\n", m_src.c_str());
 
 
 		FILE *fpDest = NULL;
@@ -199,11 +217,13 @@ int CImportThread::importFile()
 
 		if (fpDest == NULL)
 		{
-			DPRINT((DP_Trace, "CImportThread", "Open dest file %s failed!", m_dest.c_str()));
+//			DPRINT((DP_Trace, "CImportThread", "Open dest file %s failed!", m_dest.c_str()));
+			DPRINT("CImportThread Open dest file %s failed!\n", m_dest.c_str());
 			fclose(fpSrc);
 			return 0;
 		}
-		DPRINT((DP_Trace, "CImportThread", "Open dest file %s succeeded!", m_dest.c_str()));
+//		DPRINT((DP_Trace, "CImportThread", "Open dest file %s succeeded!", m_dest.c_str()));
+		DPRINT("CImportThread Open dest file %s succeeded!\n", m_dest.c_str());
 
 		uint64_t   pSize;
 		struct stat sbuf;
@@ -227,7 +247,8 @@ int CImportThread::importFile()
 		char * pBuf = new char[nSize];
 		unsigned long nBytesRead,nLongW = 0;
 		int n = 1;
-		DPRINT((DP_Trace, "CImportThread", "start copy"));
+//		DPRINT((DP_Trace, "CImportThread", "start copy"));
+		DPRINT("CImportThread start copy\n");
 		mytime("start");
 		BOOL bResult = TRUE;
 		while ((status() != thread_stoping) && (status() != thread_stopped))
@@ -240,7 +261,8 @@ int CImportThread::importFile()
 			{   // this is the end of the file 
 				break;
 			}
-			DPRINT((DP_Trace, "CtestfileDlg", "[%d]read size %d", n, nBytesRead));
+//			DPRINT((DP_Trace, "CtestfileDlg", "[%d]read size %d", n, nBytesRead));
+			DPRINT("CImportThread [%d]read size %d\n", n, nBytesRead);
 
 			uint32_t nBytesWrite = fwrite(pBuf, nBytesRead, 1, fpDest); //WriteFile(hDestFile,pBuf,nBytesRead,&nLongW,NULL);
 			if(nBytesWrite == 0)
@@ -248,15 +270,18 @@ int CImportThread::importFile()
 				break;
 			}
 			m_progress += nBytesWrite;
-			DPRINT((DP_Trace, "CtestfileDlg", "[%d]write size %d", n, nBytesWrite));
+//			DPRINT((DP_Trace, "CtestfileDlg", "[%d]write size %d", n, nBytesWrite));
+			DPRINT("CImportThread [%d]write size %d\n", n, nBytesWrite);
 
 			n++;
 		}
 
 		if(bResult)
-			DPRINT((DP_Trace, "CtestfileDlg", "end copy succeeded."));
+//			DPRINT((DP_Trace, "CtestfileDlg", "end copy succeeded."));
+			DPRINT("CImportThread end copy succeeded.\n");
 		else
-			DPRINT((DP_Trace, "CtestfileDlg", "end copy error: "));
+//			DPRINT((DP_Trace, "CtestfileDlg", "end copy error: "));
+			DPRINT("CImportThread end copy error: \n");
 
 		delete pBuf;
 
@@ -309,10 +334,12 @@ int CImportThread::importFile()
 
 		if (hSrcFile == NULL)
 		{
-			DPRINT((DP_Trace, "CImportThread", "Open source file %s failed!", m_src.c_str()));
+//			DPRINT((DP_Trace, "CImportThread", "Open source file %s failed!", m_src.c_str()));
+			DPRINT("CImportThread Open source file %s failed!\n", m_src.c_str());
 			return 0;
 		}
-		DPRINT((DP_Trace, "CImportThread", "Open source file %s succeeded!", m_src.c_str()));
+//		DPRINT((DP_Trace, "CImportThread", "Open source file %s succeeded!", m_src.c_str()));
+		DPRINT("CImportThread Open source file %s succeeded!\n", m_src.c_str());
 
 
 		HANDLE hDestFile = NULL;
@@ -397,9 +424,9 @@ int CImportThread::importFile()
 {
 	std::vector<filename>::iterator ite;
 	filename fn;
-// 	mytime("100K  开始导入节目");
+// 	mytime("100K  始目");
 // 
-// 	cout << "2进入线程" <<endl;
+// 	cout << "2叱" <<endl;
 
 	m_nIsEnd = 0;
 
@@ -421,7 +448,7 @@ int CImportThread::importFile()
 		}
 		catch (const fs::filesystem_error& ex)
 		{
-			cout << "文件路径已经存在" <<endl;
+			cout << "募路丫" <<endl;
 			std::string error = ex.what();
 			return false;
 		}
@@ -434,8 +461,8 @@ int CImportThread::importFile()
 
 		//FileHandle srcFile = fopen64(m_src.c_str() ,"rb"); 		
 		if(!FileValid(srcFile)){
-			cout << " 打开 文件错误m_src  = " << m_src  << endl;
-			DP_PrintS("打开 文件错误");
+			cout << "  募m_src  = " << m_src  << endl;
+			DP_PrintS(" 募");
 			return false;
 		}
 		cout << "file 22222222 = " << m_dest << endl;
@@ -445,14 +472,14 @@ int CImportThread::importFile()
 		if(!FileValid(destFile)){
 			destFile = FileOpenNew(m_dest.c_str());
 //			destFile = fopen64(m_dest.c_str() ,"w+b"); 
-			cout << " 创建目标文件m_dest   = "<< m_dest  << endl;						
-			DP_PrintS("创建目标文件");
+			cout << " 目募m_dest   = "<< m_dest  << endl;						
+			DP_PrintS("目募");
 		}
 
 		
 		if(!FileValid(destFile))
 		{
-			cout << " 创建目标文件错误m_dest   = "<< m_dest  << endl;									
+			cout << " 目募m_dest   = "<< m_dest  << endl;									
 			FileClose(srcFile);
 			return false;
 		}
@@ -470,7 +497,7 @@ int CImportThread::importFile()
 		
 		FileSeek(srcFile, dstSize);
 
-		// 如果断点的文件小于1M ,不做断点续传
+		// 系募小1M ,系
 		if(dstSize > srcSize && dstSize < BREAK_POINT_DELETE_FILE_SZIE)
 		{
 			cout << "dstSize > srcSize  " << endl;					
@@ -535,7 +562,7 @@ int CImportThread::importFile()
 
 				if(readBytes == 0)
 				{
-					cout << "**readBytes == 0 进入" <<endl;
+					cout << "**readBytes == 0 " <<endl;
 					if (srcSize == readAddSize){
 						brunt::sleep(1000);
 						cout << "srcSize = " << srcSize << endl;					
@@ -570,7 +597,7 @@ int CImportThread::importFile()
 			
 			if (srcSize != readAddSize)
 			{
-				cout << "**err 目标文件与copy的文件大小不等" <<endl;
+				cout << "**err 目募copy募小" <<endl;
 				m_nIsEnd = 1;
 				FileClose(srcFile);
 				FileClose(destFile);
@@ -586,12 +613,12 @@ int CImportThread::importFile()
 		FileClose(srcFile);
 		FileClose(destFile);
 
-		// cui win 不用加这个
+		// cui win 眉
 		//		system("sync");
 	}
 
 	/*  
-	// 代码的作用是，广告修改ID
+	// 牵薷ID
 	if (m_adId != "" && m_adPath != "")
 	{
 		IProgramParse* programParse = createProgramParse();
@@ -627,7 +654,7 @@ void CImportThread::doit()
 	else
 		m_status = IMPORT_STATUS_END;
 	m_pObserver->notify(m_status,m_nIsEnd);
-	mytime("完成导入节目");
+	mytime("傻目");
 
 	cout <<" ***doit = " << m_status << endl;
 }

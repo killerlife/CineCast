@@ -183,3 +183,9 @@ int CZSocket::GetLastError(char* buff, int bufsize)
 	}
 	return m_error;
 }
+
+std::string CZSocket::GetSockName()
+{
+	m_sockName = socket_name(&m_socket);
+	return m_sockName;
+}

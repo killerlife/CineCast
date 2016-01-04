@@ -62,6 +62,7 @@ pre-build:
 
 post-build:
 	-cp libx86-dcpParser.so ../../../../lib
+	-cp libx86-dcpParser.so ../../../../bin/linux/release
 	-@echo ' '
 
 .PHONY: all clean dependents

@@ -1,4 +1,4 @@
-// ProgramImport.cpp : ¶¨Òå DLL µÄ³õÊ¼»¯Àý³Ì¡£
+// ProgramImport.cpp :  DLL Ä³Ê¼Ì¡
 //
 #ifdef WIN32
 #include "stdafx.h"
@@ -24,7 +24,17 @@
 #include <boost/filesystem/exception.hpp>
 #include "config/config.h"
 #include "v15common.h"
+#ifdef DEBUGPRINT
 #include "brunt/debugprint.h"
+#else
+#ifdef DEBUG
+#define DP_PrintS(arg,...) printf(arg,...)
+#define DPRINT(arg,...) printf(arg,...)
+#else
+#define DP_PrintS(arg...)
+#define DPRINT(arg...)
+#endif
+#endif
 #ifdef WIN32
 #include <afx.h>
 #endif
@@ -56,8 +66,10 @@ using namespace brunt;
 using namespace std;
 namespace fs = boost::filesystem;
 
-#define DISKROOT	getConfig().getProgramRootPath()	// "/hdisk/program/"
-#define USBROOT		getConfig().getUsbRootPath()		// "/usb/DMS_HDD/"
+#define DISKROOT	"/storage"
+//getConfig().getProgramRootPath()	// "/hdisk/program/"
+#define USBROOT		"/media/usb"
+//getConfig().getUsbRootPath()		// "/usb/DMS_HDD/"
 
 
 class CProgramImport : public IProgramImport, public ImportObserver
@@ -93,7 +105,7 @@ private:
 	// Aavan: 2008-7-3
 	string getDstPath(const string& basePath, const string& id);//, const bool isdms, const string& adjustpath);
 
-	// Aavan: 2008-7-3 ÅÐ¶ÏÊÇ·ñÎªDMS½ÚÄ¿
+	// Aavan: 2008-7-3 Ð¶Ç·ÎªDMSÄ¿
 	bool isDmsProgram(vector<string>& childFiles);
 	string getDmsDstProgram(vector<string>& childFiles);
 	bool DeleteDirectory(char *DirName);
@@ -109,13 +121,13 @@ private:
 	int m_status;
 	CGetSpace getSpace;
 private:
-	long long int  m_nProgramSize;  // ½ÚÄ¿´óÐ¡
-	std::vector<filename> m_oProgramfileList; //½ÚÄ¿ÎÄ¼þÁÐ±í 
+	long long int  m_nProgramSize;  // Ä¿Ð¡
+	std::vector<filename> m_oProgramfileList; //Ä¿Ä¼Ð± 
 	CImportThread* m_importThread;
 	int m_ProgramType;  //	ta_type_movie = 0, 
 	//   ta_type_publicad,
 	//   ta_type_businessad 
-	int m_nIsEnd;//Ïß³Ì½áÊø
+	int m_nIsEnd;//ß³Ì½
 
 	IProgramQuery*  m_pQueryImport;
 	IProgramQuery*  m_pQueryTarget;
@@ -184,7 +196,7 @@ void CProgramImport::DelBreakPointImportFile()
 {
 	//TCHAR szPath[MAX_PATH];
 	//GetCurrentDirectory(MAX_PATH, szPath);
-	string fileName = getConfig().getBinRootPath();
+	string fileName = ".";//getConfig().getBinRootPath();
 	fileName += "\\breakpointimport.ini";
 	remove(fileName.c_str());
 }
@@ -225,7 +237,7 @@ bool CProgramImport::DeleteDirectory(char *DirName)
 	tempFind.Close();
 	if(!RemoveDirectory(DirName))
 	{
-		::MessageBox(0,"É¾³ýÄ¿Â¼Ê§°Ü£¡","¾¯¸æÐÅÏ¢",MB_OK);
+		::MessageBox(0,"É¾Ä¿Â¼Ê§Ü£","Ï¢",MB_OK);
 		return false;
 	}
 	return true;
@@ -270,7 +282,7 @@ bool CProgramImport::DelBreakPointImport()
 			DeleteDirectory((char*)breakPoint.sFilepath.c_str());
 			//TCHAR szPath[MAX_PATH];
 			//GetCurrentDirectory(MAX_PATH, szPath);
-			string fileName = getConfig().getBinRootPath();
+			string fileName = ".";//getConfig().getBinRootPath();
 			fileName += "\\breakpointimport.ini";
 			if (remove(fileName.c_str()) == -1)
 				return true;
@@ -503,9 +515,15 @@ void CProgramImport::setProgramType(int ProgramType)
 	if (m_ProgramType == 0)
 		m_root = DISKROOT ;//+ PATHSEPARATOR + "movie";
 	else if(m_ProgramType == 1)
-		m_root = DISKROOT + PATHSEPARATOR + "publicad";
+	{
+		string t = DISKROOT;
+		m_root = t + PATHSEPARATOR + "publicad";
+	}
 	else if(m_ProgramType == 2)
-		m_root = DISKROOT  + PATHSEPARATOR + "businessad";
+	{
+		string t = DISKROOT;
+		m_root = t + PATHSEPARATOR + "businessad";
+	}
 }
 
 int CProgramImport::import(const std::string& programPath, const std::string& programId)
@@ -527,7 +545,7 @@ int CProgramImport::import(const std::string& programPath, const std::string& pr
 		}
 
 		/*         
-		// µçÓ°ºÍ¹ã¸æ·ÖÀà
+		// Ó°Í¹
 		if (m_ProgramType != 0)
 		programId = lid;
 		else 
@@ -589,7 +607,7 @@ int CProgramImport::import(const std::string& programPath, const std::string& pr
 		string sIdFile = getSpace.getSaveFile();
 		if (sIdFile != "")
 		{
-			cout << "¹Ø¼üÎÄ¼þ id  | describe.ini   ||| sIdFile = " << sIdFile << endl;
+			cout << "Ø¼Ä¼ id  | describe.ini   ||| sIdFile = " << sIdFile << endl;
 			childFiles.push_back(sIdFile);
 		}
 		*/
@@ -801,7 +819,7 @@ string CProgramImport::getDstPath(const string& basePath, const string& id)//, c
 	*/ 
 }
 
-// Aavan: 2008-7-3 ÅÐ¶ÏÊÇ·ñÎªDMS½ÚÄ¿
+// Aavan: 2008-7-3 Ð¶Ç·ÎªDMSÄ¿
 bool CProgramImport::isDmsProgram(vector<string>& childFiles)
 {
 	vector<string>::iterator ite_child = childFiles.begin();
@@ -823,7 +841,7 @@ bool CProgramImport::isDmsProgram(vector<string>& childFiles)
 	return false;
 }
 
-// Aavan: 2008-7-3 µ÷ÕûÄ¿±êÂ·¾¶
+// Aavan: 2008-7-3 Ä¿Â·
 string CProgramImport::getDmsDstProgram(vector<string>& childFiles)
 {
 	vector<string>::iterator ite_child = childFiles.begin();
@@ -849,30 +867,30 @@ string CProgramImport::getDmsDstProgram(vector<string>& childFiles)
 
 
 //
-//	×¢Òâ£¡
+//	×¢â£¡
 //
-//		Èç¹û´Ë DLL ¶¯Ì¬Á´½Óµ½ MFC
-//		DLL£¬´Ó´Ë DLL µ¼³ö²¢
-//		µ÷Èë MFC µÄÈÎºÎº¯ÊýÔÚº¯ÊýµÄ×îÇ°Ãæ
-//		¶¼±ØÐëÌí¼Ó AFX_MANAGE_STATE ºê¡£
+//		 DLL Ì¬Óµ MFC
+//		DLLÓ´ DLL 
+//		 MFC ÎºÎºÚºÇ°
+//		 AFX_MANAGE_STATE ê¡£
 //
-//		ÀýÈç:
+//		:
 //
 //		extern "C" BOOL PASCAL EXPORT ExportedFunction()
 //		{
 //			AFX_MANAGE_STATE(AfxGetStaticModuleState());
-//			// ´Ë´¦ÎªÆÕÍ¨º¯ÊýÌå
+//			// Ë´ÎªÍ¨
 //		}
 //
-//		´ËºêÏÈÓÚÈÎºÎ MFC µ÷ÓÃ
-//		³öÏÖÔÚÃ¿¸öº¯ÊýÖÐÊ®·ÖÖØÒª¡£ÕâÒâÎ¶×Å
-//		Ëü±ØÐë×÷Îªº¯ÊýÖÐµÄµÚÒ»¸öÓï¾ä
-//		³öÏÖ£¬ÉõÖÁÏÈÓÚËùÓÐ¶ÔÏó±äÁ¿ÉùÃ÷£¬
-//		ÕâÊÇÒòÎªËüÃÇµÄ¹¹Ôìº¯Êý¿ÉÄÜÉú³É MFC
-//		DLL µ÷ÓÃ¡£
+//		ËºÎº MFC 
+//		Ã¿Ê®ÒªÎ¶
+//		ÎªÐµÄµÒ»
+//		Ö£Ð¶
+//		ÎªÇµÄ¹ìº¯ MFC
+//		DLL Ã¡
 //
-//		ÓÐ¹ØÆäËûÏêÏ¸ÐÅÏ¢£¬
-//		Çë²ÎÔÄ MFC ¼¼ÊõËµÃ÷ 33 ºÍ 58¡£
+//		Ð¹Ï¸Ï¢
+//		 MFC Ëµ 33  58
 //
 
 // CProgramImportApp
@@ -881,21 +899,21 @@ BEGIN_MESSAGE_MAP(CProgramImportApp, CWinApp)
 END_MESSAGE_MAP()
 
 
-// CProgramImportApp ¹¹Ôì
+// CProgramImportApp 
 
 CProgramImportApp::CProgramImportApp()
 {
-	// TODO: ÔÚ´Ë´¦Ìí¼Ó¹¹Ôì´úÂë£¬
-	// ½«ËùÓÐÖØÒªµÄ³õÊ¼»¯·ÅÖÃÔÚ InitInstance ÖÐ
+	// TODO: Ú´Ë´Ó¹ë£¬
+	// ÒªÄ³Ê¼ InitInstance 
 }
 
 
-// Î¨Ò»µÄÒ»¸ö CProgramImportApp ¶ÔÏó
+// Î¨Ò»Ò» CProgramImportApp 
 
 CProgramImportApp theApp;
 
 
-// CProgramImportApp ³õÊ¼»¯
+// CProgramImportApp Ê¼
 
 BOOL CProgramImportApp::InitInstance()
 {

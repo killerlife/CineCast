@@ -2,6 +2,6 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-LIBS := -lx86-Config
+LIBS := 
 
 USER_OBJS :=

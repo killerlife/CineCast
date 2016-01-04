@@ -1,4 +1,4 @@
-#ifndef _DEMUX_H_
+﻿#ifndef _DEMUX_H_
 #define _DEMUX_H_
 
 #include <sys/poll.h>
@@ -235,17 +235,11 @@ struct PmtDescriptor {
 	{
 		if(subfolderCountDescriptor != NULL)
 		{
-#if 0
-			printf("delete subfoldercounter %x ", subfolderCountDescriptor);
-#endif // DEBUG
 			delete subfolderCountDescriptor;
 			subfolderCountDescriptor = NULL;
 		}
 		if (fileDescriptor != NULL)
 		{
-#if 0
-			printf("delete filedescriptor %x ", fileDescriptor);
-#endif // DEBUG
 			delete fileDescriptor;
 			fileDescriptor = NULL;
 		}

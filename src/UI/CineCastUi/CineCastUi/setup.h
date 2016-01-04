@@ -15,6 +15,10 @@ public:
 	~Setup();
 
 	void LoadConfig();
+	void getTMS();      //ȡ־
+	void TMS_start();   //ȡ־ʱ
+	void TMS_stop();    //رջȡ־ʱ
+	int m_TMS_timer;    //ʱȡ־ 
 
 private:
 	void Init();
@@ -29,6 +33,7 @@ private slots:
 	void on_comboBox_ECHs_currentIndexChanged(QString);
 	void on_pushButton_2_clicked();
 	void on_pushButton_clicked();
+	void timerEvent(QTimerEvent * te);
 };
 
 #endif // SETUP_H

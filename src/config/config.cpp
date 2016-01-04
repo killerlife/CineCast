@@ -1,4 +1,4 @@
-// config.cpp : ¶¨Òå DLL Ó¦ÓÃ³ÌÐòµÄÈë¿Úµã¡£
+ï»¿// config.cpp :  DLL Ó¦Ã³Úµã¡£
 //
 #ifdef WIN32
 #include "stdafx.h"
@@ -37,6 +37,14 @@ public:
 		return m_nRemotePort;
 	}
 
+	virtual const string getLeonisUrl(){
+		return m_strLeonisUrl;
+	}
+
+	virtual const int getLeonisPort(){
+		return m_nLeonisPort;
+	}
+
 	virtual const string getProgramRootPath(){
 		return m_strProgramRoot;
 	}
@@ -61,10 +69,13 @@ public:
 		return m_strBreakPointPath;
 	}
 	
-	virtual const unsigned long getMachineId(){
+	virtual const uint32 getMachineId(){
 		return m_nMachineId;
 	}
 
+	virtual const string getHardKey(){
+		return m_strHardKey;
+	}
 	////////////////////
 	CConfig();
 	virtual ~CConfig();
@@ -74,6 +85,7 @@ private:
 	bool save();
 
 	string m_strRemoteUrl;
+	string m_strLeonisUrl;
 	string m_strProgramRoot;
 	string m_strImportRoot;
 	string m_strUsbRoot;
@@ -86,18 +98,26 @@ private:
 	string m_strLogOutRoot;
 	string m_strBreakPointPath;
 	string m_strSplPath;
+	string m_strHardKey;
 	vector<string> m_listImportPath;
 	bool m_bHdcpEnable;
 	bool m_bCheckLicenseDate;
 	int m_nRemotePort;
-	unsigned long m_nMachineId;
+	int m_nLeonisPort;
+	uint32 m_nMachineId;
 };
-
-static CConfig config;
 
 IConfig* getConfig()
 {
-	return &config;
+	return new CConfig;
+}
+
+void ReleaseConfig(IConfig* pConfig)
+{
+	if (pConfig)
+{
+		delete pConfig;
+	}
 }
 
 CConfig::CConfig()
@@ -124,10 +144,10 @@ CConfig::CConfig()
 	RegCloseKey(hk);
 
 #else
-	m_strProgramRoot = "/hdisk/program";
-	m_strImportRoot = "/hdisk/usb";
-	m_strUsbRoot = "/hdisk/usb";
-	root = "./";
+	m_strProgramRoot = "/storage";
+	m_strImportRoot = "/media/usb";
+	m_strUsbRoot = "/media/usb";
+	root = "/usr/CineCast";
 #endif//_WIN32
 
 	m_strRoot = root;
@@ -152,12 +172,16 @@ bool CConfig::init()
 	string tmp;
 	if(ini)
 	{
-		if(ini->load(m_strConfigFile))
+		if(ini->load("/etc/CineCast/CineCast.cfg"))
 		{
 			std::string strValue;
-			ini->read("remote", "url", m_strRemoteUrl);
-			ini->read("remote", "port", tmp);
+			ini->read(" ", "SERVER", m_strRemoteUrl);
+			ini->read(" ", "PORT", tmp);
 			m_nRemotePort = atoi(tmp.c_str());
+			ini->read(" ", "LEONISURL", m_strLeonisUrl);
+			ini->read(" ", "LEONISPORT", strValue);
+			m_nLeonisPort = atoi(strValue.c_str());
+#if 0
 			ini->read("path", "programroot", m_strProgramRoot);
 			ini->read("path", "importroot", m_strImportRoot);
 			ini->read("path", "usbroot", m_strUsbRoot);
@@ -174,8 +198,6 @@ bool CConfig::init()
 			m_bHdcpEnable = (strValue=="1"?true:false);
 			ini->read("playctrl", "checkdate", strValue);
 			m_bCheckLicenseDate = (strValue=="0"?false:true);
-			result = true;
-
 			// import path list
 			for(int i=1; i<=10; i++)
 			{
@@ -186,7 +208,25 @@ bool CConfig::init()
 				if(strValue.empty()) continue;
 				m_listImportPath.push_back(strValue);
 			}
+#endif
 		}
+		if(ini->load("/etc/CineCast/config.cfg"))
+		{
+			ini->read(" ", "logroot", m_strLogRoot);
+			ini->read(" ", "usbroot", m_strUsbRoot);
+			result = true;
+		}
+		else
+			result = false;
+		if(ini->load("/etc/CineCast/ID"))
+		{
+			ini->read("ID_HardKey", "ID", tmp);
+			m_nMachineId = atoi(tmp.c_str());
+			ini->read("ID_HardKey", "HardKey", m_strHardKey);
+			result = true;
+		}
+		else
+			result = false;
 		releaseMyini(ini);
 	}
 	return result;

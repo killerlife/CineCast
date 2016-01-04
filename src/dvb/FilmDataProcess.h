@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <thread/activeThread/activeThread.h>
 #include <string>
 #include "demux.h"
@@ -74,6 +74,8 @@ public:
 	uint64 CRCError();
 	uint64 TotalSegment();
 
+	void UpdateInfo();
+
 	int GetStatus() { return m_status; };
 // 	void SetObserver(IFilmDataObserver* pObserver) { m_pObserver = pObserver; };
 	void WriteFile(uint64 pos, uint8 *pbuf, uint16 size);
@@ -91,6 +93,8 @@ public:
 	void pushIntoDataBuf(struct FilmDataBuf* pBuf);
 
 	bool isStop() { return bStop; };
+
+	bool haveSegment(uint32 nSegNum);
 
 	struct LostBuf* GetLostSegment();
 
@@ -131,5 +135,6 @@ private:
 
 	bool bStop;
 
+	uint64 m_ztPos;
 // 	ILog *pLog;
 };

@@ -43,7 +43,8 @@ int CLogFileOperation::IsDirectory(const char* path)
 		return 1;
 #else
 	struct stat buf;
-	stat(path, &buf);
+	if(stat(path, &buf) != 0)
+		return 0;
 	if (buf.st_mode & S_IFDIR)
 	{
 		return 1;
@@ -87,24 +88,25 @@ int CLogFileOperation::CreateDirectory(const char* path)
 	return bSuccess;
 #else
 	std::string strDir(path);
-	if (strDir.at(strDir.length()-1)!='\\')
+	if (strDir.at(strDir.length()-1)!='/')
 	{
-		strDir.append((char*)'\\');
+		strDir += '/';
 	}
+
 	std::vector<std::string> vPath;
 	std::string strTemp;
 	bool bSuccess = false;
 
 	for (int i=0;i<strDir.length();++i)
 	{
-		if (strDir.at(i) != '\\') 
+		if (strDir.at(i) != '/') 
 		{
-			strTemp.append((char*)strDir.at(i));
+			strTemp += strDir.at(i);
 		}
 		else 
 		{
 			vPath.push_back(strTemp);
-			strTemp.append((char*)'\\');
+			strTemp += '/';
 		}
 	}
 
@@ -149,7 +151,7 @@ int CLogFileOperation::DeleteDirectory(const char* path)
 	tempFind.Close();
 	if(!RemoveDirectory(path))
 	{
-		::MessageBox(0,"É¾³ýÄ¿Â¼Ê§°Ü£¡","¾¯¸æÐÅÏ¢",MB_OK);
+		::MessageBox(0,"É¾Ä¿Â¼Ê§Ü£","Ï¢",MB_OK);
 		return FALSE;
 	}
 	return TRUE;
@@ -193,6 +195,7 @@ int CLogFileOperation::CloseFile()
 	return 0;
 }
 
+static int mLogMutex = 0;
 int CLogFileOperation::Write(const char* file,const int type, const char* context)
 {
 	time_t timep;
@@ -201,8 +204,12 @@ int CLogFileOperation::Write(const char* file,const int type, const char* contex
 	p = localtime(&timep);
 	char buft[MAX_PATH] = {0};
 
+	while(mLogMutex) usleep(1);
+	mLogMutex = 1;
+	
 	FILE* pf = fopen(file,"a+");
 	if (NULL == pf){
+		mLogMutex = 0;
 		return 0;
 	}
 
@@ -216,6 +223,7 @@ int CLogFileOperation::Write(const char* file,const int type, const char* contex
 	if (NULL != pf){
 		fclose(pf);
 	}
+	mLogMutex = 0;
 	return 1;
 }
 

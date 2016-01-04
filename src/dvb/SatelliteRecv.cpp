@@ -1,4 +1,4 @@
-#include "SatelliteRecv.h"
+﻿#include "SatelliteRecv.h"
 #include "do_tuner.h"
 #include "demux.h"
 #ifdef LIBDVB
@@ -19,7 +19,9 @@
 #include <time.h>
 #include <unistd.h>
 #include <syslog.h>
-//#include <log/Log.h>
+#include <log/Log.h>
+
+extern ILog* gLog;
 
 class Tuner : public ITuner
 {
@@ -88,15 +90,19 @@ bool Tuner::Zapto()
 		mConf.nHiBand,
 		mConf.nMis,
 		mConf.nSatNo);
-	DPRINTF("%s\n", str);
-	syslog(LOG_INFO|LOG_USER, str);
+	if (gLog)
+	{
+		gLog->Write(LOG_DVB, str);
+	}
 	if(mFrontEnd < 0)
 	{
 		if ((mFrontEnd = open (mConf.strDevName.c_str(), O_RDWR | O_NONBLOCK)) < 0)
 		{
 			sprintf(str, "[Tuner] Failed to open '%s': %d", mConf.strDevName.c_str(), errno);
-			//pLog->Write(LOG_ERROR, str);
-			syslog(LOG_ERR|LOG_USER, "[Tuner] Failed to open '%s': %d\n", mConf.strDevName.c_str(), errno); 
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
 			return false;
 		}
 	}
@@ -110,8 +116,10 @@ bool Tuner::Zapto()
 		if(polvert_values[i].user_value == -1)
 		{
 			sprintf(str, "[Tuner] Unsupport pol_vert mode: %s", mConf.strPolVert.c_str());
-			//pLog->Write(LOG_ERROR, str);
-			syslog(LOG_ERR|LOG_USER, "[Tuner] Unsupport pol_vert mode: %s\n", mConf.strPolVert.c_str());
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
 			return false;
 		}
 		if(polvert_values[i].user_string == mConf.strPolVert)
@@ -135,8 +143,10 @@ bool Tuner::Zapto()
 		if(system_values[i].user_value == -1)
 		{
 			sprintf(str, "[Tuner] Unsupport system mode: %s", mConf.strDelSys.c_str());
-			//pLog->Write(LOG_ERROR, str);
-			syslog(LOG_ERR|LOG_USER, "[Tuner] Unsupport system mode: %s\n", mConf.strDelSys.c_str());
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
 			return false;
 		}
 		if(system_values[i].user_string == mConf.strDelSys)
@@ -155,8 +165,10 @@ bool Tuner::Zapto()
 		if(coderate_values[i].user_value == -1)
 		{
 			sprintf(str, "[Tuner] Unsupport fec mode: %s", mConf.strFec.c_str());
-			//pLog->Write(LOG_ERROR, str);
-			syslog(LOG_ERR|LOG_USER, "[Tuner] Unsupport fec mode: %s\n", mConf.strFec.c_str());
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
 			return false;
 		}
 		if(coderate_values[i].user_string == mConf.strFec)
@@ -175,8 +187,10 @@ bool Tuner::Zapto()
 		if(modulation_values[i].user_value == -1)
 		{
 			sprintf(str, "[Tuner] Unsupport modulation: %s %d", mConf.strModulation.c_str(), i);
-			DPRINTF("%s\n", str);
-			syslog(LOG_ERR|LOG_USER, str);
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
 			return false;
 		}
 		if(modulation_values[i].user_string == mConf.strModulation)
@@ -195,8 +209,10 @@ bool Tuner::Zapto()
 		if(rolloff_values[i].user_value == -1)
 		{
 			sprintf(str, "[Tuner] Unsupport rolloff: %s", mConf.strRollOff.c_str());
-			//pLog->Write(LOG_ERROR, str);
-			syslog(LOG_ERR|LOG_USER, "[Tuner] Unsupport rolloff: %s\n", mConf.strRollOff.c_str());
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
 			return false;
 		}
 		if(rolloff_values[i].user_string == mConf.strRollOff)
@@ -219,7 +235,10 @@ bool Tuner::Zapto()
 		mConf.nMis) != 0)
 	{
 		DPRINTF("[Tuner] Zapto faile\n");
-		syslog(LOG_ERR|LOG_USER, "[Tuner] Zapto faile\n");
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, "[Tuner] Zapto faile.");
+		}
 		return false;
 	}
 	DPRINTF("Set Tuner success\n");
@@ -240,13 +259,13 @@ TUNER_INFO Tuner::GetTunerInfo()
 		{
 			char str[200];
 			sprintf(str, "[Tuner] Failed to open '%s': %d", mConf.strDevName.c_str(), errno);
-			//pLog->Write(LOG_ERROR, str);
-			syslog(LOG_ERR|LOG_USER, "[Tuner] Failed to open '%s': %d\n", mConf.strDevName.c_str(), errno); 
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
 			return mInfo;
 		}
 	}
-//	pLog->Write(LOG_DVB, "[Tuner] Get tuner Info");
-	syslog(LOG_INFO|LOG_USER, "[Tuner] Get tuner Info");
 	get_tuner_status(mFrontEnd, 
 		&mInfo.nStatus,
 		&mInfo.nAGC, 
@@ -270,8 +289,6 @@ Filter::~Filter()
 
 bool Filter::SetStrDevName(std::string strDevName)
 {
-	//pLog->Write(LOG_DVB, "[Filter] Set StrDev Name");
-	syslog(LOG_INFO|LOG_USER, "[Filter] Set StrDev Name");
 	if (fd > 0)
 	{
 		ioctl(fd, DMX_STOP);
@@ -287,9 +304,11 @@ bool Filter::SetStrDevName(std::string strDevName)
 	if ((fd = open(strDevName.c_str(), flags)) <0)
 	{
 		char str[200];
-		sprintf(str, "[Filter] Open device %s error: %d\n", strDevName.c_str(), errno);
-		//pLog->Write(LOG_ERROR, str);
-		syslog(LOG_ERR|LOG_USER, "[Filter] Open device %s error: %d\n", strDevName.c_str(), errno);
+		sprintf(str, "[Filter] Open device %s error: %d", strDevName.c_str(), errno);
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
 
 #ifdef USE_POLL
 		m_poll.fd = -1;
@@ -312,9 +331,6 @@ bool Filter::SetFilterID(uint16 pid, uint16 tid)
 	nPid = pid;
 	nTid = tid;
 	char str[200];
-	sprintf(str, "[Filter] Set Filter ID: Pid 0x%x - Tid 0x%x fd 0x%x", pid, tid, fd);
-	//pLog->Write(LOG_DVB, str);
-	syslog(LOG_INFO|LOG_USER, str);
 #ifdef LIBDVB
 	uint8 filter[18];
 	uint8 mask[18];
@@ -333,8 +349,10 @@ bool Filter::SetFilterID(uint16 pid, uint16 tid)
 		DMX_IMMEDIATE_START) == -1)
 	{
 		sprintf(str, "[Filter] dvb_set_section_filter failed, pid = 0x%x tid = 0x%x fd 0x%x", nPid, nTid, fd);
-		//pLog->Write(LOG_ERROR, str);
-		syslog(LOG_ERR|LOG_USER, str);
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
 
 		ioctl(fd, DMX_STOP);
 		close(fd);
@@ -359,14 +377,19 @@ bool Filter::SetFilterID(uint16 pid, uint16 tid)
 	if(ioctl(fd, DMX_SET_BUFFER_SIZE, 1024*4096) == -1)
 	{
 		sprintf(str, "[Filter] DMX_SET_BUFFER_SIZE failed, pid = 0x%x tid = 0x%x fd = 0x%d", nPid, nTid, fd);
-		syslog(LOG_ERR|LOG_USER, str);
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
 	}
 
 	if(ioctl(fd, DMX_SET_FILTER, &df) == -1)
 	{
 		sprintf(str, "[Filter] DMX_SET_FILTER failed, pid = 0x%x tid = 0x%x fd 0x%x", nPid, nTid, fd);
-		//pLog->Write(LOG_ERROR, str);
-		syslog(LOG_ERR|LOG_USER, str);
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
 
 		ioctl(fd, DMX_STOP);
 		close(fd);
@@ -389,6 +412,10 @@ bool Filter::ReadFilter(uint8 *buf, uint16& count)
 	if(fd <= 0)
 	{
 		DPRINTF("[Filter] invaild fd\n");
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, "[Filter] ReadFilter: invaild fd");
+		}
 		return false;
 	}
 
@@ -435,7 +462,6 @@ bool Filter::Stop()
 {
 	//pLog->Write(LOG_DVB, "[Filter] Stop filter");
 	//DPRINTF("[Filter] Stop filter");
-	syslog(LOG_INFO|LOG_USER, "[Filter] Stop filter");
 	if (fd > 0)
 	{
 		ioctl(fd, DMX_STOP);
@@ -450,9 +476,6 @@ bool Filter::SetPesFilterID(uint16 pid, uint16 tid)
 	nPid = pid;
 	nTid = tid;
 	char str[200];
-	sprintf(str, "[Filter] Set Pes Filter ID: Pid 0x%x - Tid 0x%x fd 0x%x", pid, tid, fd);
-	//pLog->Write(LOG_DVB, str);
-	syslog(LOG_INFO|LOG_USER, str);
 
 	struct dmx_pes_filter_params df;
 
@@ -465,8 +488,10 @@ bool Filter::SetPesFilterID(uint16 pid, uint16 tid)
 	if(ioctl(fd, DMX_SET_PES_FILTER, &df) == -1)
 	{
 		sprintf(str, "[Filter] DMX_SET_PES_FILTER failed, pid = 0x%x tid = 0x%x fd 0x%x", nPid, nTid, fd);
-		//pLog->Write(LOG_ERROR, str);
-		syslog(LOG_ERR|LOG_USER, str);
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
 
 		ioctl(fd, DMX_STOP);
 		close(fd);

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <thread/activeThread/activeThread.h>
 #include <string>
 #include <list>
@@ -15,7 +15,7 @@ public:
 	bool Init(void *param1, void *param2);
 	bool Start();
 	bool Stop();
-	bool IsFinish() { return m_bFinish; };
+	bool IsFinish();
 	int GetStatus() { return m_status; };
 	uint64 ReciveLength(){ return 0; };
 	uint64 FileLength(){return 0;};

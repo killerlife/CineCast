@@ -1,4 +1,4 @@
-#include "FilmDataProcess.h"
+﻿#include "FilmDataProcess.h"
 #include "DataProcessThread.h"
 
 #include <boost/filesystem/operations.hpp>
@@ -40,6 +40,8 @@ bool DataProcessThread::Start()
 
 bool DataProcessThread::Stop()
 {
+	if(m_status == STOP)
+		return true;
 	DPRINTF("Call Stop\n");
 	m_status = STOP;
 	//syslog(LOG_INFO|LOG_USER, "Data Process[%llx] Thread Stop\n", m_id);

@@ -228,7 +228,8 @@ namespace fileiolib
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #else
-#define uintptr_t long
+//#define uintptr_t long
+//typedef long uintptr_t;
 #endif
 
 //#ifdef HAVE_UUID_GENERATE
@@ -237,6 +238,7 @@ namespace fileiolib
 
 namespace fileiolib
 {
+typedef long uintptr_t;
 	/******** ENDIAN SWAPPING ********/
 	inline UInt16 Swap(UInt16 Val) 
 	{ 

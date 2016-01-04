@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <thread/activeThread/activeThread.h>
 #include <string>
 #include <list>
@@ -41,5 +41,6 @@ private:
 	brunt::IThreadManager* m_pManager;
 	struct ProgramDescriptor m_programDescriptor;
 	bool bThreadStart;
+	volatile uint8 m_mutex;
 // 	ILog *pLog;
 };

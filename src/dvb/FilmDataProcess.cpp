@@ -1,5 +1,6 @@
-#include "FilmDataProcess.h"
+﻿#include "FilmDataProcess.h"
 #include "DataProcessThread.h"
+#include "../netcomm/NetCommThread.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -8,16 +9,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <syslog.h>
-//#include <log/Log.h>
+#include <log/Log.h>
 #include <netcomm/message.h>
 
 namespace fs = boost::filesystem;
 using namespace brunt;
 
+extern ILog* gLog;
+NetCommThread *pNetComm;
+
 FilmDataThread::FilmDataThread(): m_ReciveLength(0), m_status(STOP),
 m_pZtBuf(0), m_pFilter(0), m_pFilmFile(NULL), m_nSegBasic(0), 
 m_ReciveSegment(0), m_LostSegment(0), m_CRCError(0), m_TotalSegment(0), 
-m_freeMutex(0), m_dataMutex(0)
+m_freeMutex(0), m_dataMutex(0), m_ztPos(-1)
 {
 	m_pDataThread = NULL;
 	m_pPmtDescriptor = NULL;
@@ -37,6 +41,11 @@ FilmDataThread::~FilmDataThread()
 	UpdateFile();
 	usleep(100000);
 
+	if(m_pZtFilmFile)
+		fclose(m_pZtFilmFile);
+	if(m_pFilmFile)
+		fclose(m_pFilmFile);
+
 	if (m_pZtBuf)
 	{
 		delete[] m_pZtBuf;
@@ -47,6 +56,10 @@ FilmDataThread::~FilmDataThread()
 	{
 		delete m_pFilter;
 		m_pFilter = NULL;
+	}
+	if (m_sLostBuf.m_buf)
+	{
+		delete[] m_sLostBuf.m_buf;
 	}
 	FreeBufPool();
 	//ReleaseLog(pLog);
@@ -102,24 +115,31 @@ bool FilmDataThread::Init(void *param1, void *param2)
 	m_sLostBuf.m_size = m_nZtBufSize
 		+ 4 + 4 + 8 + 4 + 4 + 4 + 4;
 	//ID + count + receive bytes + status + reserved + msg length + msg buffer + crc32
-	m_sLostBuf.m_buf = new uint8[m_sLostBuf.m_size];
+	m_sLostBuf.m_buf = new uint8[m_sLostBuf.m_size + 100];
 
 	memset(m_pZtBuf, 0, m_nZtBufSize);
 	memset(m_sLostBuf.m_buf, 0, m_sLostBuf.m_size);
 
 	FILE *fp;
-	if((fp = fopen64(m_strZtFileName.c_str(), "rb")) > 0)
+	if((fp = fopen(m_strZtFileName.c_str(), "rb")) > 0)
 	{
 		fread(m_pZtBuf, 1, sec_nums, fp);
+		fclose(fp);
+		m_pZtFilmFile = fopen(m_strZtFileName.c_str(), "rb+");
+		UpdateInfo();
+	}
+	else
+	{
+		m_pZtFilmFile = fopen(m_strZtFileName.c_str(), "wb+");
 	}
 
 	//Check the Film file exist, if not existed, create a new one
 	//otherwise, reopen film file with append mode.
-	if((m_pFilmFile = fopen64(m_strFileName.c_str(), "rb")) <= 0)
+	if((m_pFilmFile = fopen(m_strFileName.c_str(), "rb")) <= 0)
 	{
 		//syslog(LOG_INFO|LOG_USER, "Create Film file: %s\n",
 		//	m_strFileName.c_str());
-		m_pFilmFile = fopen64(m_strFileName.c_str(), "wb+");
+		m_pFilmFile = fopen(m_strFileName.c_str(), "wb+");
 		if(m_pFilmFile > 0)
 		{
 			if(fseek(m_pFilmFile, m_pPmtDescriptor->fileDescriptor->FileLength - 1, SEEK_SET) == 0)
@@ -136,10 +156,8 @@ bool FilmDataThread::Init(void *param1, void *param2)
 		fclose(m_pFilmFile);
 		//syslog(LOG_INFO|LOG_USER, "Reopen film file: %s\n",
 		//	m_strFileName.c_str());
-		m_pFilmFile = fopen64(m_strFileName.c_str(), "rb+");
+		m_pFilmFile = fopen(m_strFileName.c_str(), "rb+");
 	}
-
-	m_pZtFilmFile = fopen64(m_strZtFileName.c_str(), "wb");
 
 	AllocBufPool();
 
@@ -169,7 +187,11 @@ bool FilmDataThread::Start()
 
 bool FilmDataThread::Stop()
 {
+	if(m_status == STOP)
+		return true;
+
 	//syslog(LOG_INFO|LOG_USER, "Film Data Thread[%llx] stop\n", (uint32)this);
+#if 0
 	if (m_pDataThread)
 	{
 		m_pDataThread->m_status = STOP;
@@ -180,10 +202,12 @@ bool FilmDataThread::Stop()
 		m_pDataThread = NULL;
 	}
 
-	m_status = STOP;
 	usleep(100000);
+#endif
+	m_pFilter->Stop();
+	m_status = STOP;
 
-	return m_pFilter->Stop();
+	return true;
 }
 
 void FilmDataThread::doit()
@@ -293,7 +317,7 @@ void FilmDataThread::doit()
 						    
 						}
 						#endif
-						uint64 pos = seg_num * m_pPmtDescriptor->fileDescriptor->SegmentLength;
+						uint64 pos = (uint64) seg_num * m_pPmtDescriptor->fileDescriptor->SegmentLength;
 	
 						//write data to file
 						if (m_pFilmFile > 0)
@@ -305,12 +329,12 @@ void FilmDataThread::doit()
  								pFilmThread->m_pPmtDescriptor->fileDescriptor->FileLength,
  								seg_num);
 							#endif
-							#if 1
+							if(!haveSegment(seg_num))
+							{
 							WriteFile(pos,
 								buff + 15,
 								w_size);
   							UpdateZtMem(seg_num);
-  							#endif
   						
 							//this only for test
 							//UpdateZtFile();
@@ -318,6 +342,7 @@ void FilmDataThread::doit()
 							m_ReciveSegment++;//= w_size;
 							m_ReciveLength += w_size;
 						}
+					}
 					}
 					else
 						m_CRCError++;
@@ -358,12 +383,43 @@ void FilmDataThread::doit()
 #endif
 }
 
+bool FilmDataThread::haveSegment(uint32 nSegNum)
+{
+	int p1 = nSegNum/8;
+	int p2 = nSegNum%8;
+	if(p1 < m_nZtBufSize)
+	{
+		if(m_pZtBuf[p1] & (1<<p2))
+			return true;
+	}
+	return false;
+}
+
 void FilmDataThread::UpdateZtMem(uint32 nSegNum)
 {
 	int p1 = nSegNum/8;
 	int p2 = nSegNum%8;
 	if(p1 < m_nZtBufSize)
 		m_pZtBuf[p1] |= (1<<p2); 
+	if(m_ztPos == -1)
+	{
+		m_ztPos = p1;
+	}
+	else
+	{
+		if((m_ztPos + 1025) < p1)
+		{
+			if(m_pZtFilmFile > 0)
+			{
+				fseek(m_pZtFilmFile, m_ztPos, SEEK_SET);
+				fwrite((m_pZtBuf + m_ztPos),
+					1024,
+					1,
+					m_pZtFilmFile);
+			}
+			m_ztPos += 1024;
+		}
+	}
 // 	DPRINTF("ZT POS: %X %X\n", p1, p2);
 }
 
@@ -372,12 +428,17 @@ void FilmDataThread::UpdateFile()
 	//flush film file and save it
 	if(m_pFilmFile > 0)
 	{
-		fclose(m_pFilmFile);
-		m_pFilmFile = 0;
+		fflush(m_pFilmFile);
+		//m_pFilmFile = 0;
 	}
 
 	//flush zt file and save it
 	UpdateZtFile();
+	if(m_pZtFilmFile > 0)
+	{
+	    fflush(m_pZtFilmFile);
+	    //m_pZtFilmFile = 0;
+	}
 
 	return;
 }
@@ -392,9 +453,9 @@ void FilmDataThread::UpdateZtFile()
 // 			m_pPmtDescriptor->fileDescriptor->FileLength,
 // 			m_pPmtDescriptor->fileDescriptor->SegmentLength);
 		fseek(m_pZtFilmFile, 0, SEEK_SET);
-		fwrite(m_pZtBuf, 1, m_nZtBufSize, m_pZtFilmFile);
-		fclose(m_pZtFilmFile);
-		m_pZtFilmFile = 0;
+		fwrite(m_pZtBuf, m_nZtBufSize, 1, m_pZtFilmFile);
+		//fclose(m_pZtFilmFile);
+		//m_pZtFilmFile = 0;
 	}
 	return;
 }
@@ -426,7 +487,9 @@ uint64 FilmDataThread::TotalSegment()
 
 uint64 FilmDataThread::FileLength()
 {
+	if(m_pPmtDescriptor != NULL)
 	return m_pPmtDescriptor->fileDescriptor->FileLength;
+	return 0;
 }
 
 void FilmDataThread::WriteFile(uint64 pos, uint8 *pbuf, uint16 size)
@@ -435,8 +498,8 @@ void FilmDataThread::WriteFile(uint64 pos, uint8 *pbuf, uint16 size)
 	{
 		fseek(m_pFilmFile, pos, SEEK_SET);
 		fwrite(pbuf,
-			1,
 			size,
+			1,
 			m_pFilmFile);
 	}
 }
@@ -528,8 +591,10 @@ struct LostBuf* FilmDataThread::GetLostSegment()
 		m_pPmtDescriptor->fileDescriptor->SegmentLength - 1) /
 		m_pPmtDescriptor->fileDescriptor->SegmentLength;
 	
+	UpdateFile();
 	uint64 ReceiveBytes = 0;
 	uint32 LostSegments = 0;
+	uint32 ReceiveSegments = 0;
 	uint32 nPos = 28;
 	int i;
 	for (i = 0; i < m_nZtBufSize - 1; i++)
@@ -541,6 +606,7 @@ struct LostBuf* FilmDataThread::GetLostSegment()
 			if(ch&0x1)
 			{
 				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
+				ReceiveSegments++;
 			}
 			else
 			{
@@ -559,11 +625,13 @@ struct LostBuf* FilmDataThread::GetLostSegment()
 			if (ch&0x1)
 			{
 				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
+				ReceiveSegments++;
 			}
 			else
 			{
 				LostSegments++;
 			}
+			ch >>= 1;
 		}
 	}
 	else
@@ -575,16 +643,132 @@ struct LostBuf* FilmDataThread::GetLostSegment()
 			if (ch&0x1)
 			{
 				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
+				ReceiveSegments++;
 			}
 			else
 				LostSegments++;
+			ch >>= 1;
 		}
 	}
+	m_ReciveLength = ReceiveBytes;
+	m_ReciveSegment = ReceiveSegments;
+	m_LostSegment = LostSegments;
 	L_LOST_INFO *info = (L_LOST_INFO*)m_sLostBuf.m_buf;
 	info->filmID = filmId;
 	info->lostNum = LostSegments;
 	info->receivedByteCount = ReceiveBytes;
 	info->recvState = 5;
 	info->lostLength = m_sLostBuf.m_size;
+	char str[512];
+	if (gLog)
+	{
+		sprintf(str, "[FilmData] FilmID=%04X, PID=%04X, %s"
+			, filmId
+			, m_pPmtDescriptor->ElementaryPid
+			, m_strFileName.c_str());
+		gLog->Write(LOG_DVB, str);
+		sprintf(str, "[FilmData] TotalSeg=%d, LostSeg=%d, CRCSeg=%d, SegLen=%d",
+			m_TotalSegment,
+			m_LostSegment,
+			m_CRCError,
+			m_pPmtDescriptor->fileDescriptor->SegmentLength);
+		gLog->Write(LOG_DVB, str);
+	}
+	if(pNetComm)
+	{
+		//TODO: send lost report to remote
+		sprintf(str, "%s.lost", m_strZtFileName.c_str());
+		FILE *fp = fopen(str, "rb");
+		if(fp)
+		{
+			fwrite((char*)info, m_sLostBuf.m_size, 1, fp);
+			fclose(fp);
+		}
+		//--------------------------------
+		pNetComm->ReportLost((char*)info, m_sLostBuf.m_size);
+	}
 	return &m_sLostBuf;
+}
+void FilmDataThread::UpdateInfo()
+{
+	int64 sec_nums = (m_pPmtDescriptor->fileDescriptor->FileLength + 
+		m_pPmtDescriptor->fileDescriptor->SegmentLength - 1) /
+		m_pPmtDescriptor->fileDescriptor->SegmentLength;
+
+	uint64 ReceiveBytes = 0;
+	uint32 LostSegments = 0;
+	uint32 ReceiveSegments = 0;
+	uint32 nPos = 28;
+	int i;
+	for (i = 0; i < m_nZtBufSize - 1; i++)
+	{
+		uint8 ch;
+		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		for(int j = 0; j < 8; j++)
+		{
+			if(ch&0x1)
+			{
+				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
+				ReceiveSegments++;
+			}
+			else
+			{
+				LostSegments++;
+			}
+			ch >>=1;
+		}
+	}
+	int64 nums = sec_nums%8;
+	if(nums == 0)
+	{
+		uint8 ch;
+		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		for (int j = 0; j < 8; j++)
+		{
+			if (ch&0x1)
+			{
+				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
+				ReceiveSegments++;
+			}
+			else
+			{
+				LostSegments++;
+			}
+			ch >>= 1;
+		}
+	}
+	else
+	{
+		uint8 ch;
+		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		for(int j = 0; j < nums; j++)
+		{
+			if (ch&0x1)
+			{
+				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
+				ReceiveSegments++;
+			}
+			else
+				LostSegments++;
+			ch >>= 1;
+		}
+	}
+	m_ReciveLength = ReceiveBytes;
+	m_ReciveSegment = ReceiveSegments;
+	m_LostSegment = LostSegments;
+	char str[512];
+	if (gLog)
+	{
+		sprintf(str, "[FilmData] UpdateInfo: FilmID=%04X, PID=%04X, %s"
+			, filmId
+			, m_pPmtDescriptor->ElementaryPid
+			, m_strFileName.c_str());
+		gLog->Write(LOG_DVB, str);
+		sprintf(str, "[FilmData] TotalSeg=%d, LostSeg=%d, CRCSeg=%d, SegLen=%d",
+			m_TotalSegment,
+			m_LostSegment,
+			m_CRCError,
+			m_pPmtDescriptor->fileDescriptor->SegmentLength);
+		gLog->Write(LOG_DVB, str);
+	}
 }

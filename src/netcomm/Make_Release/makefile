@@ -46,7 +46,7 @@ main-build: libx86-netComm.so
 libx86-netComm.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	$(CC) -L../../../lib/linux/release  -shared -o"libx86-netComm.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	$(CC) -L../../../lib/linux/release $(LIBS) -shared -o"libx86-netComm.so" $(OBJS) $(USER_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

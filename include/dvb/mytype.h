@@ -3,12 +3,12 @@
 
 typedef char int8;
 typedef short int16;
-typedef long int32;
+typedef int int32;
 typedef long long int64;
 
 typedef unsigned char uint8;
 typedef unsigned short uint16;
-typedef unsigned long uint32;
+typedef unsigned int uint32;
 typedef unsigned long long uint64;
 
 #ifndef NULL
@@ -16,9 +16,18 @@ typedef unsigned long long uint64;
 #endif
 
 #ifdef DEBUG
-#define DPRINTF(arg...) printf(arg)
+#define DPRINTF(arg,...) printf(arg)
 #else
 #define DPRINTF(arg,...)
 #endif
+
+
+enum FILTER_RUN_STATUS
+{
+	IDLE = 0,
+	RUN,
+	STOP,
+};
+ 
 
 #endif

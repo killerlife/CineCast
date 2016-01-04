@@ -17,7 +17,14 @@ public:
 	bool Stop();
 	uint64 ReciveLength();
 	uint64 FileLength();
+	uint64 ReciveSegment();
+	uint64 LostSegment();
+	uint64 CRCError();
+	uint64 TotalSegment();
+	
 	int GetStatus() { return m_status; };
+
+	void GetLostSegment();
 
 private:
 	virtual void doit();

@@ -1,4 +1,4 @@
-#ifndef _MYTYPE_H_
+﻿#ifndef _MYTYPE_H_
 #define _MYTYPE_H_
 
 typedef char int8;
@@ -16,9 +16,9 @@ typedef unsigned long long uint64;
 #endif
 
 #ifdef DEBUG
-#define DPRINTF(arg...) printf(arg)
+#define DPRINTF printf
 #else
-#define DPRINTF(arg...)
+#define DPRINTF
 #endif
 
 

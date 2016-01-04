@@ -1,16 +1,310 @@
-#include "GuiServer.h"
+﻿#include "GuiServer.h"
 #include "UiProtocal.h"
+#include "BaseOperation.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dvb/mytype.h>
 
+#include <log/Log.h>
+extern ILog* gLog;
+
+CopyThread::CopyThread():m_status(0)
+{
+}
+
+CopyThread::~CopyThread()
+{
+	Stop();
+}
+
+bool CopyThread::Init()
+{
+	printf("CopyThread:Init\n");
+	Start();
+	return true;
+}
+
+bool CopyThread::Start()
+{
+	printf("CopyThread: Start\n");
+	Stop();
+	m_status = RUN;
+	return true;
+}
+
+bool CopyThread::Stop()
+{
+	m_status = STOP;
+	printf("CopyThread: Stop\n");
+	return true;
+}
+void CopyThread::doit()
+{
+   while(1)
+	{
+		switch(m_status)
+		{
+		case RUN:
+		     printf("CopyThread: Start in loop\n");
+			 copy_dir(this->path_dst,this->path_src,this->complete_percent,this->copy_flag);
+			 usleep(1000);
+			 Stop();    //һξֹͣ
+			break;
+		case STOP:
+			 printf("CopyThread: Stop in loop\n");
+		     usleep(1000);
+			 return;
+		case IDLE:
+			usleep(1000);
+			break;
+		}
+   }
+}
+
+
+#include <ftw.h>
+#include <limits.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <stdio.h>      /*fprintf(),stderr,BUFSIZ*/
+#include <stdlib.h>     /**/
+#include <string.h>     /*stderror()*/
+#include <fcntl.h>      /*open(),flag*/
+#include <errno.h>      /*errno*/
+#include <unistd.h>     /*ssize_t*/
+#include <sys/types.h>
+#include <sys/stat.h>   /*mode_t*/
+
+#define BUFSIZE 1024*512*2   //ļ棬̫ĻΪǵݹݹã洦
+#define PERMS 0666
+#define DUMMY 0
+
+//long long complete_size=0;       //ѾɿС
+//float  complete_percent=0.0;    //Ѿɰٷֱ
+
+
+//ɨĿ¼ͳƴС,ͳƵֽĿ
+long long scan_dir(char *dir, int depth)   // Ŀ¼ɨ? 
+{  
+
+    long long totalsize=0;          //Դ·ļܴС
+
+    DIR *dp;                      // Ŀ¼ָ  
+    struct dirent *entry;         // direntṹָ뱣Ŀ¼  
+    struct stat statbuf;          // statbufṹ? 
+    if((dp = opendir(dir)) == NULL) // Ŀ¼ȡĿ¼ָ룬жϲǷ? 
+    {  
+        puts("can't open scan_dir");   
+        return totalsize;  
+    }  
+    chdir (dir);                     // лǰĿ¼  
+    while((entry = readdir(dp)) != NULL)  // ȡһĿ¼Ϣδѭ  
+    {  
+        lstat(entry->d_name, &statbuf); // ȡһԱ  
+
+       //    totalsize+=statbuf.st_size;   //ͳļС
+
+        if(S_IFDIR &statbuf.st_mode)    // жһԱǷĿ¼  
+        {  
+            if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)  
+              continue;  
+          //  printf("%*s%s/\n", depth, "", entry->d_name);  // Ŀ¼  
+            scan_dir(entry->d_name, depth+4);              // ݹ���ɨһĿ? 
+          //  totalsize+=statbuf.st_size;   //ͳļС
+        }  
+        else  
+         {
+           if( strcmp(entry->d_name,"..")!=0 && strcmp(entry->d_name,".")!=0)
+              {
+		      //  printf("%*s%s\n", depth, "", entry->d_name);  // ԲĿ¼ĳԱ  
+		          totalsize+=statbuf.st_size;   //ͳļС
+              }
+         }
+    }
+
+    chdir("..");       // صϼĿ¼  
+    closedir(dp);   	// رĿ¼  
+	return  totalsize;
+}  
+
+
+int cpfile(char *path_dst,char *path_src,long long totalsize,long long* complete_size,int* complete_percent,int* copy_flag)
+{
+  int source,target,nread;
+  char iobuf[BUFSIZE];
+  
+  //static long long complete_size=0;
+  if((source=open(path_src,O_RDONLY,DUMMY))==-1)
+     {
+	    printf("cpfile:Source file open error!\n");
+        return 1;
+     }
+  if((target=open(path_dst,O_WRONLY|O_CREAT,PERMS))==-1)
+    {
+        printf("cpfile:Target file open error!\n");
+        return 2;
+     }
+   
+    int  numprint;    //ƲҪƵӡ
+
+
+  while((nread=read(source,iobuf,BUFSIZE))>0)
+     if(write(target,iobuf,nread)!=nread)
+       {
+          printf("cpfile:Target file write error!\n");
+          return 3;
+       }
+    else
+      {
+	   (*complete_size)+=nread;
+	   *complete_percent=10000*((float)(*complete_size)/(float)totalsize);   //Ѿɰٷֱ
+	   //10000intʹݣͻתΪ0-100
+	   // numprint++;
+		//if(numprint%100==0)   //ÿ100MӡһϢ
+         if(*complete_percent%100==0)   //ÿǰٷ֮һӡһϢ
+		{
+			printf("complete_size= %lld \n",*complete_size);       
+			printf("totalsize= %lld\n",totalsize);                       //
+			printf("complete_percent= %d\n",*complete_percent/100);    //ɰٷֱ 
+			printf("Copy file to %s ......\n",path_dst);
+		}
+
+      }	
+/*
+   struct stat s,t;
+   fstat(source,&s);
+   totalsize2+=s.st_size;   //
+*/     
+   close(source);
+
+   //fflush(FILE* srteam)(stdio.h) : дѻݼʱд,������ļܸоܿ.ǲһʵд?
+   //linuxint fsync(int fd);#include <unistd.h>
+
+   fsync(target); //ͬڴ޸ĵļݵ?
+   close(target);
+   return 0;
+}
+
+
+
+int cpdir(char *target_dir,char *source_dir,long long totalsize,long long* complete_size,int* complete_percent,int* copy_flag)
+{
+     DIR *source=NULL; 
+     DIR *target=NULL;
+     struct dirent *ent=NULL;
+     char  name1[1024],name2[1024];
+
+     source=opendir(source_dir);    
+     mkdir(target_dir,S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH);
+     target=opendir(target_dir);  
+
+     if(source!=NULL&&target!=NULL)
+        {
+          while((ent=readdir(source))!= NULL)
+          { 
+             if( strcmp(ent->d_name,"..")!=0 && strcmp(ent->d_name,".")!=0)
+                {               
+                   strcpy(name1,"\0");
+                   strcat(name1,source_dir);
+                   strcat(name1,"/");
+                   strcat(name1,ent->d_name);
+                   strcpy(name2,"\0");
+                   strcat(name2,target_dir);
+                   strcat(name2,"/"); 
+                   strcat(name2,ent->d_name);
+                   if(ent->d_type==4)
+                       cpdir(name2,name1,totalsize,complete_size,complete_percent,copy_flag);
+                   if(ent->d_type==8)
+                       cpfile(name2,name1,totalsize,complete_size,complete_percent,copy_flag);
+                }              
+           }
+         closedir(source);
+         closedir(target);
+       }
+
+    return 0;
+}
+/*
+int main(int argc,char *argv[])
+{ 
+   char path_src[1000],path_dst[1000];
+   
+	if(argc==1){
+	   printf("Please input the sourse direct path and name :");
+	   scanf("%s",path_src);
+	   printf("Please input the target direct path and name :");
+	   scanf("%s",path_dst);
+	}
+	else if(argc==3){
+	strcpy(path_dst,argv[1]);
+	strcpy(path_src,argv[2]);
+	 printf("argc==3\n");
+	}
+	else {
+	printf("parameters error'\n");
+	return -1;
+	}
+
+	puts("scan :\n");  
+	//scan_dir("/myselfcode", 0);
+	scan_dir(path_src, 0);    
+	puts("scan over\n");  
+	printf("totalsize= %d Mb\n",totalsize/1024/1024);  //
+	
+    printf("Begin copy ........\n");
+    cpdir(path_dst,path_src);
+    printf("Copy end !\n");
+ 
+    printf("totalsize= %d \n",totalsize);  //
+    printf("totalsize2= %d \n",totalsize2);  //
+
+   return 0;
+}
+*/
+   
+//int* complete_percent     ɵİٷֱ
+//int* flags                //Ϊ0ʾɣΪ1ʾڿ 
+
+
+int CopyThread::copy_dir(char *dir_dst,char *dir_src,int* complete_percent,int* copy_flag)
+{
+	  printf("toCopying PATH_dst=%s PATH_src=%s \n",dir_dst,dir_src);  
+
+	//Ѵݽ·棬ɿ?
+    // char Path_dst[1024];
+    // char Path_src[1024];
+
+      *complete_percent=0;    //ÿοǰ ɰٷֱ 
+	  *copy_flag=1;          //ڿ=1 
+    
+      long long totalsize=0;
+
+      long long tmp=0;    //Segmetation fault  long long* complete_size;*complete_size=0;
+      long long* complete_size=&tmp;
+
+	  totalsize=scan_dir(dir_src,0);
+
+	  printf("toCopying Dir totalsize= %lld\n",totalsize);  
+      if(totalsize==0)  return 0;
+
+	  printf("Dir:Begin copy Dir ......\n");
+	  cpdir(dir_dst,dir_src,totalsize,complete_size,complete_percent,copy_flag);
+	  printf("Dir:Copy end !\n");
+
+	  *copy_flag=0;          //=0 , һɹ
+	  return 0;
+}
+
+
+
+
+
 #define GUI_PORT (10003)
 
 GuiServer::GuiServer():m_status(0), m_pThread(0)
 {
-
 }
 
 GuiServer::~GuiServer()
@@ -58,6 +352,7 @@ bool GuiServer::Stop()
 
 void GuiServer::doit()
 {
+	char str[512];
 	try
 	{
 		if (m_SrvSocket.Create(AF_INET, SOCK_STREAM, 0))
@@ -77,14 +372,29 @@ void GuiServer::doit()
 						throw -1;
 				}
 				else
-					throw -1;
+					throw -2;
 
 			} while (error);
 		}
 	}
-	catch (int &)
+	catch (int &a)
 	{
-		DPRINTF("[GuiServer] Server Socket error\n");
+		switch(a)
+		{
+		case -1:
+			sprintf(str, "[GuiServer] Server Socket Listen error: %d.", status());
+			break;
+		case -2:
+			sprintf(str, "[GuiServer] Server Socket Bind error: %d.", status());
+			break;
+		default:
+			sprintf(str, "[GuiServer] Server Socket unknow error.", status());
+		}
+		DPRINTF("%s\n");
+		if (gLog)
+	{
+			gLog->Write(LOG_ERROR, str);
+		}
 		return;
 	}
 	while(1)
@@ -121,14 +431,26 @@ void GuiServer::doit()
 	}
 }
 
-GuiThread::GuiThread():m_status(0)
+GuiThread::GuiThread():m_status(0), m_Content(NULL), m_mkfs(NULL)
 {
-
+	m_Content = new ContentOperation;
+	m_mkfs = new mke2fs;
+	copyThread =NULL;   //CopyThread*ļָ߳
 }
 
 GuiThread::~GuiThread()
 {
 	Stop();
+	if(m_Content)
+	{
+		delete m_Content;
+		m_Content = NULL;
+	}
+	if(m_mkfs)
+	{
+		delete m_mkfs;
+		m_mkfs = NULL;
+	}
 }
 
 bool GuiThread::Init()
@@ -326,6 +648,59 @@ bool GuiThread::UiProcessFilter()
 				return N_GetRemote(buf);
 			case N_SET_REMOTE:
 				return N_SetRemote(buf);
+
+			case M_UPDATE_PROGRAM_LIST_HDD:
+               return M_UpdateProgramList_HDD(buf);          //UpdateProgramListˢӲб���Ա? 
+			case M_UPDATE_PROGRAM_LIST_USB:
+               return M_UpdateProgramList_USB(buf);         //UpdateProgramListˢӲб���Ա?
+			
+			case M_IS_PROGRAM_LIST_READY_HDD:                //IsProgramListReadyѯǷ׼
+			   return M_IsProgramListReady_HDD(buf); 
+			case M_IS_PROGRAM_LIST_READY_USB:                    //IsProgramListReadyѯǷ׼
+			   return M_IsProgramListReady_USB(buf); 
+
+			case M_GET_HDD_CONTENT_LIST:
+				return M_GetContent_HDD(buf);         //new  rename
+			case M_GET_HDD_INFO:
+				return M_GetDiskInfo_HDD(buf);        //new  rename
+
+			//new
+			case M_GET_USB_CONTENT_LIST:
+				return M_GetContent_USB(buf);
+			case M_GET_USB_INFO:
+				return M_GetDiskInfo_USB(buf);
+
+			case M_COPYDIR_HDD_TO_USB:
+                 return M_CopyDir_HDD_TO_USB(buf);
+
+			case M_GETCOPYPROCESS:   //ؿ
+                return setCopyProgress(buf);
+
+			case S_REBOOT:
+				return S_Reboot(buf);
+			case S_SHUTDOWN:
+				return S_Shutdown(buf);
+			case S_SET_FORMATDISK:
+				return S_FormatDisk(buf);
+			case S_GET_FORMAT_RES:
+				return S_FormatResult(buf);
+			case S_GET_FORMAT_STATUS:
+				return S_FormatStatus(buf);
+
+            //new
+			case M_USB_MOUNT:
+				return S_USB_Mount(buf);
+			case M_USB_UNMOUNT:
+				return S_USB_UnMount(buf);
+
+			case M_DELETE_DIR:
+               return M_DeleteDir(buf);   //ɾӰƬĿ¼    
+
+			case S_GET_TMS:
+               return S_Get_TMS(buf);  
+			 
+			default:
+				return UnknowFunction(buf);
 		}
 		}
 		else
@@ -337,7 +712,28 @@ bool GuiThread::UiProcessFilter()
 #include <dvb/SatelliteRecv.h>
 bool GuiThread::ErrorProtocol(char* buf)
 {
+	char str[512];
 	KL *pKL = (KL*)buf;
+	if (gLog)
+	{
+		sprintf(str, "[GuiThread] Received error protocol: %04X.", pKL->m_pkgHead);
+		gLog->Write(LOG_ERROR, str);
+	}
+	pKL->m_length = 1;
+	buf[sizeof(KL)] = -1;
+	int setsize = pKL->m_length + sizeof(KL);
+	return Write(buf, setsize, setsize);
+}
+
+bool GuiThread::UnknowFunction(char* buf)
+{
+	char str[512];
+	KL *pKL = (KL*)buf;
+	if (gLog)
+	{
+		sprintf(str, "[GuiThread] Received unknow fuction: %04X.", pKL->m_keyID);
+		gLog->Write(LOG_ERROR, str);
+	}
 	pKL->m_length = 1;
 	buf[sizeof(KL)] = -1;
 	int setsize = pKL->m_length + sizeof(KL);
@@ -374,9 +770,14 @@ bool GuiThread::S_GetReceive(char* buf)
 	Creator.m_sID = RECEIVE_FILM_CREATOR;
 	Creator.m_length = gRecv.strCreator.size();
 
-	int datalen = sizeof(uint64) * 6
-		+ sizeof(uint32)
-		+ sizeof(uint16);
+	int datalen = sizeof(gRecv.nFileLength) +
+		sizeof(gRecv.nReceiveLength) +
+		sizeof(gRecv.nTotalSegment) +
+		sizeof(gRecv.nReceiveSegment) +
+		sizeof(gRecv.nCrcErrorSegment) +
+		sizeof(gRecv.nLostSegment) +
+		sizeof(gRecv.nFileID) +
+		sizeof(gRecv.nReceiveStatus);
 
 	KL *pKL = (KL*)buf;
 
@@ -483,7 +884,6 @@ bool GuiThread::C_GetTuner(char* buf)
 	return Write(buf, sendsize, sendsize);
 }
 
-#include "BaseOperation.h"
 
 bool GuiThread::C_SetTuner(char* buf)
 {
@@ -548,7 +948,6 @@ bool GuiThread::C_SetTuner(char* buf)
 	return Write(buf, setsize, setsize);
 }
 
-#include "BaseOperation.h"
 
 bool GuiThread::N_GetConfig(char* buf)
 {
@@ -771,4 +1170,772 @@ bool GuiThread::N_SetRemote(char* buf)
 	NetOperation no;
 	no.SetRemoteConfig(rc);
 	return res;
+}
+
+bool GuiThread::M_UpdateProgramList_HDD(char* buf)          //UpdateProgramListˢӲб���Ա? 
+{
+	KL* pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + 1;
+
+	std::vector<int> srcList; 
+	srcList.push_back(PST_HDD);
+	m_Content->UpdateProgramList(srcList);
+
+	return Write(buf, sendsize, sendsize);
+}
+
+
+bool GuiThread::M_UpdateProgramList_USB(char* buf)          //UpdateProgramListˢӲб���Ա? 
+{
+    KL* pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + 1;
+
+	std::vector<int> srcList; 
+	srcList.push_back(PST_USB);
+	m_Content->UpdateProgramList(srcList);
+
+	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::M_IsProgramListReady_HDD(char* buf)         //IsProgramListReadyѯǷ׼
+{
+    KL* pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + sizeof(bool);
+    bool ret=m_Content->IsProgramListReady(PST_HDD);
+	void* pos = buf + sizeof(KL);
+	memcpy(pos,&ret,sizeof(bool));               //Ƿ׼õ״̬,صͻ
+
+	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::M_IsProgramListReady_USB(char* buf)         //IsProgramListReadyѯǷ׼
+{
+    KL* pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + sizeof(bool);
+    bool ret=m_Content->IsProgramListReady(PST_USB);
+	void* pos = buf + sizeof(KL);
+	memcpy(pos,&ret,sizeof(bool));               //Ƿ׼õ״̬,صͻ
+
+	return Write(buf, sendsize, sendsize);
+}
+
+
+
+bool GuiThread::M_GetContent_HDD(char* buf)
+{
+	printf("run to M_GetContent_HDD-start()\n");
+	SL item;
+/*
+	vector<int> src; src.push_back(PST_HDD);
+	m->update...
+		m->isReady
+		getcontent
+*/
+
+	std::vector<InfoData> m_list = m_Content->GetContentList(PST_HDD);
+	uint64 ss = m_list.size() * sizeof(SL) * 16;
+
+	DPRINTF("HDD:m_list.size()=%d\n",m_list.size());
+
+	DPRINTF("HDD:ss---------->%lld\n", ss);
+	
+	std::vector<InfoData>::iterator itor;
+	InfoData info;
+	for (itor = m_list.begin(); itor != m_list.end(); ++itor)
+	{
+		info = *itor;
+		for (int i = 0; i < 15; i++)
+		{
+		//	DPRINTF("HDD:%s\n", info.pData[i].c_str());
+			ss += info.pData[i].size();
+		}
+	}
+
+	ss += sizeof(KL) + 100;
+
+	DPRINTF("HDD:mallocsize---------->%lld\n", ss);
+	//char *buff =new char[ss];
+	char *buff =NULL;
+	buff=new char[ss];             //new
+    if(buff==NULL) 
+	{   
+		printf("malloc error ");
+		printf("FILE: %s,LINE: %d DATE:%s %s\n" ,__FILE__, __LINE__,__DATE__,__TIME__);
+		return false;
+	}
+
+
+	KL *pKL = (KL*)buff;
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = M_GET_HDD_CONTENT_LIST;
+
+	void* pos = buff + sizeof(KL);
+
+	for (itor = m_list.begin(); itor != m_list.end(); ++itor)
+	{
+		info = *itor;
+
+		item.m_sID = CONTENT_ID;
+		item.m_length = info.pData[0].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[0].c_str(), item.m_length);
+		pos += item.m_length;
+		DPRINTF("HDD:ID:%s %lld\n", info.pData[0].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_NAME;
+		item.m_length = info.pData[1].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[1].c_str(), item.m_length);
+		pos += item.m_length;
+		DPRINTF("HDD:NAME:%s %lld\n", info.pData[1].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_PROGRESS;
+		item.m_length = info.pData[2].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[2].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[2].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_STATUS;
+		item.m_length = info.pData[3].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[3].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[3].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_FORMAT;
+		item.m_length = info.pData[4].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[4].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[4].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_FILMLENGTH;
+		item.m_length = info.pData[5].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[5].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[5].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_PROGRAMLENGTH;
+		item.m_length = info.pData[6].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[6].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[6].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_STEREOSCOPIC;
+		item.m_length = info.pData[7].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[7].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[7].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_ISSUER;
+		item.m_length = info.pData[8].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[8].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[8].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_ISSUEDATE;
+		item.m_length = info.pData[9].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[9].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[9].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_TIMERANGE;
+		item.m_length = info.pData[10].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[10].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[10].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_RECVSEGMENT;
+		item.m_length = info.pData[11].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[11].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[11].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_TOTALSEGMENT;
+		item.m_length = info.pData[12].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[12].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[12].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_RECV_DATETIME;
+		item.m_length = info.pData[13].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[13].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[13].c_str(), item.m_length);
+
+
+		item.m_sID = CONTENT_LOCATE;
+		item.m_length = info.pData[14].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[14].c_str(), item.m_length);
+		pos += item.m_length;
+		DPRINTF("HDD:PATH:%s %lld\n", info.pData[14].c_str(), item.m_length);
+		
+	}
+	DPRINTF("HDD:pos %d ---------->buf %d\n", pos, buff);
+	int sendsize = (int)((char*)pos - buff);
+	pKL->m_length = sendsize - sizeof(KL);
+	DPRINTF("HDD:sendsize---------->%d\n", sendsize);
+
+	bool res = Write(buff, sendsize, sendsize);
+
+	delete[] buff;
+
+	printf("run to M_GetContent_HDD-end()  res=\n%d",res);
+
+	return res;
+}
+
+
+bool GuiThread::M_GetContent_USB(char* buf)
+{
+	printf("run to M_GetContent_USB-start()\n");
+
+	SL item;
+	std::vector<InfoData> m_list = m_Content->GetContentList(PST_USB);
+	//int ss = m_list.size() * sizeof(SL);
+
+	DPRINTF("USB:m_list.size()=%d\n",m_list.size());
+
+	uint64  ss = m_list.size() * sizeof(SL)*16;
+	DPRINTF("USB:ss---------->%lld\n", ss);
+	
+	std::vector<InfoData>::iterator itor;
+	InfoData info;
+	for (itor = m_list.begin(); itor != m_list.end(); ++itor)
+	{
+		info = *itor;
+		for (int i = 0; i < 15; i++)
+		{
+		//	DPRINTF("USB:%s\n", info.pData[i].c_str());
+			ss += info.pData[i].size();
+		}
+	}
+
+
+	ss += sizeof(KL) + 100;
+
+	DPRINTF("USB:mallocsize---------->%lld\n", ss);
+	//char *buff = new char[ss];
+	char *buff =NULL;
+	buff=new char[ss];             //new
+    if(buff==NULL) 
+	{   
+		printf("malloc error ");
+		printf("FILE: %s,LINE: %d DATE:%s %s\n" ,__FILE__, __LINE__,__DATE__,__TIME__);
+		return false;
+	}
+
+	KL *pKL = (KL*)buff;
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = M_GET_USB_CONTENT_LIST;
+
+	void* pos = buff + sizeof(KL);
+
+	for (itor = m_list.begin(); itor != m_list.end(); ++itor)
+	{
+		info = *itor;
+
+		item.m_sID = CONTENT_ID;
+		item.m_length = info.pData[0].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[0].c_str(), item.m_length);
+		pos += item.m_length;
+		DPRINTF("USB:ID:%s %lld\n", info.pData[0].c_str(), item.m_length);
+
+
+
+		item.m_sID = CONTENT_NAME;
+		item.m_length = info.pData[1].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[1].c_str(), item.m_length);
+		pos += item.m_length;
+		DPRINTF("USB:NAME:%s %lld\n", info.pData[1].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_PROGRESS;
+		item.m_length = info.pData[2].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[2].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[2].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_STATUS;
+		item.m_length = info.pData[3].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[3].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[3].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_FORMAT;
+		item.m_length = info.pData[4].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[4].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[4].c_str(), item.m_length);
+
+
+
+		item.m_sID = CONTENT_FILMLENGTH;
+		item.m_length = info.pData[5].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[5].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[5].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_PROGRAMLENGTH;
+		item.m_length = info.pData[6].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[6].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[6].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_STEREOSCOPIC;
+		item.m_length = info.pData[7].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[7].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[7].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_ISSUER;
+		item.m_length = info.pData[8].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[8].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[8].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_ISSUEDATE;
+		item.m_length = info.pData[9].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[9].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[9].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_TIMERANGE;
+		item.m_length = info.pData[10].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[10].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[10].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_RECVSEGMENT;
+		item.m_length = info.pData[11].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[11].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[11].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_TOTALSEGMENT;
+		item.m_length = info.pData[12].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[12].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[12].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_RECV_DATETIME;
+		item.m_length = info.pData[13].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[13].c_str(), item.m_length);
+		pos += item.m_length;
+	//	DPRINTF("%s %d\n", info.pData[13].c_str(), item.m_length);
+
+
+		item.m_sID = CONTENT_LOCATE;
+		item.m_length = info.pData[14].size();
+		memcpy(pos, &item, sizeof(item));
+		pos += sizeof(item);
+		memcpy(pos, info.pData[14].c_str(), item.m_length);
+		pos += item.m_length;
+		DPRINTF("USB:PATH:%s %lld\n", info.pData[14].c_str(), item.m_length);
+
+	}
+
+
+	DPRINTF("USB:pos %d ---------->buf %d\n", pos, buff);
+
+	int sendsize = (int)((char*)pos - buff);
+	pKL->m_length = sendsize - sizeof(KL);
+
+	DPRINTF("USB:sendsize---------->%d\n", sendsize);
+
+	bool res = Write(buff, sendsize, sendsize);
+	delete[] buff;
+
+	printf("run to M_GetContent_USB-end()  res=\n%d",res);
+
+	return res;
+	
+}
+
+
+
+
+bool GuiThread::M_GetDiskInfo_HDD(char* buf)
+{
+	DISK_INFO di;
+	di.nAvali = m_Content->GetAvalibleSpace(PST_HDD);
+	di.nTotal = m_Content->GetTotalSpace(PST_HDD);
+
+    printf("HDD:di.nTotal=%d GB,di.nAvali=%d GB\n",di.nTotal/1024/1024/1024,di.nAvali/1024/1024/1024);
+
+	KL *pKL = (KL*)buf;
+
+	void* pos = buf + sizeof(KL);
+
+	memcpy(pos, &di, sizeof(di));
+	pKL->m_length = sizeof(di);
+
+	int sendsize = sizeof(KL) + pKL->m_length;
+
+	printf("run to M_GetDiskInfo_HDD()\n");
+
+	return Write(buf, sendsize, sendsize);
+}
+
+
+bool GuiThread::M_GetDiskInfo_USB(char* buf)
+{
+	printf("run to M_GetDiskInfo_USB()-start\n");
+
+    DISK_INFO di;
+	di.nAvali = m_Content->GetAvalibleSpace(PST_USB);
+	di.nTotal = m_Content->GetTotalSpace(PST_USB);
+	//di.nAvali = 1024*1024*40;    //ΪֵݵͨԳɹ
+	//di.nTotal = 1024*1024*100;
+
+	printf("USB:di.nTotal=%d GB,di.nAvali=%d GB\n",di.nTotal/1024/1024/1024,di.nAvali/1024/1024/1024);
+
+	KL *pKL = (KL*)buf;
+
+	void* pos = buf + sizeof(KL);
+	memcpy(pos, &di, sizeof(di));
+	pKL->m_length = sizeof(di);
+
+	int sendsize = sizeof(KL) + pKL->m_length;
+
+	printf("run to M_GetDiskInfo_USB()-end\n");
+
+	return Write(buf, sendsize, sendsize);
+	
+
+}
+
+
+
+bool GuiThread::S_Reboot(char* buf)
+{
+	System s;
+	KL *pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + 1;
+	bool res = Write(buf, sendsize, sendsize);
+	s.Reboot();
+	return res;
+}
+
+bool GuiThread::S_Shutdown(char* buf)
+{
+	System s;
+	KL *pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + 1;
+	bool res = Write(buf, sendsize, sendsize);
+	s.Shutdown();
+	return res;
+}
+
+bool GuiThread::S_FormatDisk(char* buf)
+{
+	KL* pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + 1;
+	m_mkfs->FormatDisk();
+	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::S_FormatResult(char* buf)
+{
+	KL* pKL = (KL*)buf;
+
+	std::string s = m_mkfs->GetSOutput();
+	pKL->m_length = s.size();
+	void* pos = buf + sizeof(KL);
+	memcpy(pos, s.c_str(), pKL->m_length);
+	int sendsize = sizeof(KL) + pKL->m_length;
+
+	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::S_FormatStatus(char* buf)
+{
+	KL* pKL = (KL*)buf;
+
+	uint8 c = m_mkfs->CheckStatus();
+	pKL->m_length = sizeof(c);
+	buf[sizeof(KL)] = c;
+	int sendsize = sizeof(KL) + pKL->m_length;
+
+	return Write(buf, sendsize, sendsize);
+}
+
+
+//new
+bool GuiThread::S_USB_Mount(char* buf)
+{
+    USB usb;
+
+	KL* pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + 1;
+	usb.USB_Mount();
+	return Write(buf, sendsize, sendsize);
+
+}
+
+bool GuiThread::S_USB_UnMount(char* buf)
+{
+	USB usb;
+
+	KL* pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + 1;
+
+	usb.USB_UnMount();
+
+	return Write(buf, sendsize, sendsize);
+}
+
+
+bool GuiThread::M_DeleteDir(char* buf)
+{
+	KL* pKL = (KL*)buf;
+    char path_del[1024];                     //ɾ·
+	int sizepath =pKL->m_length;
+	int sendsize = sizeof(KL) + sizepath;   //sizeof(path_del)Ҳ
+	void* pos = buf + sizeof(KL);
+    memcpy(path_del,pos,sizeof(path_del));
+	printf("path_del:=%s \n",path_del);   //ȡͻ˴Ĵɾ·
+	
+    //²ԷŵBaseOperation
+    char str_cmd[256]="rm -rf ";    //ǿɾ
+    strcat(str_cmd,path_del);       //ƴӳϵͳ
+    system(str_cmd);                 //system("umount /media/usb"); 
+
+    printf("delete path:=%s \n",path_del);   
+
+	return Write(buf, sendsize, sendsize);
+}
+
+
+
+//#include "ThreadCopyDir.h"   //ļ߳
+int complete_percent=-1;   //ɰٷֱ
+int copy_flag=0;          //״̬
+
+bool GuiThread::M_CopyDir_HDD_TO_USB(char* buf)
+{
+
+	printf("run to M_CopyDir_HDD_TO_USB\n");
+  //  tocopy_path path;     //·  
+    copy_path path;
+
+	KL* pKL = (KL*)buf;
+	int sizepath =pKL->m_length;
+
+
+	int sendsize = sizeof(KL) + sizepath;
+	void* pos = buf + sizeof(KL);
+
+    memcpy(&path,pos,sizepath);
+   // printf("path_dst=%s  path_src=%s\n",path.path_dst.c_str(),path.path_src.c_str());
+	printf("path_dst:=%s  path_src:=%s\n",&(path.path_dst[0]),&(path.path_src[0]));
+	
+   //ѾȡԴĿ·ַ
+    char* path_src=&(path.path_src[0]);
+	char* path_dst=&(path.path_dst[0]);
+
+    //ÿ߳
+   // copy_dir(path_dst,path_src,&Complete_percent,&Copy_flags);
+   // CopyThread*  
+	if(copyThread!=NULL) {delete copyThread;}
+	copyThread=new CopyThread;
+    
+     copyThread->Init();   //
+
+    //ݲ߳
+    //copyThread->path_src=path_src;
+    //copyThread->path_dst=path_dst;
+	strcpy(copyThread->path_src,path_src);
+	strcpy(copyThread->path_dst,path_dst);
+    
+	copyThread->complete_percent=&complete_percent;
+    copyThread->copy_flag=&copy_flag;
+
+	if (copyThread->status() == brunt::thread_ready)
+	{
+		copyThread->start();
+		printf("Start CopyThread in GuiThread\n");
+	}
+	//delete copyThread;
+	//copyThread = NULL;
+
+	return Write(buf, sendsize, sendsize);
+}
+
+
+bool GuiThread::setCopyProgress(char* buf)    //ؿ
+{
+	KL* pKL = (KL*)buf;
+
+	void* pos = buf + sizeof(KL);
+	memcpy(pos,&complete_percent,sizeof(int));   //ȫֱΪ
+
+    //pos=pos+sizeof(int);
+	void* pos2= buf + sizeof(KL)+sizeof(int);
+    memcpy(pos2,&copy_flag,sizeof(int));   //俽״̬?
+
+	int sendsize = sizeof(KL)+ sizeof(int)+sizeof(int);
+	return Write(buf, sendsize, sendsize);
+}
+
+
+
+
+//#include <log/Log.h>
+//#include <log/LogStruct.h>
+
+#include "../../include/log/Log.h"
+#include "../../include/log/LogStruct.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <signal.h> 
+#include <unistd.h>
+
+
+//TMS  log־
+bool GuiThread::S_Get_TMS(char* buf)
+{
+#if 0
+    ILog * plog = CreateLog();
+	printf("plog=%d\n",plog);
+
+	LOGDATETIME timeAfter, timeBefore;
+	timeAfter.year =2015;
+	timeAfter.month =11;
+	timeAfter.day =26;
+
+	timeBefore.year =2015;
+	timeBefore.month =11;
+	timeBefore.day =26;
+
+	TLogQueryResultArray ra;
+
+	int ret;
+	ret=plog->Query(LOG_TMS, &timeAfter, &timeBefore,ra);
+
+	printf("ret=%d\n",ret);
+	printf("ra.size()=%d\n",ra.size());
+
+
+    extern std::string str_LOG;//NEW
+	printf("Service:str_LOG:%s",str_LOG.c_str());   
+
+
+	/*
+	for(int i = 0; i < ra.size(); i++)
+	{
+		printf("ra:%s %s", ra[i].time.c_str(), ra[i].text.c_str());   
+	    printf("ra.size()=%d\n",ra.size());
+	}
+	*/
+
+#else
+    extern std::string str_LOG;   //ȫַ
+	KL* pKL = (KL*)buf;
+    LOGDATE LogData;       
+	void* pos = buf + sizeof(KL);
+    memcpy(&LogData,pos,sizeof(LOGDATE));   //uiݹ
+
+    ILog * plog = CreateLog();
+	LOGDATETIME timeAfter, timeBefore;
+
+	timeAfter.year = LogData.after_year;
+	timeAfter.month = LogData.after_month;
+	timeAfter.day = LogData.after_day;
+
+	timeBefore.year = LogData.before_year;
+	timeBefore.month = LogData.before_month;
+	timeBefore.day = LogData.before_day;
+
+/*
+	timeAfter.year = 2015;
+	timeAfter.month = 11;
+	timeAfter.day = 25;
+
+	timeBefore.year = 2015;
+	timeBefore.month = 11;
+	timeBefore.day = 27;
+*/
+
+	TLogQueryResultArray ra;
+ // std::string  str_log="";
+
+    printf("After.year=%d After.month=%d After.day=%d\n",timeAfter.year,timeAfter.month,timeAfter.day);
+    printf("Before.year=%d Before.month=%d Before.day=%d\n",timeBefore.year,timeBefore.month,timeBefore.day);
+	plog->Query(LOG_TMS, &timeAfter, &timeBefore, ra);
+	for(int i = 0; i < ra.size(); i++)
+	{
+	 //	  printf("%s %s", ra[i].time.c_str(), ra[i].text.c_str());
+	 //   str_log+=ra[i].time;
+     //   str_log+=ra[i].text;
+	}
+
+  //  std::string  str_log="";
+  //  str_log+="log1234567890";
+
+	int str_size=str_LOG.size()+1;
+	int sendsize = sizeof(KL) + str_size;
+	void* pos2 = buf + sizeof(KL);
+    memcpy(pos2,str_LOG.c_str(),str_size);
+    pKL->m_length =str_size;           //䷵ص־?
+	printf("str_LOG:\n%s",str_LOG.c_str());   
+
+#endif
+
+	return Write(buf, sendsize, sendsize);
+
 }

@@ -1,4 +1,4 @@
-#include "NotifyDataProcess.h"
+﻿#include "NotifyDataProcess.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -44,6 +44,8 @@ bool NotifyDataThread::Start()
 
 bool NotifyDataThread::Stop()
 {
+	if(m_status == STOP)
+		return true;
 	m_status = STOP;
 	m_pFilter->Stop();
 	return true;

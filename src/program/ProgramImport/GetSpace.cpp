@@ -69,7 +69,8 @@ unsigned int CGetSpace::getAvalibleSpace(const std::string path)
 #else
 	unsigned int freeSpace = 0;
 	struct statfs s;
-	statfs(getConfig().getProgramRootPath().c_str(), &s);
+	statfs("/storage", &s);
+	//statfs(getConfig().getProgramRootPath().c_str(), &s);
 //	freeSpace = (s.f_bsize * ((unsigned long long)s.f_bfree))/1024/1024;
 	freeSpace = (s.f_bsize * ((unsigned long long)s.f_bavail))/1024/1024;
 	return freeSpace;
@@ -108,13 +109,13 @@ bool CGetSpace::copy_find_file(const std::string& dpath, std::vector<std::string
 				string str(itr->path().native());
 				string name =str.substr(pos); 
 				
-				cout << "关键name = " << name  <<endl;
+				cout << "丶name = " << name  <<endl;
 
 				if (name == "id")
 				{
 					dms = true;
 					m_sSaveFile = itr->path().native();
-					cout << "**关键文件 id   |" <<  name << "| sSave = "  << m_sSaveFile <<endl;
+					cout << "**丶募 id   |" <<  name << "| sSave = "  << m_sSaveFile <<endl;
 				}
 				else if(name == "describe.ini")
 				{

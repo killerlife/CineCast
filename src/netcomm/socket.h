@@ -54,4 +54,6 @@ const char *socket_ioerror(p_socket ps, int err);
 int socket_gethostbyaddr(const char *addr, socklen_t len, struct hostent **hp);
 int socket_gethostbyname(const char *addr, struct hostent **hp);
 
+const char* socket_name(p_socket ps);
+
 #endif /* SOCKET_H */

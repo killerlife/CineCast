@@ -28,6 +28,19 @@ void Status::Init()
 	ui.progressBar_siganl_Strength->setStyleSheet("QProgressBar{font-size: 18px; font-family:'Book Antiqua';}");
 	ui.progressBar_siganl_Quality->setStyleSheet("QProgressBar{font-size: 18px; font-family:'Book Antiqua';}");
 	ui.progressBar_Revceiver_length->setStyleSheet("QProgressBar{font-size: 18px; font-family:'Book Antiqua';}");
+	ui.textBrowser->setStyleSheet("QTextBrowser{font-size: 18px; font-family:'Book Antiqua';}");
+
+	ui.label_10->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_12->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_14->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_16->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_18->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_20->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_22->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_24->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_26->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_28->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_30->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
 }
 
 void Status::UpdateSatellite(TUNER_INFO* tInfo)
@@ -48,6 +61,286 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	ui.label_Receiver->setText(s);
 	if(tInfo->nFileLength > 0)
 	{
-		ui.progressBar_Revceiver_length->setValue(tInfo->nReceiveLength/tInfo->nFileLength*100);
+		ui.progressBar_Revceiver_length->setValue(tInfo->nReceiveLength*10000/tInfo->nFileLength);
+	}
+	QString txt;
+	txt = QString(tr("Film Name: %1<br>UUID: %2<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
+		.arg(tInfo->strFilmName.c_str())
+		.arg(tInfo->strUuid.c_str())
+		.arg(tInfo->strCreator.c_str())
+		.arg(QString::fromLocal8Bit(tInfo->strIssuer.c_str()))
+		.arg(tInfo->strIssueDate.c_str())
+		.arg(QString::number(tInfo->nTotalSegment))
+		.arg(QString::number(tInfo->nReceiveSegment))
+		.arg(QString::number(tInfo->nCrcErrorSegment))
+		.arg(QString::number(tInfo->nLostSegment))
+		.arg(QString::number(tInfo->nReceiveStatus>>16));
+	ui.textBrowser->setText(txt);
+	switch(tInfo->nReceiveStatus & 0xff)
+	{
+	case 0:
+		ui.label_10->setEnabled(true);
+		ui.label_11->setEnabled(true);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		break;
+	case 1:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(true);
+		ui.label_13->setEnabled(true);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		break;
+	case 2:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_21->setEnabled(true);
+		ui.label_20->setEnabled(true);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		break;
+	case 3:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_14->setEnabled(true);
+		ui.label_15->setEnabled(true);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		break;
+	case 5:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(true);
+		ui.label_17->setEnabled(true);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		break;
+	case 6:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_23->setEnabled(true);
+		ui.label_22->setEnabled(true);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		break;
+	case 7:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(true);
+		ui.label_24->setEnabled(true);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		break;
+	case 8:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(true);
+		ui.label_26->setEnabled(true);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		break;
+	case 9:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(true);
+		ui.label_28->setEnabled(true);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		break;
+	case 10:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(true);
+		ui.label_30->setEnabled(true);
+		ui.label_18->setEnabled(false);
+		ui.label_7->setEnabled(false);
+		break;
+	case 11:
+		ui.label_10->setEnabled(false);
+		ui.label_11->setEnabled(false);
+		ui.label_12->setEnabled(false);
+		ui.label_13->setEnabled(false);
+		ui.label_21->setEnabled(false);
+		ui.label_20->setEnabled(false);
+		ui.label_14->setEnabled(false);
+		ui.label_15->setEnabled(false);
+		ui.label_16->setEnabled(false);
+		ui.label_17->setEnabled(false);
+		ui.label_23->setEnabled(false);
+		ui.label_22->setEnabled(false);
+		ui.label_25->setEnabled(false);
+		ui.label_24->setEnabled(false);
+		ui.label_27->setEnabled(false);
+		ui.label_26->setEnabled(false);
+		ui.label_29->setEnabled(false);
+		ui.label_28->setEnabled(false);
+		ui.label_31->setEnabled(false);
+		ui.label_30->setEnabled(false);
+		ui.label_18->setEnabled(true);
+		ui.label_7->setEnabled(true);
+		break;
 	}
 }

@@ -6,6 +6,7 @@ Setup::Setup(QTcpSocket* pSocket, QWidget *parent)
 	ui.setupUi(this);
 	Init();
 	this->pSocket = pSocket;
+	m_TMS_timer = -1;       //ȡ־ʱ
 }
 
 Setup::~Setup()
@@ -37,7 +38,25 @@ void Setup::Init()
 	ui.comboBox_ECHs->setStyleSheet("QComboBox{font-size:18px;font-family:'Book Antiqua';}");
 	ui.checkBox_DHCP->setStyleSheet("QCheckBox{font-size:20px;font-family:'Book Antiqua';}");
 	ui.lineEdit_Remote_2->setStyleSheet("QLineEdit{font-size:18px;font-family:'Book Antiqua';}");
+	ui.pushButton_4->setStyleSheet("QPushButton{font-size:18px;font-family:'Book Antiqua';}");
+	ui.pushButton_3->setStyleSheet("QPushButton{font-size:18px;font-family:'Book Antiqua';}");
+	ui.textBrowser->setStyleSheet("QTextBrowser{font-size:18px;font-family:'Book Antiqua';}");
+	ui.pushButton_3->setVisible(false);
+	ui.pushButton_4->setVisible(false);
 }
+
+
+extern int m_ConnectStatus;   //״̬01,2ɹ
+void Setup::timerEvent(QTimerEvent * te)
+{
+	if(te->timerId() == m_TMS_timer&&2==m_ConnectStatus)
+	{
+         this->getTMS();      //ȡ־
+	}
+}
+
+
+
 
 #include "../../../netcomm/UiProtocal.h"
 
@@ -656,4 +675,120 @@ void Setup::on_comboBox_ECHs_currentIndexChanged(QString name)
 				ui.checkBox_DHCP->setCheckState(Qt::Unchecked);
 		}
 	}
+}
+#include <qdatetime.h>
+void Setup::getTMS()      //ȡ־
+{
+    	char *buf = new char[1024*1024];
+	KL *pKL = (KL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = S_GET_TMS;
+
+  //  QDate Date = QDate::currentDate();//ȡ
+    QDateTime time = QDateTime::currentDateTime();//ȡϵͳڵʱ
+	//QString str = time.toString("yyyy-MM-dd hh:mm:ss ddd"); //ʾʽ
+	QDate Date=time.date();
+
+	QDate DateAfter=Date.addDays(-3);   //ȡǰ-޸Ҫȡǰ־
+
+    LOGDATE LogData;  //
+
+    LogData.after_year=DateAfter.year();
+	LogData.after_month=DateAfter.month();
+	LogData.after_day=DateAfter.day();
+	LogData.before_year=Date.year();
+	LogData.before_month=Date.month();
+	LogData.before_day=Date.day();
+
+/*
+    LogData.after_year=Date.year();
+	LogData.after_month=Date.month();
+	LogData.after_day=Date.day()-1;
+	LogData.before_year=Date.year();
+	LogData.before_month=Date.month();
+	LogData.before_day=Date.day();
+*/
+	printf("Date After: %d %d %d\n",DateAfter.year(),DateAfter.month(),DateAfter.day());
+	printf("Date Before: %d %d %d\n",Date.year(),Date.month(),Date.day());
+/*
+    LogData.after_year=2015;
+	LogData.after_month=11;
+	LogData.after_day=30;
+	LogData.before_year=2015;
+	LogData.before_month=11;
+	LogData.before_day=30;
+*/	
+
+	void* pos = buf + sizeof(KL);
+    memcpy(pos,&LogData,sizeof(LOGDATE));   //uiݹ
+
+	pKL->m_length = sizeof(LOGDATE);
+
+    int sendsize=sizeof(KL)+sizeof(LOGDATE);
+	pSocket->write(buf, sendsize);
+	pSocket->waitForBytesWritten(-1);
+	pSocket->waitForReadyRead(-1);
+	int i= pSocket->read(buf, 1024*1024);
+
+	//֤ݽ
+	int total = pKL->m_length + sizeof(KL);
+	int r = total - i;
+	char* aaa = (char*)buf + i;
+	while(r)
+	{
+		pSocket->waitForReadyRead(-1);
+		i = pSocket->read(aaa, r);
+		aaa += i;
+		r -= i;
+	}
+
+	if (pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_GET_TMS)
+	{
+		//printf("Start_TMS\n");
+		printf("run to Start_TMS_clicked()\n");
+		QString Data;//="Current Date:"+QString::number(Date.year())+"-"+QString::number(Date.month())+"-"+QString::number(Date.day())+" ";  
+		int log_size = pKL->m_length;
+        if(log_size<=1) 
+		{
+// 		    printf("LOG=NULL\n");
+// 			Data+=" has no log\n";
+	        ui.textBrowser->setText(Data);   
+			return;
+		}
+		void* pos  =buf+sizeof(KL);
+		char* cstr_log=new char[log_size+1];   //ȡlog־
+        if(NULL==cstr_log) 
+		{
+			return;
+		}
+        memcpy(cstr_log,pos,log_size);
+// 		printf("LOG:%s\n",cstr_log);
+	    QString txt_Log=QString(QLatin1String(cstr_log));    // char * תQString
+	    
+		ui.textBrowser->setText(txt_Log);    
+	   }
+}
+
+void Setup::TMS_start()   //ȡ־ʱ
+{
+
+	this->getTMS();  //״λȡ 
+	m_TMS_timer = startTimer(5*1000);   //ܿʼһʱ0
+//	printf("m_TMS_timer=%d\n",m_TMS_timer);
+}
+
+void Setup::TMS_stop()    //رջȡ־ʱ
+{
+
+
+    if(m_TMS_timer<0)
+	{
+       killTimer(m_TMS_timer);  
+	   m_TMS_timer = -1; 
+	}
+
+//	printf("Setup::TMS_stop()\n");
+//	printf("m_TMS_timer=%d\n",m_TMS_timer);
+
 }

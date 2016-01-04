@@ -1,4 +1,4 @@
-#ifndef _UI_PROTOCOL_H_
+﻿#ifndef _UI_PROTOCOL_H_
 #define _UI_PROTOCOL_H_
 
 #include <dvb/mytype.h>
@@ -31,13 +31,69 @@ typedef enum
 	M_SET_HDD_CONTENT_DEL,
 	M_GET_USB_CONTENT_LIST,
 	M_SET_USB_CONTENT_DEL,
+	M_GET_HDD_INFO,
+	M_GET_USB_INFO,
 
 	M_SET_HDD_CONTENT_EXPORT = 0x300,
 	M_GET_HDD_CONTENT_EXPORT,
 	M_SET_HDD_FORMAT,
 	M_GET_HDD_FORMAT,
 
+	S_REBOOT = 0x350,
+	S_SHUTDOWN,
+	S_SET_FORMATDISK,
+	S_GET_FORMAT_RES,
+	S_GET_FORMAT_STATUS,
+
+    //new
+    M_USB_MOUNT,        
+    M_USB_UNMOUNT,
+
+    //new
+	M_COPYDIR_HDD_TO_USB,
+	M_GETCOPYPROCESS,  //ȡļ
+
+    M_DELETE_DIR,      //ɾӰƬļĿ¼
+
+	M_UPDATE_PROGRAM_LIST_HDD,     //UpdateProgramListˢӲб���Ա? 
+	M_UPDATE_PROGRAM_LIST_USB,     //UpdateProgramListˢӲб���Ա? 
+     
+	M_IS_PROGRAM_LIST_READY_HDD,   //IsProgramListReadyѯǷ׼
+	M_IS_PROGRAM_LIST_READY_USB,   //IsProgramListReadyѯǷ׼
+
 } UiProtocalKey;
+
+
+//һ־ʱṹ塣uiݸserver
+typedef struct _LOGDATE_
+{
+	unsigned short after_year;
+	unsigned char  after_month;
+	unsigned char  after_day;
+	unsigned short before_year;
+	unsigned char  before_month;
+	unsigned char  before_day;
+}LOGDATE;
+
+
+
+//charַ·ٸ
+typedef struct _copy_path_
+{
+	char path_src[512];
+	char path_dst[512];
+}copy_path;
+
+
+typedef struct _tocopy_path_
+{
+	std::string path_src;
+	std::string path_dst;
+}tocopy_path;
+
+
+
+
 
 typedef struct _KL_
 {
@@ -100,6 +156,25 @@ typedef enum
 	REMOTE_DNS,
 	REMOTE_SERVER,
 
+	CONTENT_ID = 0x80,
+	CONTENT_NAME,
+	CONTENT_PROGRESS,
+	CONTENT_STATUS,
+	CONTENT_FORMAT,
+	CONTENT_FILMLENGTH,
+	CONTENT_PROGRAMLENGTH,
+	CONTENT_STEREOSCOPIC,
+	CONTENT_ISSUER,
+	CONTENT_ISSUEDATE,
+	CONTENT_TIMERANGE,
+	CONTENT_RECVSEGMENT,
+	CONTENT_TOTALSEGMENT,
+	CONTENT_RECV_DATETIME,
+	CONTENT_LOCATE,
+
+	CONTENT_PATH_SRC,   //Դ·ַ
+	CONTENT_PATH_DST,   //Ŀ·ַ
+
 } ReceiveKey;
 
 typedef struct receive_info
@@ -111,7 +186,7 @@ typedef struct receive_info
 	uint64 nCrcErrorSegment;
 	uint64 nLostSegment; //Reserved
 	uint32 nFileID;
-	uint16 nReceiveStatus;
+	uint32 nReceiveStatus;
 	std::string strFilmName;
 	std::string strUuid;
 	std::string strIssueDate;
@@ -161,6 +236,31 @@ typedef struct remote_conf {
 	std::string strDns1;
 	std::string strDns2;
 	std::string strRemote;
+	int nPort;
 } REMOTE_CONF;
+
+typedef struct content_info {
+	std::string strId; //0
+	std::string strName; //1
+	std::string strProgress; //2
+	std::string strStatus; //3
+	std::string strFormat; //4
+	std::string strFilmLength; //5
+	std::string strProgramLength; //6
+	std::string strStereo; //7
+	std::string strIssuer; //8
+	std::string strIssueDate; //9
+	std::string strTimeRange;
+	std::string strNational;
+	std::string strIssueArea;
+	std::string strSubAudio;
+	std::string strPath; //14
+}CONTENT_INFO;
+
+typedef struct disk_info
+{
+	uint64 nTotal;
+	uint64 nAvali;
+}DISK_INFO;
 
 #endif _UI_PROTOCOL_H_

@@ -401,3 +401,14 @@ const char *socket_ioerror(p_socket ps, int err) {
     (void) ps;
     return socket_strerror(err);
 } 
+
+const char* socket_name(p_socket ps)
+{
+	static char server_ip[20];
+	memset(server_ip, 0, 20);
+	struct sockaddr_in addr;
+	int len = sizeof(addr);
+	getsockname(*ps, (struct sockaddr*)&addr, &len);
+	inet_ntop(AF_INET, &addr.sin_addr, server_ip, sizeof(server_ip));
+ 	return server_ip;
+}

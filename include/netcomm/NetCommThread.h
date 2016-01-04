@@ -3,10 +3,10 @@
 #include <string>
 #include <list>
 #include <dvb/demux.h>
-#include <config/config.h>
 #include <thread/activeThread/activeThreadManager_i.h>
 #include "zSocket.h"
 #include "message.h"
+#include <config/config.h>
 
 enum NET_RUN_STATUS
 {
@@ -39,8 +39,9 @@ private:
 
 private:
 	int m_status;
-	CZSocket m_loginSocket, m_authSocket;
-	IConfig m_Config;
+	CZSocket m_loginSocket;
+	CZSocket m_authSocket;
+	IConfig* m_pConfig;
 	struct L_LOGIN_REQ m_loginReq;
 	struct R_LOGIN_REP m_loginRep; 
 	uint8 m_hardKey[16];

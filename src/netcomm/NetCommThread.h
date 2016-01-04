@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <thread/activeThread/activeThread.h>
 #include <string>
 #include <list>
@@ -6,7 +6,6 @@
 #include <thread/activeThread/activeThreadManager_i.h>
 #include "zSocket.h"
 #include "message.h"
-#include <config/config.h>
 
 enum NET_RUN_STATUS
 {
@@ -28,7 +27,10 @@ public:
 	bool Stop();
 	int GetStatus() { return m_status; };
 	bool GetMD5File(uint32 filmId);
-	bool ReportLost(L_LOST_INFO &lost);
+	bool ReportLost(char* buf, int nSize);
+	bool HeartBreat();
+	void StartRecvTask();
+	void StartRoundRecv();
 
 private:
 	virtual void doit();
@@ -36,17 +38,23 @@ private:
 	bool Auth();
 	inline void GetMutex();
 	inline void ReleaseMutex();
+	void GetHardKey(const std::string hardkey);
+	void cleanThread();
+	bool RecvFilter();
 
 private:
 	int m_status;
 	CZSocket m_loginSocket;
 	CZSocket m_authSocket;
-	IConfig* m_pConfig;
 	struct L_LOGIN_REQ m_loginReq;
 	struct R_LOGIN_REP m_loginRep; 
+	uint32 m_nMachineId;
 	uint8 m_hardKey[16];
 	struct R_AUTH_REP m_authRep;
 	int m_mutex;
 	struct R_MD5_KEY_REP m_md5Rep;
 	bool bMd5Rep;
+	bool bConnected;
+	std::string m_strTaskTime;
+	std::string m_strRoundTime;
 };

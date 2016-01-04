@@ -1,4 +1,4 @@
-#include "PATDataProcess.h"
+﻿#include "PATDataProcess.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -43,11 +43,13 @@ bool PATDataThread::Start()
 
 bool PATDataThread::Stop()
 {
+	DPRINTF("[PAT] stop\n");
+	if(m_status == STOP)
+		return true;
+
 	m_status = STOP;
+
 	m_pFilter->Stop();
-#ifdef DEBUG
-	printf("PAT stop\n");
-#endif
 
 	std::list<PMTDataThread*>::iterator itor;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)

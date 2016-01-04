@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <thread/activeThread/activeThread.h>
 #include <string>
 #include <list>
@@ -17,9 +17,15 @@ public:
 	bool Stop();
 	uint64 ReciveLength(){ return 0; };
 	uint64 FileLength(){return 0;};
-	struct StartDescriptor* GetStartDescriptor(){ return m_pStartDescriptor; };
-	struct FileDescriptor* GetFileDescriptor(){ return m_pFileDescriptor; };
+	struct StartDescriptor* GetStartDescriptor(){ return (StartDescriptor*)m_pStartDescriptor; };
+	struct FileDescriptor* GetFileDescriptor(){ return (FileDescriptor*)m_pFileDescriptor; };
 	int GetStatus() { return m_status; };
+	std::string GetFilmName() {return m_filmName;};
+	std::string GetUUID() {return m_uuid;};
+	std::string GetCreator() {return m_creator;};
+	std::string GetIssuer() {return m_issuer;};
+	std::string GetIssueDate() {return m_issueDate;};
+	bool IsStart();
 
 private:
 	virtual void doit();
@@ -27,9 +33,11 @@ private:
 private:
 	int m_status;
 	uint16 m_pid;
-	struct StartDescriptor* m_pStartDescriptor;
-	struct FileDescriptor* m_pFileDescriptor;
+	volatile struct StartDescriptor* m_pStartDescriptor;
+	volatile struct FileDescriptor* m_pFileDescriptor;
 	Filter* m_pFilter;
 	uint8 m_buffer[4096];
+	std::string m_filmName, m_uuid, m_creator, m_issuer, m_issueDate;
+	bool bStart;
 //	ILog* pLog;
 };

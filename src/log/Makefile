@@ -4,7 +4,9 @@ SRC=Log.cpp LogFileOperation.cpp
 OBJ=Log.o LogFileOperation.o
 
 BIND=/usr/local/bin/
-INC=-I../../include/config -I../../include -I../../include/log
+INC=-I../../include/config -I../../include -I../../include/log \
+-I../../include/brunt
+
 CFLG=-shared -fPIC
 
 TARGET=libx86-Log.so.1.0

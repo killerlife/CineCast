@@ -51,13 +51,13 @@ C_DEPS += \
 %.o: ../%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	$(CC) -D__USE_FILE_OFFSET64 -D_FILE_OFFSET_BITS=64  -fPIC -I../../../public/boost/include -I../../../include -I../../../../include/dcp -I../../../../include/brunt -I../../../../include/xml -I../../../../public/boost_1_33_1 -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(CC) $(CFLAGS) -DUSE_POLL -DDEBUG -D__USE_FILE_OFFSET64 -D_FILE_OFFSET_BITS=64  -fPIC -I../../../public/boost/include -I../../../include -I../../../../include/dcp -I../../../../include/brunt -I../../../../include/xml -I../../../../public/boost_1_33_1 -O3  -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
 %.o: ../%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	gcc -fPIC -I../../../public/boost/include -I../../../include -I../../../../include/dcp -I../../../../include/brunt -I../../../../include/xml -I../../../../public/boost_1_33_1 -O3  -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	gcc $(CFLAGS) -DUSE_POLL -DDEBUG -fPIC -I../../../public/boost/include -I../../../include -I../../../../include/dcp -I../../../../include/brunt -I../../../../include/xml -I../../../../public/boost_1_33_1 -O3  -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '

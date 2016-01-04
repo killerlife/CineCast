@@ -1,4 +1,4 @@
-#ifndef MESSAGE_H
+﻿#ifndef MESSAGE_H
 #define MESSAGE_H
 
 #include <stdio.h>
@@ -8,6 +8,7 @@
 
 #include <dvb/mytype.h>
 
+#pragma pack(1)
 
 typedef enum Recv_State_e
 {
@@ -76,7 +77,7 @@ struct R_LOGIN_REP
 	uint32 sys_date;//  系统当前日期 32位无符号整型 1-31
 	uint32 sys_hour;//  系统当前小时 32位无符号整型 0-24
 	uint32 sys_minute;//  系统当前分钟 32位无符号整型 0-59
-	uint32 sys_second;//  系统当前�?32位无符号整型 0-59
+	uint32 sys_second;//  系统当前?32位无符号整型 0-59
 	uint32 crc32;
 };
 
@@ -112,14 +113,14 @@ struct R_AUTH_REP
 
 };
 
-struct L_MD5_KEY_REQ//  MD5与密钥请求报�?
+struct L_MD5_KEY_REQ//  MD5与密钥请求报?
 {
     uint32 filmID;//  影片ID
     uint64 reserved;
     uint32 crc32;
 };
 
-struct R_MD5_KEY_REP//  MD5与密钥反馈报�?
+struct R_MD5_KEY_REP//  MD5与密钥反馈报?
 {
     uint32 filmID;//  影片ID
     uint32 fileLength;//  文件长度
@@ -139,7 +140,7 @@ struct R_MD5_KEY_REP//  MD5与密钥反馈报�?
 	}
 };
 
-struct L_MD5_KEY_CONFIRM//MD5与密钥确认报�?
+struct L_MD5_KEY_CONFIRM//MD5与密钥确认报?
 {
     uint32 filmID;//  影片ID
     uint64 reserved;
@@ -171,11 +172,11 @@ struct R_MD5_RESULT_CONFIRM//解密与MD5校验结果确认报文
 
 struct L_HEART_INFO_REPORT//心跳信息上报报文
 {
-    uint32 machineID;//  接收机的机器�?
+    uint32 machineID;//  接收机的机器?
     uint32 temperature;//  运行温度
-    uint32 CPUUsage;//  CPU使用�?
+    uint32 CPUUsage;//  CPU使用?
     uint64 memTotal;//  内存总数
-    uint64 memIdle;//  内存空闲�?
+    uint64 memIdle;//  内存空闲?
     uint64 networkRate;//  互联网数据速率
     uint32 agc;//  卫星信道信号强度 1-100
     uint32 snr;//  卫星信道信号质量 1-100
@@ -185,15 +186,15 @@ struct L_HEART_INFO_REPORT//心跳信息上报报文
     uint32 filmID;//  影片ID ,if no film,the value is 0
     uint32 filmNameLength;//  影片名称长度
     uint8* pFilmName;
-    uint64 filmLength;//  影片总大�?
-    uint64 filmSegment;//  影片segment包数�?
+    uint64 filmLength;//  影片总大?
+    uint64 filmSegment;//  影片segment包数?
     uint32 recvRound;//  接收轮次
     uint8 taskStartTime[20];
     uint8 recvStartTime[20];
-    uint32 filmRecvState;//  影片接收状�?
+    uint32 filmRecvState;//  影片接收状?
     uint64 reserved2;//本结构体定义中有两处关于reserved
-    uint64 recvLength;//  影片已接收大�?
-    uint64 lostSegment;//  影片已丢失segment包数�?
+    uint64 recvLength;//  影片已接收大?
+    uint64 lostSegment;//  影片已丢失segment包数?
     uint32 crc32;
 };
 
@@ -258,7 +259,7 @@ struct L_LOST_INFO
     uint32 filmID;//  影片ID ,if no film,the value is 0
     uint32 lostNum;
     uint64 receivedByteCount;
-    uint32 recvState;//  影片接收状�?
+    uint32 recvState;//  影片接收状?
     uint32 reserved;
     uint32 lostLength;
     uint8* pLost;

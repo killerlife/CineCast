@@ -55,6 +55,7 @@ clean:
 
 post-build:
 	-cp libx86-programManager.so ../../../../lib
+	-cp libx86-programManager.so ../../../../bin/linux/release
 	-@echo ' '
 
 .PHONY: all clean dependents

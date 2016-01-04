@@ -1,4 +1,4 @@
-#include <fstream>
+﻿#include <fstream>
 #include "myini.h"
 #include "mystring.h"
 #include "line_iterator.h"
@@ -43,8 +43,8 @@ namespace brunt
 	std::ostream& operator << (std::ostream& os, const ini_value& value)
 	{
 		for(unsigned int i = 0; i < value.m_comments.size(); ++i)
-			os << "   " << commentchar << value.m_comments[i] << endl;
-		os << "   " <<value.m_name << "=" << value.m_value << endl;
+			os << commentchar << value.m_comments[i] << endl;
+		os <<value.m_name << "=" << value.m_value << endl;
 		return os;
 	}
 
@@ -54,6 +54,7 @@ namespace brunt
 	}
 	ostream& operator << (ostream& os, const ini_index& index)
 	{
+		if(index.m_name != " ")
 		os << "[" << index.m_name << "]" << endl;
 		set<ini_value>::iterator beg = index.m_valueset.begin();
 		while(beg != index.m_valueset.end())
@@ -83,12 +84,18 @@ namespace brunt
 			return false;
 		line_iterator ifile(f), eos;
 		vector<string> lines(ifile, eos);
-		copy(ifile, eos, inserter(lines, lines.end()));
+		//Add by Killerlife
+		//Don't know why, call this will make all new line what duplicate the first line. so comment it.
+		//copy(ifile, eos, inserter(lines, lines.end()));
+		//-----------------
 		
 		pair<set<ini_index>::iterator, bool> currentindex;
 		ini_value curvalue;
 		
+		//Add by Killerlife
 		int flag = 0;
+		//-----------------
+				
 		for(unsigned int i = 0; i < lines.size(); ++i)
 		{
 			
@@ -103,7 +110,11 @@ namespace brunt
 			else if(is_index(lines[i])) //is a index line
 			{
 				currentindex = m_indexset.insert(ini_index(lines[i].c_str()));
+				//Add by Killerlife
+				flag = 1;
+				//-----------------
 			}
+			//Add by Killerlife
 			else if(is_key(lines[i], curvalue) && flag == 0)
 			{
 				currentindex = m_indexset.insert(ini_index(" "));
@@ -111,6 +122,7 @@ namespace brunt
 				index.m_valueset.insert(curvalue);
 				flag = 1;
 			}
+			//----------------------------------------------
 			else if(currentindex.second && is_key(lines[i], curvalue)) //key line 
 			{
 				const ini_index& index = *currentindex.first;

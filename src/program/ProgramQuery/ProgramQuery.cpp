@@ -11,15 +11,31 @@
 #include <boost/filesystem/exception.hpp>
 #include <iostream>
 #include <list>
+#ifdef DEBUGPRINT
 #include "brunt/debugprint.h"
+#else
+#ifdef DEBUG
+#define DPRINT(arg,...) printf(arg,...)
+#define DP_Trace(arg,...) printf(arg,...)
+#define DP_Warning(arg,...) printf(arg,...)
+#else
+#define DPRINT(arg...)
+#define DP_Trace(arg,...)
+#define DP_Warning(arg,...)
+#endif
+#endif
 #include "v15common.h"
 #include "config/config.h"
 
 using namespace std;
 namespace fs = boost::filesystem;
 
-#define DISKROOT	getConfig().getProgramRootPath()	// "/hdisk/program/"
-#define USBROOT		getConfig().getUsbRootPath()		// "/usb/DMS_HDD/"
+#define DISKROOT	"/storage"
+//getConfig().getProgramRootPath()	// "/hdisk/program/"
+
+#define USBROOT		"/media/usb"
+//getConfig().getUsbRootPath()		// "/usb/DMS_HDD/"
+
 #define ASSETMAP	"ASSETMAP"
 
 #ifdef WIN32
@@ -145,7 +161,8 @@ int CProgramQuery::getProgramInfo(int index, TProgramInfo& info)
 
 int CProgramQuery::getHashValue(int index, std::vector<CHashInfo>& hashInfo)
 {
-	DPRINT((DP_Trace, "CProgramQuery", "getHashValue had not been implemented!"));
+	DPRINT("CProgramQuery getHashValue had not been implemented!\n");
+//	DPRINT((DP_Trace, "CProgramQuery", "getHashValue had not been implemented!"));
 	return 0;
 }
 
@@ -198,14 +215,18 @@ void CProgramQuery::findPath(const fs::path& root , std::vector<std::string>& pr
 			try
 			{
 				boost::filesystem::path* dir_name = NULL;
-				if(fs::is_directory(*itr) && is_dcp_directory(*itr))
+				//Modify by Killerlife
+				if(fs::is_directory(*itr))// && is_dcp_directory(*itr))
 				{
-					programList.push_back(itr->path().native());
+					//programList.push_back(itr->path().native());
+					findPath(*itr, programList);
 				}
+				//End
 			}
 			catch(const fs::filesystem_error& e)
 			{
-				DPRINT((DP_Warning, "CProgramQuery", "findPath: Skip the IO error, except: %s.", e.what()));
+				DPRINT("CProgramQuery findPath: Skip the IO error, except: %s.\n", e.what());
+//				DPRINT((DP_Warning, "CProgramQuery", "findPath: Skip the IO error, except: %s.", e.what()));
 			}
 		}
 	}
@@ -219,7 +240,8 @@ void CProgramQuery::findPath(const fs::path& root , std::vector<std::string>& pr
 
 int CProgramQuery::init(const string& root)
 {
-	DPRINT((DP_Trace, "CProgramQuery", "init root path: %s", root.c_str()));
+	DPRINT("CProgramQuery init root path: %s\n", root.c_str());
+//	DPRINT((DP_Trace, "CProgramQuery", "init root path: %s", root.c_str()));
 
 	int result = no_error;
 	std::vector<std::string> pathlist;
@@ -234,7 +256,8 @@ int CProgramQuery::init(const string& root)
 
 		if(pathlist.size()==0)
 		{
-			DPRINT((DP_Error, "CProgramQuery", "program path list is null."));
+			DPRINT("CProgramQuery program path list is null.\n");
+//			DPRINT((DP_Error, "CProgramQuery", "program path list is null."));
 			return 0;
 		}
 
@@ -245,7 +268,8 @@ int CProgramQuery::init(const string& root)
 			{
 				if(!pParser->open(pathlist[i]))
 				{
-					DPRINT((DP_Warning, "CProgramQuery", "'%s' is not valid program path.", pathlist[i].c_str()));
+					DPRINT("CProgramQuery '%s' is not valid program path.\n", pathlist[i].c_str());
+//					DPRINT((DP_Warning, "CProgramQuery", "'%s' is not valid program path.", pathlist[i].c_str()));
 					continue;
 				}
 
@@ -315,11 +339,12 @@ NEXT_PKL:
 								//Add by Jaontolt
 								//vinfo.iduration = info.m_videoInfo.iduration;
 								//End
+#if 0 //Disable by support JPEG200
 								if (!(vinfo.type == "MPEG2" || vinfo.type == "MPEG2_3D"))
 								{
 									continue;
 								}
-								
+#endif							
 								char buf[20];
 								ainfo.fileName = info.m_audioInfo.fileName;
 								ainfo.entryPoint = info.m_audioInfo.entryPoint;
@@ -357,10 +382,12 @@ NEXT_PKL:
 				ReleaseDcpParser(&pParser);
 			}
 		}
+		DPRINT("CProgramQuery 'init m_programInfoList ... ok\n");
 //		DPRINT((DP_Trace, "CProgramQuery", "'init m_programInfoList ... ok"));
 
 		if(result!=no_error)
-			DPRINT((DP_Error, "CProgramQuery", "program parse error: %d.", result));
+			DPRINT("CProgramQuery program parse error: %d.\n", result);
+//			DPRINT((DP_Error, "CProgramQuery", "program parse error: %d.", result));
 
 	}
 	catch(const fs::filesystem_error& e)
@@ -368,7 +395,8 @@ NEXT_PKL:
 		//run on 8634, when last ++itr, always throw exception, so omit this exception.
 		//return get_program_list_catch_exception_error;
 		//cout << "CProgramQuery::getProgramList, except:" << e.what() << endl;
-		DPRINT((DP_Error, "CProgramQuery", "init unknown error: %s.", e.what()));
+//		DPRINT((DP_Error, "CProgramQuery", "init unknown error: %s.", e.what()));
+		DPRINT("CProgramQuery init unknown error: %s.\n", e.what());
 	}
 	
 	return result;

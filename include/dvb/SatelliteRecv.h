@@ -1,15 +1,26 @@
 #pragma once
+
 #include <string>
 #include "mytype.h"
+
+#include <stdlib.h>
+#include <stdio.h>
 
 #include <linux/dvb/frontend.h>
 #include <linux/dvb/dmx.h>
 #include <linux/dvb/audio.h>
 #include <linux/dvb/version.h>
+#include <netcomm/UiProtocal.h>
+
+#ifdef USE_POLL
+#include <sys/poll.h> 
+#endif
 
 #if DVB_API_VERSION < 5
 #error szap-s2 requires Linux DVB driver API version 5.0 or newer!
 #endif 
+
+#pragma pack(1)
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -28,6 +39,13 @@ struct t_channel_parameter_map {
 	int driver_value;
 	std::string user_string;
 }; 
+
+static struct t_channel_parameter_map inversion_values[] = {
+	{   0, INVERSION_OFF, "off" },
+	{   1, INVERSION_ON,  "on" },
+	{ 999, INVERSION_AUTO },
+	{ -1 }
+};
 
 static struct t_channel_parameter_map coderate_values[] = {
 	{   0, FEC_NONE, "none" },
@@ -81,7 +99,7 @@ static struct t_channel_parameter_map system_values[] = {
 
 
 static struct t_channel_parameter_map rolloff_values[] = {
-	// {   0, ROLLOFF_AUTO, "auto"},
+	{   0, ROLLOFF_AUTO, "auto"},
 	{  20, ROLLOFF_20, "0.20" },
 	{  25, ROLLOFF_25, "0.25" },
 	{  35, ROLLOFF_35, "0.35" },
@@ -94,16 +112,19 @@ static struct t_channel_parameter_map polvert_values[] = {
 	{ -1 }
 };
 
+#if 0
 typedef struct tuner_conf {
+	unsigned int nFreq;
+	unsigned int nHiBand;
+	unsigned int nSR;
+	unsigned int nMis;
+	unsigned int nSatNo;
 	std::string strDevName;		//Such as "/dev/dvb/adapter0/frontend0"
 	std::string strDelSys;		//Such as "DVB-S", "DVB-S2"
 	std::string strFec;			//Such as "1/2", "2/3", "3/4", "4/5", "5/6"
 	std::string strModulation;	//Such as "8PSK", "16APSK"
 	std::string strRollOff;		//Such as "0.20", "0.25", "0.35"
 	std::string strPolVert;		//Such as "V", "H"
-	unsigned int nFreq;
-	unsigned int nHiBand;
-	unsigned int nSR;
 
 	//for default
 	tuner_conf()
@@ -117,6 +138,8 @@ typedef struct tuner_conf {
 		nFreq = 12500000;
 		nHiBand = 11300000;
 		nSR = 43200000;
+		nMis = -1;
+		nSatNo = 1;
 	};
 } TUNER_CONF;
 
@@ -133,6 +156,9 @@ typedef struct tuner_info
 		nStatus = nAGC = nSNR = nBER = nUNC = nLock = 0;
 	};
 } TUNER_INFO;
+#endif
+
+//class ILog;
 
 class ITuner
 {
@@ -161,10 +187,11 @@ void ReleaseTuner(ITuner* tuner);
 class Filter
 {
 public:
-	Filter():fd(-1){};
+	Filter();
 	~Filter();
 	bool SetStrDevName(std::string strDevName);
 	bool SetFilterID(uint16 pid, uint16 tid);
+	bool SetPesFilterID(uint16 pid, uint16 tid);
 	bool ReadFilter(uint8 *buf, uint16& count);
 	bool Stop();
 
@@ -172,20 +199,26 @@ private:
 	int fd;
 	uint16 nPid;
 	uint16 nTid;
+
+#ifdef USE_POLL
+	struct pollfd m_poll;
+#endif
+
+//	ILog* pLog;
 };
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 // End of FILTER codes
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
-
+#if 0
 enum FILTER_RUN_STATUS
 {
 	IDLE = 0,
 	RUN,
 	STOP,
 };
-
+#endif
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 // Filter Processor

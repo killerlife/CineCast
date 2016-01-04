@@ -15,8 +15,15 @@ namespace fs = boost::filesystem;
 #include "errordefine.h"
 #include "assetMap.h"
 #include "DcpParser.h"
+#ifdef DEBUGPRINT
 #include "brunt/debugprint.h"
-
+#else
+#ifdef DEBUG
+#define DP_PrintS(arg...) printf(arg...)
+#else
+#define DP_PrintS(arg...)
+#endif
+#endif
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
@@ -169,7 +176,7 @@ std::string CDcpParse::findCPLFile(const std::string& path, const std::string& c
 		return ""; 
 	}
 
-//	DP_PrintS("CDcpParse::findCPLFile %d", childFiles.size());
+	DP_PrintS("CDcpParse::findCPLFile %d", childFiles.size());
 
 	for(unsigned int i=0;i<childFiles.size();++i)
 	{
@@ -194,11 +201,11 @@ std::string CDcpParse::findCPLFile(const std::string& path, const std::string& c
 				//End
 			}
 
-//			DP_PrintS("CCompositionPlayList childFiles[%d] = %s",i,childFiles[i].c_str());
+			DP_PrintS("CCompositionPlayList childFiles[%d] = %s",i,childFiles[i].c_str());
 			CCompositionPlayList cpl(childFiles[i].c_str());
-//			DP_PrintS("CCompositionPlayList 2");
+			DP_PrintS("CCompositionPlayList 2");
 			if(cpl.GetUUIDElement() == cpluuid){
-//				DP_PrintS("CCompositionPlayList cpl.GetUUIDElement() == cpluuid = %s",cpluuid.c_str());
+				DP_PrintS("CCompositionPlayList cpl.GetUUIDElement() == cpluuid = %s",cpluuid.c_str());
 				return childFiles[i];			
 			}
 		}

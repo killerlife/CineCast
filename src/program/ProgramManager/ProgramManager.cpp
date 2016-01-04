@@ -1,11 +1,18 @@
-// ProgramManager.cpp : ¶¨Òå DLL Ó¦ÓÃ³ÌÐòµÄÈë¿Úµã¡£
+// ProgramManager.cpp :  DLL Ó¦Ã³Úµã¡£
 //
 #include "ProgramManager.h"
 #include "activeThread.h"
+#ifdef DEBUGPRINT
 #include "brunt/debugprint.h"
+#else
+#define DPRINT(arg...)
+#endif
+#include <stdio.h>
+#include <stdlib.h>
 #include "config/config.h"
+#ifdef LICENSE
 #include "license/ILicense.h"
-
+#endif
 #include <sstream>
 #include <string>
 #include <vector>
@@ -116,7 +123,8 @@ int CProgramManager::update(const vector<int>& updateSrcList)
 {
 	if(!(status() == thread_stopped || status() == thread_ready ))
 	{
-		DPRINT((DP_Error, "CProgramManager", "The thread had not been ready, status = %d.", status()));
+		DPRINT("CProgramManager The thread had not been ready, status = %d.\n", status());
+//		DPRINT((DP_Error, "CProgramManager", "The thread had not been ready, status = %d.", status()));
 		return -1;
 	}
 
@@ -128,7 +136,8 @@ int CProgramManager::update(const vector<int>& updateSrcList)
 	m_updateSrcList = updateSrcList;
 	if(!start())
 	{
-		DPRINT((DP_Error, "CProgramManager", "Start thread failed, status = %d.", status()));
+		DPRINT("CProgramManager Start thread failed, status = %d.\n", status());
+//		DPRINT((DP_Error, "CProgramManager", "Start thread failed, status = %d.", status()));
 		return -1;
 	}
 
@@ -238,13 +247,14 @@ void CProgramManager::loadInfo(int nSrc)
 
 	string root;
 	if(nSrc==PST_HDD)
-		root = getConfig().getProgramRootPath();
+		root = "/storage";//getConfig().getProgramRootPath();
 	else
-		root = getConfig().getUsbRootPath();
+		root = "/media/usb";//getConfig().getUsbRootPath();
 
 	if(p->open(root, true)!=0)
 	{
-		DPRINT((DP_Error, "CProgramManager", "IProgramQuery->open(%s) failed.", root.c_str()));
+		DPRINT("CProgramManager IProgramQuery->open(%s) failed.\n", root.c_str());
+//		DPRINT(DP_Error, "CProgramManager", "IProgramQuery->open(%s) failed.", root.c_str());
 //		releaseProgramQuery(p);
 //		return;
 	}
@@ -327,6 +337,7 @@ int CProgramManager::getProgramFileList(int nSrc, int type, std::vector<InfoData
 		
 		// license
 		viewInfo.pData[10] = "N/A";
+		#ifdef LICENSE
 		ILicenseManager* licmgr = getLicenseManager();
 		ILicenseCtrl* licensectrl = licmgr->queryILicenseCtrl(info.id);
 		if(licensectrl)
@@ -340,6 +351,7 @@ int CProgramManager::getProgramFileList(int nSrc, int type, std::vector<InfoData
 			}
 			licensectrl->Release();
 		}
+		#endif
 
 		ProgramList.push_back(viewInfo);
 		count++;
@@ -378,6 +390,7 @@ int CProgramManager::getProgramFileList(int nSrc, int type, std::vector<InfoData
 		viewInfo.pData[14] = info.rootpath;//programList[i];
 
 		// license
+		#ifdef LICENSE
 		ILicenseManager* licmgr = getLicenseManager();
 		ILicenseCtrl* licensectrl = licmgr->queryILicenseCtrl(info.id);
 		if(licensectrl)
@@ -385,6 +398,7 @@ int CProgramManager::getProgramFileList(int nSrc, int type, std::vector<InfoData
 			viewInfo.pData[3] = licensectrl->checkType()?(licensectrl->getType()==LST_KDM?"KDM":"DMS"):"U";
 			licensectrl->Release();
 		}
+		#endif
 
 		m_programInfoList[nSrc].push_back(viewInfo);
 	}

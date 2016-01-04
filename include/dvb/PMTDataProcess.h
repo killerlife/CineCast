@@ -19,6 +19,13 @@ public:
 	uint64 FileLength();
 	int GetStatus() { return m_status; };
 
+	uint64 ReciveSegment();
+	uint64 LostSegment();
+	uint64 CRCError();
+	uint64 TotalSegment();
+
+	void GetLostSegment();
+
 private:
 	virtual void doit();
 

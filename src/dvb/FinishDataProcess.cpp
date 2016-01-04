@@ -1,4 +1,4 @@
-#include "FinishDataProcess.h"
+﻿#include "FinishDataProcess.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -41,8 +41,17 @@ bool FinishDataThread::Start()
 	return true;
 }
 
+bool FinishDataThread::IsFinish()
+{
+	bool bRet = m_bFinish;
+	m_bFinish = false;
+	return bRet;
+}
+
 bool FinishDataThread::Stop()
 {
+	if(m_status == STOP)
+		return true;
 	m_status = STOP;
 	m_pFilter->Stop();
 	return true;

@@ -1,4 +1,4 @@
-#include "CancelDataProcess.h"
+﻿#include "CancelDataProcess.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -17,7 +17,10 @@ CancelDataThread::CancelDataThread():m_bCancel(false), m_status(0), m_pid(0)
 
 CancelDataThread::~CancelDataThread()
 {
+	DPRINTF("[CancelDataThread] Destroy Stop\n");
 	Stop();
+
+	DPRINTF("[CancelDataThread] Destroy Delete Filter\n");
 	if(m_pFilter)
 	{
 		delete m_pFilter;
@@ -43,6 +46,8 @@ bool CancelDataThread::Start()
 
 bool CancelDataThread::Stop()
 {
+	if(m_status == STOP)
+		return true;
 	m_status = STOP;
 	m_pFilter->Stop();
 	return true;

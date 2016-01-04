@@ -1,4 +1,4 @@
-// Log.cpp : ¶¨Òå DLL µÄ³õÊ¼»¯Àý³Ì¡£
+// Log.cpp :  DLL Ä³Ê¼Ì¡
 //
 #ifdef WIN32
 #include "stdafx.h"
@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ini.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,6 +23,7 @@
 class CLog : public ILog
 {
 public:
+	CLog();
 	int Delete(LOGDATETIME * timeAfter, LOGDATETIME * timeBefore);
 	int Export(TLogQueryResultArray & contextList);
 	int Query(LOGTYPE type, LOGDATETIME* timeAfter, LOGDATETIME* timeBefore, TLogQueryResultArray & result);
@@ -29,8 +31,7 @@ public:
 
 private:
 	CLogFileOperation m_LogFileOp;
-
-
+	std::string logroot, usbroot;
 };
 
 V15PC_LOG_API ILog* CreateLog()
@@ -45,11 +46,30 @@ V15PC_LOG_API void ReleaseLog(ILog* pLog)
 }
 
 //#define LOGROOT		getConfig().getLogRootPath()	
-#define LOGROOT	getConfig().getLogPath()
-#define USBROOT	getConfig().getLogOutPath()
+//#define LOGROOT	getConfig().getLogPath()
+//#define USBROOT	getConfig().getLogOutPath()
+#define LOGROOT "../log"
+#define USBROOT "/media/usb"
 
+using namespace brunt;
 
-
+CLog::CLog()
+{
+	ICMyini* ini = createMyini();
+	logroot = LOGROOT;
+	usbroot = USBROOT;
+	if (ini)
+	{
+		if(ini->load("/etc/CineCast/config.cfg"))
+		{
+			std::string tmp;
+			if(ini->read(" ", "logroot", tmp))
+				logroot = tmp;
+			if(ini->read(" ", "usbroot", tmp))
+				usbroot = tmp;
+		}
+	}
+}
 
 int CLog::Delete(LOGDATETIME * timeAfter, LOGDATETIME * timeBefore)
 {
@@ -119,7 +139,7 @@ int CLog::Export(TLogQueryResultArray & contextList)
 	}
 #else
 	char buft[MAX_PATH] = {0};
-	string path = USBROOT;
+	string path = usbroot;
 	string start, end;
 	start = contextList.at(0).time;
 	end = contextList.at(contextList.size() - 1).time;
@@ -152,7 +172,7 @@ int CLog::Export(TLogQueryResultArray & contextList)
 int CLog::Query(LOGTYPE type, LOGDATETIME* timeAfter, LOGDATETIME* timeBefore, TLogQueryResultArray & result)
 {
 	char buft[MAX_PATH] = {0};
-	string path = LOGROOT;
+	string path = logroot;
 
 	/*
 	sprintf(buft,"%s\\%04d\\%02d",path.c_str(),timeAfter->year,timeAfter->month);
@@ -175,7 +195,7 @@ int CLog::Query(LOGTYPE type, LOGDATETIME* timeAfter, LOGDATETIME* timeBefore, T
 		&& year == timeBefore->year))
 	{
 		memset(buft,0,MAX_PATH);
-		sprintf(buft,"%s\\%04d\\%02d\\%02d.log",path.c_str(),year,month,day++);
+		sprintf(buft,"%s/%04d-%02d/%02d.log",path.c_str(),year, month, day++);
 		if (m_LogFileOp.OpenFile(buft)){		
 			m_LogFileOp.Read(type,result);
 			m_LogFileOp.CloseFile();
@@ -204,10 +224,9 @@ int CLog::Write(LOGTYPE type, const char *text)
 	time	(&timep);
 	tm* p = localtime(&timep);
 	char buft[MAX_PATH] = {0};
-	string path = LOGROOT;
+	string path = logroot;
 
 	sprintf(buft,"%s/%04d-%02d",path.c_str(),(1900+p->tm_year),(1+p->tm_mon));
-
 	if (!m_LogFileOp.IsDirectory(buft)){
 		if (!m_LogFileOp.CreateDirectory(buft))
 			return 0;
@@ -221,56 +240,31 @@ int CLog::Write(LOGTYPE type, const char *text)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //
-//	×¢Òâ£¡
+//	×¢â£¡
 //
-//		Èç¹û´Ë DLL ¶¯Ì¬Á´½Óµ½ MFC
-//		DLL£¬´Ó´Ë DLL µ¼³ö²¢
-//		µ÷Èë MFC µÄÈÎºÎº¯ÊýÔÚº¯ÊýµÄ×îÇ°Ãæ
-//		¶¼±ØÐëÌí¼Ó AFX_MANAGE_STATE ºê¡£
+//		 DLL Ì¬Óµ MFC
+//		DLLÓ´ DLL 
+//		 MFC ÎºÎºÚºÇ°
+//		 AFX_MANAGE_STATE ê¡£
 //
-//		ÀýÈç:
+//		:
 //
 //		extern "C" BOOL PASCAL EXPORT ExportedFunction()
 //		{
 //			AFX_MANAGE_STATE(AfxGetStaticModuleState());
-//			// ´Ë´¦ÎªÆÕÍ¨º¯ÊýÌå
+//			// Ë´ÎªÍ¨
 //		}
 //
-//		´ËºêÏÈÓÚÈÎºÎ MFC µ÷ÓÃ
-//		³öÏÖÔÚÃ¿¸öº¯ÊýÖÐÊ®·ÖÖØÒª¡£ÕâÒâÎ¶×Å
-//		Ëü±ØÐë×÷Îªº¯ÊýÖÐµÄµÚÒ»¸öÓï¾ä
-//		³öÏÖ£¬ÉõÖÁÏÈÓÚËùÓÐ¶ÔÏó±äÁ¿ÉùÃ÷£¬
-//		ÕâÊÇÒòÎªËüÃÇµÄ¹¹Ôìº¯Êý¿ÉÄÜÉú³É MFC
-//		DLL µ÷ÓÃ¡£
+//		ËºÎº MFC 
+//		Ã¿Ê®ÒªÎ¶
+//		ÎªÐµÄµÒ»
+//		Ö£Ð¶
+//		ÎªÇµÄ¹ìº¯ MFC
+//		DLL Ã¡
 //
-//		ÓÐ¹ØÆäËûÏêÏ¸ÐÅÏ¢£¬
-//		Çë²ÎÔÄ MFC ¼¼ÊõËµÃ÷ 33 ºÍ 58¡£
+//		Ð¹Ï¸Ï¢
+//		 MFC Ëµ 33  58
 //
 
 // CLogApp
@@ -279,21 +273,21 @@ BEGIN_MESSAGE_MAP(CLogApp, CWinApp)
 END_MESSAGE_MAP()
 
 
-// CLogApp ¹¹Ôì
+// CLogApp 
 
 CLogApp::CLogApp()
 {
-	// TODO: ÔÚ´Ë´¦Ìí¼Ó¹¹Ôì´úÂë£¬
-	// ½«ËùÓÐÖØÒªµÄ³õÊ¼»¯·ÅÖÃÔÚ InitInstance ÖÐ
+	// TODO: Ú´Ë´Ó¹ë£¬
+	// ÒªÄ³Ê¼ InitInstance 
 }
 
 
-// Î¨Ò»µÄÒ»¸ö CLogApp ¶ÔÏó
+// Î¨Ò»Ò» CLogApp 
 
 CLogApp theApp;
 
 
-// CLogApp ³õÊ¼»¯
+// CLogApp Ê¼
 
 BOOL CLogApp::InitInstance()
 {

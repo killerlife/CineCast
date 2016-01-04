@@ -43,6 +43,7 @@ public:
 	int ReceiveFrom( char* buff, int size, size_t& getsize, const sockaddr_in *addr_in, t_timeout* tm = 0);
 	int Wait(int type, t_timeout* tm = 0);
 	int GetLastError(char* buff = NULL, int bufsize = 0);
+	std::string GetSockName();
 
 protected:
 	int			m_error;
@@ -51,6 +52,8 @@ protected:
 
 	int  m_bInitOK;
 	int  m_nRefCount;		// all socket objects used count 
+
+	std::string m_sockName;
 
 public:
 	CZSocket(void);

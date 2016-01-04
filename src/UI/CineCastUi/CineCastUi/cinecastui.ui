@@ -56,6 +56,43 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QLabel" name="label_NetworkStatus" />
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_Reboot" >
+       <property name="icon" >
+        <iconset resource="cinecastui.qrc" >
+         <normaloff>:/CineCastUi/Resources/restart.png</normaloff>:/CineCastUi/Resources/restart.png</iconset>
+       </property>
+       <property name="iconSize" >
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="flat" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_Shutdown" >
+       <property name="icon" >
+        <iconset resource="cinecastui.qrc" >
+         <normaloff>:/CineCastUi/Resources/power.png</normaloff>:/CineCastUi/Resources/power.png</iconset>
+       </property>
+       <property name="iconSize" >
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="flat" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -104,12 +141,12 @@ QTabWidget#Tab1>QTabBar::tab:last:pressed
       <enum>QTabWidget::Triangular</enum>
      </property>
      <property name="currentIndex" >
-      <number>3</number>
+      <number>6</number>
      </property>
      <property name="iconSize" >
       <size>
-       <width>20</width>
-       <height>35</height>
+       <width>35</width>
+       <height>40</height>
       </size>
      </property>
      <property name="usesScrollButtons" >
@@ -125,6 +162,10 @@ QTabWidget#Tab1>QTabBar::tab:last:pressed
       <attribute name="title" >
        <string>Status</string>
       </attribute>
+      <attribute name="icon" >
+       <iconset resource="cinecastui.qrc" >
+        <normaloff>:/CineCastUi/Resources/monitor.png</normaloff>:/CineCastUi/Resources/monitor.png</iconset>
+      </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2" >
        <item>
         <widget class="QMdiArea" name="mdiArea_statue" />
@@ -135,6 +176,10 @@ QTabWidget#Tab1>QTabBar::tab:last:pressed
       <attribute name="title" >
        <string>Content</string>
       </attribute>
+      <attribute name="icon" >
+       <iconset resource="cinecastui.qrc" >
+        <normaloff>:/CineCastUi/Resources/content.png</normaloff>:/CineCastUi/Resources/content.png</iconset>
+      </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3" >
        <item>
         <widget class="QMdiArea" name="mdiArea_ContentManagement" />
@@ -143,7 +188,11 @@ QTabWidget#Tab1>QTabBar::tab:last:pressed
      </widget>
      <widget class="QWidget" name="tab_2" >
       <attribute name="title" >
-       <string>Manager</string>
+       <string>Disk Manager</string>
+      </attribute>
+      <attribute name="icon" >
+       <iconset resource="cinecastui.qrc" >
+        <normaloff>:/CineCastUi/Resources/disktool.png</normaloff>:/CineCastUi/Resources/disktool.png</iconset>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2" >
        <item>
@@ -155,9 +204,73 @@ QTabWidget#Tab1>QTabBar::tab:last:pressed
       <attribute name="title" >
        <string>Setup</string>
       </attribute>
+      <attribute name="icon" >
+       <iconset resource="cinecastui.qrc" >
+        <normaloff>:/CineCastUi/Resources/systempreferences.png</normaloff>:/CineCastUi/Resources/systempreferences.png</iconset>
+      </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4" >
        <item>
         <widget class="QMdiArea" name="mdiArea_Setup" >
+         <property name="font" >
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab" >
+      <attribute name="title" >
+       <string>RAID5 Array</string>
+      </attribute>
+      <attribute name="icon" >
+       <iconset resource="cinecastui.qrc" >
+        <normaloff>:/CineCastUi/Resources/raid5.png</normaloff>:/CineCastUi/Resources/raid5.png</iconset>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout" >
+       <item>
+        <widget class="QMdiArea" name="mdiArea_RAID" >
+         <property name="font" >
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_5" >
+      <attribute name="title" >
+       <string>Live Event</string>
+      </attribute>
+      <attribute name="icon" >
+       <iconset resource="cinecastui.qrc" >
+        <normaloff>:/CineCastUi/Resources/live.png</normaloff>:/CineCastUi/Resources/live.png</iconset>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_4" >
+       <item>
+        <widget class="QMdiArea" name="mdiArea_Live" >
+         <property name="font" >
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_6" >
+      <attribute name="title" >
+       <string>TKR</string>
+      </attribute>
+      <attribute name="icon" >
+       <iconset resource="cinecastui.qrc" >
+        <normaloff>:/CineCastUi/Resources/tkr.png</normaloff>:/CineCastUi/Resources/tkr.png</iconset>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_5" >
+       <item>
+        <widget class="QMdiArea" name="mdiArea_TKR" >
          <property name="font" >
           <font>
            <pointsize>10</pointsize>

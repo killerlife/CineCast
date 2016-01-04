@@ -1,5 +1,30 @@
-<RCC>
+﻿<RCC>
     <qresource prefix="/CineCastUi" >
+        <file>Resources/HDD2.png</file>
+        <file>Resources/Reflash.png</file>
+        <file>Resources/analysis.png</file>
+        <file>Resources/content.png</file>
+        <file>Resources/delete.png</file>
+        <file>Resources/disktool.png</file>
+        <file>Resources/down.png</file>
+        <file>Resources/finish.png</file>
+        <file>Resources/idle.png</file>
+        <file>Resources/left.png</file>
+        <file>Resources/live.png</file>
         <file>Resources/logobig.png</file>
+        <file>Resources/monitor.png</file>
+        <file>Resources/play.png</file>
+        <file>Resources/power.png</file>
+        <file>Resources/raid5.png</file>
+        <file>Resources/recv.png</file>
+        <file>Resources/report.png</file>
+        <file>Resources/restart.png</file>
+        <file>Resources/right.png</file>
+        <file>Resources/satellite.png</file>
+        <file>Resources/stop.png</file>
+        <file>Resources/systempreferences.png</file>
+        <file>Resources/tkr.png</file>
+        <file>Resources/up.png</file>
+        <file>Resources/usbdisk.png</file>
     </qresource>
 </RCC>

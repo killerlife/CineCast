@@ -14,7 +14,7 @@
 using namespace std;
 using namespace brunt;
 
-// Aavan:2008-7-6 断点信息SECTION
+// Aavan:2008-7-6 系息SECTION
 #define BKP_SECTION_IMPORT			           "V15_BREAKPOINT_IMPORT"
 #define CONFIG_ROOT_IMPORT_PATH               "/hdisk/data/bp/"
 #define CONFIGBK_ROOT_IMPORT_PATH           "/hdisk/databackup/bp/"
@@ -66,7 +66,7 @@ bool CBreakPointImport::open()
 	m_pIni = createMyini();
 	//TCHAR szPath[MAX_PATH];
 	//GetCurrentDirectory(MAX_PATH, szPath);
-	string fileName = getConfig().getBinRootPath();
+	string fileName = ".";//getConfig().getBinRootPath();
 	fileName += "\\breakpointimport.ini";
 
 	cout << "::open    filename = " << fileName <<endl;
@@ -142,7 +142,7 @@ bool CBreakPointImport::del()
 
 	//TCHAR szPath[MAX_PATH];
 	//GetCurrentDirectory(MAX_PATH, szPath);
-	string fileName = getConfig().getBinRootPath();;
+	string fileName = ".";//getConfig().getBinRootPath();;
 	fileName += "\\breakpointimport.ini";
 
 	if (remove(fileName.c_str()) == -1)
@@ -161,7 +161,7 @@ int CBreakPointImport::save()
 	int result = 0;
 	//TCHAR szPath[MAX_PATH];
 	//GetCurrentDirectory(MAX_PATH, szPath);
-	string fileName = getConfig().getBinRootPath();
+	string fileName = ".";//getConfig().getBinRootPath();
 	fileName += "\\breakpointimport.ini";
 	if(m_pIni->save(fileName))
 		++result;
