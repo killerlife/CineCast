@@ -669,7 +669,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing cinecastui.qrc..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;cinecastui&quot; -no-compress &quot;.\cinecastui.qrc&quot; -o .\GeneratedFiles\qrc_cinecastui.cpp&#x0D;&#x0A;"
-						AdditionalDependencies=".\cinecastui.qrc;.\Resources\HDD2.png;.\Resources\Reflash.png;.\Resources\analysis.png;.\Resources\content.png;.\Resources\delete.png;.\Resources\disktool.png;.\Resources\down.png;.\Resources\finish.png;.\Resources\idle.png;.\Resources\left.png;.\Resources\live.png;.\Resources\logobig.png;.\Resources\monitor.png;.\Resources\play.png;.\Resources\power.png;.\Resources\raid5.png;.\Resources\recv.png;.\Resources\report.png;.\Resources\restart.png;.\Resources\right.png;.\Resources\satellite.png;.\Resources\stop.png;.\Resources\systempreferences.png;.\Resources\tkr.png;.\Resources\up.png;.\Resources\usbdisk.png"
+						AdditionalDependencies=".\cinecastui.qrc;.\Resources\HDD2.png;.\Resources\Reflash.png;.\Resources\Remote.png;.\Resources\analysis.png;.\Resources\content.png;.\Resources\delete.png;.\Resources\disktool.png;.\Resources\down.png;.\Resources\finish.png;.\Resources\idle.png;.\Resources\left.png;.\Resources\live.png;.\Resources\logobig.png;.\Resources\monitor.png;.\Resources\play.png;.\Resources\power.png;.\Resources\raid5.png;.\Resources\recv.png;.\Resources\report.png;.\Resources\restart.png;.\Resources\right.png;.\Resources\satellite.png;.\Resources\stop.png;.\Resources\systempreferences.png;.\Resources\tkr.png;.\Resources\up.png;.\Resources\usbdisk.png"
 						Outputs=".\GeneratedFiles\qrc_cinecastui.cpp"
 					/>
 				</FileConfiguration>
@@ -680,7 +680,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing cinecastui.qrc..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;cinecastui&quot; -no-compress &quot;.\cinecastui.qrc&quot; -o .\GeneratedFiles\qrc_cinecastui.cpp&#x0D;&#x0A;"
-						AdditionalDependencies=".\cinecastui.qrc;.\Resources\HDD2.png;.\Resources\Reflash.png;.\Resources\analysis.png;.\Resources\content.png;.\Resources\delete.png;.\Resources\disktool.png;.\Resources\down.png;.\Resources\finish.png;.\Resources\idle.png;.\Resources\left.png;.\Resources\live.png;.\Resources\logobig.png;.\Resources\monitor.png;.\Resources\play.png;.\Resources\power.png;.\Resources\raid5.png;.\Resources\recv.png;.\Resources\report.png;.\Resources\restart.png;.\Resources\right.png;.\Resources\satellite.png;.\Resources\stop.png;.\Resources\systempreferences.png;.\Resources\tkr.png;.\Resources\up.png;.\Resources\usbdisk.png"
+						AdditionalDependencies=".\cinecastui.qrc;.\Resources\HDD2.png;.\Resources\Reflash.png;.\Resources\Remote.png;.\Resources\analysis.png;.\Resources\content.png;.\Resources\delete.png;.\Resources\disktool.png;.\Resources\down.png;.\Resources\finish.png;.\Resources\idle.png;.\Resources\left.png;.\Resources\live.png;.\Resources\logobig.png;.\Resources\monitor.png;.\Resources\play.png;.\Resources\power.png;.\Resources\raid5.png;.\Resources\recv.png;.\Resources\report.png;.\Resources\restart.png;.\Resources\right.png;.\Resources\satellite.png;.\Resources\stop.png;.\Resources\systempreferences.png;.\Resources\tkr.png;.\Resources\up.png;.\Resources\usbdisk.png"
 						Outputs=".\GeneratedFiles\qrc_cinecastui.cpp"
 					/>
 				</FileConfiguration>
@@ -1026,6 +1026,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Resources\Remote.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\Resources\report.png"
 				>
 				<FileConfiguration
@@ -1253,18 +1273,6 @@
 			SourceControlFiles="false"
 			>
 			<File
-				RelativePath=".\GeneratedFiles\Release\moc_cinecastui.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\GeneratedFiles\Debug\moc_cinecastui.cpp"
 				>
 				<FileConfiguration
@@ -1277,7 +1285,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Release\moc_content.cpp"
+				RelativePath=".\GeneratedFiles\Release\moc_cinecastui.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1301,10 +1309,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Debug\moc_disk.cpp"
+				RelativePath=".\GeneratedFiles\Release\moc_content.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1317,6 +1325,18 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\Debug\moc_disk.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1349,18 +1369,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\generatedfiles\release\moc_raid.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\GeneratedFiles\Debug\moc_raid.cpp"
 				>
 				<FileConfiguration
@@ -1373,10 +1381,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Debug\moc_setup.cpp"
+				RelativePath=".\generatedfiles\release\moc_raid.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1389,6 +1397,18 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\Debug\moc_setup.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1421,10 +1441,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\generatedfiles\release\moc_tkr.cpp"
+				RelativePath=".\GeneratedFiles\Debug\moc_tkr.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Win32"
+					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1433,10 +1453,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Debug\moc_tkr.cpp"
+				RelativePath=".\generatedfiles\release\moc_tkr.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool

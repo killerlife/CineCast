@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+﻿//#include "stdafx.h"
 #include "zSocket.h"
 
 extern "C" {
@@ -104,7 +104,14 @@ int CZSocket::Send(const char* buff, int size, size_t& sent, t_timeout* tm)
 {
 	assert(buff);
 	assert(size>=0);
-	m_error = socket_send(&m_socket, buff, size, &sent, tm);
+	size_t s = size;
+	while(s > 0)
+	{
+		m_error = socket_send(&m_socket, buff, s, &sent, tm);
+		s -= sent;
+		if(ZSOCKET_FAILED(m_error))
+			break;
+	}
 	return m_error;
 }
 
@@ -112,7 +119,14 @@ int CZSocket::Receive(char* buff, int size, size_t& getsize, t_timeout* tm)
 {
 	assert(buff);
 	assert(size>=0);
-	m_error = socket_recv(&m_socket, buff, size, &getsize, tm);
+	size_t s = size;
+	while(s > 0)
+	{
+		m_error = socket_recv(&m_socket, buff, s, &getsize, tm);
+		s -= getsize;
+		if(ZSOCKET_FAILED(m_error))
+			break;
+	}
 	return m_error;
 }
 
@@ -121,7 +135,14 @@ int CZSocket::SendTo(const char* buff, int size, size_t& sent, const sockaddr_in
 	assert(buff);
 	assert(size>=0);
 	socklen_t len = sizeof(sockaddr_in);
-	m_error = socket_sendto(&m_socket, buff, size, &sent, (SA*)addr_in, len, tm);
+	size_t s = size;
+	while(s > 0)
+	{
+		m_error = socket_sendto(&m_socket, buff, s, &sent, (SA*)addr_in, len, tm);
+		s -= sent;
+		if(ZSOCKET_FAILED(m_error))
+			break;
+	}
 	return 0;
 }
 
@@ -130,7 +151,14 @@ int CZSocket::ReceiveFrom(char* buff, int size, size_t& getsize, const sockaddr_
 	assert(buff);
 	assert(size>=0);
 	socklen_t len = sizeof(sockaddr_in);
-	m_error = socket_recvfrom(&m_socket, buff, size, &getsize, (SA*)addr_in, &len, tm);
+	size_t s = size;
+	while(s > 0)
+	{
+		m_error = socket_recvfrom(&m_socket, buff, s, &getsize, (SA*)addr_in, &len, tm);
+		s -= getsize;
+		if(ZSOCKET_FAILED(m_error))
+			break;
+	}
 	return m_error;
 }
 

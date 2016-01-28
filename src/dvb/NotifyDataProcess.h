@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <thread/activeThread/activeThread.h>
 #include <string>
 #include <list>
@@ -38,3 +38,6 @@ private:
 	uint32 m_filmId;
 // 	ILog* pLog;
 };
+
+NotifyDataThread* CreateNotify();
+void ReleaseNotify(NotifyDataThread* pNotify);

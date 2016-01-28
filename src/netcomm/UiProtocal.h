@@ -136,6 +136,7 @@ typedef enum
 	RECEIVE_FILM_ISSUE_DATE,
 	RECEIVE_FILM_ISSUER,
 	RECEIVE_FILM_CREATOR,
+	RECEIVE_EXTEND,
 
 	TUNER_CONFIG = 0x20,
 	TUNER_DEV_NAME,
@@ -155,6 +156,7 @@ typedef enum
 	REMOTE_CONFIG = 0x60,
 	REMOTE_DNS,
 	REMOTE_SERVER,
+	REMOTE_PORT,
 
 	CONTENT_ID = 0x80,
 	CONTENT_NAME,
@@ -192,6 +194,7 @@ typedef struct receive_info
 	std::string strIssueDate;
 	std::string strIssuer;
 	std::string strCreator;
+	std::string strExtend;
 } RECEIVE_INFO;
 
 typedef struct tuner_conf {

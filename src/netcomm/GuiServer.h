@@ -30,17 +30,6 @@ public:
     int* copy_flag;            //״̬
 };
 
-
-
-
-
-
-
-
-
-
-
-
 class GuiThread;
 class ContentOperation;
 class mke2fs;
@@ -147,4 +136,5 @@ private:
     CopyThread*  copyThread;    //ļָ߳
 };
 
-
+GuiServer* CreateGuiServer();
+void ReleaseGuiServer(GuiServer* pGui);

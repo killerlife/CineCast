@@ -16,12 +16,13 @@ namespace fs = boost::filesystem;
 using namespace brunt;
 
 extern ILog* gLog;
-NetCommThread *pNetComm;
+extern NetCommThread *pNetComm;
+extern std::vector<std::string> gRunPathList;
 
 FilmDataThread::FilmDataThread(): m_ReciveLength(0), m_status(STOP),
 m_pZtBuf(0), m_pFilter(0), m_pFilmFile(NULL), m_nSegBasic(0), 
 m_ReciveSegment(0), m_LostSegment(0), m_CRCError(0), m_TotalSegment(0), 
-m_freeMutex(0), m_dataMutex(0), m_ztPos(-1)
+m_freeMutex(0), m_dataMutex(0), m_ztPos(-1),m_writeMutex(0), m_Ready(false)
 {
 	m_pDataThread = NULL;
 	m_pPmtDescriptor = NULL;
@@ -75,24 +76,36 @@ bool FilmDataThread::Init(void *param1, void *param2)
 
 	//Create Save FileName
 	m_strFileName = STORAGE_PATH;
+	m_strFileNameReport = "";
 	for(int i = 0; i< m_pPmtDescriptor->subfolderCountDescriptor->SubfolderCount; i++)
 	{
 		m_strFileName += m_pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[i].SubfolderName;
+		m_strFileNameReport += m_pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[i].SubfolderName;
 		if(m_strFileName[m_strFileName.size() - 1] == '\\')
 		{
 			m_strFileName.resize(m_strFileName.size()-1);
 			m_strFileName += "/";
 		}
+		if(m_strFileNameReport[m_strFileNameReport.size() - 1] == '\\')
+		{
+			m_strFileNameReport.resize(m_strFileNameReport.size()-1);
+			m_strFileNameReport += "/";
+		}
+
 		fs::create_directories(m_strFileName);
 	}
 
+	gRunPathList.push_back(m_strFileName);
 // 	m_pPmtDescriptor->fileDescriptor->FileName
 // 		[m_pPmtDescriptor->fileDescriptor->DescriptorLength - 10] = '\0';
 
 	m_strFileName += m_pPmtDescriptor->fileDescriptor->FileName;
+	m_strFileNameReport += m_pPmtDescriptor->fileDescriptor->FileName;
 
 	//Create lost report filename
 	m_strZtFileName = m_strFileName + ".zt";
+
+	m_strFileNameReport += ".zt";
 
 	//Check lost file exist, and read it into buffer 
 	int64 sec_nums = (m_pPmtDescriptor->fileDescriptor->FileLength + 
@@ -182,6 +195,7 @@ bool FilmDataThread::Start()
 	m_pFilter->SetFilterID(m_pPmtDescriptor->ElementaryPid, 0x80);
 	m_status = RUN;
 	bStop = false;
+	m_Ready = true;
 	return true;
 }
 
@@ -496,11 +510,14 @@ void FilmDataThread::WriteFile(uint64 pos, uint8 *pbuf, uint16 size)
 {
 	if (m_pFilmFile > 0)
 	{
+		while(m_writeMutex);
+		m_writeMutex = 1;
 		fseek(m_pFilmFile, pos, SEEK_SET);
 		fwrite(pbuf,
 			size,
 			1,
 			m_pFilmFile);
+		m_writeMutex = 0;
 	}
 }
 
@@ -585,6 +602,7 @@ void FilmDataThread::pushIntoDataBuf(struct FilmDataBuf* pBuf)
 	m_dataMutex = 0;
 }
 
+#if 0
 struct LostBuf* FilmDataThread::GetLostSegment()
 {
 	int64 sec_nums = (m_pPmtDescriptor->fileDescriptor->FileLength + 
@@ -595,7 +613,9 @@ struct LostBuf* FilmDataThread::GetLostSegment()
 	uint64 ReceiveBytes = 0;
 	uint32 LostSegments = 0;
 	uint32 ReceiveSegments = 0;
-	uint32 nPos = 28;
+	L_LOST_INFO* pLost = (L_LOST_INFO*)m_sLostBuf.m_buf;
+	uint32 nPos = (uint32)((uint8*)&(pLost->pLost) - (m_sLostBuf.m_buf));
+
 	int i;
 	for (i = 0; i < m_nZtBufSize - 1; i++)
 	{
@@ -650,6 +670,10 @@ struct LostBuf* FilmDataThread::GetLostSegment()
 			ch >>= 1;
 		}
 	}
+	uint32 nName = m_strFileNameReport.size();
+	memcpy(m_sLostBuf.m_buf + nPos + m_nZtBufSize, &nName, sizeof(uint32));
+	memcpy(m_sLostBuf.m_buf + nPos + m_nZtBufSize + sizeof(uint32), m_strFileNameReport.c_str(), nName);
+	nName += m_sLostBuf.m_size + sizeof(uint32);
 	m_ReciveLength = ReceiveBytes;
 	m_ReciveSegment = ReceiveSegments;
 	m_LostSegment = LostSegments;
@@ -658,7 +682,9 @@ struct LostBuf* FilmDataThread::GetLostSegment()
 	info->lostNum = LostSegments;
 	info->receivedByteCount = ReceiveBytes;
 	info->recvState = 5;
-	info->lostLength = m_sLostBuf.m_size;
+	info->lostLength = m_nZtBufSize;//m_sLostBuf.m_size;
+	
+	info->reserved = m_pPmtDescriptor->fileDescriptor->SegmentLength;
 	char str[512];
 	if (gLog)
 	{
@@ -677,6 +703,7 @@ struct LostBuf* FilmDataThread::GetLostSegment()
 	if(pNetComm)
 	{
 		//TODO: send lost report to remote
+#if 0
 		sprintf(str, "%s.lost", m_strZtFileName.c_str());
 		FILE *fp = fopen(str, "rb");
 		if(fp)
@@ -684,11 +711,118 @@ struct LostBuf* FilmDataThread::GetLostSegment()
 			fwrite((char*)info, m_sLostBuf.m_size, 1, fp);
 			fclose(fp);
 		}
+#endif
 		//--------------------------------
-		pNetComm->ReportLost((char*)info, m_sLostBuf.m_size);
+		pNetComm->ReportLost((char*)info, m_sLostBuf.m_size, nName);
 	}
 	return &m_sLostBuf;
 }
+
+#endif
+
+std::string FilmDataThread::GetLostSegment()
+{
+	int64 sec_nums = (m_pPmtDescriptor->fileDescriptor->FileLength + 
+		m_pPmtDescriptor->fileDescriptor->SegmentLength - 1) /
+		m_pPmtDescriptor->fileDescriptor->SegmentLength;
+
+	UpdateFile();
+	uint64 ReceiveBytes = 0;
+	uint32 LostSegments = 0;
+	uint32 ReceiveSegments = 0;
+	L_LOST_INFO* pLost = (L_LOST_INFO*)m_sLostBuf.m_buf;
+	uint32 nPos = (uint32)((uint8*)&(pLost->pLost) - (m_sLostBuf.m_buf));
+
+	int i;
+	for (i = 0; i < m_nZtBufSize - 1; i++)
+	{
+		uint8 ch;
+		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		for(int j = 0; j < 8; j++)
+		{
+			if(ch&0x1)
+			{
+				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
+				ReceiveSegments++;
+			}
+			else
+			{
+				LostSegments++;
+			}
+			ch >>=1;
+		}
+	}
+	int64 nums = sec_nums%8;
+	if(nums == 0)
+	{
+		uint8 ch;
+		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		for (int j = 0; j < 8; j++)
+		{
+			if (ch&0x1)
+			{
+				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
+				ReceiveSegments++;
+			}
+			else
+			{
+				LostSegments++;
+			}
+			ch >>= 1;
+		}
+	}
+	else
+	{
+		uint8 ch;
+		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		for(int j = 0; j < nums; j++)
+		{
+			if (ch&0x1)
+			{
+				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
+				ReceiveSegments++;
+			}
+			else
+				LostSegments++;
+			ch >>= 1;
+		}
+	}
+
+	m_ReciveLength = ReceiveBytes;
+	m_ReciveSegment = ReceiveSegments;
+	m_LostSegment = LostSegments;
+
+	//Move Update file to /home/leonis/update
+	if(m_ReciveSegment == m_TotalSegment)
+	{
+		if((filmId %1000) >= 900 && 
+			m_strFileName.find("leonisupdate.zt") != std::string::npos)
+		{
+			system("mkdir /home/leonis/update");
+			std::string cmd = "install " + m_strFileName + "/home/leonis/update";
+			system(cmd.c_str());
+		}
+	}
+
+	char str[512];
+	if (gLog)
+	{
+		sprintf(str, "[FilmData] FilmID=%04X, PID=%04X, %s"
+			, filmId
+			, m_pPmtDescriptor->ElementaryPid
+			, m_strFileName.c_str());
+		gLog->Write(LOG_DVB, str);
+		sprintf(str, "[FilmData] TotalSeg=%d, LostSeg=%d, CRCSeg=%d, SegLen=%d",
+			m_TotalSegment,
+			m_LostSegment,
+			m_CRCError,
+			m_pPmtDescriptor->fileDescriptor->SegmentLength);
+		gLog->Write(LOG_DVB, str);
+	}
+	return m_strFileNameReport;
+}
+
+
 void FilmDataThread::UpdateInfo()
 {
 	int64 sec_nums = (m_pPmtDescriptor->fileDescriptor->FileLength + 
@@ -771,4 +905,68 @@ void FilmDataThread::UpdateInfo()
 			m_pPmtDescriptor->fileDescriptor->SegmentLength);
 		gLog->Write(LOG_DVB, str);
 	}
+}
+
+bool FilmDataThread::UnzipSubtitle()
+{
+	std::size_t found;
+	if((found = m_strFileName.find("ZM.zip")) == std::string::npos)
+		return false;
+	std::string path = m_strFileName;
+	path.resize(m_strFileName.size() - found);
+	char fn[1024];
+	sprintf(fn, "unzip %s -d %s", m_strFileName.c_str(), path.c_str());
+	system(fn);
+	if (gLog)
+	{
+		gLog->Write(LOG_SYSTEM, fn);
+	}
+	return true;
+}
+
+bool FilmDataThread::SaveData(char* fn, char* pData, uint32 segNum, uint32 len)
+{
+	if(m_strFileName.find(fn) == std::string::npos)
+		return false;
+
+	if(!haveSegment(segNum))
+	{
+		uint64 pos = (uint64) segNum * m_pPmtDescriptor->fileDescriptor->SegmentLength;
+		WriteFile(pos,
+			(uint8*)pData,
+			len);
+		UpdateZtMem(segNum);
+
+		//this only for test
+		//UpdateZtFile();
+		//
+		m_ReciveSegment++;//= w_size;
+		m_ReciveLength += len;
+	}
+
+	return false;
+}
+
+std::string FilmDataThread::FindAssetmap()
+{
+	std::string path = "";
+	size_t pos;
+	if((pos = m_strFileName.find("ASSETMAP")) != std::string::npos)
+	{
+		path = m_strFileName;
+		path.resize(pos);
+	}
+	return path;
+}
+
+bool FilmDataThread::IsSameDCP(std::string path)
+{
+	if(m_strFileName.find(path) != std::string::npos)
+		return true;
+	return false;
+}
+
+bool FilmDataThread::IsReady()
+{
+	return m_Ready;
 }

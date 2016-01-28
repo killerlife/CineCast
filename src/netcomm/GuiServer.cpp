@@ -10,6 +10,17 @@
 #include <log/Log.h>
 extern ILog* gLog;
 
+GuiServer gGuiServer;
+GuiServer* CreateGuiServer()
+{
+	return &gGuiServer;
+}
+
+void ReleaseGuiServer(GuiServer* pGui)
+{
+
+}
+
 CopyThread::CopyThread():m_status(0)
 {
 }
@@ -353,8 +364,16 @@ bool GuiServer::Stop()
 void GuiServer::doit()
 {
 	char str[512];
+	bool bSuccess = false;
+	int i = 0;
+	while(m_status != STOP && bSuccess == false)
+	{
 	try
 	{
+			if((i % 1000*1000*5) == 0)
+			{
+				i = 0;
+				//DPRINTF("Create socket\n");
 		if (m_SrvSocket.Create(AF_INET, SOCK_STREAM, 0))
 		{
 			struct sockaddr_in addr_in;
@@ -368,14 +387,26 @@ void GuiServer::doit()
 				t_timeout tm = 3000;
 				if(m_SrvSocket.Bind(&addr_in))
 				{
-					if (!m_SrvSocket.Listen(10))
+							if (!m_SrvSocket.Listen(20))
 						throw -1;
+							bSuccess = true;
+							DPRINTF("Bind success\n");
 				}
 				else
 					throw -2;
 
 			} while (error);
 		}
+				else
+				{
+					//DPRINTF("Create failure\n");
+				}
+			}
+			else
+			{
+				i++;
+				usleep(1000);
+			}
 	}
 	catch (int &a)
 	{
@@ -390,13 +421,15 @@ void GuiServer::doit()
 		default:
 			sprintf(str, "[GuiServer] Server Socket unknow error.", status());
 		}
-		DPRINTF("%s\n");
+			DPRINTF("%s\n", str);
 		if (gLog)
 	{
 			gLog->Write(LOG_ERROR, str);
 		}
-		return;
+			//		return;
+		}
 	}
+	DPRINTF("Run\n");
 	while(1)
 	{
 		switch(m_status)
@@ -754,7 +787,7 @@ bool GuiThread::S_GetReceive(char* buf)
 {
 	extern RECEIVE_INFO gRecv;
 
-	SL FN, Uuid, IssueDate, Issuer, Creator;
+	SL FN, Uuid, IssueDate, Issuer, Creator, Extend;
 	FN.m_sID = RECEIVE_FILM_NAME;
 	FN.m_length = gRecv.strFilmName.size();
 
@@ -769,6 +802,9 @@ bool GuiThread::S_GetReceive(char* buf)
 
 	Creator.m_sID = RECEIVE_FILM_CREATOR;
 	Creator.m_length = gRecv.strCreator.size();
+
+	Extend.m_sID = RECEIVE_EXTEND;
+	Extend.m_length = gRecv.strExtend.size();
 
 	int datalen = sizeof(gRecv.nFileLength) +
 		sizeof(gRecv.nReceiveLength) +
@@ -809,6 +845,11 @@ bool GuiThread::S_GetReceive(char* buf)
 	pos += sizeof(Creator);
 	memcpy(pos, gRecv.strCreator.c_str(), Creator.m_length);
 	pos += Creator.m_length;
+
+	memcpy(pos, &Extend, sizeof(Extend));
+	pos += sizeof(Extend);
+	memcpy(pos, gRecv.strExtend.c_str(), Extend.m_length);
+	pos += Extend.m_length;
 
 	int sendsize = (int)((char*)pos - buf);
 	pKL->m_length = sendsize - sizeof(KL);
@@ -1081,7 +1122,7 @@ bool GuiThread::N_GetRemote(char* buf)
 
 	REMOTE_CONF rc = no.GetRemoteConfig();
 
-	SL Dns1, Dns2, Remote;
+	SL Dns1, Dns2, Remote, Port;
 
 	KL *pKL = (KL*)buf;
 
@@ -1095,6 +1136,9 @@ bool GuiThread::N_GetRemote(char* buf)
 
 	Remote.m_sID = REMOTE_SERVER;
 	Remote.m_length = rc.strRemote.size();
+
+	Port.m_sID = REMOTE_PORT;
+	Port.m_length = sizeof(rc.nPort);
 
 	memcpy(pos, &Dns1, sizeof(Dns1));
 	pos += sizeof(Dns1);
@@ -1110,6 +1154,11 @@ bool GuiThread::N_GetRemote(char* buf)
 	pos += sizeof(Remote);
 	memcpy(pos, rc.strRemote.c_str(), Remote.m_length);
 	pos += Remote.m_length;
+
+	memcpy(pos, &Port, sizeof(Port));
+	pos += sizeof(Port);
+	memcpy(pos, &rc.nPort, sizeof(rc.nPort));
+	pos += Port.m_length;
 
 	int sendsize = (int)((char*)pos - buf);
 	pKL->m_length = sendsize - sizeof(KL);
@@ -1159,6 +1208,13 @@ bool GuiThread::N_SetRemote(char* buf)
 			break;
 		case  REMOTE_SERVER:
 			rc.strRemote = tmp;
+			break;
+		case REMOTE_PORT:
+			memset(&rc.nPort, 0, sizeof(rc.nPort));
+			if(tmp.size() < 4)
+				memcpy(&rc.nPort, tmp.c_str(), tmp.size());
+			else
+				memcpy(&rc.nPort, tmp.c_str(), sizeof(rc.nPort));
 			break;
 		}
 	}
@@ -1277,112 +1333,112 @@ bool GuiThread::M_GetContent_HDD(char* buf)
 
 		item.m_sID = CONTENT_ID;
 		item.m_length = info.pData[0].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[0].c_str(), item.m_length);
 		pos += item.m_length;
 		DPRINTF("HDD:ID:%s %lld\n", info.pData[0].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_NAME;
 		item.m_length = info.pData[1].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[1].c_str(), item.m_length);
 		pos += item.m_length;
 		DPRINTF("HDD:NAME:%s %lld\n", info.pData[1].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_PROGRESS;
 		item.m_length = info.pData[2].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[2].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[2].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_STATUS;
 		item.m_length = info.pData[3].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[3].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[3].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_FORMAT;
 		item.m_length = info.pData[4].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[4].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[4].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_FILMLENGTH;
 		item.m_length = info.pData[5].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[5].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[5].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_PROGRAMLENGTH;
 		item.m_length = info.pData[6].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[6].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[6].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_STEREOSCOPIC;
 		item.m_length = info.pData[7].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[7].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[7].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_ISSUER;
 		item.m_length = info.pData[8].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[8].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[8].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_ISSUEDATE;
 		item.m_length = info.pData[9].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[9].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[9].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_TIMERANGE;
 		item.m_length = info.pData[10].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[10].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[10].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_RECVSEGMENT;
 		item.m_length = info.pData[11].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[11].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[11].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_TOTALSEGMENT;
 		item.m_length = info.pData[12].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[12].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[12].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_RECV_DATETIME;
 		item.m_length = info.pData[13].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[13].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[13].c_str(), item.m_length);
@@ -1390,8 +1446,8 @@ bool GuiThread::M_GetContent_HDD(char* buf)
 
 		item.m_sID = CONTENT_LOCATE;
 		item.m_length = info.pData[14].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[14].c_str(), item.m_length);
 		pos += item.m_length;
 		DPRINTF("HDD:PATH:%s %lld\n", info.pData[14].c_str(), item.m_length);
@@ -1463,8 +1519,8 @@ bool GuiThread::M_GetContent_USB(char* buf)
 
 		item.m_sID = CONTENT_ID;
 		item.m_length = info.pData[0].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[0].c_str(), item.m_length);
 		pos += item.m_length;
 		DPRINTF("USB:ID:%s %lld\n", info.pData[0].c_str(), item.m_length);
@@ -1473,32 +1529,32 @@ bool GuiThread::M_GetContent_USB(char* buf)
 
 		item.m_sID = CONTENT_NAME;
 		item.m_length = info.pData[1].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[1].c_str(), item.m_length);
 		pos += item.m_length;
 		DPRINTF("USB:NAME:%s %lld\n", info.pData[1].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_PROGRESS;
 		item.m_length = info.pData[2].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[2].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[2].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_STATUS;
 		item.m_length = info.pData[3].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[3].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[3].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_FORMAT;
 		item.m_length = info.pData[4].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[4].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[4].c_str(), item.m_length);
@@ -1507,72 +1563,72 @@ bool GuiThread::M_GetContent_USB(char* buf)
 
 		item.m_sID = CONTENT_FILMLENGTH;
 		item.m_length = info.pData[5].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[5].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[5].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_PROGRAMLENGTH;
 		item.m_length = info.pData[6].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[6].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[6].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_STEREOSCOPIC;
 		item.m_length = info.pData[7].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[7].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[7].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_ISSUER;
 		item.m_length = info.pData[8].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[8].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[8].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_ISSUEDATE;
 		item.m_length = info.pData[9].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[9].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[9].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_TIMERANGE;
 		item.m_length = info.pData[10].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[10].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[10].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_RECVSEGMENT;
 		item.m_length = info.pData[11].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[11].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[11].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_TOTALSEGMENT;
 		item.m_length = info.pData[12].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[12].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[12].c_str(), item.m_length);
 
 		item.m_sID = CONTENT_RECV_DATETIME;
 		item.m_length = info.pData[13].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[13].c_str(), item.m_length);
 		pos += item.m_length;
 	//	DPRINTF("%s %d\n", info.pData[13].c_str(), item.m_length);
@@ -1580,8 +1636,8 @@ bool GuiThread::M_GetContent_USB(char* buf)
 
 		item.m_sID = CONTENT_LOCATE;
 		item.m_length = info.pData[14].size();
-		memcpy(pos, &item, sizeof(item));
-		pos += sizeof(item);
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
 		memcpy(pos, info.pData[14].c_str(), item.m_length);
 		pos += item.m_length;
 		DPRINTF("USB:PATH:%s %lld\n", info.pData[14].c_str(), item.m_length);
@@ -1620,8 +1676,8 @@ bool GuiThread::M_GetDiskInfo_HDD(char* buf)
 
 	void* pos = buf + sizeof(KL);
 
-	memcpy(pos, &di, sizeof(di));
-	pKL->m_length = sizeof(di);
+	memcpy(pos, &di, sizeof(DISK_INFO));
+	pKL->m_length = sizeof(DISK_INFO);
 
 	int sendsize = sizeof(KL) + pKL->m_length;
 
@@ -1646,8 +1702,8 @@ bool GuiThread::M_GetDiskInfo_USB(char* buf)
 	KL *pKL = (KL*)buf;
 
 	void* pos = buf + sizeof(KL);
-	memcpy(pos, &di, sizeof(di));
-	pKL->m_length = sizeof(di);
+	memcpy(pos, &di, sizeof(DISK_INFO));
+	pKL->m_length = sizeof(DISK_INFO);
 
 	int sendsize = sizeof(KL) + pKL->m_length;
 
@@ -1666,6 +1722,12 @@ bool GuiThread::S_Reboot(char* buf)
 	KL *pKL = (KL*)buf;
 	int sendsize = sizeof(KL) + 1;
 	bool res = Write(buf, sendsize, sendsize);
+	char str[512];
+	sprintf(str, "[GuiThread] Receive Shutdown from UI");
+	if (gLog)
+	{
+		gLog->Write(LOG_SYSTEM, str);
+	}
 	s.Reboot();
 	return res;
 }
@@ -1676,6 +1738,12 @@ bool GuiThread::S_Shutdown(char* buf)
 	KL *pKL = (KL*)buf;
 	int sendsize = sizeof(KL) + 1;
 	bool res = Write(buf, sendsize, sendsize);
+	char str[512];
+	sprintf(str, "[GuiThread] Receive Shutdown from UI");
+	if (gLog)
+	{
+		gLog->Write(LOG_SYSTEM, str);
+	}
 	s.Shutdown();
 	return res;
 }
@@ -1684,7 +1752,7 @@ bool GuiThread::S_FormatDisk(char* buf)
 {
 	KL* pKL = (KL*)buf;
 	int sendsize = sizeof(KL) + 1;
-	m_mkfs->FormatDisk();
+	m_mkfs->FormatDisk(DISK_REMOVEABLE);
 	return Write(buf, sendsize, sendsize);
 }
 
@@ -1706,7 +1774,7 @@ bool GuiThread::S_FormatStatus(char* buf)
 	KL* pKL = (KL*)buf;
 
 	uint8 c = m_mkfs->CheckStatus();
-	pKL->m_length = sizeof(c);
+	pKL->m_length = sizeof(uint8);
 	buf[sizeof(KL)] = c;
 	int sendsize = sizeof(KL) + pKL->m_length;
 
@@ -1737,6 +1805,7 @@ bool GuiThread::S_USB_UnMount(char* buf)
 
 	return Write(buf, sendsize, sendsize);
 }
+
 
 
 bool GuiThread::M_DeleteDir(char* buf)
@@ -1914,8 +1983,8 @@ bool GuiThread::S_Get_TMS(char* buf)
 	TLogQueryResultArray ra;
  // std::string  str_log="";
 
-    printf("After.year=%d After.month=%d After.day=%d\n",timeAfter.year,timeAfter.month,timeAfter.day);
-    printf("Before.year=%d Before.month=%d Before.day=%d\n",timeBefore.year,timeBefore.month,timeBefore.day);
+//     printf("After.year=%d After.month=%d After.day=%d\n",timeAfter.year,timeAfter.month,timeAfter.day);
+//     printf("Before.year=%d Before.month=%d Before.day=%d\n",timeBefore.year,timeBefore.month,timeBefore.day);
 	plog->Query(LOG_TMS, &timeAfter, &timeBefore, ra);
 	for(int i = 0; i < ra.size(); i++)
 	{
@@ -1932,8 +2001,9 @@ bool GuiThread::S_Get_TMS(char* buf)
 	void* pos2 = buf + sizeof(KL);
     memcpy(pos2,str_LOG.c_str(),str_size);
     pKL->m_length =str_size;           //䷵ص־?
-	printf("str_LOG:\n%s",str_LOG.c_str());   
+// 	printf("str_LOG:\n%s",str_LOG.c_str());   
 
+	ReleaseLog(plog);
 #endif
 
 	return Write(buf, sendsize, sendsize);

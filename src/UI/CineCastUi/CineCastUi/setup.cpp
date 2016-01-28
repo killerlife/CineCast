@@ -1,4 +1,4 @@
-#include "setup.h"
+﻿#include "setup.h"
 
 Setup::Setup(QTcpSocket* pSocket, QWidget *parent)
 	: QWidget(parent), pSocket(NULL)
@@ -26,11 +26,13 @@ void Setup::Init()
 	ui.label_ip->setStyleSheet("QLabel{font-size:20px;font-family:'Book Antiqua';}");
 	ui.label_Gateway->setStyleSheet("QLabel{font-size:20px;font-family:'Book Antiqua';}");
 	ui.label_Gateway_2->setStyleSheet("QLabel{font-size:20px;font-family:'Book Antiqua';}");
+	ui.label_Gateway_3->setStyleSheet("QLabel{font-size:20px;font-family:'Book Antiqua';}");
 	ui.label_Netm_mask->setStyleSheet("QLabel{font-size:20px;font-family:'Book Antiqua';}");
 	ui.label_DNS->setStyleSheet("QLabel{font-size:20px;font-family:'Book Antiqua';}");
 	ui.label_DNS_2->setStyleSheet("QLabel{font-size:20px;font-family:'Book Antiqua';}");
 	ui.lineEdit_Ip->setStyleSheet("QLineEdit{font-size:18px;font-family:'Book Antiqua';}");
 	ui.lineEdit_GateWay->setStyleSheet("QLineEdit{font-size:18px;font-family:'Book Antiqua';}");
+	ui.lineEdit_Remote_3->setStyleSheet("QLineEdit{font-size:18px;font-family:'Book Antiqua';}");
 	ui.lineEdit_Net_AsK->setStyleSheet("QLineEdit{font-size:18px;font-family:'Book Antiqua';}");
 	ui.lineEdit_DNS->setStyleSheet("QLineEdit{font-size:18px;font-family:'Book Antiqua';}");
 	ui.lineEdit_DNS_2->setStyleSheet("QLineEdit{font-size:18px;font-family:'Book Antiqua';}");
@@ -49,7 +51,7 @@ void Setup::Init()
 extern int m_ConnectStatus;   //״̬01,2ɹ
 void Setup::timerEvent(QTimerEvent * te)
 {
-	if(te->timerId() == m_TMS_timer&&2==m_ConnectStatus)
+	if(te->timerId() == m_TMS_timer && m_ConnectStatus == 2)
 	{
          this->getTMS();      //ȡ־
 	}
@@ -318,11 +320,19 @@ void Setup::LoadConfig()
 			case  REMOTE_SERVER:
 				rc.strRemote = tmp;
 				break;
+			case REMOTE_PORT:
+				memset(&rc.nPort, 0, sizeof(rc.nPort));
+				if(tmp.size() < 4)
+					memcpy(&rc.nPort, tmp.c_str(), tmp.size());
+				else
+					memcpy(&rc.nPort, tmp.c_str(), sizeof(rc.nPort));
+				break;
 			}
 		}
 		ui.lineEdit_DNS->setText(rc.strDns1.c_str());
 		ui.lineEdit_DNS_2->setText(rc.strDns2.c_str());
 		ui.lineEdit_Remote_2->setText(rc.strRemote.c_str());
+		ui.lineEdit_Remote_3->setText(QString::number(rc.nPort));
 	}
 }
 
@@ -414,8 +424,9 @@ void Setup::on_pushButton_clicked()
 	rc.strDns1 = ui.lineEdit_DNS->text().toStdString();
 	rc.strDns2 = ui.lineEdit_DNS_2->text().toStdString();
 	rc.strRemote = ui.lineEdit_Remote_2->text().toStdString();
+	rc.nPort = ui.lineEdit_Remote_3->text().toUInt(); //You need to change for get value from UI
 
-	SL Dns1, Dns2, Remote;
+	SL Dns1, Dns2, Remote, Port;
 	Dns1.m_sID = REMOTE_DNS;
 	Dns1.m_length = rc.strDns1.size();
 
@@ -424,6 +435,9 @@ void Setup::on_pushButton_clicked()
 
 	Remote.m_sID = REMOTE_SERVER;
 	Remote.m_length = rc.strRemote.size();
+
+	Port.m_sID = REMOTE_PORT;
+	Port.m_length = sizeof(rc.nPort);
 
 	pos = buf + sizeof(KL);
 
@@ -441,6 +455,12 @@ void Setup::on_pushButton_clicked()
 	pos += sizeof(Remote);
 	memcpy(pos, rc.strRemote.c_str(), Remote.m_length);
 	pos += Remote.m_length;
+
+	memcpy(pos, &Port, sizeof(Port));
+	pos += sizeof(Port);
+	memcpy(pos, &rc.nPort, sizeof(rc.nPort));
+	DPRINTF("port %d\n", rc.nPort);
+	pos += Port.m_length;
 
 	sendsize = (int)((char*)pos - buf);
 	pKL->m_length = sendsize - sizeof(KL);
@@ -782,7 +802,7 @@ void Setup::TMS_stop()    //رջȡ־ʱ
 {
 
 
-    if(m_TMS_timer<0)
+    if(m_TMS_timer>0)
 	{
        killTimer(m_TMS_timer);  
 	   m_TMS_timer = -1; 

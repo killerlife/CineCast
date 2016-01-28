@@ -50,6 +50,15 @@ typedef enum Net_Command
 	NET_REMOTE_UPDATE_PUSH = 0X71,
 	NET_REMOTE_UPDATA_PUSH_REP,
 	NET_REMOTE_UPDATE_REQ,
+	NET_PKG_SEND_START = 0x90,
+	NET_PKG_SEND_CONFIRM,
+	NET_PKG_DATA,
+	NET_PKG_SEND_END,
+	NET_PKG_COLLECT_REQ,
+	NET_PKG_COLLECT_CONFIRM,
+	NET_PKG_COLLECT_START,
+	NET_LOG_REQ_LEONIS = 0x100,
+	NET_LOG_REP_LEONIS,
 }Net_Command_t;
 
 struct L_LOGIN_REQ
@@ -98,6 +107,14 @@ struct L_AUTH_REQ
     uint64 diskCapacity;
     uint32 reserved_2;
 	//------------------------------------------------------------------
+	L_AUTH_REQ()
+	{
+		memset(version, 0, 16);
+		memcpy(version, "1.0.0.0", 7);
+		reserved_1 = reserved_2 = 0;
+		logMode = 2;
+		connectMode = 1;
+	};
     uint32 crc32;
 };
 
@@ -118,6 +135,10 @@ struct L_MD5_KEY_REQ//  MD5与密钥请求报?
     uint32 filmID;//  影片ID
     uint64 reserved;
     uint32 crc32;
+	L_MD5_KEY_REQ()
+	{
+		reserved = 0;
+	}
 };
 
 struct R_MD5_KEY_REP//  MD5与密钥反馈报?
@@ -145,6 +166,10 @@ struct L_MD5_KEY_CONFIRM//MD5与密钥确认报?
     uint32 filmID;//  影片ID
     uint64 reserved;
     uint32 crc32;
+	L_MD5_KEY_CONFIRM()
+	{
+		reserved = 0;
+	}
 };
 
 struct  R_MD5_RESULT_REQ//解密与MD5校验结果请求报文
@@ -161,6 +186,12 @@ struct L_MD5_RESULT_REPORT//解密与MD5校验结果上报报文
     uint64 reserved;
     uint64 rollBackLen;
     uint32 crc32;
+	L_MD5_RESULT_REPORT()
+	{
+		md5Result = 0;
+		rollBackLen = 0;
+		reserved = 0;
+	}
 };
 
 struct R_MD5_RESULT_CONFIRM//解密与MD5校验结果确认报文
@@ -196,6 +227,21 @@ struct L_HEART_INFO_REPORT//心跳信息上报报文
     uint64 recvLength;//  影片已接收大?
     uint64 lostSegment;//  影片已丢失segment包数?
     uint32 crc32;
+	L_HEART_INFO_REPORT()
+	{
+		filmID = 0;
+		filmNameLength = 0;
+		pFilmName = NULL;
+		filmLength = 0;
+		recvRound = 0;
+		filmSegment = 0;
+		memset(taskStartTime, 0, 20);
+		memset(recvStartTime, 0, 20);
+		memset(reserved, 0, 16);
+		reserved2 = 0;
+		recvLength = 0;
+		lostSegment = 0;
+	}
 };
 
 struct R_LOG_REQ
@@ -235,6 +281,11 @@ struct R_REMOTE_UPGRADE_REQ
     uint32 fileLength;
     uint8* pFile;
     uint32 crc32;
+	R_REMOTE_UPGRADE_REQ()
+	{
+		memset(updateSerialNo, 0, 16);
+		memset(reserved_2, 0, 16);
+	}
 };
 
 struct L_REMOTE_UPGRADE_PUSH_REP
@@ -245,6 +296,14 @@ struct L_REMOTE_UPGRADE_PUSH_REP
     uint8 updateSerialNo[16];
     uint8 reserved_2[16];
     uint32 crc32;
+	L_REMOTE_UPGRADE_PUSH_REP()
+	{
+		reserved_1 = 0;
+		updateCheckResult = 0;
+		memset(reserved_2, 0, 16);
+		memset(oldVersion, 0, 16);
+		memset(updateSerialNo, 0, 16);
+	}
 };
 
 struct R_REMOTE_UPGRADE_PUSH_CONFIRM
@@ -252,6 +311,11 @@ struct R_REMOTE_UPGRADE_PUSH_CONFIRM
     uint8 updateSerialNo[16];
     uint8 reserved[16];
     uint32 crc32;
+	R_REMOTE_UPGRADE_PUSH_CONFIRM()
+	{
+		memset(updateSerialNo, 0, 16);
+		memset(reserved, 0, 16);
+	}
 };
 
 struct L_LOST_INFO
@@ -264,6 +328,10 @@ struct L_LOST_INFO
     uint32 lostLength;
     uint8* pLost;
     uint32 crc32;
+	L_LOST_INFO()
+	{
+		reserved = 0;
+	}
 };
 
 struct R_LOST_INFO_CONFIRM
@@ -278,6 +346,20 @@ struct Lose_Info_Req_Msg
     uint32 filmID;//  影片ID ,if no film,the value is 0
     uint64 reserved;
     uint32 crc32;
+};
+
+struct R_PKG_SEND_START
+{
+	uint32 filmID;
+	uint32 segLen;
+	uint32 filmNameLen;
+};
+
+struct R_PKG_SEND_DATA
+{
+	uint32 filmID;
+	uint32 segNum;
+	uint32 dataLen;
 };
 
 std::string getDateTime();

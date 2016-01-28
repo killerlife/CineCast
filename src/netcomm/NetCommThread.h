@@ -22,15 +22,18 @@ class NetCommThread: public brunt::CActiveThread
 public:
 	NetCommThread();
 	virtual ~NetCommThread();
-	bool Init();
+	bool Init(bool bLeonis = false);
 	bool Start();
 	bool Stop();
 	int GetStatus() { return m_status; };
 	bool GetMD5File(uint32 filmId);
-	bool ReportLost(char* buf, int nSize);
+	bool ReportLost(char* buf, int nSize, int nLeoSize);
 	bool HeartBreat();
 	void StartRecvTask();
 	void StartRoundRecv();
+	bool LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis = false);
+	bool PkgSendConfirm(uint32 filmId);
+	bool IsConnect(){ return bConnected;};
 
 private:
 	virtual void doit();
@@ -41,6 +44,8 @@ private:
 	void GetHardKey(const std::string hardkey);
 	void cleanThread();
 	bool RecvFilter();
+	bool DecryptRep(uint32 filmId);
+	bool UpdateRep(uint8* sn);
 
 private:
 	int m_status;
@@ -57,4 +62,9 @@ private:
 	bool bConnected;
 	std::string m_strTaskTime;
 	std::string m_strRoundTime;
+	bool bLeonisCfg;
+	std::string m_strPkgFileName;
+	bool bPkgSendStart;
+	uint32 nFilmId;
+	std::string m_strUpdateFile;
 };

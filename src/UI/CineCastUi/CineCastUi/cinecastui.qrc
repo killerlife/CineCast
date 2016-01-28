@@ -2,6 +2,7 @@
     <qresource prefix="/CineCastUi" >
         <file>Resources/HDD2.png</file>
         <file>Resources/Reflash.png</file>
+        <file>Resources/Remote.png</file>
         <file>Resources/analysis.png</file>
         <file>Resources/content.png</file>
         <file>Resources/delete.png</file>

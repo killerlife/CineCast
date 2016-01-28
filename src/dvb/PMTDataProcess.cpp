@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <syslog.h>
 //#include <log/Log.h>
+#include <time.h>
+
+extern RECEIVE_INFO gRecv;
 
 PMTDataThread::PMTDataThread():
 m_status(0), m_PmtId(0), 
@@ -338,12 +341,137 @@ uint64 PMTDataThread::GetLostSegment()
 {
 	uint64 nLostCount = 0;
 	std::list<FilmDataThread*>::iterator itor;
+	std::vector<std::string> dcp;
+
 	if(m_mutex == 1)
 		return nLostCount;
+	m_strReportFileList = ""; 
 	for(itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
 	{
 		FilmDataThread* thread = *itor;
-		struct LostBuf * pLostBuf = thread->GetLostSegment();
+		m_strReportFileList += thread->GetLostSegment();
+		m_strReportFileList += " ";
+		nLostCount += thread->LostSegment();
+		m_FilmId = thread->GetFilmId();
+
+		std::string assetmap = thread->FindAssetmap();
+		if(assetmap != "")
+		{
+			bool bFound = false;
+			for (int j = 0; j < dcp.size(); j++)
+			{
+				if (assetmap == dcp.at(j))
+				{
+					bFound = true;
+				}
+			}
+			if (!bFound)
+			{
+				dcp.push_back(assetmap);
+			}
+		}
+	}
+
+	for(int i = 0; i < dcp.size(); i++)
+	{
+		uint64 mFilmLength = 0;
+		uint64 mReceLength = 0;
+		uint64 mTotaSegment = 0;
+		uint64 mReceSegment = 0;
+		uint64 mLostSegment = 0;
+		uint64 mCrcError = 0;
+
+		for(itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
+		{
+			FilmDataThread* thread = *itor;
+			if(thread->IsSameDCP(dcp.at(i)))
+			{
+				mFilmLength += thread->FileLength();
+				mReceLength += thread->ReciveLength();
+				mTotaSegment += thread->TotalSegment();
+				mReceSegment += thread->ReciveSegment();
+				mLostSegment += thread->LostSegment();
+				mCrcError += thread->CRCError();
+			}
+		}
+		std::string fn = dcp.at(i) + ".RecvStatus";
+		FILE *fp = fopen(fn.c_str(), "wb");
+		if(fp)
+		{
+			char buf[200];
+			std::string name = dcp.at(i);
+			if (name.at(name.size() - 1) == '/')
+				name.resize(name.size() - 1);
+			size_t pos = name.rfind("/");
+			if(pos != std::string::npos)
+			{
+				name = name.c_str() + pos + 1;
+			}
+			sprintf(buf, "FilmId=%lld\nFilmName=%s\nFilmLength=%lld\n",
+				m_FilmId, name.c_str(), mFilmLength);
+			fwrite(buf, strlen(buf), 1, fp);
+			sprintf(buf, "Creator=%s\nCRCError=%lld\nIssueDate=%d\n",
+				gRecv.strCreator.c_str(), mCrcError, gRecv.strIssueDate.c_str());
+			fwrite(buf, strlen(buf), 1, fp);
+			sprintf(buf, "Issuer=%s\nLostSegment=%lld\nReceiveLength=%lld\n",
+				gRecv.strIssuer.c_str(), mLostSegment, mReceLength);
+			fwrite(buf, strlen(buf), 1, fp);
+			sprintf(buf, "ReceiveStatus=%lld\nTotalSegment=%lld\nReceiveSegment=%lld\n",
+				gRecv.nReceiveStatus & 0xffff, mTotaSegment, mReceSegment);
+			fwrite(buf, strlen(buf), 1, fp);
+
+			time_t t;
+			time(&t);
+			struct tm *pTm;
+			pTm = localtime(&t);
+ 			sprintf(buf, "DateTime=%.4d-%.2d-%.2d\n",
+				pTm->tm_year + 1900,
+				pTm->tm_mon + 1,
+				pTm->tm_mday);
+ 			fwrite(buf, strlen(buf), 1, fp);
+			fclose(fp);
+		}
 	}
 	return nLostCount;
+}
+
+bool PMTDataThread::UnzipSubtitle()
+{
+	std::list<FilmDataThread*>::iterator itor;
+	if(m_mutex == 1)
+		return false;
+	for (itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
+	{
+		if((*itor)->UnzipSubtitle())
+			return true;
+	}
+	return false;
+}
+
+bool PMTDataThread::SaveData(char* fn, char* pData, uint32 segNum, uint32 len)
+{
+	std::list<FilmDataThread*>::iterator itor;
+	if(m_mutex == 1)
+		return false;
+	for (itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
+	{
+		if((*itor)->SaveData(fn, pData, segNum, len))
+			return true;
+	}
+	return false;
+}
+
+bool PMTDataThread::IsFilmDataReady()
+{
+	std::list<FilmDataThread*>::iterator itor;
+	if (m_filmList.size() < 1)
+		return false;
+	if(m_mutex == 1)
+		return false;
+	for (itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
+	{
+		if(!(*itor)->IsReady())
+			return false;
+	}
+	return true;
 }

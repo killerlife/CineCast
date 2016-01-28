@@ -234,7 +234,21 @@ bool ContentParser::open(const std::string& path)
 	ini->read(" ", "TotalSegment", m_status.TotalSegment);
 	ini->read(" ", "ReceiveSegment", m_status.ReceiveSegment);
 	ini->read(" ", "DateTime", m_status.DateTime);
-
+#if 0
+	printf("%s\n", m_status.FilmId.c_str());
+	printf("%s\n", m_status.FilmName.c_str());
+	printf("%s\n", m_status.FilmLength.c_str());
+	printf("%s\n ", m_status.Creator.c_str());
+	printf("%s\n ", m_status.CRCError.c_str());
+	printf("%s\n ", m_status.IssueDate.c_str());
+	printf("%s\n ", m_status.Issuer.c_str());
+	printf("%s\n ", m_status.LostSegment.c_str());
+	printf("%s\n ", m_status.ReceiveLength.c_str());
+	printf("%s\n ", m_status.ReceiveStatus.c_str());
+	printf("Total %s\n ", m_status.TotalSegment.c_str());
+	printf("Receive %s\n ", m_status.ReceiveSegment.c_str());
+	printf("%s\n ", m_status.DateTime.c_str());
+#endif
 	std::vector<std::string> filesXml;
 	findXmlFiles(path, filesXml);
 
@@ -383,8 +397,10 @@ int ContentParser::parseProgramInfo(DcpInfo& info, int index /* = 0 */)
 std::string ContentParser::getRecvRatio()
 {
 	uint64 i,j;
-	i = atol(m_status.TotalSegment.c_str());
-	j = atol(m_status.ReceiveSegment.c_str());
+	i = atoll(m_status.TotalSegment.c_str());
+	j = atoll(m_status.ReceiveSegment.c_str());
+// 	printf("T %s %d\n", m_status.TotalSegment.c_str(), i);
+// 	printf("R %s %d\n", m_status.ReceiveSegment.c_str(), j);
 	i = j*100/i;
 	char buf[10];
 	sprintf(buf, "%d", i);

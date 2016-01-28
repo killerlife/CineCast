@@ -1,4 +1,4 @@
-<ui version="4.0" >
+﻿<ui version="4.0" >
  <class>StatusClass</class>
  <widget class="QWidget" name="StatusClass" >
   <property name="geometry" >
@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>1266</width>
-    <height>583</height>
+    <height>621</height>
    </rect>
   </property>
   <property name="font" >
@@ -354,6 +354,23 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_11" >
+            <item>
+             <widget class="QLabel" name="label_40" >
+              <property name="enabled" >
+               <bool>false</bool>
+              </property>
+              <property name="pixmap" >
+               <pixmap resource="cinecastui.qrc" >:/CineCastUi/Resources/Remote.png</pixmap>
+              </property>
+              <property name="alignment" >
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>
@@ -1009,6 +1026,13 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_38" >
+     <property name="alignment" >
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

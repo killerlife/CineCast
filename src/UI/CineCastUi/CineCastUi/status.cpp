@@ -1,5 +1,7 @@
-#include "status.h"
+﻿#include "status.h"
 #include <QString>
+#include <QTextCodec>
+#include <QTextStream>
 
 Status::Status(QWidget *parent)
 	: QWidget(parent)
@@ -41,6 +43,7 @@ void Status::Init()
 	ui.label_26->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
 	ui.label_28->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
 	ui.label_30->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
+	ui.label_38->setStyleSheet("QLabel{font-size: 40px; font-family:'Book Antiqua'; color:#0000FF;}");
 }
 
 void Status::UpdateSatellite(TUNER_INFO* tInfo)
@@ -64,11 +67,14 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.progressBar_Revceiver_length->setValue(tInfo->nReceiveLength*10000/tInfo->nFileLength);
 	}
 	QString txt;
+	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
+	QString creator = gbk->toUnicode(tInfo->strCreator.c_str());
+	QString issuer = gbk->toUnicode(tInfo->strIssuer.c_str());
 	txt = QString(tr("Film Name: %1<br>UUID: %2<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
 		.arg(tInfo->strFilmName.c_str())
 		.arg(tInfo->strUuid.c_str())
-		.arg(tInfo->strCreator.c_str())
-		.arg(QString::fromLocal8Bit(tInfo->strIssuer.c_str()))
+		.arg(creator)
+		.arg(issuer)
 		.arg(tInfo->strIssueDate.c_str())
 		.arg(QString::number(tInfo->nTotalSegment))
 		.arg(QString::number(tInfo->nReceiveSegment))
@@ -76,9 +82,11 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		.arg(QString::number(tInfo->nLostSegment))
 		.arg(QString::number(tInfo->nReceiveStatus>>16));
 	ui.textBrowser->setText(txt);
-	switch(tInfo->nReceiveStatus & 0xff)
+	switch(tInfo->nReceiveStatus & 0xffff)
 	{
 	case 0:
+// 		ui.label_38->setText(tr("Please power-off and take out the removeable disk."));
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(true);
 		ui.label_11->setEnabled(true);
 		ui.label_12->setEnabled(false);
@@ -103,6 +111,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		break;
 	case 1:
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(false);
 		ui.label_11->setEnabled(false);
 		ui.label_12->setEnabled(true);
@@ -127,6 +136,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		break;
 	case 2:
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(false);
 		ui.label_11->setEnabled(false);
 		ui.label_12->setEnabled(false);
@@ -151,6 +161,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		break;
 	case 3:
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(false);
 		ui.label_11->setEnabled(false);
 		ui.label_12->setEnabled(false);
@@ -175,6 +186,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		break;
 	case 5:
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(false);
 		ui.label_11->setEnabled(false);
 		ui.label_12->setEnabled(false);
@@ -199,6 +211,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		break;
 	case 6:
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(false);
 		ui.label_11->setEnabled(false);
 		ui.label_12->setEnabled(false);
@@ -223,6 +236,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		break;
 	case 7:
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(false);
 		ui.label_11->setEnabled(false);
 		ui.label_12->setEnabled(false);
@@ -247,6 +261,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		break;
 	case 8:
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(false);
 		ui.label_11->setEnabled(false);
 		ui.label_12->setEnabled(false);
@@ -271,6 +286,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		break;
 	case 9:
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(false);
 		ui.label_11->setEnabled(false);
 		ui.label_12->setEnabled(false);
@@ -295,6 +311,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_7->setEnabled(false);
 		break;
 	case 10:
+		ui.label_38->setText("");
 		ui.label_10->setEnabled(false);
 		ui.label_11->setEnabled(false);
 		ui.label_12->setEnabled(false);
@@ -341,6 +358,13 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		ui.label_18->setEnabled(true);
 		ui.label_7->setEnabled(true);
+		ui.label_38->setText(tr("Please power-off and take out the removeable disk."));
 		break;
 	}
+	if (tInfo->strExtend.find("REMOTE:1") != std::string::npos)
+		ui.label_40->setEnabled(true);
+	else
+		ui.label_40->setEnabled(false);
+	if(tInfo->strExtend.find("REMOVEABLEDISK:0") != std::string::npos)
+		ui.label_38->setText(tr("Mount removeable disk error, please check disk."));
 }

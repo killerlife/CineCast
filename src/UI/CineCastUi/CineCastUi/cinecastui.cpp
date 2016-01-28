@@ -6,6 +6,7 @@
 #include "live.h"
 #include "raid.h"
 #include "tkr.h"
+#include <QPixmap>
 
 int m_ConnectStatus = 0;    //״̬    =2=1=0
 
@@ -34,12 +35,12 @@ void CineCastUi::Init()
 //  	this->setStyleSheet("background-color:#336699");     //#0099CCƫ #3366CCƫ
 	ui.tabWidget->setTabShape(QTabWidget::Triangular);
 // 	ui.tabWidget->setStyleSheet("QTabBar{color:white;border-color:#333333}");
-	ui.tabWidget->setCurrentIndex(0);
 
 	connect(&socket, SIGNAL(error(QAbstractSocket::SocketError)),
 		this, SLOT(Error(QAbstractSocket::SocketError)));
 	connect(&socket, SIGNAL(connected()), this, SLOT(Connected()));
 	m_network_timer = startTimer(1000);  //״̬ʱ //old 500
+	m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
 
 	statusForm = new Status;
 	statusWid =  ui.mdiArea_statue->addSubWindow(statusForm);
@@ -89,24 +90,33 @@ void CineCastUi::Init()
 	tkrWid->showMaximized();
 	tkrWid->setStyleSheet("background-color:#cccccc");
 	tkrWid->show();
+
+	ui.tabWidget->setCurrentIndex(0);
 }
 
 void CineCastUi::timerEvent(QTimerEvent * te)
 {
 	extern QString rIp;
+	QPixmap pix;
 	if(te->timerId() == m_network_timer)
 	{
 		switch(m_ConnectStatus)
 		{
 		case 0:
+			pix.load(QString::fromUtf8(":/CineCastUi/Resources/recv.png"));
+			ui.label->setPixmap(pix);
 			socket.connectToHost(rIp, 10003);
 			m_ConnectStatus = 1;
 			
 			break;
 		case 1:
+			pix.load(QString::fromUtf8(":/CineCastUi/Resources/recv.png"));
+			ui.label->setPixmap(pix);
 			//ui.label_NetworkStatus->setText("NetWork Status: Connecting ");  //new
 			break;
 		case 2:
+			pix.load(QString::fromUtf8(":/CineCastUi/Resources/idle.png"));
+			ui.label->setPixmap(pix);
 		//	UiFilter();
 			break;
 		}
@@ -116,10 +126,10 @@ void CineCastUi::timerEvent(QTimerEvent * te)
 	{
 		switch(m_ConnectStatus)
 		{
-		case 0:
-			break;
-		case 1:
-			break;
+// 		case 0:
+// 			break;
+// 		case 1:
+// 			break;
 		case 2:
 			UiFilter();
 			break;
@@ -133,10 +143,13 @@ void CineCastUi::Error(QAbstractSocket::SocketError socketError)
 	m_ConnectStatus = 0;
 	//ui.label_NetworkStatus->setText("NetWork Status:   Error    ");
 
-    m_network_timer = startTimer(1000);   //·ʱɹرնʱ
+//     m_network_timer = startTimer(1000);   //·ʱɹرնʱ
 
+	if(m_UpdateSatellite_timer > 0)
+	{
    	killTimer(m_UpdateSatellite_timer);
 	m_UpdateSatellite_timer = -1;
+}
 }
 
 void CineCastUi::Connected()
@@ -145,11 +158,11 @@ void CineCastUi::Connected()
 	//ui.label_NetworkStatus->setText("NetWork Status:     OK     ");
 
 	//·ʱɹرնʱ
-	killTimer(m_network_timer);
-	m_network_timer = -1;
+// 	killTimer(m_network_timer);
+// 	m_network_timer = -1;
 
 
-	m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
+// 	m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
 }
 
 #include "../../../netcomm/UiProtocal.h"
@@ -232,6 +245,9 @@ void CineCastUi::UiFilter()
 			case RECEIVE_FILM_CREATOR:
 				recv.strCreator = tmp;
 				break;
+			case RECEIVE_EXTEND:
+				recv.strExtend = tmp;
+				break;
 			}
 		}
 		statusForm->UpdateRecv((RECEIVE_INFO*)&recv);
@@ -242,6 +258,7 @@ void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 {
 	if(3==nIndex)                    //лҳ3Żȡ־
 	{
+		if (m_ConnectStatus == 2)
 		   setupForm->TMS_start();   //ȡ־ʱ
 	}
 	else
@@ -282,10 +299,7 @@ void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 	}
 }
 
-
-
-
-
+extern QString rIp;
 void CineCastUi::on_pushButton_Reboot_clicked()
 {
     switch(QMessageBox::question(this,"Question",tr("Do you want to Reboot"),
@@ -293,6 +307,43 @@ void CineCastUi::on_pushButton_Reboot_clicked()
     {
     case QMessageBox::Ok:
 		{
+			if(rIp == "127.0.0.1")
+			{
+#ifdef WIN32
+				if(m_ConnectStatus==2)    
+				{
+					KL *pKL = (KL*)buf;
+					int i;
+
+					pKL->m_pkgHead = 0x7585;
+					pKL->m_keyID = S_REBOOT;
+					pKL->m_length = 1;
+					buf[sizeof(KL)] = 1;
+					socket.write(buf, sizeof(KL) + 1);
+					socket.waitForBytesWritten(-1);
+					socket.waitForReadyRead(-1);
+
+					i = socket.read(buf, 2048);
+					if(pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_REBOOT)
+					{
+						QMessageBox::information(this,"Information",tr("Reboot successful"));
+						return;
+					}
+				}
+				else
+				{
+					//ʾʾѾ
+					// ʧ
+					QMessageBox::information(this,"Information",tr("Reboot failed,network errors, operation failed"));
+					return;
+				}
+#else
+				system("/bin/sync");
+				system("/sbin/reboot");
+#endif
+			}
+			else
+			{
 				if(m_ConnectStatus==2)    
 				{
 					KL *pKL = (KL*)buf;
@@ -321,6 +372,7 @@ void CineCastUi::on_pushButton_Reboot_clicked()
                      return;
 				}
 			}
+		}
 			break;
 		case QMessageBox::Cancel:
 		//	label->setText(" Question button / Cancel ");
@@ -329,7 +381,6 @@ void CineCastUi::on_pushButton_Reboot_clicked()
 			break;
 		}
 		return;
-
 }
 
 void CineCastUi::on_pushButton_Shutdown_clicked()
@@ -339,6 +390,9 @@ void CineCastUi::on_pushButton_Shutdown_clicked()
     {
     case QMessageBox::Ok:
 		{
+			if(rIp == "127.0.0.1")
+			{
+#ifdef WIN32
 				if(m_ConnectStatus==2)     
 				{
 					KL *pKL = (KL*)buf;
@@ -364,8 +418,40 @@ void CineCastUi::on_pushButton_Shutdown_clicked()
 					 QMessageBox::information(this,"Information",tr("Shutdown failed,network errors, operation failed"));
                      return;
 				}
+#else
+				system("/bin/sync");
+				system("/sbin/init 0");
+#endif
 		}
+			else
+			{
+				if(m_ConnectStatus==2)     
+				{
+					KL *pKL = (KL*)buf;
+					int i;
 
+					pKL->m_pkgHead = 0x7585;
+					pKL->m_keyID = S_SHUTDOWN;
+					pKL->m_length = 1;
+					buf[sizeof(KL)] = 1;
+					socket.write(buf, sizeof(KL) + 1);
+					socket.waitForBytesWritten(-1);
+					socket.waitForReadyRead(-1);
+
+					i = socket.read(buf, 2048);
+					if(pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_SHUTDOWN)
+					{
+						QMessageBox::information(this,"Information",tr("Shutdown successful"));
+						return;
+					}
+				}
+				else
+				{
+					QMessageBox::information(this,"Information",tr("Shutdown failed,network errors, operation failed"));
+					return;
+				}
+			}
+		}
     	break;
     case QMessageBox::Cancel:
     	break;

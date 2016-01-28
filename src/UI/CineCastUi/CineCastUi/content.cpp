@@ -1,5 +1,6 @@
 ﻿#include "content.h"
 #include <QTcpSocket>
+#include "../../../netcomm/UiProtocal.h"
 
 Content::Content(QTcpSocket* pSocket, QWidget *parent)
 	: QWidget(parent), pSocket(NULL)
@@ -61,6 +62,12 @@ void Content::Init()
 	ui.treeWidget_HDD_info->headerItem()->setFont(7, font);
 	ui.treeWidget_USB_info->headerItem()->setFont(0, font);
 	ui.treeWidget_USB_info->headerItem()->setFont(1, font);
+#if 1
+	ui.treeWidget_HDD_info->setColumnWidth(0, 45);
+	ui.treeWidget_HDD_info->setColumnWidth(1, 50);
+	ui.treeWidget_HDD_info->setColumnWidth(4, 40);
+	ui.treeWidget_HDD_info->setColumnWidth(5, 80);
+#endif
 
 	ui.groupBox->setStyleSheet("QGroupBox{font-size: 18px; font-family:'Book Antiqua';}");
 	ui.label->setStyleSheet("QLabel{font-size: 18px; font-family:'Book Antiqua';}");
@@ -79,9 +86,6 @@ void Content::Init()
 	ui.label_12->setStyleSheet("QLabel{font-size: 18px; font-family:'Book Antiqua';}");
 	ui.label_Progress->setVisible(false);
 }
-
-
-#include "../../../netcomm/UiProtocal.h"
 
 //new
 extern  int m_ConnectStatus;    //״̬    =2=1=0
@@ -201,8 +205,11 @@ void Content::ContentisReady_HDD()     //Ƿ׼,׼ֱӵLoadContent_HDD
         if(true==ret)  //Ѿ׼
 		{
             this->LoadContent_HDD();            //ȡб
+			if (m_isReady_timer_HDD > 0)
+			{
 		    killTimer(m_isReady_timer_HDD);
             m_isReady_timer_HDD=-1;
+		}
 		}
 
 	}
@@ -237,10 +244,12 @@ void Content::ContentisReady_USB()     //Ƿ׼,׼ֱӵLoadContent_USB
         if(true==ret)  //Ѿ׼
 		{
             this->LoadContent_USB();            //ȡб
+			if(m_isReady_timer_USB > 0)
+			{
 		    killTimer(m_isReady_timer_USB);
 			m_isReady_timer_USB=-1;
 }
-
+		}
 	}
 }
 
@@ -383,10 +392,7 @@ void Content::LoadContent_HDD()
 				item_HDD[i]=new ContentItem;
 				break;
 			}
-			
 		}
-
-     
 	}
 
     delete[] buf;
@@ -394,10 +400,6 @@ void Content::LoadContent_HDD()
 	printf("%d:run to:LoadContent_HDD()-end\n",num1++);
 
 }
-
-
-
-
 
 void Content::LoadContent_USB()
 {
@@ -552,14 +554,30 @@ void Content::LoadContent_USB()
 
 void ContentItem::MakeItem_HDD()
 {
+#if 1
+	setTextAlignment(0, Qt::AlignRight);
 	setText(0, pData[C_STATUS].c_str());
+	setTextAlignment(1, Qt::AlignRight);
 	setText(1, pData[C_PROGRESS].c_str());
 	setText(2, pData[C_NAME].c_str());
+	setTextAlignment(3, Qt::AlignRight);
 	setText(3, pData[C_RECV_DATETIME].c_str());
 	setText(4, pData[C_STEREO].c_str());
-	setText(5, pData[C_FILM_LENGTH].c_str());
+#ifdef WIN32
+	uint64 len = _atoi64(pData[C_FILM_LENGTH].c_str());
+#else
+	uint64 len = atoll(pData[C_FILM_LENGTH].c_str());
+#endif
+	len = len/1024/1024/1024;
+	char buf[30];
+	sprintf(buf, "%ld GB", len);
+	setTextAlignment(5, Qt::AlignRight);
+	setText(5, buf);
+	setTextAlignment(6, Qt::AlignRight);
 	setText(6, pData[C_RECVSEGMENT].c_str());
+	setTextAlignment(7, Qt::AlignRight);
 	setText(7, pData[C_TOTAL_SEGMENT].c_str());
+#endif
 }
 
 
@@ -798,11 +816,6 @@ int Content::getCopyProgress()   //ʱѯļ
             void* pos2=buf+sizeof(KL)+sizeof(int);
 	        memcpy(&get_copy_flag,pos2,sizeof(int));    //ɣ۳ɹ������0
            
-
-		    printf("ȡĽpercent:=%d\n",get_percent);
-			printf("ȡ״̬percent:=%d\n",get_copy_flag);
-
-
 			if(get_percent>=0&&get_percent<=10000)
             ui.progressBar_CopyDir->setValue(get_percent);     //
 			//QString s=QString::number(get_percent);
@@ -814,8 +827,11 @@ int Content::getCopyProgress()   //ʱѯļ
 			
 			if(get_copy_flag==0) 
 			{
+				if(m_query_timer > 0)
+				{
 				killTimer(m_query_timer);       //ɣʧ,ɱѯȵĶʱ 
 		        m_query_timer=-1;
+				}
 				ui.pushButton_ExporttoUSB->setEnabled(true);   //ťʹܣļɺڻָֻ֤һļڿ
 				this->UpdateContent_USB();
 			}
@@ -864,7 +880,6 @@ void Content::on_pushButton_DeleteDir_HDD_clicked()
 
 		//֤ȷ
 	    memcpy(path_del,pos,sizeof(path_del));
-		printf("ɾĿ¼:path_del=%s ",path_del);
 	
         pSocket->write(buf,sendsize);
 		pSocket->waitForBytesWritten(-1);
@@ -915,7 +930,6 @@ void Content::on_pushButton_DeleteDir_USB_clicked()
 
 		//֤ȷ
 	    memcpy(path_del,pos,sizeof(path_del));
-		printf("ɾĿ¼:path_del=%s ",path_del);
 	
         pSocket->write(buf,sendsize);
 		pSocket->waitForBytesWritten(-1);

@@ -8,8 +8,6 @@ OBJ=test.o
 CFLG = -L../../lib -L/usr/lib64
 
 CFLAGS += \
--DCAPTURE \
--g 
 
 CLIB = \
 -lQtCore \
@@ -29,8 +27,8 @@ CLIB = \
 -lx86-netComm \
 -lx86-dvbOperater \
 -lx86-Config \
--lx86-Log \
 -lx86-iniFile \
+-lx86-Log \
 -ldvbv5 \
 -lssl \
 -lcrypto \
@@ -64,6 +62,7 @@ clean:
 	
 post-build:
 	cp $(TARGET) ../../bin/linux/release
+	cp $(TARGET) /usr/CineCast/bin/cinecastd
 	
 %.o: %.cpp
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@

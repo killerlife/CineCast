@@ -5,6 +5,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mount.h>
+
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/exception.hpp>
+#include <exception>
+#include <iostream>
+
+#include <openssl/rsa.h>
+#include <openssl/evp.h>
+#include <openssl/objects.h>
+#include <openssl/x509.h>
+#include <openssl/err.h>
+#include <openssl/pem.h>
+#include <openssl/ssl.h>
+#include <openssl/md5.h>
+#include <errno.h>
+
+#include <log/Log.h>
+#include <log/LogStruct.h>
+#include <xml/GeneralXMLLib/GeneralXMLLib.h>
+#include <xml/GeneralXMLLib/Element.h>
 
 #define NETDEV_COUNT 2
 #define ETH "/etc/sysconfig/network-scripts/ifcfg-enp6s"
@@ -12,6 +35,8 @@
 #define RESOLV "/etc/resolv.conf"
 
 using namespace brunt;
+namespace fs = boost::filesystem;
+extern ILog* gLog;
 
 NetOperation::NetOperation()
 {
@@ -321,6 +346,7 @@ bool NetOperation::SetRemoteConfig(REMOTE_CONF &m_remoteConf)
 		ini->load("/etc/CineCast/CineCast.cfg");
 		ini->write(" ", "SERVER", m_remoteConf.strRemote.c_str());
 		sprintf(fn, "%d", m_remoteConf.nPort);
+		if(m_remoteConf.nPort != 0)
 		ini->write(" ", "PORT", fn);
 		ini->save("/etc/CineCast/CineCast.cfg");
 	}
@@ -328,18 +354,48 @@ bool NetOperation::SetRemoteConfig(REMOTE_CONF &m_remoteConf)
 	ICMyini* ini2 = createMyini();
 	if (ini2)
 	{
-		for(int i = 0; i < NETDEV_COUNT; i++)
+		std::string tmp;
+		if(ini->read(" ", "ETH0", tmp))
 		{
-			sprintf(fn, "%s%d", ETH, i);
+			if (!tmp.empty())
+			{
+				sprintf(fn, "%s%s", ETHA, tmp.c_str());
+				if(ini2->load(fn))
+		{
+					if(!m_remoteConf.strDns1.empty())
+						ini2->write(" ", "DNS1", m_remoteConf.strDns1.c_str());
+					if(!m_remoteConf.strDns2.empty())
+						ini2->write(" ", "DNS2", m_remoteConf.strDns2.c_str());
+					ini2->save(fn);
+				}
+				sprintf(fn,
+					"nmcli con mod %s ipv4.dns \"%s %s\"",
+					tmp.c_str(),
+					m_remoteConf.strDns1.c_str(),
+					m_remoteConf.strDns2.c_str());
+				DPRINTF("%s\n", fn);
+				system(fn);
+
+				sprintf(fn,
+					"nmcli con up %s",
+					tmp.c_str());
 			DPRINTF("%s\n", fn);
-			ini2->load(fn);
+				system(fn);
+			}
+		}
+		if(ini->read(" ", "ETH1", tmp))
+		{
+			if (!tmp.empty())
+			{
+				sprintf(fn, "%s%s", ETHA, tmp.c_str());
+				if(ini2->load(fn))
+				{
 			if(!m_remoteConf.strDns1.empty())
 				ini2->write(" ", "DNS1", m_remoteConf.strDns1.c_str());
 			if(!m_remoteConf.strDns2.empty())
 				ini2->write(" ", "DNS2", m_remoteConf.strDns2.c_str());
-			std::string tmp;
-			ini2->read(" ", "DEVICE", tmp);
-// 			ini2->save(fn);
+					ini2->save(fn);
+				}
 			sprintf(fn,
 				"nmcli con mod %s ipv4.dns \"%s %s\"",
 				tmp.c_str(),
@@ -354,6 +410,7 @@ bool NetOperation::SetRemoteConfig(REMOTE_CONF &m_remoteConf)
 			DPRINTF("%s\n", fn);
 			system(fn);
 		}
+	}
 	}
 #endif
 	return true;
@@ -412,6 +469,8 @@ bool SatelliteConfOperation::WriteConfig()
 	char buf[500];
 	if(ini)
 	{
+		if(ini->load("/etc/CineCast/CineCast.cfg"))
+		{
 		std::string tmp;
 		sprintf(buf, "%ld", gTuner.nFreq);
 		tmp = buf;
@@ -458,6 +517,7 @@ bool SatelliteConfOperation::WriteConfig()
 			ini->write(" ", "POL", gTuner.strPolVert.c_str());
 
 		return ini->save("/etc/CineCast/CineCast.cfg");
+	}
 	}
 	return false;
 }
@@ -545,6 +605,103 @@ uint64 ContentOperation::GetTotalSpace(int src)
 	return 0;
 }
 
+void ContentOperation::UpdateDirList(int src)
+{
+	std::string root;
+	switch(src)
+	{
+	case PST_HDD:
+		root = "/storage/";
+		break;
+	case PST_USB:
+		root = "/media/usb";
+		break;
+	}
+	m_dir.clear();
+	FindDir(root);
+#if 0
+	for(int i = 0; i < m_dir.size(); i++)
+	{
+		DPRINTF("%s\n", m_dir.at(i).c_str());
+	}
+#endif
+}
+
+void ContentOperation::FindDir(std::string dir)
+{
+	char str[512];
+	fs::path p(dir);
+	try
+	{
+		m_dir.push_back(dir);
+
+		fs::directory_iterator end_itr;
+		for(fs::directory_iterator itr(p); itr != end_itr; ++itr)
+		{
+			try
+			{
+				boost::filesystem::path* dir_name = NULL;
+				if(fs::is_directory(*itr))
+				{
+					FindDir((*itr).path().native());
+				}
+			}
+			catch(const fs::filesystem_error& e)
+			{
+				sprintf(str, "[ContentOperation] FindDir: Skip the IO error, except: %s.", e.what());
+				if (gLog)
+				{
+					gLog->Write(LOG_ERROR, str);
+				}
+				DPRINTF("[ContentOperation] FindDir: Skip the IO error, except: %s.", e.what());
+			}
+		}
+	}
+	catch(const fs::filesystem_error& e)
+	{
+		sprintf(str, "[ContentOperation] FindDir: except: %s.", e.what());
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
+	}
+}
+
+bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList)
+{
+	if(GetAvalibleSpace(src) < 350*1024*1024*1024)
+	{
+		UpdateDirList(src);
+		switch(src)
+		{
+		case PST_HDD:
+			{
+				for (int i = 0; i < m_dir.size(); i++)
+				{
+					bool bFind = false;
+					for(int j = 0; j < runList.size(); j++)
+					{
+						if(runList.at(j).find(m_dir.at(i)) != std::string::npos)
+						{
+							bFind = true;
+							break;
+						}
+					}
+					if(!bFind)
+					{
+						char cmd[512];
+						sprintf(cmd, "rm -rf %s", m_dir.at(i).c_str());
+						//DPRINTF("%s\n", cmd);
+						system(cmd);
+					}
+				}
+			}
+			break;
+		case PST_USB:
+			break;
+		}
+	}
+}
 mke2fs::mke2fs():fp(NULL), m_Status(0)
 {
 
@@ -555,8 +712,10 @@ mke2fs::~mke2fs()
 	CActiveThread::stop();
 }
 
-bool mke2fs::FormatDisk()
+bool mke2fs::FormatDisk(DISK_TYPE type)
 {
+	m_type = type;
+
 	if(!(status() == thread_stopped || status() == thread_ready ))
 	{
 		DPRINTF("The thread had not been ready, status = %d.", status());
@@ -579,7 +738,46 @@ bool mke2fs::FormatDisk()
 
 void mke2fs::doit()
 {
-	fp = popen("mke2fs /dev/sdb1", "r");
+	ICMyini* ini = createMyini();
+	bool bRead = false;
+	std::string tmp;
+	if(ini)
+	{
+		if (ini->load("/etc/CineCast/config.cfg"))
+		{
+			switch(m_type)
+			{
+			case DISK_REMOVEABLE:
+				if(ini->read(" ", "programdisk", tmp))
+				{
+					bRead = true;
+				}
+				break;
+			case DISK_RAID:
+				if(ini->read(" ", "raiddisk", tmp))
+				{
+					bRead = true;
+				}
+				break;
+			}
+		}
+	}
+	if (!bRead)
+	{
+		switch(m_type)
+		{
+		case DISK_REMOVEABLE:
+			tmp = "/dev/sdb1";
+			break;
+		case DISK_RAID:
+			tmp = "/dev/md0";
+			break;
+		}
+	}
+	releaseMyini(ini);
+
+	tmp = "mkfs.ext3 " + tmp;
+	fp = popen(tmp.c_str(), "r");
 	setvbuf(fp, NULL, _IONBF, 0);
 	sout.clear();
 	memset(out, 0, 80);
@@ -612,17 +810,79 @@ uint8 mke2fs::CheckStatus()
 	return m_Status;
 }
 
+bool mke2fs::MountDisk(DISK_TYPE type)
+{
+	ICMyini* ini = createMyini();
+	bool bRead = false;
+	std::string tmp;
+	m_type = type;
+	if(ini)
+	{
+		switch(m_type)
+		{
+		case DISK_REMOVEABLE:
+			if(ini->read(" ", "programdisk", tmp))
+			{
+				bRead = true;
+			}
+			break;
+		case DISK_RAID:
+			if(ini->read(" ", "raiddisk", tmp))
+			{
+				bRead = true;
+			}
+			break;
+		}
+	}
+	if (!bRead)
+	{
+		switch(m_type)
+		{
+		case DISK_REMOVEABLE:
+			tmp = "/dev/sdb1";
+			break;
+		case DISK_RAID:
+			tmp = "/dev/md0";
+			break;
+		}
+	}
+	releaseMyini(ini);
+	int res;
+	switch(m_type)
+	{
+	case DISK_REMOVEABLE:
+		res = mount(tmp.c_str(), "/storage", "ext3", MS_SYNCHRONOUS, NULL);
+		break;
+	case DISK_RAID:
+		res = mount(tmp.c_str(), "/storage", "ext3", MS_SYNCHRONOUS, NULL);
+		break;
+	}
+	if(res == 0)
+		return true;
+	if(errno == EBUSY)
+		return true;
+	return false;
+}
+
 void System::Reboot()
 {
+	system("/bin/sync");
 	system("/sbin/reboot");
 }
 
 void System::Shutdown()
 {
+	system("/bin/sync");
 	system("/sbin/init 0");
 }
 
-
+void System::SetDateTime(char* stime)
+{
+	std::string strParam = "/bin/date -s ";
+	strParam += stime;
+	system(strParam.c_str());
+	system("/sbin/clock -w");
+}
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -734,4 +994,234 @@ void USB::USB_UnMount()
 void USB::USB_UpdateSpace()     //???????????
 {
 
+}
+
+Md5Class::Md5Class():bMd5Success(false), nRollBackLen(0)
+{
+}
+
+bool Md5Class::Md5Parser(char *buf)
+{
+	int step = 0;
+	try
+	{
+		efl.clear();
+		std::string rootName("EncodeInfo");
+		CElement prjElement(rootName.c_str(), buf, BUFFER_FLAG);
+		step = 1;
+
+		CElement EncodeFileList = prjElement.GetChildByNameIndex("EncodeFileList");
+		efl.Id = atoi(EncodeFileList.GetAttribute("ID").c_str());
+		efl.Name = EncodeFileList.GetAttribute("Name");
+		efl.ChallengeCode = EncodeFileList.GetChildElementText("ChallengeCode");
+
+// 		DPRINTF("efl.id = %u Name = %s\n", efl.Id, efl.Name.c_str());
+// 		DPRINTF("efl.ChallengeCode = %s\n", efl.ChallengeCode.c_str());
+		
+		int count = EncodeFileList.GetChildCountByName("EncodeFile");
+		for(int i = 0; i < count; i++)
+		{
+// 			DPRINTF("EncoderFile:%u\n", i);
+			CElement EncodeFile = EncodeFileList.GetChildByNameIndex("EncodeFile", i);
+			ENCODEFILE ef;
+			ef.Name = EncodeFile.GetAttribute("Name");
+			ef.Id = atoi(EncodeFile.GetAttribute("ID").c_str());
+			if(EncodeFile.GetAttribute("EncodeCount") == "0")
+				ef.Encode = false;
+			else
+				ef.Encode = true;
+			if(EncodeFile.GetAttribute("MD5Count") == "0")
+				ef.Md5 = false;
+			else
+				ef.Md5 = true;
+			ef.SubPath = EncodeFile.GetAttribute("SubPath");
+// 			DPRINTF("\nName:%s ID:%u EC:%u MD:%u SP:%s\n", 
+// 				ef.Name.c_str(), ef.Id, ef.Encode, ef.Md5, ef.SubPath.c_str());
+
+			if(ef.Encode)
+			{
+				CElement EncodeBlockList = EncodeFile.GetChildByNameIndex("EncodeBlockList");
+				int c1 = EncodeBlockList.GetChildCountByName("EncodeBlock");
+				int ii;
+				for (ii = 0; ii < c1; ii++)
+				{
+					ENCODEBLOCK eb;
+					CElement e = EncodeBlockList.GetChildByNameIndex("EncodeBlock", ii);
+					eb.EncodeBegin = atoll(e.GetChildElementText("EncodeBeginPoint").c_str());
+					eb.EncodeEnd = atoll(e.GetChildElementText("EncodeEndPoint").c_str());
+					ef.EncodeBlockList.push_back(eb);
+// 					DPRINTF("EC Begin:%08X End:%08X\n", eb.EncodeBegin, eb.EncodeEnd);
+				}
+			}
+
+			if(ef.Md5)
+			{
+				CElement MD5BlockList = EncodeFile.GetChildByNameIndex("MD5BlockList");
+				int c1 = MD5BlockList.GetChildCountByName("MD5Block");
+				int a = 0;
+				for (a = 0; a < c1; a++)
+				{
+					MD5BLOCK mb;
+					CElement e = MD5BlockList.GetChildByNameIndex("MD5Block", a);
+					mb.Md5Begin = atoll(e.GetChildElementText("MD5BeginPoint").c_str());
+					mb.Md5End = atoll(e.GetChildElementText("MD5EndPoint").c_str());
+					std::string s = e.GetChildElementText("MD5");
+// 					DPRINTF("%s\n", s.c_str());
+					char hex[20];
+					sscanf(s.c_str(),
+						"%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
+						(uint8*)(hex+0), (uint8*)(hex+1), (uint8*)(hex+2), (uint8*)(hex+3),
+						(uint8*)(hex+4), (uint8*)(hex+5), (uint8*)(hex+6), (uint8*)(hex+7),
+						(uint8*)(hex+8), (uint8*)(hex+9), (uint8*)(hex+10), (uint8*)(hex+11),
+						(uint8*)(hex+12), (uint8*)(hex+13), (uint8*)(hex+14), (uint8*)(hex+15));
+					memcpy(mb.md5, hex, 16);
+					ef.Md5BlockList.push_back(mb);
+
+// 					DPRINTF("MB Begin:%08X End:%08X\n", mb.Md5Begin, mb.Md5End);
+// 					DPRINTF("%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X\n",
+// 						(uint8)mb.md5[0], (uint8)mb.md5[1], (uint8)mb.md5[2], (uint8)mb.md5[3],
+// 						(uint8)mb.md5[4], (uint8)mb.md5[5], (uint8)mb.md5[6], (uint8)mb.md5[7],
+// 						(uint8)mb.md5[8], (uint8)mb.md5[9], (uint8)mb.md5[10], (uint8)mb.md5[11],
+// 						(uint8)mb.md5[12], (uint8)mb.md5[13], (uint8)mb.md5[14], (uint8)mb.md5[15]);
+				}
+			}
+			efl.EncodeFileList.push_back(ef);
+		}
+	}
+	catch (std::exception&)
+	{
+		char str[512];
+		std::string errStr;
+		switch(step)
+		{
+		case 0:
+			errStr = "XML Parse failed.";
+			break;
+		case 1:
+			errStr = "XML Element failed.";
+			break;
+		}
+		sprintf(str, "[BaseOperation] Md5Parser: %s", errStr.c_str());
+		if(gLog)
+			gLog->Write(LOG_ERROR, str);
+		DPRINTF("%s\n", str);
+		return false;
+	}
+	return true;
+}
+
+bool Md5Class::GetMd5(FILE* fp, MD5BLOCK mb)
+{
+	if(fp <= 0)
+		return false;
+
+	MD5_CTX c;
+	MD5_Init(&c);
+
+	char buf[1024*1024];
+	int count = (mb.Md5End - mb.Md5Begin)/1024/1024;
+	DPRINTF("/:%lld\n", count);
+	fseek(fp, mb.Md5Begin, SEEK_SET);
+
+	for(int i = 0; i < count; i++)
+	{
+		fread(buf, 1024*1024, 1, fp);
+		MD5_Update(&c, buf, 1024*1024);
+	}
+	count = (mb.Md5End - mb.Md5Begin)%(1024*1024);
+	DPRINTF("%%:%lld\n", count);
+	if (count > 0)
+	{
+		fread(buf, count, 1, fp);
+		MD5_Update(&c, buf, count);
+	}
+	DPRINTF("Start:%lld end:%lld\n", mb.Md5Begin, mb.Md5End);
+
+	char md[16];
+	memset(md, 0, 16);
+	MD5_Final((unsigned char*)md, &c);
+	if (memcmp(md, mb.md5, 16) == 0)
+	{
+		return true;
+	}
+	DPRINTF("%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X\n",
+		(uint8)md[0], (uint8)md[1], (uint8)md[2], (uint8)md[3],
+		(uint8)md[4], (uint8)md[5], (uint8)md[6], (uint8)md[7],
+		(uint8)md[8], (uint8)md[9], (uint8)md[10], (uint8)md[11],
+		(uint8)md[12], (uint8)md[13], (uint8)md[14], (uint8)md[15]);
+	DPRINTF("%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X\n",
+		(uint8)mb.md5[0], (uint8)mb.md5[1], (uint8)mb.md5[2], (uint8)mb.md5[3],
+		(uint8)mb.md5[4], (uint8)mb.md5[5], (uint8)mb.md5[6], (uint8)mb.md5[7],
+		(uint8)mb.md5[8], (uint8)mb.md5[9], (uint8)mb.md5[10], (uint8)mb.md5[11],
+		(uint8)mb.md5[12], (uint8)mb.md5[13], (uint8)mb.md5[14], (uint8)mb.md5[15]);
+	DPRINTF("MD5 failed\n\n", mb.Md5Begin, mb.Md5End);
+	return false;
+}
+
+bool Md5Class::Md5Verify()
+{
+	std::string fn;
+	uint64 rollback = 0;
+	for (int i = 0; i < efl.EncodeFileList.size(); i++)
+	{
+		ENCODEFILE ef = efl.EncodeFileList.at(i);
+		if(ef.Md5)
+		{
+			//convert windows path "\xxx\xxx\xxx" to
+			//linux path "/xxx/xxx/xxx"
+			std::string s;
+			for(int j = 0; j < ef.SubPath.size(); j++)
+			{
+				if (ef.SubPath.at(j) == '\\')
+					s.push_back('/');
+				else
+					s.push_back(ef.SubPath.at(j));
+			}
+			if(s.at(s.size() - 1) == '/')
+				fn = "/storage/" + s + ef.Name;
+			else
+				fn = "storage/" + s + "/" + ef.Name;
+			//convert end
+
+			FILE *fp = fopen(fn.c_str(), "rb");
+			if(fp <= 0)
+			{
+				DPRINTF("Open %s failed\n", fn.c_str());
+				bMd5Success = false;
+				nRollBackLen = rollback;
+				return bMd5Success;
+			}
+			else
+			{
+				DPRINTF("Open %s success\n", fn.c_str());
+				for (int j = 0; j < ef.Md5BlockList.size(); j++)
+				{
+					MD5BLOCK mb = ef.Md5BlockList.at(j);
+					if(GetMd5(fp, mb))
+						rollback += (mb.Md5End - mb.Md5Begin);
+					else
+					{
+						bMd5Success = false;
+						nRollBackLen = rollback;
+						fclose(fp);
+						return bMd5Success;
+					}
+				}
+				fclose(fp);
+			}
+		}
+	}
+	bMd5Success = true;
+	return bMd5Success;
+}
+
+static Md5Class gMd5Class;
+
+Md5Class* CreateMd5Class()
+{
+	return &gMd5Class;
+}
+
+void ReleaseMd5Class(Md5Class* pMd5)
+{
 }

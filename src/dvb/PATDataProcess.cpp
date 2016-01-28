@@ -1,4 +1,5 @@
 ﻿#include "PATDataProcess.h"
+#include "../netcomm/NetCommThread.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -7,7 +8,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <syslog.h>
-//#include <log/Log.h>
+#include <log/Log.h>
+#include <sys/stat.h>
+#include <netcomm/message.h>
+
+extern ILog* gLog;
+extern NetCommThread *pNetComm;
 
 PATDataThread::PATDataThread():m_status(0), m_PatId(0xfe), m_pManager(NULL)
 {
@@ -243,10 +249,106 @@ uint64 PATDataThread::GetLostSegment()
 {
 	std::list<PMTDataThread*>::iterator itor;
 	uint64 nLostCount = 0;
+	m_strReportFileList = "";
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
 		nLostCount +=(*itor)->GetLostSegment();
+		m_strReportFileList += (*itor)->GetReportFileList();
+		m_strReportFileList += " ";
+		m_FilmId = (*itor)->GetFilmId();
 	}
 	return nLostCount;
 }
 
+bool PATDataThread::UnzipSubtitle()
+{
+	std::list<PMTDataThread*>::iterator itor;
+	for(itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
+	{
+		if((*itor)->UnzipSubtitle())
+			return true;
+	}
+	return false;
+}
+
+bool PATDataThread::SendLostReport()
+{
+	char str[512];
+
+	//Delete lostinfo.zip
+	system("rm -rf /tmp/lostinfo.zip");
+
+	//Construct zip command and zip all zt file to one archive file
+	if(m_strReportFileList.find(".zt") == std::string::npos)
+	    return false;
+	std::string cmd = "zip /tmp/lostinfo.zip " + m_strReportFileList;
+	system(cmd.c_str());
+
+	struct stat mstat;
+	if (stat("/tmp/lostinfo.zip", &mstat) == -1)
+	{
+		sprintf(str, "[PATDataThread] Unable stat /tmp/lostinfo.zip.");
+		if(gLog)
+			gLog->Write(LOG_ERROR, str);
+		DPRINTF("%s\n", str);
+		return false;
+	}
+
+	char *buf = new char[mstat.st_size + 100];
+	L_LOST_INFO *info = (L_LOST_INFO*) buf;
+	char *pos = buf + 28;//(char*)&info->pLost;
+	
+	FILE *fp = fopen("/tmp/lostinfo.zip", "rb");
+	if(fp <= 0)
+	{
+		sprintf(str, "[PATDataThread] Unable open /tmp/lostinfo.zip.");
+		if(gLog)
+			gLog->Write(LOG_ERROR, str);
+		DPRINTF("%s\n", str);
+		delete[] buf;
+		return false;
+	}
+	fread(pos, mstat.st_size, 1, fp);
+
+	info->filmID = m_FilmId;
+	info->lostNum = LostSegment();
+	info->receivedByteCount = ReciveLength();
+	info->recvState = 5;
+	info->lostLength = mstat.st_size;
+	info->reserved = 0;
+
+	
+	if(pNetComm)
+	{
+		pNetComm->ReportLost(buf, 
+			28 + mstat.st_size + sizeof(uint32),
+			28 + mstat.st_size + sizeof(uint32));
+	}
+
+	delete[] buf;
+	return true;
+}
+
+bool PATDataThread::SaveData(char* fn, char* pData, uint32 segNum, uint32 len)
+{
+	std::list<PMTDataThread*>::iterator itor;
+	for(itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
+	{
+		if((*itor)->SaveData(fn, pData, segNum, len))
+			return true;
+	}
+	return false;
+}
+
+bool PATDataThread::IsPmtReady()
+{
+	std::list<PMTDataThread*>::iterator itor;
+	if (m_pmtList.size() < 1)
+		return false;
+	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
+	{
+		if(!(*itor)->IsFilmDataReady())
+			return false;
+	}
+	return true;
+}

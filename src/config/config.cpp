@@ -29,11 +29,13 @@ class CConfig: public IConfig
 {
 public:
 	// interface of IConfig
-	virtual const string getRemoteUrl(){
+	virtual string getRemoteUrl(){
+    		//printf("%s\n", m_strRemoteUrl.c_str());
 		return m_strRemoteUrl;
 	}
 
-	virtual const int getRemotePort(){
+	virtual int getRemotePort(){
+		printf("%d\n", m_nRemotePort);
 		return m_nRemotePort;
 	}
 
@@ -69,11 +71,11 @@ public:
 		return m_strBreakPointPath;
 	}
 	
-	virtual const uint32 getMachineId(){
+	virtual uint32 getMachineId(){
 		return m_nMachineId;
 	}
 
-	virtual const string getHardKey(){
+	virtual string getHardKey(){
 		return m_strHardKey;
 	}
 	////////////////////
@@ -175,8 +177,9 @@ bool CConfig::init()
 		if(ini->load("/etc/CineCast/CineCast.cfg"))
 		{
 			std::string strValue;
-			ini->read(" ", "SERVER", m_strRemoteUrl);
-			ini->read(" ", "PORT", tmp);
+			if(ini->read(" ", "SERVER", tmp))
+			    m_strRemoteUrl = tmp;
+			if(ini->read(" ", "PORT", tmp))
 			m_nRemotePort = atoi(tmp.c_str());
 			ini->read(" ", "LEONISURL", m_strLeonisUrl);
 			ini->read(" ", "LEONISPORT", strValue);

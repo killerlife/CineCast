@@ -1,15 +1,15 @@
-CC=gcc
+﻿CC=gcc
 
 SRC=Log.cpp LogFileOperation.cpp
 OBJ=Log.o LogFileOperation.o
 
 BIND=/usr/local/bin/
-INC=-I../../include/config -I../../include -I../../include/log \
--I../../include/brunt
-
+INC=-I../../include/config -I../../include -I../../include/log
 CFLG=-shared -fPIC
 
-TARGET=libx86-Log.so.1.0
+#TARGET=libx86-Log.so.1.0
+TARGET=libx86-Log.so
+
 
 all: $(TARGET)
 
@@ -21,6 +21,7 @@ $(OBJ): $(HED)
 install: all
 	-cp $(TARGET) ../../lib
 	-cp $(TARGET) ../../bin/linux/release
+	-cp $(TARGET) /usr/CineCast/lib
 
 uninstall:
 	rm ../../lib/$(TARGET)

@@ -5,6 +5,7 @@
 #include "CancelDataProcess.h"
 #include "PATDataProcess.h"
 #include "../netcomm/NetCommThread.h"
+#include "../netcomm/BaseOperation.h"
 
 #include "thread/activeThread/activeThreadManager_i.h"
 
@@ -17,6 +18,8 @@
 #include <netcomm/UiProtocal.h>
 #include <netcomm/BaseOperation.h>
 #include "log/Log.h"
+#include <vector>
+#include <string>
 
 #include "ini.h"
 
@@ -28,6 +31,7 @@ TUNER_INFO gInfo;
 RECEIVE_INFO gRecv;
 TUNER_CONF gTuner;
 char bTunerChange = 0;
+char *gMd5 = NULL;
 
 NotifyDataThread *pNotify;
 StartDataThread *pStart;
@@ -37,6 +41,7 @@ PATDataThread* pPat;
 GuiServer* guiServer;
 ILog* gLog;
 NetCommThread *pNetComm;
+std::vector<std::string> gRunPathList;
 
 static void handle_sigint(int sig)
 {
@@ -112,14 +117,17 @@ int main(int argc, char **argv)
 	char m_log[512];
 	bool bRoundCount = false;
 
+	//====================================================================
+	//Change work directory to "/storage"
+	chdir("/storage");
+	//====================================================================
+
 	gLog = CreateLog();
 
 	sprintf(m_log, "[System] CineCast Started.");
 	gLog->Write(LOG_SYSTEM, m_log);
 
-#ifdef CAPTURE
 	m_pManager = createThreadManager();
-#endif
 
 	ITuner *pTuner = CreateTuner();
 	
@@ -133,13 +141,12 @@ int main(int argc, char **argv)
 	pTuner->SetTunerConf(gTuner);
 	pTuner->Zapto(gTuner);
 
-#ifdef CAPTURE
 	pStart = new StartDataThread;
-	pNotify = new NotifyDataThread;
+	pNotify = CreateNotify();
 	pFinish = new FinishDataThread;
 	pCancel = new CancelDataThread;
 	pPat = new PATDataThread;
-	guiServer = new GuiServer;
+	guiServer = CreateGuiServer();
 	pNetComm = new NetCommThread;
 
 	uint16 pid = 0x1ff;
@@ -161,6 +168,7 @@ int main(int argc, char **argv)
 
 	guiServer->Init();
 
+	pNetComm->Init();
 	pNetComm->Start();
 
 	ThreadRunPolicy policy;
@@ -191,14 +199,38 @@ int main(int argc, char **argv)
 
 	gRecv.nReceiveStatus = 0x0000 + 0x00; //IDLE
 
+	int nHeartBreat = 0;
+	mke2fs fs;
+	bool bMountRD = fs.MountDisk(DISK_REMOVEABLE);
+	gRunPathList.clear();
+
+	int nAutoDelCounter = 0;
 	while(1)
 	{
 		sleep(5);
+		nHeartBreat++;
+		if (nHeartBreat>=(120/5))
+		{
+			nHeartBreat = 0;
+			if (pNetComm)
+				pNetComm->HeartBreat();
+		}
 		//If tuner configuration change, call Zapto.
 		if (bTunerChange)
 		{
 			pTuner->Zapto(gTuner);
 			bTunerChange = 0;
+		}
+
+		//Use counter to make sure start auto delete previous DCP
+		if(pPat->IsPmtReady() && nAutoDelCounter <= 60)
+		{
+			nAutoDelCounter++;
+			if(nAutoDelCounter == 60)
+			{
+				ContentOperation co;
+				co.AutoDelete(0, gRunPathList);
+			}
 		}
 
 		//Get satellite status and log it.
@@ -225,6 +257,17 @@ int main(int argc, char **argv)
 		gRecv.strUuid = pStart->GetUUID();
 		gRecv.strFilmName = pStart->GetFilmName();
 		gRecv.strIssueDate = pStart->GetIssueDate();
+		if(pNetComm)
+		{
+			if (pNetComm->IsConnect())
+				gRecv.strExtend = "REMOTE:1";
+			else
+				gRecv.strExtend = "REMOTE:0";
+		}
+		if(bMountRD == false)
+		{
+			gRecv.strExtend += "|REMOVEABLEDISK:0";
+		}
 
  		if(pStart->IsStart())
 		{
@@ -243,13 +286,27 @@ int main(int argc, char **argv)
 					gRecv.nFileID);
 				gLog->Write(LOG_SYSTEM, m_log);
 			}
+			if (!(gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0))
+			{
+				printf("set state 1 %x %x\n", gRecv.nReceiveSegment, gRecv.nTotalSegment);
+				gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 1;
+			}
+#if 0
+			if(gRecv.nReceiveSegment != gRecv.nTotalSegment)
  			gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 0x01;
+			else if(gRecv.nReceiveSegment == 0)
+				gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 0x01;
+#endif
 		}
 
 		if(pFinish->IsFinish())
 		{
+			if (!(gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0))
+			{
+				printf("set state 2\n");
 			gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 2; //STOP
 			gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 3; //STOP
+			}
 			
 			//This function process lost file, and send lost file to Network Center.
 			pPat->GetLostSegment();
@@ -272,14 +329,86 @@ int main(int argc, char **argv)
 					gRecv.nReceiveSegment,
 					gRecv.nFileID);
 				gLog->Write(LOG_SYSTEM, m_log);
+
+				//Send Lost Report
+				//pPat->SendLostReport();
+
+				//If Received full DCP, check and unzip subtitle zip file
+				if (gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0)
+				{
+					printf("unzip ZM file\n");
+					gRecv.nReceiveLength = gRecv.nFileLength;
+					pPat->UnzipSubtitle();
+					printf("Get MD5 file\n");
+
+					//Do Md5 Request
+					printf("%d\n", gRecv.nReceiveStatus & 0xffff);
+					if((gRecv.nReceiveStatus & 0xffff) < 8)
+					{
+						if(pNetComm)
+						{
+							pNetComm->GetMD5File(gRecv.nFileID);
+							if(!pNetComm->IsConnect())
+								gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 11;
+						}
+					}
+				}
+				else
+				{
+					//Send Lost Report
+					pPat->SendLostReport();
+				}
+
+			}
 			}
 
-			//TODO lost report
-			//gRecv.nReceiveStatus = 5;
-			//write_output();
-			//break;
+		if (gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0)
+		{
+			printf("Get MD5 file\n");
+
+			//Do Md5 Request
+			printf("%d\n", gRecv.nReceiveStatus & 0xffff);
+			if((gRecv.nReceiveStatus & 0xffff) < 8)
+			{
+				if(pNetComm)
+					pNetComm->GetMD5File(gRecv.nFileID);
+			}
+		}
+		if ((gRecv.nReceiveStatus & 0xffff) == 0x08)
+		{
+			//Received MD5File
+			//Do md5 parser and decrypt
+			printf("Md5 verify\n");
+			Md5Class* pMd5 = CreateMd5Class();
+			if(gMd5)
+			{
+				printf("Md5 parser\n");
+				pMd5->Md5Parser(gMd5);
+				gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 9;
+				if(pMd5->Md5Verify())
+				{
+					gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 10;
+					gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 11;
+				}
+			}
+		}
+		if(pCancel->IsCancel())
+		{
+			gRecv.nReceiveStatus  = 0;
+			gRecv.nCrcErrorSegment = 0;
+			gRecv.nFileID = 0;
+			gRecv.nFileLength = 0;
+			gRecv.nLostSegment = 0;
+			gRecv.nReceiveLength = 0;
+			gRecv.nReceiveSegment = 0;
+			gRecv.nTotalSegment = 0;
+
+			gRecv.strCreator = "";
+			gRecv.strIssuer = "";
+			gRecv.strUuid = "";
+			gRecv.strFilmName = "";
+			gRecv.strIssueDate = "";
 	}
 	}
-#endif
 	return 0;
 }

@@ -1,4 +1,4 @@
-CC=gcc
+﻿CC=gcc
 
 SRC=config.cpp
 OBJ=config.o
@@ -9,16 +9,17 @@ CFLG=-shared -fPIC
 
 TARGET=libx86-Config.so
 
-all: $(TARGET)
+all: $(TARGET) install
 
 $(TARGET): $(OBJ)
 	$(CC) $(CFLG) $(OBJ) -o $(TARGET) $(CLIB) 
 
 $(OBJ): $(HED)
 
-install: all
+install:
 	-cp $(TARGET) ../../lib
 	-cp $(TARGET) ../../bin/linux/release
+	-cp $(TARGET) /usr/CineCast/lib
 
 uninstall:
 	rm ../../lib/$(TARGET)

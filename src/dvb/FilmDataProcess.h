@@ -77,7 +77,7 @@ public:
 	void UpdateInfo();
 
 	int GetStatus() { return m_status; };
-// 	void SetObserver(IFilmDataObserver* pObserver) { m_pObserver = pObserver; };
+
 	void WriteFile(uint64 pos, uint8 *pbuf, uint16 size);
 	void UpdateZtMem(uint32 nSegNum);
 	void UpdateZtFile();
@@ -96,7 +96,20 @@ public:
 
 	bool haveSegment(uint32 nSegNum);
 
+	std::string GetLostSegment();
+
+	uint32 GetFilmId() {return filmId;};
+#if 0
 	struct LostBuf* GetLostSegment();
+#endif
+
+	bool UnzipSubtitle();
+
+	bool SaveData(char* fn, char* pData, uint32 segNum, uint32 len);
+
+	std::string FindAssetmap();
+	bool IsSameDCP(std::string path);
+	bool IsReady();
 
 public:
 	struct PmtDescriptor* m_pPmtDescriptor;
@@ -110,7 +123,7 @@ private:
 private:
 	int m_status;
 // 	IFilmDataObserver *m_pObserver;
-	std::string m_strFileName;
+	std::string m_strFileName, m_strFileNameReport;
 	std::string m_strZtFileName;
 	int m_nZtBufSize;
 	uint8 *m_pZtBuf;
@@ -127,6 +140,7 @@ private:
 	std::list<struct FilmDataBuf*> m_bufDataPool;
 	volatile uint8 m_freeMutex;
 	volatile uint8 m_dataMutex;
+	volatile uint8 m_writeMutex;
 
 	uint16 m_allocSize;
 
@@ -136,5 +150,6 @@ private:
 	bool bStop;
 
 	uint64 m_ztPos;
+	bool m_Ready;
 // 	ILog *pLog;
 };

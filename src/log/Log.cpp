@@ -1,4 +1,4 @@
-// Log.cpp :  DLL ĳʼ̡
+﻿// Log.cpp :  DLL ĳʼ̡
 //
 #ifdef WIN32
 #include "stdafx.h"
@@ -168,7 +168,6 @@ int CLog::Export(TLogQueryResultArray & contextList)
 	return 0;
 }
 
-
 int CLog::Query(LOGTYPE type, LOGDATETIME* timeAfter, LOGDATETIME* timeBefore, TLogQueryResultArray & result)
 {
 	char buft[MAX_PATH] = {0};
@@ -214,7 +213,17 @@ int CLog::Query(LOGTYPE type, LOGDATETIME* timeAfter, LOGDATETIME* timeBefore, T
 		}
 	}
 
+//  printf("run to CLog::Query()\n");
+//  printf("run to CLog::Query()-end\n");
+// 	printf("result.size()=%d\n",result.size());
+	
+// 	for(int i = 0; i < result.size(); i++)
+// 	{
+// 		printf("result:%s %s", result[i].time.c_str(), result[i].text.c_str());
+// 	}
+	
 	return 0;
+	//return result;
 }
 
 
@@ -227,10 +236,14 @@ int CLog::Write(LOGTYPE type, const char *text)
 	string path = logroot;
 
 	sprintf(buft,"%s/%04d-%02d",path.c_str(),(1900+p->tm_year),(1+p->tm_mon));
+	//printf("%s\n", buft);
 	if (!m_LogFileOp.IsDirectory(buft)){
 		if (!m_LogFileOp.CreateDirectory(buft))
+		{
 			return 0;
 	}
+	}
+	//printf("%s\n", buft);
 
 	memset(buft,0,MAX_PATH);
 	sprintf(buft,"%s/%04d-%02d/%02d.log",path.c_str(),(1900+p->tm_year),(1+p->tm_mon),p->tm_mday);

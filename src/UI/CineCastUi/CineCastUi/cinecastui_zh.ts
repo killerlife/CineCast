@@ -4,32 +4,36 @@
 <context>
     <name>CineCastUi</name>
     <message>
-        <location filename="cinecastui.cpp" line="292"/>
+        <location filename="cinecastui.cpp" line="301"/>
         <source>Do you want to Reboot</source>
         <translation>请确认重启系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="313"/>
+        <location filename="cinecastui.cpp" line="325"/>
+        <location filename="cinecastui.cpp" line="359"/>
         <source>Reboot successful</source>
         <translation>重启成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="321"/>
+        <location filename="cinecastui.cpp" line="333"/>
+        <location filename="cinecastui.cpp" line="367"/>
         <source>Reboot failed,network errors, operation failed</source>
         <translation>网络错误导致重启失败</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="338"/>
+        <location filename="cinecastui.cpp" line="384"/>
         <source>Do you want to Shutdown</source>
         <translation>请确认关闭系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="359"/>
+        <location filename="cinecastui.cpp" line="408"/>
+        <location filename="cinecastui.cpp" line="440"/>
         <source>Shutdown successful</source>
         <translation>关机成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="365"/>
+        <location filename="cinecastui.cpp" line="414"/>
+        <location filename="cinecastui.cpp" line="446"/>
         <source>Shutdown failed,network errors, operation failed</source>
         <translation>网络错误导致关机失败</translation>
     </message>
@@ -47,37 +51,37 @@
         <translation>CineCast</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="163"/>
+        <location filename="cinecastui.ui" line="170"/>
         <source>Status</source>
         <translation>状态</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="177"/>
+        <location filename="cinecastui.ui" line="184"/>
         <source>Content</source>
         <translation>内容</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="191"/>
+        <location filename="cinecastui.ui" line="198"/>
         <source>Disk Manager</source>
         <translation>可抽取硬盘管理</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="205"/>
+        <location filename="cinecastui.ui" line="212"/>
         <source>Setup</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="225"/>
+        <location filename="cinecastui.ui" line="232"/>
         <source>RAID5 Array</source>
         <translation>RAID5阵列</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="245"/>
+        <location filename="cinecastui.ui" line="252"/>
         <source>Live Event</source>
         <translation>直播</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="265"/>
+        <location filename="cinecastui.ui" line="272"/>
         <source>TKR</source>
         <translation>TKR</translation>
     </message>
@@ -85,24 +89,24 @@
 <context>
     <name>Content</name>
     <message>
-        <location filename="content.cpp" line="142"/>
-        <location filename="content.cpp" line="171"/>
-        <location filename="content.cpp" line="654"/>
-        <location filename="content.cpp" line="747"/>
-        <location filename="content.cpp" line="884"/>
-        <location filename="content.cpp" line="935"/>
+        <location filename="content.cpp" line="141"/>
+        <location filename="content.cpp" line="170"/>
+        <location filename="content.cpp" line="653"/>
+        <location filename="content.cpp" line="746"/>
+        <location filename="content.cpp" line="877"/>
+        <location filename="content.cpp" line="927"/>
         <source>network error, operation failed</source>
         <translation>网络错误</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="647"/>
-        <location filename="content.cpp" line="875"/>
-        <location filename="content.cpp" line="926"/>
+        <location filename="content.cpp" line="646"/>
+        <location filename="content.cpp" line="868"/>
+        <location filename="content.cpp" line="918"/>
         <source>operation successful</source>
         <translation>操作成功</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="735"/>
+        <location filename="content.cpp" line="734"/>
         <source>operation start</source>
         <translation>操作开始</translation>
     </message>
@@ -119,7 +123,7 @@
         <location filename="content.ui" line="76"/>
         <location filename="content.ui" line="321"/>
         <source>Disk Space(MB)</source>
-        <translation></translation>
+        <translation>磁盘空间(MB)</translation>
     </message>
     <message>
         <location filename="content.ui" line="84"/>
@@ -810,17 +814,22 @@
         <translation>远程主机:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="889"/>
+        <location filename="setup.ui" line="886"/>
+        <source>Port:</source>
+        <translation>端口号:</translation>
+    </message>
+    <message>
+        <location filename="setup.ui" line="920"/>
         <source>TMS</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="905"/>
+        <location filename="setup.ui" line="936"/>
         <source>Start</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="925"/>
+        <location filename="setup.ui" line="956"/>
         <source>Stop</source>
         <translation></translation>
     </message>
@@ -828,20 +837,30 @@
 <context>
     <name>Status</name>
     <message>
-        <location filename="status.cpp" line="51"/>
+        <location filename="status.cpp" line="52"/>
         <source>Yes</source>
         <translation>锁定</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="53"/>
+        <location filename="status.cpp" line="54"/>
         <source>No</source>
         <translation>未锁定</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="67"/>
+        <location filename="status.cpp" line="68"/>
         <source>Film Name: %1&lt;br&gt;UUID: %2&lt;br&gt;Creator: %3&lt;br&gt;Issuer: %4&lt;br&gt;IssueDate: %5&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;Round: %10	Total Segment: %6	Received Segment: %7	CRC Error: %8	Lost Segment:%9&lt;/pre&gt;&lt;br&gt;</source>
         <oldsource>Film Name: %1&lt;br&gt;UUID: %2&lt;br&gt;Creator: %3&lt;br&gt;Issuer: %4&lt;br&gt;IssueDate: %5&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;Total Segment: %6	Received Segment: %7	CRC Error: %8	Lost Segment:%9&lt;/pre&gt;&lt;br&gt;</oldsource>
         <translation>电影名: %1&lt;br&gt;UUID: %2&lt;br&gt;创建: %3&lt;br&gt;发行: %4&lt;br&gt;发行时间: %5&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;轮数: %10	分片总数: %6	已接收分片: %7	CRC错误: %8	已丢失分片:%9&lt;/pre&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="356"/>
+        <source>Please power-off and take out the removeable disk.</source>
+        <translation>接收完成，请关机并取出可抽取硬盘。</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="364"/>
+        <source>Mount removeable disk error, please check disk.</source>
+        <translation>挂载可抽取硬盘失败，请检查硬盘是否插好。</translation>
     </message>
 </context>
 <context>
@@ -873,9 +892,9 @@
     </message>
     <message>
         <location filename="status.ui" line="176"/>
-        <location filename="status.ui" line="446"/>
+        <location filename="status.ui" line="463"/>
         <source>Receive</source>
-        <translation>接收状态</translation>
+        <translation>接收中</translation>
     </message>
     <message>
         <location filename="status.ui" line="200"/>
@@ -908,54 +927,54 @@
         <translation>状态:</translation>
     </message>
     <message>
-        <location filename="status.ui" line="386"/>
+        <location filename="status.ui" line="403"/>
         <source>Idle</source>
         <translation>空闲</translation>
     </message>
     <message>
-        <location filename="status.ui" line="506"/>
+        <location filename="status.ui" line="523"/>
         <source>Received</source>
-        <translation>接收</translation>
+        <translation>接收结束</translation>
     </message>
     <message>
-        <location filename="status.ui" line="566"/>
+        <location filename="status.ui" line="583"/>
         <source>Analysis</source>
         <translation>丢包分析</translation>
     </message>
     <message>
-        <location filename="status.ui" line="626"/>
+        <location filename="status.ui" line="643"/>
         <source>Report</source>
-        <translation>丢包回传</translation>
+        <translation>丢包上报</translation>
     </message>
     <message>
-        <location filename="status.ui" line="686"/>
+        <location filename="status.ui" line="703"/>
         <source>Confirm</source>
-        <translation>丢包确认</translation>
+        <translation>上报确认</translation>
     </message>
     <message>
-        <location filename="status.ui" line="746"/>
+        <location filename="status.ui" line="763"/>
         <source>MD5 Req.</source>
         <translation>MD5请求</translation>
     </message>
     <message>
-        <location filename="status.ui" line="806"/>
+        <location filename="status.ui" line="823"/>
         <source>MD5 Confirm</source>
         <translation>MD5确认</translation>
     </message>
     <message>
-        <location filename="status.ui" line="866"/>
+        <location filename="status.ui" line="883"/>
         <source>Verify</source>
-        <translation>检验</translation>
+        <translation>数据校验</translation>
     </message>
     <message>
-        <location filename="status.ui" line="926"/>
+        <location filename="status.ui" line="943"/>
         <source>Verified</source>
-        <translation>检验完成</translation>
+        <translation>校验成功</translation>
     </message>
     <message>
-        <location filename="status.ui" line="986"/>
+        <location filename="status.ui" line="1003"/>
         <source>Finish</source>
-        <translation>结束</translation>
+        <translation>任务完成</translation>
     </message>
 </context>
 <context>

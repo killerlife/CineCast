@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <thread/activeThread/activeThread.h>
 #include <string>
 #include <list>
@@ -26,7 +26,15 @@ public:
 	
 	int GetStatus() { return m_status; };
 
-	uint64 GetLostSegment();
+	uint64 GetLostSegment(); //Use to calc lost segment/receive segment, and generate lost info struct
+	
+	bool UnzipSubtitle(); //find and unzip subtitle zip file
+
+	bool SendLostReport();
+
+	bool SaveData(char* fn, char* pData, uint32 segNum, uint32 len);
+
+	bool IsPmtReady();
 
 private:
 	virtual void doit();
@@ -39,5 +47,7 @@ private:
 	Filter* m_pFilter;
 	uint8 m_buffer[4096];
 	brunt::IThreadManager* m_pManager;
+	std::string m_strReportFileList;
+	uint32 m_FilmId;
 // 	ILog *pLog;
 };

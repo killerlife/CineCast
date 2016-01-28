@@ -1,4 +1,4 @@
-<ui version="4.0" >
+﻿<ui version="4.0" >
  <class>CineCastUiClass</class>
  <widget class="QWidget" name="CineCastUiClass" >
   <property name="geometry" >
@@ -55,6 +55,13 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="label" >
+       <property name="pixmap" >
+        <pixmap resource="cinecastui.qrc" >:/CineCastUi/Resources/recv.png</pixmap>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_NetworkStatus" />

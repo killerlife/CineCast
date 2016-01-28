@@ -9,7 +9,17 @@
 //#include <log/Log.h>
 #include <syslog.h>
 
-NotifyDataThread::NotifyDataThread():m_status(0), bMatch(false), m_machineId(0), m_pid(0)
+NotifyDataThread gNotify;
+NotifyDataThread* CreateNotify()
+{
+	return &gNotify;
+}
+
+void ReleaseNotify(NotifyDataThread* pNotify)
+{
+}
+
+NotifyDataThread::NotifyDataThread():m_status(0), bMatch(false), m_machineId(0), m_pid(0), m_filmId(0)
 {
 	m_pFilter = new Filter;
 // 	pLog = CreateLog();

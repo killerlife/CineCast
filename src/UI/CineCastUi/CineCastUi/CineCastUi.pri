@@ -7,31 +7,31 @@
 HEADERS += ./cinecastui.h \
     ./content.h \
     ./disk.h \
-    ./setup.h \
-    ./status.h \
     ./live.h \
     ./raid.h \
+    ./setup.h \
+    ./status.h \
     ./tkr.h
 
 #Source files
 SOURCES += ./cinecastui.cpp \
     ./content.cpp \
     ./disk.cpp \
+    ./live.cpp \
     ./main.cpp \
+    ./raid.cpp \
     ./setup.cpp \
     ./status.cpp \
-    ./live.cpp \
-    ./raid.cpp \
     ./tkr.cpp
 
 #Forms
 FORMS += ./cinecastui.ui \
     ./content.ui \
     ./disk.ui \
-    ./setup.ui \
-    ./status.ui \
     ./live.ui \
     ./raid.ui \
+    ./setup.ui \
+    ./status.ui \
     ./tkr.ui
 
 #Resource file(s)

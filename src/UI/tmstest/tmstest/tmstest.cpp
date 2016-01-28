@@ -1,9 +1,19 @@
-#include "tmstest.h"
+﻿#include "tmstest.h"
 #include <QDomDocument>
 #include <QDomElement>
+#include <QDomNodeList>
 #include <QString>
 #include <QByteArray>
 #include <QDomProcessingInstruction>
+
+#include <openssl/rsa.h>
+#include <openssl/evp.h>
+#include <openssl/objects.h>
+#include <openssl/x509.h>
+#include <openssl/err.h>
+#include <openssl/pem.h>
+#include <openssl/ssl.h>
+#include <openssl/md5.h>
 
 tmstest::tmstest(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
@@ -17,10 +27,269 @@ tmstest::~tmstest()
 
 }
 #include <QFile>
+#include <vector>
+
+#pragma pack(1)
+
+typedef unsigned int uint32;
+typedef unsigned short uint16;
+typedef unsigned long uint64;
+
+typedef struct _ENCODEBLOCK_
+{
+	uint64 EncodeBegin;
+	uint64 EncodeEnd;
+}ENCODEBLOCK;
+
+typedef struct _MD5BLOCK_
+{
+	uint64 Md5Begin;
+	uint64 Md5End;
+	char md5[16];
+	_MD5BLOCK_()
+	{
+		memset(md5, 0, 16);
+	}
+}MD5BLOCK;
+
+typedef struct _ENCODEFILE_
+{
+	std::string Name;
+	uint16 Id;
+	bool Encode;
+	bool Md5;
+	std::string SubPath;
+	std::vector<ENCODEBLOCK> EncodeBlockList;
+	std::vector<MD5BLOCK> Md5BlockList;
+public:
+	void ENCODEFILE()
+	{
+		Encode = false;
+		Md5 = false;
+	}
+	~_ENCODEFILE_()
+	{
+		EncodeBlockList.clear();
+		Md5BlockList.clear();
+	};
+	void clear()
+	{
+		EncodeBlockList.clear();
+		Md5BlockList.clear();
+	};
+}ENCODEFILE;
+
+typedef struct _ENCODEFILELIST_
+{
+	std::string Name;
+	uint32 Id;
+	std::string ChallengeCode;
+	std::vector<ENCODEFILE> EncodeFileList;
+public:
+	void clear()
+	{
+		for(int i = 0; i < EncodeFileList.size(); i++)
+		{
+			EncodeFileList[i].clear();
+		}
+		EncodeFileList.clear();
+	}
+} ENCODEFILELIST;
+
+ENCODEFILELIST efl;
+
+bool Md5Parser(char *buf)
+{
+	QString errStr;
+	int errLine;
+	int errColumn;
+
+	QString uuidText;
+	QString msg;
+
+	QDomDocument doc;
+	try
+	{
+		if (doc.setContent(QByteArray(buf),
+			true, &errStr, &errLine, &errColumn))
+		{
+			efl.clear();
+			QDomElement root = doc.firstChildElement("EncodeInfo");
+			QDomElement EncodeFileList = root.firstChildElement("EncodeFileList");
+			QString id = EncodeFileList.attribute("ID");
+			QString name = EncodeFileList.attribute("Name");
+			QDomElement CCode = EncodeFileList.firstChildElement("ChallengeCode");
+			QString code = CCode.text();
+			efl.Id = id.toULong();
+			efl.Name = name.toStdString();
+			efl.ChallengeCode = code.toStdString();
+
+			QDomNodeList EncodeFile = EncodeFileList.elementsByTagName("EncodeFile");
+			for (int i = 0; i < EncodeFile.count(); i++)
+			{
+				ENCODEFILE ef;
+				QDomElement element = EncodeFile.at(i).toElement();
+				QString s = element.attribute("Name");
+				ef.Name = s.toStdString();
+				s = element.attribute("ID");
+				ef.Id = s.toUShort();
+				s = element.attribute("EncodeCount");
+				ef.Encode = (bool)s.toUShort();
+				s = element.attribute("MD5Count");
+				ef.Md5 = (bool)s.toUShort();
+				s = element.attribute("SubPath");
+				ef.SubPath = s.toStdString();
+
+				if(ef.Encode)
+				{
+					QDomElement EBL = element.firstChildElement("EncodeBlockList");
+					QDomNodeList elist = EBL.elementsByTagName("EncodeBlock");
+					uint32 c = elist.count();
+					uint32 ii;
+					for (ii = 0; ii < elist.count(); ii++)
+					{
+						ENCODEBLOCK eb;
+						QDomElement e = elist.at(ii).toElement();
+						QDomElement tmp = e.firstChildElement("EncodeBeginPoint");
+						QString s = tmp.text();
+						eb.EncodeBegin = s.toULongLong();
+						tmp = e.firstChildElement("EncodeEndPoint");
+						s = tmp.text();
+						eb.EncodeEnd = s.toULongLong();
+						ef.EncodeBlockList.push_back(eb);
+					}
+				}
+				if(ef.Md5)
+				{
+					QDomElement MD5 = element.firstChildElement("MD5BlockList");
+					QDomNodeList mlist = MD5.elementsByTagName("MD5Block");
+					uint32 c = mlist.count();
+					uint32 a = 0;
+					for (a = 0; a < mlist.count(); a++)
+					{
+						MD5BLOCK mb;
+						QDomElement e = mlist.at(a).toElement();
+						QDomElement tmp = e.firstChildElement("MD5BeginPoint");
+						QString s = tmp.text();
+						mb.Md5Begin = s.toULongLong();
+						tmp = e.firstChildElement("MD5EndPoint");
+						s = tmp.text();
+						mb.Md5End = s.toULongLong();
+						tmp = e.firstChildElement("MD5");
+						s = tmp.text();
+						sscanf(s.toStdString().c_str(),
+							"%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
+							&mb.md5[0], &mb.md5[1], &mb.md5[2], &mb.md5[3],
+							&mb.md5[4], &mb.md5[5], &mb.md5[6], &mb.md5[7],
+							&mb.md5[8], &mb.md5[9], &mb.md5[10], &mb.md5[11],
+							&mb.md5[12], &mb.md5[13], &mb.md5[14], &mb.md5[15]);
+						ef.Md5BlockList.push_back(mb);
+					}
+				}
+				efl.EncodeFileList.push_back(ef);
+			}
+			return true;
+		}
+		else
+		{
+#if 0
+			if(gLog)
+			{
+				gLog->Write(LOG_ERROR, "[NetCommThread] Md5 Parse error.");
+			}
+#endif
+			throw -1;
+		}
+	}
+	catch(int&)
+	{
+		return false;
+	}
+}
+
+bool GetMd5(FILE* fp, MD5BLOCK mb)
+{
+	if(fp <= 0)
+		return false;
+
+	MD5_CTX c;
+	MD5_Init(&c);
+	
+	char buf[1024*1024];
+	int count = (mb.Md5End - mb.Md5Begin)/1024/1024;
+	fseek(fp, mb.Md5Begin, SEEK_SET);
+
+	for(int i = 0; i < count; i++)
+	{
+		fread(buf, 1024*1024, 1, fp);
+		MD5_Update(&c, buf, 1024*1024);
+	}
+	count = (mb.Md5End - mb.Md5Begin)%(1024/1024);
+	if (count > 0)
+	{
+		fread(buf, count, 1, fp);
+		MD5_Update(&c, buf, count);
+	}
+
+	char md[16];
+	memset(md, 0, 16);
+	MD5_Final((unsigned char*)md, &c);
+	if (memcmp(md, mb.md5, 16) == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool Md5Verify()
+{
+	std::string fn;
+	uint64 rollback = 0;
+	for (int i = 0; i < efl.EncodeFileList.size(); i++)
+	{
+		ENCODEFILE ef = efl.EncodeFileList.at(i);
+		if(ef.Md5)
+		{
+			fn = "/storage/" + ef.SubPath + "/" + ef.Name;
+			FILE *fp = fopen(fn.c_str(), "rb");
+			for (int j = 0; j < ef.Md5BlockList.size(); i++)
+			{
+				MD5BLOCK mb = ef.Md5BlockList.at(i);
+				if(GetMd5(fp, mb))
+					rollback += (mb.Md5End - mb.Md5Begin);
+				else
+				{
+					fclose(fp);
+					return rollback;
+				}
+			}
+			fclose(fp);
+		}
+	}
+	return rollback;
+}
 
 void tmstest::on_pushButton_clicked()
 {
+	FILE*fp = fopen("r:\\1.xml", "rb");
 
+	char buf[4096];
+
+	memset(buf, 0, 4096);
+
+	int i = fread(buf, 1, 4096, fp);
+	fclose(fp);
+	Md5Parser(buf);
+
+
+	fp = fopen("r:\\02.mxf.zt", "rb");
+	MD5BLOCK mb;
+	mb.Md5Begin = 0;
+	mb.Md5End = 9648129;
+	GetMd5(fp, mb);
+
+
+#if 0
 	QDomDocument doc;
 	QDomProcessingInstruction instruction;  
 	instruction = doc.createProcessingInstruction("xml","version=\"1.0\" encoding=\"utf-8\"");  
@@ -60,6 +329,7 @@ void tmstest::on_pushButton_clicked()
 	item.appendChild(txt);
 
 	QString ss = doc.toString();
+#endif
 }
 
 void tmstest::on_pushButton_2_clicked()

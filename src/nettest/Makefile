@@ -1,4 +1,4 @@
-CC=gcc
+﻿CC=gcc
 CPLUS=g++
 
 SRC=tmsd.cpp
@@ -23,7 +23,13 @@ CLIB = \
 -lboost_system \
 -lboost_thread \
 -lboost_signals \
--lx86-activeThreadManager
+-lx86-activeThreadManager \
+-lx86-GeneralXMLLib \
+-lxerces-c \
+-lxerces-depdom \
+-lxml-security-c \
+-lx86-xmldatetime \
+-lx86-dcpXmlCore
 
 BIND=/usr/local/bin/
 INCLUDE=-I../s2/linux/include -I../../include

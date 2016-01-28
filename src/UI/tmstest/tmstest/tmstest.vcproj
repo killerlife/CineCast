@@ -109,7 +109,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtXml;$(QTDIR)\include\QtNetwork"
+				AdditionalIncludeDirectories="D:\work\CineCast\public\openssl\include;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtXml&quot;;&quot;$(QTDIR)\include\QtNetwork&quot;"
 				PreprocessorDefinitions="UNICODE,WIN32,QT_THREAD_SUPPORT,QT_CORE_LIB,QT_GUI_LIB,QT_XML_LIB,QT_NETWORK_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -126,9 +126,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies=" qtmaind.lib QtCored4.lib QtGuid4.lib QtXmld4.lib QtNetworkd4.lib"
+				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtXmld4.lib QtNetworkd4.lib ssleay32.lib libeay32.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
-				AdditionalLibraryDirectories="$(QTDIR)\lib"
+				AdditionalLibraryDirectories="D:\work\CineCast\public\openssl\lib;&quot;$(QTDIR)\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 			/>
@@ -200,7 +200,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing tmstest.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_XML_LIB -DQT_NETWORK_LIB -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;.\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtXml\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; &quot;.\tmstest.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_tmstest.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_XML_LIB -DQT_NETWORK_LIB  -I&quot;D:\work\CineCast\public\openssl\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtXml\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; &quot;.\tmstest.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_tmstest.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\tmstest.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_tmstest.cpp&quot;"
 					/>
@@ -279,18 +279,11 @@
 			SourceControlFiles="false"
 			>
 			<File
-				RelativePath=".\GeneratedFiles\Debug\moc_tmstest.cpp"
+				RelativePath=".\GeneratedFiles\Release\moc_tmstest.cpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -298,17 +291,10 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\GeneratedFiles\Release\moc_tmstest.cpp"
+				RelativePath=".\GeneratedFiles\Debug\moc_tmstest.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool

@@ -27,6 +27,14 @@ public:
 	uint64 TotalSegment();
 
 	uint64 GetLostSegment();
+	bool UnzipSubtitle();
+
+	std::string GetReportFileList(){ return m_strReportFileList;};
+	uint32 GetFilmId(){ return m_FilmId;};
+
+	bool SaveData(char* fn, char* pData, uint32 segNum, uint32 len);
+	
+	bool IsFilmDataReady();
 
 private:
 	virtual void doit();
@@ -42,5 +50,7 @@ private:
 	struct ProgramDescriptor m_programDescriptor;
 	bool bThreadStart;
 	volatile uint8 m_mutex;
+	std::string m_strReportFileList;
+	uint32 m_FilmId;
 // 	ILog *pLog;
 };

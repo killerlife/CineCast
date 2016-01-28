@@ -1,4 +1,4 @@
-#include "disk.h"
+﻿#include "disk.h"
 #include <QTcpSocket>
 
 
@@ -138,7 +138,11 @@ void Disk::timerEvent(QTimerEvent * te)
 			char *s = buf + sizeof(KL);
 			if(buf[sizeof(KL)] == 0)
 			{
+				if(m_Timer > 0)
+				{
 				killTimer(m_Timer);
+					m_Timer = -1;
+				}
 				ui.pushButton_format->setEnabled(true);
 			}
 		}
