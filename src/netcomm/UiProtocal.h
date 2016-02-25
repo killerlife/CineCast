@@ -3,6 +3,8 @@
 
 #include <dvb/mytype.h>
 #include <string>
+#include <vector>
+#include <string.h>
 
 #pragma pack(1)
 typedef enum
@@ -61,6 +63,14 @@ typedef enum
 	M_IS_PROGRAM_LIST_READY_HDD,   //IsProgramListReadyѯǷ׼
 	M_IS_PROGRAM_LIST_READY_USB,   //IsProgramListReadyѯǷ׼
 
+	M_GET_RAID_CONTENT_LIST,
+	M_SET_RAID_CONTENT_DEL,
+	M_GET_RAID_INFO,
+	M_UPDATE_PROGRAM_LIST_RAID,     //UpdateProgramListˢӲб���Ա? 
+	M_IS_PROGRAM_LIST_READY_RAID,   //IsProgramListReadyѯǷ׼
+
+	R_GET_RAID_INFO = 0x400,
+
 } UiProtocalKey;
 
 
@@ -82,6 +92,12 @@ typedef struct _copy_path_
 {
 	char path_src[512];
 	char path_dst[512];
+public:
+	_copy_path_()
+	{
+		memset(path_src, 0, 512);
+		memset(path_dst, 0, 512);
+	}
 }copy_path;
 
 
@@ -177,6 +193,10 @@ typedef enum
 	CONTENT_PATH_SRC,   //Դ·ַ
 	CONTENT_PATH_DST,   //Ŀ·ַ
 
+	RAID_INFO_LEVEL,
+	RAID_INFO_STATE,
+	RAID_INFO_DEVSTATE,
+
 } ReceiveKey;
 
 typedef struct receive_info
@@ -265,5 +285,18 @@ typedef struct disk_info
 	uint64 nTotal;
 	uint64 nAvali;
 }DISK_INFO;
+
+typedef struct raid_info
+{
+	uint16 nRaidDevices;
+	uint16 nActiveDevices;
+	uint16 nWorkingDevices;
+	uint16 nFailedDevices;
+	uint64 nArraySize;
+	uint64 nUsedSize;
+	std::string strLevel;
+	std::string strState;
+	std::vector<std::string> strDevState;
+}RAID_INFO;
 
 #endif _UI_PROTOCOL_H_

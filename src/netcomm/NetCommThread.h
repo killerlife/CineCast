@@ -17,6 +17,8 @@ enum NET_RUN_STATUS
 	NET_STOP,
 };
 
+class HeartThread;
+
 class NetCommThread: public brunt::CActiveThread
 {
 public:
@@ -67,4 +69,6 @@ private:
 	bool bPkgSendStart;
 	uint32 nFilmId;
 	std::string m_strUpdateFile;
+	uint64 nRecvLength;
+	HeartThread* pHeartThread;
 };

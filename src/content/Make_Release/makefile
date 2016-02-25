@@ -1,4 +1,4 @@
-################################################################################
+﻿################################################################################
 # Automatically-generated file. Do not edit!
 ################################################################################
 
@@ -63,6 +63,7 @@ pre-build:
 post-build:
 	-cp libx86-contentMgr.so ../../../lib
 	-cp libx86-contentMgr.so ../../../bin/linux/release
+	-cp libx86-contentMgr.so /usr/CineCast/lib
 	-@echo ' '
 
 .PHONY: all clean dependents

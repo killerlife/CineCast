@@ -358,7 +358,11 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_30->setEnabled(false);
 		ui.label_18->setEnabled(true);
 		ui.label_7->setEnabled(true);
+		if((tInfo->nFileID % 1000) >= 900)
+			ui.label_38->setText(tr("Get update file. To update system, please reboot system."));
+		else
 		ui.label_38->setText(tr("Please power-off and take out the removeable disk."));
+		
 		break;
 	}
 	if (tInfo->strExtend.find("REMOTE:1") != std::string::npos)

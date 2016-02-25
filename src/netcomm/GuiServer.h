@@ -126,6 +126,11 @@ private:
 
 	bool UnknowFunction(char* buf);
 
+	bool R_GetRaidInfo(char* buf);
+	bool M_UpdateProgramList_RAID(char* buf);          //UpdateProgramListˢӲб���Ա? 
+	bool M_IsProgramListReady_RAID(char* buf);         //IsProgramListReadyѯǷ׼
+	bool M_GetContent_RAID(char* buf);     //rename
+	bool M_GetDiskInfo_RAID(char* buf);    //rename
 
 private:
 	int m_status;

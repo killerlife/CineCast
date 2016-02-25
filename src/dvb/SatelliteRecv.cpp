@@ -37,6 +37,8 @@ private:
 	TUNER_CONF mConf;
 	TUNER_INFO mInfo;
 	int mFrontEnd;
+	int mod;
+	int count;
 // 	ILog *pLog;
 };
 
@@ -52,7 +54,7 @@ void ReleaseTuner(ITuner* tuner)
 
 }
 
-Tuner::Tuner():mFrontEnd(-1)
+Tuner::Tuner():mFrontEnd(-1), mod(0), count(0)
 {
 // 	pLog = CreateLog();
 }
@@ -174,7 +176,7 @@ bool Tuner::Zapto()
 		if(coderate_values[i].user_string == mConf.strFec)
 		{
 			fec = coderate_values[i].driver_value;
-			DPRINTF("coderate: %s\n", coderate_values[i].user_string.c_str());
+			DPRINTF("fec coderate: %s\n", coderate_values[i].user_string.c_str());
 			break;
 		}
 		i++;
@@ -248,6 +250,18 @@ bool Tuner::Zapto()
 bool Tuner::Zapto(TUNER_CONF conf)
 {
 	SetTunerConf(conf);
+	if(conf.strModulation == "8PSK")
+	{
+		mod = 0;
+	}
+	else if(conf.strModulation == "16APSK")
+	{
+		mod = 1;
+	}
+	else if(conf.strModulation == "32APSK")
+	{
+		mod = 2;
+	}
 	return Zapto();
 }
 
@@ -273,6 +287,40 @@ TUNER_INFO Tuner::GetTunerInfo()
 		&mInfo.nBER, 
 		&mInfo.nUNC, 
 		&mInfo.nLock);
+#if 0	
+	if(mInfo.nLock == 0)
+	{
+		if(count < 3)
+		{
+			count++;
+		}
+		else
+		{
+			if(mod == 0)
+			{
+				mod = 1;
+				mConf.strModulation = "16APSK";
+				printf("switch 16APSK\n");
+				Zapto();
+			}
+			else if(mod == 1)
+			{
+				mod = 2;
+				mConf.strModulation = "32APSK";
+				printf("switch 32APSK\n");
+				Zapto();
+			}
+			else if(mod == 2)
+			{
+				mod = 0;
+				mConf.strModulation = "8PSK";
+				printf("switch 8PSK\n");
+				Zapto();
+			}
+			count = 0;
+		}
+	}
+#endif
 	return mInfo;
 }
 

@@ -3,12 +3,18 @@
 #include <netcomm/UiProtocal.h>
 #include <log/Log.h>
 #include "tmssrv.h"
+#include "../netcomm/NetCommThread.h"
+#include "../dvb/PATDataProcess.h"
 
 TUNER_INFO gInfo;
 RECEIVE_INFO gRecv;
 TUNER_CONF gTuner;
 char bTunerChange = 0;
 ILog* gLog;
+char *gMd5 = NULL;
+NetCommThread *pNetComm;
+std::vector<std::string> gRunPathList;
+PATDataThread* pPat;
 
 ITmsServer *tms = 0;
 

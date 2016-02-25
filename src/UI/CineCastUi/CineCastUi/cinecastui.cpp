@@ -90,7 +90,6 @@ void CineCastUi::Init()
 	tkrWid->showMaximized();
 	tkrWid->setStyleSheet("background-color:#cccccc");
 	tkrWid->show();
-
 	ui.tabWidget->setCurrentIndex(0);
 }
 
@@ -268,10 +267,12 @@ void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 	switch(nIndex)
 	{
 	case 0:
-		if(m_network_timer == -1)
+		//if(m_network_timer == -1)
 		//	m_network_timer = startTimer(500);
+		raidForm->Stop();
 		break;
 	case 1: //Content Page
+		raidForm->Stop();
 		if (m_ConnectStatus == 2)
 		{
 		//	killTimer(m_network_timer);
@@ -282,6 +283,7 @@ void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 		}
 		break;
 	case 2:
+		raidForm->Stop();
 		if(m_ConnectStatus == 2)
 		{
 		//	killTimer(m_network_timer);
@@ -289,6 +291,7 @@ void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 		}
 		break;
 	case 3: //Setup Page
+		raidForm->Stop();
 		if(m_ConnectStatus == 2)
 		{
 		//	killTimer(m_network_timer);
@@ -296,6 +299,14 @@ void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 			setupForm->LoadConfig();
 	}
 		break;
+	case 4:
+		if (m_ConnectStatus == 2)
+		{
+			raidForm->Start();
+		}
+		break;
+	default:
+		raidForm->Stop();
 	}
 }
 

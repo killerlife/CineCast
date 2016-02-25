@@ -41,6 +41,7 @@ bool CancelDataThread::Start()
 	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
 	m_pFilter->SetFilterID(m_pid, 0x94);
 	m_status = RUN;
+	m_bCancel = false;
 	return true;
 }
 
@@ -90,6 +91,7 @@ void CancelDataThread::doit()
 					(*((m_buffer + len)) << 16) |
 					(*((m_buffer + len + 1)) << 8) |
 					(*((m_buffer + len + 2)))) & 0xffffffff;
+				printf("Cancel\n");
 				if (crc == crc1)
 				{
 					m_bCancel = true;
@@ -113,3 +115,7 @@ void CancelDataThread::doit()
 	}
 }
 
+void CancelDataThread::ClearCancel()
+{
+    m_bCancel = false;
+}

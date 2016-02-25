@@ -60,6 +60,7 @@ void Content::Init()
 	ui.treeWidget_HDD_info->headerItem()->setFont(5, font);
 	ui.treeWidget_HDD_info->headerItem()->setFont(6, font);
 	ui.treeWidget_HDD_info->headerItem()->setFont(7, font);
+
 	ui.treeWidget_USB_info->headerItem()->setFont(0, font);
 	ui.treeWidget_USB_info->headerItem()->setFont(1, font);
 #if 1
@@ -67,6 +68,8 @@ void Content::Init()
 	ui.treeWidget_HDD_info->setColumnWidth(1, 50);
 	ui.treeWidget_HDD_info->setColumnWidth(4, 40);
 	ui.treeWidget_HDD_info->setColumnWidth(5, 80);
+
+	ui.treeWidget_USB_info->setColumnWidth(0, 500);
 #endif
 
 	ui.groupBox->setStyleSheet("QGroupBox{font-size: 18px; font-family:'Book Antiqua';}");

@@ -31,10 +31,13 @@ public:
 	bool UnzipSubtitle(); //find and unzip subtitle zip file
 
 	bool SendLostReport();
+	bool SendLostReport(uint32 filmId);
 
 	bool SaveData(char* fn, char* pData, uint32 segNum, uint32 len);
 
 	bool IsPmtReady();
+	bool IsPat();
+	bool RoundCleanCounter();
 
 private:
 	virtual void doit();
@@ -49,5 +52,6 @@ private:
 	brunt::IThreadManager* m_pManager;
 	std::string m_strReportFileList;
 	uint32 m_FilmId;
+	volatile bool m_bPat;
 // 	ILog *pLog;
 };

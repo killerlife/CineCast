@@ -732,6 +732,18 @@ bool GuiThread::UiProcessFilter()
 			case S_GET_TMS:
                return S_Get_TMS(buf);  
 			 
+			case R_GET_RAID_INFO:
+				return R_GetRaidInfo(buf);
+
+			case M_UPDATE_PROGRAM_LIST_RAID:
+				return M_UpdateProgramList_RAID(buf);          //UpdateProgramListˢӲб���Ա? 
+			case M_IS_PROGRAM_LIST_READY_RAID:                //IsProgramListReadyѯǷ׼
+				return M_IsProgramListReady_RAID(buf); 
+			case M_GET_RAID_CONTENT_LIST:
+				return M_GetContent_RAID(buf);         //new  rename
+			case M_GET_RAID_INFO:
+				return M_GetDiskInfo_RAID(buf);        //new  rename
+
 			default:
 				return UnknowFunction(buf);
 		}
@@ -1240,6 +1252,18 @@ bool GuiThread::M_UpdateProgramList_HDD(char* buf)          //UpdateProgramList�
 	return Write(buf, sendsize, sendsize);
 }
 
+bool GuiThread::M_UpdateProgramList_RAID(char* buf)          //UpdateProgramListˢӲб���Ա? 
+{
+	KL* pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + 1;
+
+	std::vector<int> srcList; 
+	srcList.push_back(PST_RAID);
+	m_Content->UpdateProgramList(srcList);
+
+	return Write(buf, sendsize, sendsize);
+}
+
 
 bool GuiThread::M_UpdateProgramList_USB(char* buf)          //UpdateProgramListˢӲб���Ա? 
 {
@@ -1258,6 +1282,17 @@ bool GuiThread::M_IsProgramListReady_HDD(char* buf)         //IsProgramListReady
     KL* pKL = (KL*)buf;
 	int sendsize = sizeof(KL) + sizeof(bool);
     bool ret=m_Content->IsProgramListReady(PST_HDD);
+	void* pos = buf + sizeof(KL);
+	memcpy(pos,&ret,sizeof(bool));               //Ƿ׼õ״̬,صͻ
+
+	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::M_IsProgramListReady_RAID(char* buf)         //IsProgramListReadyѯǷ׼
+{
+	KL* pKL = (KL*)buf;
+	int sendsize = sizeof(KL) + sizeof(bool);
+	bool ret=m_Content->IsProgramListReady(PST_RAID);
 	void* pos = buf + sizeof(KL);
 	memcpy(pos,&ret,sizeof(bool));               //Ƿ׼õ״̬,صͻ
 
@@ -1467,6 +1502,164 @@ bool GuiThread::M_GetContent_HDD(char* buf)
 	return res;
 }
 
+bool GuiThread::M_GetContent_RAID(char* buf)
+{
+	SL item;
+
+	std::vector<InfoData> m_list = m_Content->GetContentList(PST_RAID);
+	uint64 ss = m_list.size() * sizeof(SL) * 16;
+
+	std::vector<InfoData>::iterator itor;
+	InfoData info;
+	for (itor = m_list.begin(); itor != m_list.end(); ++itor)
+	{
+		info = *itor;
+		for (int i = 0; i < 15; i++)
+		{
+			ss += info.pData[i].size();
+		}
+	}
+
+	ss += sizeof(KL) + 100;
+
+	//char *buff =new char[ss];
+	char *buff =NULL;
+	buff=new char[ss];             //new
+    if(buff==NULL) 
+	{   
+		if(gLog)
+			gLog->Write(LOG_ERROR, "[GuiTHread] M_GetContent_HDD: alloc memory error.");
+		return false;
+	}
+
+
+	KL *pKL = (KL*)buff;
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = M_GET_RAID_CONTENT_LIST;
+
+	void* pos = buff + sizeof(KL);
+
+	for (itor = m_list.begin(); itor != m_list.end(); ++itor)
+	{
+		info = *itor;
+
+		item.m_sID = CONTENT_ID;
+		item.m_length = info.pData[0].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[0].c_str(), item.m_length);
+		pos += item.m_length;
+		DPRINTF("HDD:ID:%s %lld\n", info.pData[0].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_NAME;
+		item.m_length = info.pData[1].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[1].c_str(), item.m_length);
+		pos += item.m_length;
+		DPRINTF("HDD:NAME:%s %lld\n", info.pData[1].c_str(), item.m_length);
+
+		item.m_sID = CONTENT_PROGRESS;
+		item.m_length = info.pData[2].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[2].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_STATUS;
+		item.m_length = info.pData[3].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[3].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_FORMAT;
+		item.m_length = info.pData[4].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[4].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_FILMLENGTH;
+		item.m_length = info.pData[5].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[5].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_PROGRAMLENGTH;
+		item.m_length = info.pData[6].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[6].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_STEREOSCOPIC;
+		item.m_length = info.pData[7].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[7].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_ISSUER;
+		item.m_length = info.pData[8].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[8].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_ISSUEDATE;
+		item.m_length = info.pData[9].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[9].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_TIMERANGE;
+		item.m_length = info.pData[10].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[10].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_RECVSEGMENT;
+		item.m_length = info.pData[11].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[11].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_TOTALSEGMENT;
+		item.m_length = info.pData[12].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[12].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_RECV_DATETIME;
+		item.m_length = info.pData[13].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[13].c_str(), item.m_length);
+		pos += item.m_length;
+
+		item.m_sID = CONTENT_LOCATE;
+		item.m_length = info.pData[14].size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		memcpy(pos, info.pData[14].c_str(), item.m_length);
+		pos += item.m_length;
+		
+	}
+	int sendsize = (int)((char*)pos - buff);
+	pKL->m_length = sendsize - sizeof(KL);
+
+	bool res = Write(buff, sendsize, sendsize);
+
+	delete[] buff;
+
+	return res;
+}
 
 bool GuiThread::M_GetContent_USB(char* buf)
 {
@@ -1670,8 +1863,6 @@ bool GuiThread::M_GetDiskInfo_HDD(char* buf)
 	di.nAvali = m_Content->GetAvalibleSpace(PST_HDD);
 	di.nTotal = m_Content->GetTotalSpace(PST_HDD);
 
-    printf("HDD:di.nTotal=%d GB,di.nAvali=%d GB\n",di.nTotal/1024/1024/1024,di.nAvali/1024/1024/1024);
-
 	KL *pKL = (KL*)buf;
 
 	void* pos = buf + sizeof(KL);
@@ -1686,6 +1877,25 @@ bool GuiThread::M_GetDiskInfo_HDD(char* buf)
 	return Write(buf, sendsize, sendsize);
 }
 
+bool GuiThread::M_GetDiskInfo_RAID(char* buf)
+{
+	DISK_INFO di;
+	di.nAvali = m_Content->GetAvalibleSpace(PST_RAID);
+	di.nTotal = m_Content->GetTotalSpace(PST_RAID);
+
+	KL *pKL = (KL*)buf;
+
+	void* pos = buf + sizeof(KL);
+
+	memcpy(pos, &di, sizeof(DISK_INFO));
+	pKL->m_length = sizeof(DISK_INFO);
+
+	int sendsize = sizeof(KL) + pKL->m_length;
+
+	printf("run to M_GetDiskInfo_HDD()\n");
+
+	return Write(buf, sendsize, sendsize);
+}
 
 bool GuiThread::M_GetDiskInfo_USB(char* buf)
 {
@@ -2008,4 +2218,70 @@ bool GuiThread::S_Get_TMS(char* buf)
 
 	return Write(buf, sendsize, sendsize);
 
+}
+bool GuiThread::R_GetRaidInfo(char* buf)
+{
+	RaidDetailParser rdp;
+	rdp.RunRaidManager();
+	
+	RAID_INFO ri;
+	
+	ri.nRaidDevices = rdp.GetRaidDevices();
+	ri.nActiveDevices = rdp.GetActiveDevices();
+	ri.nWorkingDevices = rdp.GetWorkingDevices();
+	ri.nFailedDevices = rdp.GetFailedDevices();
+	ri.nArraySize = rdp.GetArraySize();
+	ri.nUsedSize = rdp.GetUsedSize();
+	ri.strLevel = rdp.GetRaidLevel();
+	ri.strState = rdp.GetState();
+	ri.strDevState = rdp.GetDevicesState();
+
+	KL *pKL = (KL*)buf;
+
+	void* pos = buf + sizeof(KL);
+
+	memcpy(pos, &ri, sizeof(uint16)*4 + sizeof(uint64)*2);
+	pos += sizeof(uint16)*4 + sizeof(uint64)*2;
+
+// 	int sendsize = sizeof(KL) + pKL->m_length;
+
+	SL item;
+
+	item.m_sID = RAID_INFO_LEVEL;
+	item.m_length = ri.strLevel.size();
+	memcpy(pos, &item, sizeof(SL));
+	pos += sizeof(SL);
+	if(item.m_length > 0)
+	{
+		memcpy(pos, ri.strLevel.c_str(), item.m_length);
+		pos += item.m_length;
+	}
+	
+	item.m_sID = RAID_INFO_STATE;
+	item.m_length = ri.strState.size();
+	memcpy(pos, &item, sizeof(SL));
+	pos += sizeof(SL);
+	if (item.m_length > 0)
+	{
+		memcpy(pos, ri.strState.c_str(), item.m_length);
+		pos += item.m_length;
+	}
+
+	for(int i = 0; i < ri.strDevState.size(); i++)
+	{
+		item.m_sID = RAID_INFO_DEVSTATE;
+		item.m_length = ri.strDevState.at(i).size();
+		memcpy(pos, &item, sizeof(SL));
+		pos += sizeof(SL);
+		if (item.m_length > 0)
+		{
+			memcpy(pos, ri.strDevState.at(i).c_str(), item.m_length);
+			pos += item.m_length;
+		}
+	}
+
+	int sendsize = (int)((char*)pos - buf);
+	pKL->m_length = sendsize - sizeof(KL);
+
+	return Write(buf, sendsize, sendsize);
 }

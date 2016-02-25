@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <thread/activeThread/activeThread.h>
 #include <string>
 #include <list>
@@ -16,6 +16,7 @@ public:
 	bool Start();
 	bool Stop();
 	bool IsCancel() { return m_bCancel; };
+	void ClearCancel();
 	int GetStatus() { return m_status; };
 	uint64 ReciveLength(){ return 0; };
 	uint64 FileLength(){return 0;};

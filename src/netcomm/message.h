@@ -235,8 +235,8 @@ struct L_HEART_INFO_REPORT//心跳信息上报报文
 		filmLength = 0;
 		recvRound = 0;
 		filmSegment = 0;
-		memset(taskStartTime, 0, 20);
-		memset(recvStartTime, 0, 20);
+		strcpy((char*)taskStartTime, "0000-00-00 00:00:00");
+		strcpy((char*)recvStartTime, "0000-00-00 00:00:00");
 		memset(reserved, 0, 16);
 		reserved2 = 0;
 		recvLength = 0;

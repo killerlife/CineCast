@@ -1,5 +1,6 @@
 ﻿#include "BaseOperation.h"
 #include "ini.h"
+#include "../externcall/ExternCall.h"
 
 #include <string>
 #include <stdio.h>
@@ -524,10 +525,10 @@ bool SatelliteConfOperation::WriteConfig()
 
 ContentOperation::ContentOperation()
 {
-	std::vector<int> srcList;
-	srcList.push_back(PST_USB); //new   
-	srcList.push_back(PST_HDD);
-	getIContentManager()->update(srcList);
+	m_srcList.push_back(PST_USB); //new   
+	m_srcList.push_back(PST_HDD);
+	m_srcList.push_back(PST_RAID);
+	getIContentManager()->update(m_srcList);
 }
 
 ContentOperation::~ContentOperation()
@@ -553,13 +554,32 @@ std::vector<InfoData>& ContentOperation::GetContentList(int src)
 			getIContentManager()->getProgramFileList(PST_USB,  TYPE_MOVIE, m_UsbContent);
 		}
 		return m_UsbContent;
+	case PST_RAID:
+		if(getIContentManager()->isReady(PST_RAID))
+		{
+			m_RaidContent.clear();
+			getIContentManager()->getProgramFileList(PST_RAID,  TYPE_MOVIE, m_RaidContent);
+		}
+		return m_RaidContent;
 	}
 	return m_Content;
 }
 
 int ContentOperation::UpdateProgramList(std::vector<int> srcList)
 {
-	return getIContentManager()->update(srcList);
+	bool bFind = false;
+	for (int i = 0; i < m_srcList.size(); i++)
+	{
+		if(m_srcList.at(i) == srcList.at(0))
+		{
+			bFind = true;
+			break;
+		}
+	}
+	if (!bFind)
+		m_srcList.push_back(srcList.at(0));
+	    
+	return getIContentManager()->update(m_srcList);
 }
 
 bool ContentOperation::IsProgramListReady(int src)
@@ -669,8 +689,14 @@ void ContentOperation::FindDir(std::string dir)
 
 bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList)
 {
-	if(GetAvalibleSpace(src) < 350*1024*1024*1024)
+	uint64 fspace = GetAvalibleSpace(src);
+	if( fspace < (uint64)350*1024*1024*1024)
 	{
+		char str[512];
+		sprintf(str, "[ContentOperation] AutoDelete: %lld free.", fspace);
+		if(gLog)
+		    gLog->Write(LOG_NETCOMMU, str);
+		    
 		UpdateDirList(src);
 		switch(src)
 		{
@@ -741,6 +767,8 @@ void mke2fs::doit()
 	ICMyini* ini = createMyini();
 	bool bRead = false;
 	std::string tmp;
+	int res = 0;
+	char str[512];
 	if(ini)
 	{
 		if (ini->load("/etc/CineCast/config.cfg"))
@@ -770,12 +798,59 @@ void mke2fs::doit()
 			tmp = "/dev/sdb1";
 			break;
 		case DISK_RAID:
-			tmp = "/dev/md0";
+			tmp = "";
 			break;
 		}
 	}
 	releaseMyini(ini);
 
+	switch(m_type)
+	{
+	case DISK_REMOVEABLE:
+		chdir("/");
+
+		res = umount("/storage");
+		if(res != 0)
+		{
+			m_Status = 0;
+			out[0] = -1;
+			memcpy(out + 1, "umount disk failed.\n", 19);
+			sout += (out+1);
+			return;
+		}
+
+		tmp = "mkfs.ext3 " + tmp;
+		fp = popen(tmp.c_str(), "r");
+		setvbuf(fp, NULL, _IONBF, 0);
+		sout.clear();
+		memset(out, 0, 80);
+		while(fgets(out+1, sizeof(out-1), fp) != NULL)
+		{
+			m_Status = 1;
+			out[0] = 1;
+			sout += (out+1);
+		}
+		out[0] = -1;
+		pclose(fp);
+		m_Status = 0;
+		fp = NULL;
+
+		MountDisk(DISK_REMOVEABLE);
+		chdir("/storage");
+
+		break;
+	case DISK_RAID:
+		if(tmp != "")
+		{
+			res = umount("/raid");
+			if(res != 0)
+			{
+				m_Status = 0;
+				out[0] = -1;
+				memcpy(out + 1, "umount disk failed.\n", 19);
+				sout += (out+1);
+				return;
+			}
 	tmp = "mkfs.ext3 " + tmp;
 	fp = popen(tmp.c_str(), "r");
 	setvbuf(fp, NULL, _IONBF, 0);
@@ -793,6 +868,17 @@ void mke2fs::doit()
 	pclose(fp);
 	m_Status = 0;
 	fp = NULL;
+			MountDisk(DISK_RAID);
+		}
+		else
+		{
+			sprintf(str, "[mke2fs] doit: no raid array.");
+			if(gLog)
+				gLog->Write(LOG_ERROR, str);
+			res = 0;
+		}
+		break;
+	}
 }
 
 char* mke2fs::GetOutput()
@@ -816,8 +902,11 @@ bool mke2fs::MountDisk(DISK_TYPE type)
 	bool bRead = false;
 	std::string tmp;
 	m_type = type;
+	char str[512];
 	if(ini)
 	{
+		if (ini->load("/etc/CineCast/config.cfg"))
+		{
 		switch(m_type)
 		{
 		case DISK_REMOVEABLE:
@@ -834,15 +923,21 @@ bool mke2fs::MountDisk(DISK_TYPE type)
 			break;
 		}
 	}
+	}
 	if (!bRead)
 	{
+		sprintf(str, "[mke2fs] MountDisk: Read config.cfg error.");
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
 		switch(m_type)
 		{
 		case DISK_REMOVEABLE:
 			tmp = "/dev/sdb1";
 			break;
 		case DISK_RAID:
-			tmp = "/dev/md0";
+			tmp = "";
 			break;
 		}
 	}
@@ -854,13 +949,24 @@ bool mke2fs::MountDisk(DISK_TYPE type)
 		res = mount(tmp.c_str(), "/storage", "ext3", MS_SYNCHRONOUS, NULL);
 		break;
 	case DISK_RAID:
-		res = mount(tmp.c_str(), "/storage", "ext3", MS_SYNCHRONOUS, NULL);
+		if(tmp != "")
+			res = mount(tmp.c_str(), "/raid", "ext3", MS_SYNCHRONOUS, NULL);
+		else
+		{
+			sprintf(str, "[mke2fs] MountDisk: no raid array.");
+			if(gLog)
+				gLog->Write(LOG_ERROR, str);
+			res = 0;
+		}
 		break;
 	}
 	if(res == 0)
 		return true;
 	if(errno == EBUSY)
 		return true;
+	sprintf(str, "[mke2fs] MountDisk: mount disk error - %d.", m_type);
+	if(gLog)
+		gLog->Write(LOG_ERROR, str);
 	return false;
 }
 
@@ -1155,13 +1261,16 @@ bool Md5Class::GetMd5(FILE* fp, MD5BLOCK mb)
 		(uint8)mb.md5[8], (uint8)mb.md5[9], (uint8)mb.md5[10], (uint8)mb.md5[11],
 		(uint8)mb.md5[12], (uint8)mb.md5[13], (uint8)mb.md5[14], (uint8)mb.md5[15]);
 	DPRINTF("MD5 failed\n\n", mb.Md5Begin, mb.Md5End);
+	if(gLog)
+	    gLog->Write(LOG_ERROR, "[Md5Class] GetMd5: Get hash failed.");
 	return false;
 }
 
-bool Md5Class::Md5Verify()
+bool Md5Class::Md5Verify(uint32 filmId)
 {
 	std::string fn;
 	uint64 rollback = 0;
+	char str[512];
 	for (int i = 0; i < efl.EncodeFileList.size(); i++)
 	{
 		ENCODEFILE ef = efl.EncodeFileList.at(i);
@@ -1186,9 +1295,15 @@ bool Md5Class::Md5Verify()
 			FILE *fp = fopen(fn.c_str(), "rb");
 			if(fp <= 0)
 			{
+				if(gLog)
+				{
+					sprintf(str, "[Md5Class] Md5Verify: Open %s failed.", fn.c_str());
+					gLog->Write(LOG_ERROR, str);
+				}
 				DPRINTF("Open %s failed\n", fn.c_str());
 				bMd5Success = false;
 				nRollBackLen = rollback;
+				SaveResult(filmId);
 				return bMd5Success;
 			}
 			else
@@ -1204,6 +1319,7 @@ bool Md5Class::Md5Verify()
 						bMd5Success = false;
 						nRollBackLen = rollback;
 						fclose(fp);
+						SaveResult(filmId);
 						return bMd5Success;
 					}
 				}
@@ -1212,7 +1328,26 @@ bool Md5Class::Md5Verify()
 		}
 	}
 	bMd5Success = true;
+	SaveResult(filmId);
 	return bMd5Success;
+}
+
+void Md5Class::SaveResult(uint32 filmId)
+{
+    ICMyini *ini = createMyini();
+    if(ini)
+    {
+	char str[512];
+	if(bMd5Success)
+	    ini->write(" ", "SUCCESS", "true");
+	else
+	    ini->write(" ", "SUCCESS", "false");
+	sprintf(str, "%lld", nRollBackLen);
+	ini->write(" ", "LENGTH", str);
+	sprintf(str, "/tmp/film%ld.md5", filmId);
+	ini->save(str);
+	releaseMyini(ini);
+    }
 }
 
 static Md5Class gMd5Class;
@@ -1224,4 +1359,176 @@ Md5Class* CreateMd5Class()
 
 void ReleaseMd5Class(Md5Class* pMd5)
 {
+}
+void RaidDetailParser::DetailParser(std::string strDetail)
+{
+	strRaidLevel = "";
+	strState = "";
+	nRaidDevices = nActiveDevices = nWorkingDevices = nFailedDevice = 0;
+	nArraySize = nUsedSize = 0;
+	strDevState.clear();
+	size_t pos;
+	if ((pos = strDetail.find("Raid Level")) != std::string::npos)
+	{
+		char buf[50];
+		sscanf(strDetail.c_str() + pos + 13, "%s", buf);
+		strRaidLevel = buf;
+		if((pos = strDetail.find("State : ")) != std::string::npos)
+		{
+			sscanf(strDetail.c_str() + pos + 8, "%s", buf);
+			strState = buf;
+		}
+		if((pos = strDetail.find("Array Size")) != std::string::npos)
+		{
+			sscanf(strDetail.c_str() + pos + 13, "%lld", &nArraySize);
+		}
+		if((pos = strDetail.find("Used Dev Size")) != std::string::npos)
+		{
+			sscanf(strDetail.c_str() + pos + 16, "%lld", &nUsedSize);
+		}
+		if((pos = strDetail.find("Raid Devices")) != std::string::npos)
+		{
+			sscanf(strDetail.c_str() + pos + 15, "%d", &nRaidDevices);
+		}
+		if ((pos = strDetail.find("Active Devices")) != std::string::npos)
+		{
+			sscanf(strDetail.c_str() + pos + 17, "%d", &nActiveDevices);
+		}
+		if ((pos = strDetail.find("Working Devices")) != std::string::npos)
+		{
+			sscanf(strDetail.c_str() + pos + 18, "%d", &nWorkingDevices);
+		}
+		if ((pos = strDetail.find("Failed Devices")) != std::string::npos)
+		{
+			sscanf(strDetail.c_str() + pos + 17, "%d", &nFailedDevice);
+		}
+		if ((pos = strDetail.find("Number")) != std::string::npos)
+		{
+			int i = 0;
+			for(i = 0;; i++)
+			{
+				if(strDetail.at(pos + i) == '\n')
+					break;
+			}
+			i++;
+			pos += i;
+			for (i = 0; i < nRaidDevices; i++)
+			{
+				int n, major, minor, raid;
+				char state1[20], state2[20], dev[40];
+				int j = 0;
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) != ' ')
+						break;
+				}
+				pos += j;
+				sscanf(strDetail.c_str() + pos, "%d", &n);
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) == ' ')
+						break;
+				}
+				pos += j;
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) != ' ')
+						break;
+				}
+				pos += j;
+				sscanf(strDetail.c_str() + pos, "%d", &major);
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) == ' ')
+						break;
+				}
+				pos += j;
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) != ' ')
+						break;
+				}
+				pos += j;
+				sscanf(strDetail.c_str() + pos, "%d", &minor);
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) == ' ')
+						break;
+				}
+				pos += j;
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) != ' ')
+						break;
+				}
+				pos += j;
+				sscanf(strDetail.c_str() + pos, "%d", &raid);
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) == ' ')
+						break;
+				}
+				pos += j;
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) != ' ')
+						break;
+				}
+				pos += j;
+				sscanf(strDetail.c_str() + pos, "%s", state1);
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) == ' ')
+						break;
+				}
+				pos += j;
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) != ' ')
+						break;
+				}
+				pos += j;
+				sscanf(strDetail.c_str() + pos, "%s", state2);
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) == ' ')
+						break;
+				}
+				pos += j;
+				for (j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) != ' ')
+						break;
+				}
+				pos += j;
+				sscanf(strDetail.c_str() + pos, "%s", dev);
+				for(j = 0;; j++)
+				{
+					if(strDetail.at(pos + j) == '\n')
+						break;
+				}
+				pos += (j+1);
+				std::string sState = dev;
+				sState += "|";
+				sState +=state1;
+				sState += " ";
+				sState += state2;
+				strDevState.push_back(sState);
+			}
+		}
+	}
+}
+
+void RaidDetailParser::RunRaidManager()
+{
+	IExternCall* pEc = CreateExternCall();
+	pEc->RunCommand("mdadm -D /dev/md0");
+	while(1)
+	{
+		if (pEc->IsFinish())
+		{
+			DetailParser(pEc->GetOutput());
+			break;
+		}
+	}
 }

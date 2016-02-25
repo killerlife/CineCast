@@ -18,6 +18,7 @@ using namespace brunt;
 extern ILog* gLog;
 extern NetCommThread *pNetComm;
 extern std::vector<std::string> gRunPathList;
+extern bool bRecvData;
 
 FilmDataThread::FilmDataThread(): m_ReciveLength(0), m_status(STOP),
 m_pZtBuf(0), m_pFilter(0), m_pFilmFile(NULL), m_nSegBasic(0), 
@@ -140,10 +141,12 @@ bool FilmDataThread::Init(void *param1, void *param2)
 		fclose(fp);
 		m_pZtFilmFile = fopen(m_strZtFileName.c_str(), "rb+");
 		UpdateInfo();
+		bSequence = false;
 	}
 	else
 	{
 		m_pZtFilmFile = fopen(m_strZtFileName.c_str(), "wb+");
+		bSequence = true;
 	}
 
 	//Check the Film file exist, if not existed, create a new one
@@ -196,6 +199,7 @@ bool FilmDataThread::Start()
 	m_status = RUN;
 	bStop = false;
 	m_Ready = true;
+	m_lastSegNum = 0;
 	return true;
 }
 
@@ -318,6 +322,7 @@ void FilmDataThread::doit()
 						uint16 pll = *(buff + 4);
 						w_size = pl - pll - 6;
 						filmId = getBits(buff + 5, 0, 32);
+						bRecvData = true;
 						#if 0
 						if(pos == 0)
 						    pos = seg_num;
@@ -355,11 +360,33 @@ void FilmDataThread::doit()
 							//
 							m_ReciveSegment++;//= w_size;
 							m_ReciveLength += w_size;
+								#if 1
+								if(bSequence)
+								{
+								    if(m_lastSegNum == seg_num)
+									;
+								    else if(m_lastSegNum == (seg_num - 1))
+									m_lastSegNum = seg_num;
+								    else
+								    {
+									m_LostSegment += (seg_num - m_lastSegNum - 1);
+									m_lastSegNum = seg_num;
+								    }
+								}
+								else
+								#endif
+								{
+								    if(m_LostSegment > 0)
+									m_LostSegment--;
+								}
 						}
 					}
 					}
 					else
+					{
 						m_CRCError++;
+						m_LostSegment++;
+					}
 				#else
 					m_ReciveSegment++;//= w_size;
 					//m_ReciveLength += w_size;
@@ -407,6 +434,11 @@ bool FilmDataThread::haveSegment(uint32 nSegNum)
 			return true;
 	}
 	return false;
+}
+
+bool FilmDataThread::RoundCleanCounter()
+{
+    m_LostSegment = m_CRCError = 0;
 }
 
 void FilmDataThread::UpdateZtMem(uint32 nSegNum)
@@ -791,6 +823,7 @@ std::string FilmDataThread::GetLostSegment()
 	m_ReciveLength = ReceiveBytes;
 	m_ReciveSegment = ReceiveSegments;
 	m_LostSegment = LostSegments;
+	bSequence = false;
 
 	//Move Update file to /home/leonis/update
 	if(m_ReciveSegment == m_TotalSegment)
@@ -913,7 +946,8 @@ bool FilmDataThread::UnzipSubtitle()
 	if((found = m_strFileName.find("ZM.zip")) == std::string::npos)
 		return false;
 	std::string path = m_strFileName;
-	path.resize(m_strFileName.size() - found);
+//	path.resize(m_strFileName.size() - found);
+	path.resize(found);
 	char fn[1024];
 	sprintf(fn, "unzip %s -d %s", m_strFileName.c_str(), path.c_str());
 	system(fn);

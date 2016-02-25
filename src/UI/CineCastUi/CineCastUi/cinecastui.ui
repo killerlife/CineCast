@@ -148,7 +148,7 @@ QTabWidget#Tab1>QTabBar::tab:last:pressed
       <enum>QTabWidget::Triangular</enum>
      </property>
      <property name="currentIndex" >
-      <number>6</number>
+      <number>3</number>
      </property>
      <property name="iconSize" >
       <size>

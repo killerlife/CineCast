@@ -11,6 +11,7 @@
 #include <log/Log.h>
 #include <sys/stat.h>
 #include <netcomm/message.h>
+#include "ini.h"
 
 extern ILog* gLog;
 extern NetCommThread *pNetComm;
@@ -45,6 +46,13 @@ bool PATDataThread::Start()
 	m_pFilter->SetFilterID(m_PatId, 0x00);
 	m_status = RUN;
 	return true;
+}
+
+bool PATDataThread::IsPat()
+{
+    bool bRes = m_bPat;
+    m_bPat = false;
+    return bRes;
 }
 
 bool PATDataThread::Stop()
@@ -117,6 +125,9 @@ void PATDataThread::doit()
 					uint8 *pbuf = m_buffer + 8;
 					len -= 9;
 					uint16 program_number;
+					
+					m_bPat = true;
+					
 					while(len > 0)
 					{
 						program_number = (pbuf[0] << 8) |
@@ -271,26 +282,30 @@ bool PATDataThread::UnzipSubtitle()
 	return false;
 }
 
+using namespace brunt;
+
 bool PATDataThread::SendLostReport()
 {
-	char str[512];
+	char str[200], str1[200];
 
-	//Delete lostinfo.zip
-	system("rm -rf /tmp/lostinfo.zip");
-
+	sprintf(str, "/tmp/lost%ld.zip ", m_FilmId);
 	//Construct zip command and zip all zt file to one archive file
 	if(m_strReportFileList.find(".zt") == std::string::npos)
-	    return false;
-	std::string cmd = "zip /tmp/lostinfo.zip " + m_strReportFileList;
+	{
+	    return SendLostReport(m_FilmId);
+	}
+	std::string cmd = "zip -f ";
+	cmd = cmd + str + m_strReportFileList;
 	system(cmd.c_str());
 
 	struct stat mstat;
-	if (stat("/tmp/lostinfo.zip", &mstat) == -1)
+	sprintf(str, "/tmp/lost%ld.zip", m_FilmId);
+	if (stat(str, &mstat) == -1)
 	{
-		sprintf(str, "[PATDataThread] Unable stat /tmp/lostinfo.zip.");
+		sprintf(str1, "[PATDataThread] Unable stat %s.", str);
 		if(gLog)
-			gLog->Write(LOG_ERROR, str);
-		DPRINTF("%s\n", str);
+			gLog->Write(LOG_ERROR, str1);
+		DPRINTF("%s\n", str1);
 		return false;
 	}
 
@@ -298,18 +313,18 @@ bool PATDataThread::SendLostReport()
 	L_LOST_INFO *info = (L_LOST_INFO*) buf;
 	char *pos = buf + 28;//(char*)&info->pLost;
 	
-	FILE *fp = fopen("/tmp/lostinfo.zip", "rb");
+	sprintf(str, "/tmp/lost%ld.zip", m_FilmId);
+	FILE *fp = fopen(str, "rb");
 	if(fp <= 0)
 	{
-		sprintf(str, "[PATDataThread] Unable open /tmp/lostinfo.zip.");
+		sprintf(str1, "[PATDataThread] Unable open %s.", str);
 		if(gLog)
-			gLog->Write(LOG_ERROR, str);
-		DPRINTF("%s\n", str);
+			gLog->Write(LOG_ERROR, str1);
+		DPRINTF("%s\n", str1);
 		delete[] buf;
 		return false;
 	}
 	fread(pos, mstat.st_size, 1, fp);
-
 	info->filmID = m_FilmId;
 	info->lostNum = LostSegment();
 	info->receivedByteCount = ReciveLength();
@@ -317,6 +332,21 @@ bool PATDataThread::SendLostReport()
 	info->lostLength = mstat.st_size;
 	info->reserved = 0;
 
+	ICMyini *ini = createMyini();
+	if(ini)
+	{
+	    sprintf(str, "%ld", info->filmID);
+	    ini->write(" ", "FILMID", str);
+	    sprintf(str, "%lld", info->lostNum);
+	    ini->write(" ", "LOST", str);
+	    sprintf(str, "%lld", info->receivedByteCount);
+	    ini->write(" ", "RECVBYTE", str);
+	    sprintf(str, "%ld", info->recvState);
+	    ini->write(" ", "STATUS", str);
+	    sprintf(str, "/tmp/lost%ld.info", m_FilmId);
+	    ini->save(str);
+	    releaseMyini(ini);
+	}
 	
 	if(pNetComm)
 	{
@@ -327,6 +357,120 @@ bool PATDataThread::SendLostReport()
 
 	delete[] buf;
 	return true;
+}
+
+extern RECEIVE_INFO gRecv;
+
+bool PATDataThread::SendLostReport(uint32 filmId)
+{
+	char str[200], str1[200];
+
+	//Construct zip command and zip all zt file to one archive file
+	sprintf(str, "/tmp/lost%ld.zip", filmId);
+
+	char *buf;
+	L_LOST_INFO *info;
+	struct stat mstat;
+	uint32 zipsize = 0;
+	if (stat(str, &mstat) == -1)
+	{
+		sprintf(str1, "[PATDataThread] SendLostReport(id) Unable stat %s.", str);
+		if(gLog)
+			gLog->Write(LOG_ERROR, str1);
+		DPRINTF("%s\n", str1);
+		buf = new char[100];
+		
+		info = (L_LOST_INFO*) buf;
+		char *pos = buf + 28;
+	
+		info->filmID = filmId;
+		info->lostNum = LostSegment();
+		info->receivedByteCount = ReciveLength();
+		info->recvState = 5;
+		info->lostLength = zipsize = 0;
+		info->reserved = 0;
+	}
+	else
+	{
+	    buf = new char[mstat.st_size + 100];
+	    info = (L_LOST_INFO*) buf;
+	    char *pos = buf + 28;//(char*)&info->pLost;
+	
+		sprintf(str, "/tmp/lost%ld.zip", filmId);
+		FILE *fp = fopen(str, "rb");
+		if(fp <= 0)
+		{
+			sprintf(str1, "[PATDataThread] Unable open %s.", str);
+			if(gLog)
+				gLog->Write(LOG_ERROR, str1);
+			DPRINTF("%s\n", str1);
+			info->filmID = filmId;
+			info->lostNum = LostSegment();
+			info->receivedByteCount = ReciveLength();
+			info->recvState = 5;
+			info->lostLength = zipsize = 0;
+			info->reserved = 0;
+		}
+		else
+		{
+			fread(pos, mstat.st_size, 1, fp);
+
+			sprintf(str, "/tmp/lost%ld.info", filmId);
+			ICMyini *ini = createMyini();
+			if(ini)
+			{
+			    if(ini->load(str))
+			    {
+				std::string tmp;
+				if(ini->read(" ", "LOST", tmp))
+				    info->lostNum = atol(tmp.c_str());
+				else
+				    info->lostNum = LostSegment();
+				if(ini->read(" ", "RECVBYTE", tmp))
+				    info->receivedByteCount = atoll(tmp.c_str());
+				else
+				    info->receivedByteCount = ReciveLength();
+			    }
+			    else
+			    {
+				info->lostNum = LostSegment();
+				info->receivedByteCount = ReciveLength();
+			    }
+			}
+			else
+			{
+				info->lostNum = LostSegment();
+				info->receivedByteCount = ReciveLength();
+			}
+			info->filmID = filmId;
+			info->recvState = gRecv.nReceiveStatus & 0xffff;
+			info->lostLength = zipsize = mstat.st_size;
+			info->reserved = 0;
+		}
+
+	}
+	
+	if(pNetComm)
+	{
+		pNetComm->ReportLost(buf, 
+			28 + zipsize + sizeof(uint32),
+			28 + zipsize + sizeof(uint32));
+		RoundCleanCounter();
+	}
+
+	delete[] buf;
+	return true;
+}
+
+bool PATDataThread::RoundCleanCounter()
+{
+	std::list<PMTDataThread*>::iterator itor;
+	for(itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
+	{
+		if((*itor)-RoundCleanCounter())
+			return true;
+	}
+	return false;
 }
 
 bool PATDataThread::SaveData(char* fn, char* pData, uint32 segNum, uint32 len)

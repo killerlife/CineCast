@@ -110,6 +110,7 @@ public:
 	std::string FindAssetmap();
 	bool IsSameDCP(std::string path);
 	bool IsReady();
+	bool RoundCleanCounter();
 
 public:
 	struct PmtDescriptor* m_pPmtDescriptor;
@@ -151,5 +152,9 @@ private:
 
 	uint64 m_ztPos;
 	bool m_Ready;
+	
+	volatile bool bSequence;
+	uint32 m_lastSegNum;
+	
 // 	ILog *pLog;
 };

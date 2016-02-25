@@ -1,4 +1,4 @@
-#include "do_tuner.h"
+﻿#include "do_tuner.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -152,21 +152,33 @@ int get_tuner_status(int frontend_fd,
 					 uint8 *lock)
 {
 	fe_status_t status1;
+	uint16 SNR, AGC;
 	if (ioctl(frontend_fd, FE_READ_STATUS, &status1) == -1)
 	{
 		perror("FE_READ_STATUS failed");
 	}
-	if(ioctl(frontend_fd, FE_READ_SIGNAL_STRENGTH, agc) == -1)
-		*(agc) = -2;
-	if(ioctl(frontend_fd, FE_READ_SNR, snr) == -1)
-		*(snr) = -2;
+	if(ioctl(frontend_fd, FE_READ_SIGNAL_STRENGTH, &AGC) == -1)
+		AGC = -2;
+	if(ioctl(frontend_fd, FE_READ_SNR, &SNR) == -1)
+		SNR = -2;
 	if(ioctl(frontend_fd, FE_READ_BER, ber) == -1)
 		*(ber) = -2;
 	if(ioctl(frontend_fd,  FE_READ_UNCORRECTED_BLOCKS, unc) == -1)
 		*snr = -2;
 	*(status) = status1;
-	*(agc) = ((*(agc)) * 100 / 0xffff);
-	*(snr) = ((*(snr)) * 100 / 0xffff);
+#if 1
+	//TBS69x3
+	*agc = (AGC * 100) / 0xffff;
+	if((SNR/10000) == 0)
+		*snr = 0;//(SNR * 100) / 0xffff;
+	else
+		*snr = SNR/1000;
+#else
+	//TBS69x2
+	*agc = (AGC - 22389) * 100 / 41075;
+	*snr = SNR*100/0xffff;//(0xffff-SNR)*100/23464;
+#endif
+	//printf("AGC:%d SNR:%d\n", AGC, SNR);
 	if (status1 & FE_HAS_LOCK)
 	{
 		*(lock) = 1;

@@ -1,4 +1,4 @@
-﻿<ui version="4.0" >
+<ui version="4.0" >
  <class>SetupClass</class>
  <widget class="QWidget" name="SetupClass" >
   <property name="geometry" >
@@ -412,12 +412,7 @@
             </item>
             <item>
              <property name="text" >
-              <string>VSB16</string>
-             </property>
-            </item>
-            <item>
-             <property name="text" >
-              <string>VSB8</string>
+              <string>32APSK</string>
              </property>
             </item>
             <item>

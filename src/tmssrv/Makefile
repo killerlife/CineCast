@@ -23,10 +23,13 @@ CLIB = \
 -lboost_system \
 -lboost_thread \
 -lboost_signals \
+-lxerces-c \
+-lx86-dcpXmlCore \
+-lx86-GeneralXMLLib \
 -lx86-activeThreadManager
 
 BIND=/usr/local/bin/
-INCLUDE=-I../s2/linux/include -I../../include -I../../include/brunt
+INCLUDE=-I../s2/linux/include -I../../include
 
 TARGET=tmsd
 
@@ -49,6 +52,7 @@ clean:
 	
 post-build:
 	cp $(TARGET) ../../bin/linux/release
+	cp $(TARGET) /usr/CineCast/bin
 	
 %.o: %.cpp
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@

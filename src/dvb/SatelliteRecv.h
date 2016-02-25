@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 #include "mytype.h"
@@ -50,10 +50,7 @@ static struct t_channel_parameter_map inversion_values[] = {
 static struct t_channel_parameter_map coderate_values[] = {
 	{   0, FEC_NONE, "none" },
 	{  12, FEC_1_2,  "1/2" },
-	//  {  13, FEC_1_3,  "1/3" },
-	//  {  14, FEC_1_4,  "1/4" },
 	{  23, FEC_2_3,  "2/3" },
-	//  {  25, FEC_2_5,  "2/5" },
 	{  34, FEC_3_4,  "3/4" },
 	{  35, FEC_3_5,  "3/5" },
 	{  45, FEC_4_5,  "4/5" },
@@ -67,27 +64,20 @@ static struct t_channel_parameter_map coderate_values[] = {
 };
 
 static struct t_channel_parameter_map modulation_values[] = {
-	// {   0, NONE,    "none" },
-	// {   4, QAM_4,    "QAM4" },
 	{  16, QAM_16,   "QAM16" },
 	{  32, QAM_32,   "QAM32" },
 	{  64, QAM_64,   "QAM64" },
 	{ 128, QAM_128,  "QAM128" },
 	{ 256, QAM_256,  "QAM256" },
-	//  { 512, QAM_512,  "QAM512" },
-	//  {1024, QAM_1024, "QAM1024" },
-	//  {   1, BPSK,    "BPSK" },
 	{   2, QPSK,    "QPSK" },
-	//  {   3, OQPSK,   "OQPSK" },
 	{   5, PSK_8,    "8PSK" },
 	{   6, APSK_16,  "16APSK" },
-	//{   7, _32APSK,  "32APSK" },
-	//  {   8, OFDM,    "OFDM" },
+	{   7, APSK_32,  "32APSK" },
+	{   8, DQPSK,    "OFDM" },
 	//  {   9, COFDM,   "COFDM" },
 	{  10, VSB_8,    "VSB8" },
 	{  11, VSB_16,   "VSB16" },
 	{ 998, QAM_AUTO, "QAMAUTO" },
-	//  { 999, AUTO },
 	{ -1 }
 };
 

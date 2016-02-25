@@ -35,6 +35,7 @@ public:
 	bool SaveData(char* fn, char* pData, uint32 segNum, uint32 len);
 	
 	bool IsFilmDataReady();
+	bool RoundCleanCounter();
 
 private:
 	virtual void doit();

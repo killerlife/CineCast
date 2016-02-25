@@ -126,16 +126,114 @@ void aes_decrypt(uint8* key, uint8* in, uint8* out, uint32 size)
 	EVP_CIPHER_CTX_cleanup(&ctx);
 }
 
-NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false)
+class HeartThread: public brunt::CActiveThread
+{
+public:
+    HeartThread();
+    virtual ~HeartThread();
+    bool Init(NetCommThread* pNetCom);
+    bool Start();
+    bool Stop();
+    
+private:
+    virtual void doit();
+    void cleanThread();
+
+private:
+    NetCommThread* pNetCom;
+};
+
+HeartThread::HeartThread()
+{
+    pNetCom = NULL;
+}
+
+HeartThread::~HeartThread()
+{
+    cleanThread();
+}
+
+bool HeartThread::Init(NetCommThread* pNetCom)
+{
+    this->pNetCom = pNetCom;
+    return true;
+}
+
+bool HeartThread::Start()
+{
+	char str[512];
+
+	if(!(status() == thread_stopped || status() == thread_ready))
+	{
+		sprintf(str, "[HeartThread] The thread had not been ready, status = %d.", status());
+		DPRINTF("%s\n", str);
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
+		return false;
+	}
+
+	if (isStopped())
+	{
+		cleanThread();
+	}
+
+	if(!start())
+	{
+		sprintf(str, "[HeartThread] Start thread failed, status = %d.", status());
+		DPRINTF("%s\n", str);
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
+		return false; 
+	}
+
+	return true;
+}
+
+void HeartThread::cleanThread()
+{
+	CActiveThread::stop();
+}
+
+bool HeartThread::Stop()
+{
+}
+
+void HeartThread::doit()
+{
+	char str[512];
+
+	while(1)
+	{
+	    sleep(120);
+	    if(pNetCom)
+	    {
+		pNetCom->HeartBreat();
+	    }
+	}
+}
+
+
+NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false), pHeartThread(NULL)
 {
 	string s = getDateTime();
 	memset(m_loginReq.startupTime, 0, 20);
 	strcpy((char*)m_loginReq.startupTime, s.c_str());
 	m_loginReq.loginCount = 0;
+	nRecvLength = 0;
+	
+	pHeartThread = new HeartThread;
+	pHeartThread->Init(this);
 }
 
 NetCommThread::~NetCommThread()
 {
+	if(pHeartThread)
+		delete pHeartThread;
+		
 	cleanThread();
 }
 
@@ -161,7 +259,7 @@ bool NetCommThread::Start()
 
 	if(!(status() == thread_stopped || status() == thread_ready))
 	{
-		sprintf(str, "[TmsThread] The thread had not been ready, status = %d.", status());
+		sprintf(str, "[NetCommThread] The thread had not been ready, status = %d.", status());
 		DPRINTF("%s\n", str);
 		if (gLog)
 		{
@@ -177,7 +275,7 @@ bool NetCommThread::Start()
 
 	if(!start())
 	{
-		sprintf(str, "[TmsThread] Start thread failed, status = %d.", status());
+		sprintf(str, "[NetCommThread] Start thread failed, status = %d.", status());
 		DPRINTF("%s\n", str);
 		if (gLog)
 		{
@@ -187,6 +285,8 @@ bool NetCommThread::Start()
 	}
 
 	m_status = NET_RUN;
+
+	pHeartThread->Start();
 	return true;
 }
 
@@ -198,7 +298,6 @@ void NetCommThread::cleanThread()
 	m_loginSocket.Destroy();
 	m_authSocket.Destroy();
 }
-
 
 bool NetCommThread::Stop()
 {
@@ -585,7 +684,7 @@ bool NetCommThread::GetMD5File(uint32 filmId)
 
 bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 {
-	if(!bConnected)
+	if(!bConnected || (m_status != NET_READ))
 	{
 		char str[512];
 		sprintf(str, "[NetCommThread] ReportLost: remote not connect.");
@@ -664,10 +763,22 @@ bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 
 bool NetCommThread::HeartBreat()
 {
+	static uint32 dataRate = 80;
+	
 	if(!bConnected)
 	{
 		char str[512];
 		sprintf(str, "[NetCommThread] HeartBreat: remote not connect.");
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
+		return false;
+	}
+	if(m_status != NET_READ)
+	{
+		char str[512];
+		sprintf(str, "[NetCommThread] HeartBreat: not auth from remote.");
 		if (gLog)
 		{
 			gLog->Write(LOG_ERROR, str);
@@ -685,7 +796,13 @@ bool NetCommThread::HeartBreat()
 	m_sHeart.agc = gInfo.nAGC;
 	m_sHeart.snr = gInfo.nSNR;
 	m_sHeart.interfaceRate = gTuner.nSR/1000;
+	
+        m_sHeart.dataRate = (gRecv.nReceiveLength - nRecvLength)*8/1024/1024/120;
+	nRecvLength = gRecv.nReceiveLength;
+	
+	if(m_sHeart.dataRate < 80)
 	m_sHeart.dataRate = 80;
+    
 	m_sHeart.reserved;
 	m_sHeart.filmID = gRecv.nFileID;
 	m_sHeart.filmNameLength = gRecv.strFilmName.size();
@@ -697,6 +814,7 @@ bool NetCommThread::HeartBreat()
 	m_sHeart.filmRecvState = gRecv.nReceiveStatus & 0xffff;
 	m_sHeart.reserved2 = 0;
 	m_sHeart.recvLength = gRecv.nReceiveLength;
+	
 	m_sHeart.lostSegment = gRecv.nLostSegment;
 
 	int leng = sizeof(L_HEART_INFO_REPORT) - sizeof(uint8*) + m_sHeart.filmNameLength;
@@ -1111,10 +1229,13 @@ bool NetCommThread::RecvFilter()
 			if(m_inetDesc.payloadLength < 2048)
 			{
 				buf1 = buf;
+				memset(buf1, 0, 2048);
 					}
 					else
 					{
-				buf1 = new char[m_inetDesc.payloadLength];
+				buf1 = new char[m_inetDesc.payloadLength + 100];
+				DPRINTF("New MD5 length:%d\n", m_inetDesc.payloadLength);
+				memset(buf1, 0, m_inetDesc.payloadLength + 100);
 				bNew = true;
 			}
 			if(buf1)
@@ -1129,6 +1250,7 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw -1;
 				}
+				DPRINTF("MD5 Responsed length:%d\n", get_size);
 
 				if (m_inetDesc.flag != ENC_NONE)
 				{
@@ -1224,8 +1346,10 @@ bool NetCommThread::RecvFilter()
 				}
 				uint32 crc32 = calc_crc32((uint8*)buf1, m_inetDesc.payloadLength - sizeof(uint32));
 				char* pCrc32 = buf1 + m_inetDesc.payloadLength - sizeof(uint32);
+				DPRINTF("%08x %08x\n", crc32, *(uint32*)pCrc32);
 				if(crc32 == *(uint32*)pCrc32)
 				{
+					DPRINTF("Return MD5 result\n");
 					R_MD5_RESULT_REQ* req = (R_MD5_RESULT_REQ*)buf1;
 					DecryptRep(req->filmID);
 				}
@@ -1562,6 +1686,66 @@ bool NetCommThread::RecvFilter()
 			}
 		}
 		break;
+	case NET_LOST_REQ:
+		{
+		    DPRINTF("Receive lost req\n");
+		    char *buf1 = NULL;
+		    bool bNew = false;
+		    if(m_inetDesc.payloadLength < 2048)
+			buf1 = buf;
+		    else
+		    {
+			buf1 = new char[m_inetDesc.payloadLength];
+			bNew = true;
+		    }
+		    if(buf1)
+		    {
+			get_size = 0;
+			tm = 10000;
+			if(m_authSocket.Receive((char*)buf1,
+			    m_inetDesc.payloadLength,
+			    get_size,
+			    &tm) < 0)
+			{
+			    if(bNew)
+				delete[] buf1;
+				throw -1;
+			}
+			if(m_inetDesc.flag != ENC_NONE)
+			{
+			    aes_decrypt((uint8*)m_authRep.sessionKey,
+			    (uint8*)buf1,
+			    (uint8*)buf1,
+			    m_inetDesc.payloadLength);
+			}
+			uint32 crc32 = calc_crc32((uint8*)buf1, sizeof(struct Lose_Info_Req_Msg) - 4);
+			char* pCrc32 = buf1 + m_inetDesc.payloadLength - sizeof(uint32);
+			if(crc32 == *(uint32*)pCrc32)
+			{
+			    struct Lose_Info_Req_Msg* pLostReq = (struct Lose_Info_Req_Msg*)buf;
+			    if(gRecv.nFileID != pLostReq->filmID)
+			    {
+				DPRINTF("Send lost with id\n");
+				pPat->SendLostReport(pLostReq->filmID);
+			    }
+			    else
+			    {
+				DPRINTF("Send lost without id\n");
+				pPat->SendLostReport();
+			    }
+			}
+			else
+			{
+				char str[512];
+				sprintf(str, "[NetCommThread] Received Lost Report request CRC error.");
+				if (gLog)
+				{
+					gLog->Write(LOG_SYSTEM, str);
+				}
+			}
+		    }
+		}
+		break;
 	case NET_LOST_CONFIRM:
 		{
 			DPRINTF("Receive lost report confirm\n");
@@ -1605,7 +1789,7 @@ bool NetCommThread::RecvFilter()
 				if(crc32 != *(uint32*)pCrc32)
 				{
 					char str[512];
-					sprintf(str, "[NetCommThread] Received Lost Report confirm.");
+					sprintf(str, "[NetCommThread] Received Lost Report confirm CRC error.");
 					if (gLog)
 					{
 						gLog->Write(LOG_SYSTEM, str);
@@ -1975,22 +2159,24 @@ bool NetCommThread::PkgSendConfirm(uint32 filmId)
 
 bool NetCommThread::DecryptRep(uint32 filmId)
 {
+	char str[512];
 	if(!bConnected)
 	{
-		char str[512];
-		sprintf(str, "[NetCommThread] GetMD5File: remote not connect.");
+		sprintf(str, "[NetCommThread] DecryptRep: remote not connect.");
 		if (gLog)
 		{
 			gLog->Write(LOG_NETCOMMU, str);
 		}
 		return false;
 	}
+	DPRINTF("DecryptRep\n");
+	
 	//construct preamble
 	struct INET_DESCRIPTOR inet_descriptor;
 	inet_descriptor.flag = ENC_SESSIONKEY;
 	inet_descriptor.command = NET_DECRYPT_UPLOAD;
 	inet_descriptor.subCommand = 0x00;
-	inet_descriptor.payloadLength = sizeof(struct L_MD5_KEY_REQ);
+	inet_descriptor.payloadLength = sizeof(struct L_MD5_RESULT_REPORT);
 
 	bMd5Rep = false;
 
@@ -2000,6 +2186,44 @@ bool NetCommThread::DecryptRep(uint32 filmId)
 	
 	//TODO: add some md5 decrypt result into struct
 	//
+	DPRINTF("FILMID %ld %ld\n", filmId, gRecv.nFileID);
+	if(filmId != gRecv.nFileID)
+	{
+	    ICMyini *ini = createMyini();
+	    if(ini)
+	    {
+		sprintf(str, "/tmp/film%ld.md5", filmId);
+		if(ini->load(str))
+		{
+		    std::string tmp;
+		    if(ini->read(" ", "SUCCESS", tmp))
+		    {
+			if(tmp == "true")
+			    m_md5Report.md5Result = 0;
+			else
+			    m_md5Report.md5Result = 1;
+		    }
+		    if(ini->read(" ", "LENGTH", tmp))
+		    {
+			m_md5Report.rollBackLen = atoll(tmp.c_str());
+		    }
+		    else
+		    {
+			//do nothing
+		    }
+		}
+		releaseMyini(ini);
+	    }
+	}
+	else
+	{
+	    Md5Class *pMd5 = CreateMd5Class();
+	    if(pMd5->bMd5Success)
+		m_md5Report.md5Result = 0;
+	    else
+		m_md5Report.md5Result = 1;
+	    m_md5Report.rollBackLen = pMd5->nRollBackLen;
+	}
 	//
 	
 	m_md5Report.crc32 = calc_crc32((uint8*)&m_md5Report,

@@ -56,11 +56,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_6" >
-              <property name="text" >
-               <string>RAID5</string>
-              </property>
-             </widget>
+             <widget class="QLabel" name="label_6" />
             </item>
            </layout>
           </item>
@@ -106,7 +102,7 @@
             <item>
              <widget class="QLabel" name="label_2" >
               <property name="text" >
-               <string>5</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -130,7 +126,7 @@
             <item>
              <widget class="QLabel" name="label_20" >
               <property name="text" >
-               <string>12TB</string>
+               <string>0.00TB</string>
               </property>
              </widget>
             </item>
@@ -154,7 +150,7 @@
             <item>
              <widget class="QLabel" name="label_22" >
               <property name="text" >
-               <string>11.5TB</string>
+               <string>0.00TB</string>
               </property>
              </widget>
             </item>
@@ -178,7 +174,7 @@
             <item>
              <widget class="QLabel" name="label_24" >
               <property name="text" >
-               <string>0.5TB</string>
+               <string>0.00TB</string>
               </property>
              </widget>
             </item>
@@ -200,11 +196,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_8" >
-              <property name="text" >
-               <string>Healthy</string>
-              </property>
-             </widget>
+             <widget class="QLabel" name="label_8" />
             </item>
            </layout>
           </item>
@@ -224,11 +216,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_10" >
-              <property name="text" >
-               <string>Online</string>
-              </property>
-             </widget>
+             <widget class="QLabel" name="label_10" />
             </item>
            </layout>
           </item>
@@ -248,11 +236,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_12" >
-              <property name="text" >
-               <string>Online</string>
-              </property>
-             </widget>
+             <widget class="QLabel" name="label_12" />
             </item>
            </layout>
           </item>
@@ -272,11 +256,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_15" >
-              <property name="text" >
-               <string>Online</string>
-              </property>
-             </widget>
+             <widget class="QLabel" name="label_15" />
             </item>
            </layout>
           </item>
@@ -296,11 +276,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_16" >
-              <property name="text" >
-               <string>Online</string>
-              </property>
-             </widget>
+             <widget class="QLabel" name="label_16" />
             </item>
            </layout>
           </item>
@@ -320,11 +296,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="label_18" >
-              <property name="text" >
-               <string>Online</string>
-              </property>
-             </widget>
+             <widget class="QLabel" name="label_18" />
             </item>
            </layout>
           </item>
@@ -417,7 +389,7 @@
    <item>
     <widget class="QLabel" name="label_26" >
      <property name="text" >
-      <string> </string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -431,7 +403,7 @@
    <item>
     <widget class="QLabel" name="label" >
      <property name="text" >
-      <string> </string>
+      <string/>
      </property>
     </widget>
    </item>
@@ -537,7 +509,7 @@
         <item>
          <widget class="QPushButton" name="pushButton_4" >
           <property name="icon" >
-           <iconset>
+           <iconset resource="cinecastui.qrc" >
             <normaloff>:/CineCastUi/Resources/Reflash.png</normaloff>:/CineCastUi/Resources/Reflash.png</iconset>
           </property>
           <property name="iconSize" >
@@ -564,7 +536,7 @@
         <item>
          <widget class="QPushButton" name="pushButton_3" >
           <property name="icon" >
-           <iconset>
+           <iconset resource="cinecastui.qrc" >
             <normaloff>:/CineCastUi/Resources/up.png</normaloff>:/CineCastUi/Resources/up.png</iconset>
           </property>
           <property name="iconSize" >
@@ -591,7 +563,7 @@
         <item>
          <widget class="QPushButton" name="pushButton_2" >
           <property name="icon" >
-           <iconset>
+           <iconset resource="cinecastui.qrc" >
             <normaloff>:/CineCastUi/Resources/down.png</normaloff>:/CineCastUi/Resources/down.png</iconset>
           </property>
           <property name="iconSize" >
@@ -618,7 +590,7 @@
         <item>
          <widget class="QPushButton" name="pushButton_5" >
           <property name="icon" >
-           <iconset>
+           <iconset resource="cinecastui.qrc" >
             <normaloff>:/CineCastUi/Resources/delete.png</normaloff>:/CineCastUi/Resources/delete.png</iconset>
           </property>
           <property name="iconSize" >

@@ -64,7 +64,9 @@ private:
 private:
 	std::vector<InfoData> m_Content;
 	std::vector<InfoData> m_UsbContent;
+	std::vector<InfoData> m_RaidContent;
 	std::vector<std::string>m_dir;
+	std::vector<int> m_srcList;
 };
 
 typedef enum{
@@ -197,15 +199,46 @@ public:
 	virtual ~Md5Class(){};
 	bool Md5Parser(char *buf);
 	bool GetMd5(FILE* fp, MD5BLOCK mb);
-	bool Md5Verify();
+	bool Md5Verify(uint32 filmId);
 
-private:
-	ENCODEFILELIST efl;
 	bool bMd5Success;
 	uint64 nRollBackLen;
+
+private:
+	void SaveResult(uint32 filmId);
+	ENCODEFILELIST efl;
 };
 
 Md5Class* CreateMd5Class();
 void ReleaseMd5Class(Md5Class* pMd5);
+
+class RaidDetailParser
+{
+public:
+	void RunRaidManager();
+	std::string GetRaidLevel(){ return strRaidLevel; };
+	std::string GetState(){ return strState; };
+	int GetRaidDevices(){ return nRaidDevices; };
+	int GetActiveDevices(){ return nActiveDevices; };
+	int GetWorkingDevices(){ return nWorkingDevices; };
+	int GetFailedDevices(){ return nFailedDevice; };
+	uint64 GetArraySize(){ return nArraySize; };
+	uint64 GetUsedSize(){ return nUsedSize; };
+	std::vector<std::string>& GetDevicesState(){ return strDevState; };
+
+private:
+	void DetailParser(std::string strDetail);
+
+private:
+	std::string strRaidLevel;
+	std::string strState;
+	int nRaidDevices;
+	int nActiveDevices;
+	int nWorkingDevices;
+	int nFailedDevice;
+	uint64 nArraySize;
+	uint64 nUsedSize;
+	std::vector<std::string> strDevState;
+};
 
 #endif _BASE_OPERATION_H_

@@ -52,9 +52,6 @@ public:
 }; 
 
 
-
-
-
 class ContentItem : public QTreeWidgetItem, public InfoData
 {
 public:

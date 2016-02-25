@@ -1,4 +1,4 @@
-################################################################################
+﻿################################################################################
 # Automatically-generated file. Do not edit!
 ################################################################################
 
@@ -57,6 +57,7 @@ post-build:
 	-cp ../ini.h ../../../../include 
 	-cp libx86-iniFile.so ../../../../lib 
 	-cp libx86-iniFile.so ../../../../bin/linux/release
+	-cp libx86-iniFile.so /usr/CineCast/lib
 	-@echo ' '
 
 .PHONY: all clean dependents

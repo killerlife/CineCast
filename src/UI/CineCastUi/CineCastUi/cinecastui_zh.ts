@@ -4,36 +4,36 @@
 <context>
     <name>CineCastUi</name>
     <message>
-        <location filename="cinecastui.cpp" line="301"/>
+        <location filename="cinecastui.cpp" line="316"/>
         <source>Do you want to Reboot</source>
         <translation>请确认重启系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="325"/>
-        <location filename="cinecastui.cpp" line="359"/>
+        <location filename="cinecastui.cpp" line="340"/>
+        <location filename="cinecastui.cpp" line="374"/>
         <source>Reboot successful</source>
         <translation>重启成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="333"/>
-        <location filename="cinecastui.cpp" line="367"/>
+        <location filename="cinecastui.cpp" line="348"/>
+        <location filename="cinecastui.cpp" line="382"/>
         <source>Reboot failed,network errors, operation failed</source>
         <translation>网络错误导致重启失败</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="384"/>
+        <location filename="cinecastui.cpp" line="399"/>
         <source>Do you want to Shutdown</source>
         <translation>请确认关闭系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="408"/>
-        <location filename="cinecastui.cpp" line="440"/>
+        <location filename="cinecastui.cpp" line="423"/>
+        <location filename="cinecastui.cpp" line="455"/>
         <source>Shutdown successful</source>
         <translation>关机成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="414"/>
-        <location filename="cinecastui.cpp" line="446"/>
+        <location filename="cinecastui.cpp" line="429"/>
+        <location filename="cinecastui.cpp" line="461"/>
         <source>Shutdown failed,network errors, operation failed</source>
         <translation>网络错误导致关机失败</translation>
     </message>
@@ -89,24 +89,24 @@
 <context>
     <name>Content</name>
     <message>
-        <location filename="content.cpp" line="141"/>
-        <location filename="content.cpp" line="170"/>
-        <location filename="content.cpp" line="653"/>
-        <location filename="content.cpp" line="746"/>
-        <location filename="content.cpp" line="877"/>
-        <location filename="content.cpp" line="927"/>
+        <location filename="content.cpp" line="150"/>
+        <location filename="content.cpp" line="179"/>
+        <location filename="content.cpp" line="676"/>
+        <location filename="content.cpp" line="769"/>
+        <location filename="content.cpp" line="903"/>
+        <location filename="content.cpp" line="953"/>
         <source>network error, operation failed</source>
         <translation>网络错误</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="646"/>
-        <location filename="content.cpp" line="868"/>
-        <location filename="content.cpp" line="918"/>
+        <location filename="content.cpp" line="669"/>
+        <location filename="content.cpp" line="894"/>
+        <location filename="content.cpp" line="944"/>
         <source>operation successful</source>
         <translation>操作成功</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="734"/>
+        <location filename="content.cpp" line="757"/>
         <source>operation start</source>
         <translation>操作开始</translation>
     </message>
@@ -215,6 +215,88 @@
         <location filename="content.ui" line="471"/>
         <source>Unmount</source>
         <translation>卸载</translation>
+    </message>
+</context>
+<context>
+    <name>CopyFilmClass</name>
+    <message>
+        <location filename="copyfilm.ui" line="16"/>
+        <source>CopyFilm</source>
+        <translation>电影拷贝</translation>
+    </message>
+    <message>
+        <location filename="copyfilm.ui" line="43"/>
+        <source>Films:</source>
+        <translation>电影:</translation>
+    </message>
+    <message>
+        <location filename="copyfilm.ui" line="61"/>
+        <location filename="copyfilm.ui" line="107"/>
+        <source>TextLabel</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="copyfilm.ui" line="89"/>
+        <source>Total:</source>
+        <translation>总计:</translation>
+    </message>
+    <message>
+        <location filename="copyfilm.ui" line="131"/>
+        <source>Current</source>
+        <translation>当前</translation>
+    </message>
+    <message>
+        <location filename="copyfilm.ui" line="165"/>
+        <source>Total</source>
+        <translation>总计</translation>
+    </message>
+    <message>
+        <location filename="copyfilm.ui" line="213"/>
+        <source>Warning</source>
+        <translation>警告</translation>
+    </message>
+    <message>
+        <location filename="copyfilm.ui" line="234"/>
+        <source>Can&apos;t stop copy operation while copying films.</source>
+        <translation>在电影拷贝的过程中不能终止与退出.</translation>
+    </message>
+    <message>
+        <location filename="copyfilm.ui" line="261"/>
+        <source>Start</source>
+        <translation>开始拷贝</translation>
+    </message>
+</context>
+<context>
+    <name>DelConfirmClass</name>
+    <message>
+        <location filename="delconfirm.ui" line="13"/>
+        <source>Delete Films</source>
+        <translation>删除电影</translation>
+    </message>
+    <message>
+        <location filename="delconfirm.ui" line="21"/>
+        <source>Please confirm films will be delete.</source>
+        <translation>请确认以下电影将被删除.</translation>
+    </message>
+    <message>
+        <location filename="delconfirm.ui" line="35"/>
+        <source>RAID</source>
+        <translation>RAID阵列</translation>
+    </message>
+    <message>
+        <location filename="delconfirm.ui" line="51"/>
+        <source>Removeable Disk</source>
+        <translation>可抽取硬盘</translation>
+    </message>
+    <message>
+        <location filename="delconfirm.ui" line="80"/>
+        <source>Delete</source>
+        <translation>删除</translation>
+    </message>
+    <message>
+        <location filename="delconfirm.ui" line="100"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
     </message>
 </context>
 <context>
@@ -387,180 +469,155 @@
         <translation>RAID类型:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="61"/>
-        <source>RAID5</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="raid.ui" line="78"/>
+        <location filename="raid.ui" line="74"/>
         <source>Hdd Capacity:</source>
         <translation>硬盘容量</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="85"/>
+        <location filename="raid.ui" line="81"/>
         <source>3TB</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="raid.ui" line="102"/>
+        <location filename="raid.ui" line="98"/>
         <source>DiskCount:</source>
         <translation>硬盘数量</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="109"/>
-        <source>5</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="raid.ui" line="126"/>
+        <location filename="raid.ui" line="122"/>
         <source>Total:</source>
         <translation>总容量:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="133"/>
-        <source>12TB</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="raid.ui" line="150"/>
+        <location filename="raid.ui" line="146"/>
         <source>Avalible:</source>
         <translation>可用空间:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="157"/>
-        <source>11.5TB</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="raid.ui" line="174"/>
+        <location filename="raid.ui" line="170"/>
         <source>Used:</source>
         <translation>已用空间:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="181"/>
-        <source>0.5TB</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="raid.ui" line="198"/>
+        <location filename="raid.ui" line="194"/>
         <source>RAID Status:</source>
         <translation>RAID状态:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="205"/>
         <source>Healthy</source>
-        <translation>健康</translation>
+        <translation type="obsolete">健康</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="222"/>
+        <location filename="raid.ui" line="214"/>
         <source>Disk 1:</source>
         <translation>硬盘1:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="229"/>
-        <location filename="raid.ui" line="253"/>
-        <location filename="raid.ui" line="277"/>
-        <location filename="raid.ui" line="301"/>
-        <location filename="raid.ui" line="325"/>
         <source>Online</source>
-        <translation>在线</translation>
+        <translation type="obsolete">在线</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="246"/>
+        <location filename="raid.ui" line="234"/>
         <source>Disk 2:</source>
         <translation>硬盘2:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="270"/>
+        <location filename="raid.ui" line="254"/>
         <source>Disk 3:</source>
         <translation>硬盘3:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="294"/>
+        <location filename="raid.ui" line="274"/>
         <source>Disk 4:</source>
         <translation>硬盘4:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="318"/>
+        <location filename="raid.ui" line="294"/>
         <source>Disk 5:</source>
         <translation>硬盘5:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="356"/>
+        <location filename="raid.ui" line="328"/>
         <source>RAID Tools</source>
         <translation>RAID工具</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="383"/>
+        <location filename="raid.ui" line="355"/>
         <source>Rebuild RAID5</source>
         <translation>重建RAID5</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="420"/>
-        <location filename="raid.ui" line="434"/>
-        <source> </source>
+        <location filename="raid.ui" line="105"/>
+        <source>0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="raid.ui" line="452"/>
+        <location filename="raid.ui" line="129"/>
+        <location filename="raid.ui" line="153"/>
+        <location filename="raid.ui" line="177"/>
+        <source>0.00TB</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="raid.ui" line="424"/>
         <source>Content Travel</source>
         <translation>内容漫游</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="458"/>
+        <location filename="raid.ui" line="430"/>
         <source>RAID Array</source>
         <translation>RAID阵列</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="479"/>
-        <location filename="raid.ui" line="671"/>
+        <location filename="raid.ui" line="451"/>
+        <location filename="raid.ui" line="643"/>
         <source>Status</source>
         <translation>状态</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="484"/>
-        <location filename="raid.ui" line="676"/>
+        <location filename="raid.ui" line="456"/>
+        <location filename="raid.ui" line="648"/>
         <source>Progress</source>
         <translation>进度</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="489"/>
-        <location filename="raid.ui" line="681"/>
+        <location filename="raid.ui" line="461"/>
+        <location filename="raid.ui" line="653"/>
         <source>FilmName</source>
         <translation>电影名</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="494"/>
-        <location filename="raid.ui" line="686"/>
+        <location filename="raid.ui" line="466"/>
+        <location filename="raid.ui" line="658"/>
         <source>RecvTime</source>
         <translation>接收时间</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="499"/>
-        <location filename="raid.ui" line="691"/>
+        <location filename="raid.ui" line="471"/>
+        <location filename="raid.ui" line="663"/>
         <source>2D/3D</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="raid.ui" line="504"/>
-        <location filename="raid.ui" line="696"/>
+        <location filename="raid.ui" line="476"/>
+        <location filename="raid.ui" line="668"/>
         <source>FilmLength</source>
         <translation>电影长度</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="509"/>
-        <location filename="raid.ui" line="701"/>
+        <location filename="raid.ui" line="481"/>
+        <location filename="raid.ui" line="673"/>
         <source>RecvSegment</source>
         <translation>已接收分片</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="514"/>
-        <location filename="raid.ui" line="706"/>
+        <location filename="raid.ui" line="486"/>
+        <location filename="raid.ui" line="678"/>
         <source>TotalSegment</source>
         <translation>分片总数</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="650"/>
+        <location filename="raid.ui" line="622"/>
         <source>Removeable HDD</source>
         <translation>可抽取式硬盘</translation>
     </message>
@@ -679,7 +736,7 @@
     </message>
     <message>
         <location filename="setup.ui" line="359"/>
-        <location filename="setup.ui" line="555"/>
+        <location filename="setup.ui" line="550"/>
         <source>auto</source>
         <translation>自动</translation>
     </message>
@@ -710,126 +767,121 @@
     </message>
     <message>
         <location filename="setup.ui" line="415"/>
-        <source>VSB16</source>
+        <source>32APSK</source>
         <translation></translation>
     </message>
     <message>
         <location filename="setup.ui" line="420"/>
-        <source>VSB8</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="setup.ui" line="425"/>
         <source>QAM16</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="430"/>
+        <location filename="setup.ui" line="425"/>
         <source>QAM32</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="435"/>
+        <location filename="setup.ui" line="430"/>
         <source>QAM64</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="440"/>
+        <location filename="setup.ui" line="435"/>
         <source>QAM128</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="445"/>
+        <location filename="setup.ui" line="440"/>
         <source>QAM256</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="450"/>
+        <location filename="setup.ui" line="445"/>
         <source>QAMAUTO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="486"/>
+        <location filename="setup.ui" line="481"/>
         <source>Roll Off:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="540"/>
+        <location filename="setup.ui" line="535"/>
         <source>0.20</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="545"/>
+        <location filename="setup.ui" line="540"/>
         <source>0.25</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="550"/>
+        <location filename="setup.ui" line="545"/>
         <source>0.35</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="617"/>
+        <location filename="setup.ui" line="612"/>
         <source>Network Device</source>
         <translation>网络设备</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="649"/>
+        <location filename="setup.ui" line="644"/>
         <source>DHCP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="673"/>
+        <location filename="setup.ui" line="668"/>
         <source>IP Address:</source>
         <translation>IP地址:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="704"/>
+        <location filename="setup.ui" line="699"/>
         <source>Netmask:</source>
         <translation>子网掩码:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="739"/>
+        <location filename="setup.ui" line="734"/>
         <source>Gateway:</source>
         <translation>网关:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="777"/>
+        <location filename="setup.ui" line="772"/>
         <source>Internet</source>
         <translation>互联网</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="789"/>
+        <location filename="setup.ui" line="784"/>
         <source>DNS 1:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="820"/>
+        <location filename="setup.ui" line="815"/>
         <source>DNS 2:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="855"/>
+        <location filename="setup.ui" line="850"/>
         <source>Remote:</source>
         <translation>远程主机:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="886"/>
+        <location filename="setup.ui" line="881"/>
         <source>Port:</source>
         <translation>端口号:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="920"/>
+        <location filename="setup.ui" line="915"/>
         <source>TMS</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="936"/>
+        <location filename="setup.ui" line="931"/>
         <source>Start</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="956"/>
+        <location filename="setup.ui" line="951"/>
         <source>Stop</source>
         <translation></translation>
     </message>
@@ -837,28 +889,33 @@
 <context>
     <name>Status</name>
     <message>
-        <location filename="status.cpp" line="52"/>
+        <location filename="status.cpp" line="54"/>
         <source>Yes</source>
         <translation>锁定</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="54"/>
+        <location filename="status.cpp" line="56"/>
         <source>No</source>
         <translation>未锁定</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="68"/>
+        <location filename="status.cpp" line="73"/>
         <source>Film Name: %1&lt;br&gt;UUID: %2&lt;br&gt;Creator: %3&lt;br&gt;Issuer: %4&lt;br&gt;IssueDate: %5&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;Round: %10	Total Segment: %6	Received Segment: %7	CRC Error: %8	Lost Segment:%9&lt;/pre&gt;&lt;br&gt;</source>
         <oldsource>Film Name: %1&lt;br&gt;UUID: %2&lt;br&gt;Creator: %3&lt;br&gt;Issuer: %4&lt;br&gt;IssueDate: %5&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;Total Segment: %6	Received Segment: %7	CRC Error: %8	Lost Segment:%9&lt;/pre&gt;&lt;br&gt;</oldsource>
         <translation>电影名: %1&lt;br&gt;UUID: %2&lt;br&gt;创建: %3&lt;br&gt;发行: %4&lt;br&gt;发行时间: %5&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;轮数: %10	分片总数: %6	已接收分片: %7	CRC错误: %8	已丢失分片:%9&lt;/pre&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="356"/>
+        <location filename="status.cpp" line="362"/>
+        <source>Get update file. To update system, please reboot system.</source>
+        <translation>升级文件接收成功，请重启设备已完成升级。</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="364"/>
         <source>Please power-off and take out the removeable disk.</source>
         <translation>接收完成，请关机并取出可抽取硬盘。</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="364"/>
+        <location filename="status.cpp" line="373"/>
         <source>Mount removeable disk error, please check disk.</source>
         <translation>挂载可抽取硬盘失败，请检查硬盘是否插好。</translation>
     </message>

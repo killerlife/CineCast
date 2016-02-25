@@ -29,6 +29,7 @@ void Disk::Init()
 
 void Disk::on_pushButton_format_clicked()
 {
+	char buf[1024];
 
   switch(QMessageBox::question(this,"Question",tr("Do you want to Format HDD_Disk"),
     		QMessageBox::Ok|QMessageBox::Cancel,QMessageBox::Ok))
@@ -37,7 +38,6 @@ void Disk::on_pushButton_format_clicked()
 		{
 				if(m_ConnectStatus==2)    //ȷѾӷ
 				{
-	char *buf = new char[1024];
 	KL *pKL = (KL*)buf;
 
 	int i;
@@ -54,20 +54,15 @@ void Disk::on_pushButton_format_clicked()
 	if(pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_SET_FORMATDISK)
 	{
 		m_Timer = startTimer(100);
-						QMessageBox::information(this,"Information",tr("Format successful"));
+					ui.pushButton_format->setEnabled(false);
+					ui.progressBar->setValue(0);
                         return;
 	}
-	ui.pushButton_format->setEnabled(false);
-	ui.progressBar->setValue(0);
-
-	                delete[] buf;   //new
-				    
 				}
 				else
 				{
 					 //ʾʾѾ
 					 // ʧ
-					 QMessageBox::information(this,"Information",tr("Reboot failed,network errors, operation failed"));
                      return;
 				}
 			}
@@ -79,16 +74,14 @@ void Disk::on_pushButton_format_clicked()
 			break;
 		}
 		return;
-
-
-
 }
 
 void Disk::timerEvent(QTimerEvent * te)
 {
+	char buf[4096];
 	if(te->timerId() == m_Timer)
 	{
-		char *buf = new char[1024];
+		//char *buf = new char[1024];
 		KL *pKL = (KL*)buf;
 
 		int i;
@@ -101,19 +94,39 @@ void Disk::timerEvent(QTimerEvent * te)
 		pSocket->write(buf, sizeof(KL) + 1);
 		pSocket->waitForBytesWritten(-1);
 		pSocket->waitForReadyRead(-1);
-		i = pSocket->read(buf, 1024);
-		QString ss;
+
+		int nread = sizeof(KL);
+		int pos = 0;
+		i = 0;
+		while (nread > 0)
+		{
+			i = pSocket->read(buf + pos, nread);
+			nread -= i;
+			pos += i;
+		}
+		nread = pKL->m_length;
+		pos = 0;
+		while (nread > 0)
+		{
+			i = pSocket->read(buf + sizeof(KL) + pos, nread);
+			nread -= i;
+			pos += i;
+		}
+
+		QString ss, sss;
 		if(pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_GET_FORMAT_RES)
 		{
 			char *s = buf + sizeof(KL);
 			buf[sizeof(KL) + pKL->m_length] = 0;
-			for(int i = 0; i < pKL->m_length; i++)
+			sss = QString::fromUtf8(s);
+			for(int i = 0; i < sss.size(); i++)
 			{
-				if(s[i] != 0x8)
-					ss.append(s[i]);
+				if(sss.at(i) != 0x8)
+					ss.append(sss.at(i));
 				else
 					ss.resize(ss.size() - 1);
 			}
+			
 			if(ss.contains("Writing superblocks and filesystem accounting information: done"))
 				ui.progressBar->setValue(100);
 			else if(ss.contains("Writing inode tables: done"))
@@ -121,6 +134,14 @@ void Disk::timerEvent(QTimerEvent * te)
 			else if (ss.contains("Allocating group tables: done"))
 				ui.progressBar->setValue(50);
 			else if (ss.contains("Discarding device blocks: done"))
+				ui.progressBar->setValue(25);
+			else if(ss.contains(QString::fromLocal8Bit("Writing superblocks and filesystem accounting information: ")))
+				ui.progressBar->setValue(100);
+			else if(ss.contains(QString::fromLocal8Bit("дinode: ")))
+				ui.progressBar->setValue(75);
+			else if (ss.contains(QString::fromLocal8Bit("Allocating group tables: ")))
+				ui.progressBar->setValue(50);
+			else if (ss.contains(QString::fromLocal8Bit("Discarding device blocks: ")))
 				ui.progressBar->setValue(25);
 			ui.textBrowser->setText(ss);
 		}

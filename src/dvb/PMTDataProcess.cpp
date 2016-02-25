@@ -309,6 +309,17 @@ uint64 PMTDataThread::LostSegment()
 	return length;
 }
 
+bool PMTDataThread::RoundCleanCounter()
+{
+	std::list<FilmDataThread*>::iterator itor;
+	for(itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
+	{
+		FilmDataThread* thread = *itor;
+		thread->RoundCleanCounter();
+	}
+	return true;
+}
+
 uint64 PMTDataThread::CRCError()
 {
 	uint64 length = 0;

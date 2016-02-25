@@ -33,6 +33,8 @@ TUNER_CONF gTuner;
 char bTunerChange = 0;
 char *gMd5 = NULL;
 
+bool bRecvData = false;
+
 NotifyDataThread *pNotify;
 StartDataThread *pStart;
 FinishDataThread *pFinish;
@@ -115,7 +117,7 @@ static void write_output(void)
 int main(int argc, char **argv)
 {
 	char m_log[512];
-	bool bRoundCount = false;
+	volatile bool bRoundCount = false;
 
 	//====================================================================
 	//Change work directory to "/storage"
@@ -202,12 +204,15 @@ int main(int argc, char **argv)
 	int nHeartBreat = 0;
 	mke2fs fs;
 	bool bMountRD = fs.MountDisk(DISK_REMOVEABLE);
+	bool bMountRaid = fs.MountDisk(DISK_RAID);
+
 	gRunPathList.clear();
 
 	int nAutoDelCounter = 0;
 	while(1)
 	{
 		sleep(5);
+		#if 0
 		nHeartBreat++;
 		if (nHeartBreat>=(120/5))
 		{
@@ -215,6 +220,7 @@ int main(int argc, char **argv)
 			if (pNetComm)
 				pNetComm->HeartBreat();
 		}
+		#endif
 		//If tuner configuration change, call Zapto.
 		if (bTunerChange)
 		{
@@ -268,22 +274,46 @@ int main(int argc, char **argv)
 		{
 			gRecv.strExtend += "|REMOVEABLEDISK:0";
 		}
+		if(bMountRaid == false)
+		{
+			gRecv.strExtend += "|RAIDDISK:0";
+		}
 
  		if(pStart->IsStart())
 		{
 			if(bRoundCount == false)
 		{
-				bRoundCount = true;
+//				bRoundCount = true;
+				#if 0
+				if((gRecv.nReceiveStatus & 0xffff0000) == 0)
 				gRecv.nReceiveStatus += 0x010000;
-				if(gRecv.nReceiveStatus == 0x010000)
+				else
+				#endif
+				{
+				    if(pPat->IsPmtReady() & pPat->IsPat())
+				    {
+					gRecv.nReceiveStatus += 0x010000;
+				bRoundCount = true;
+					
+					sprintf(m_log, "+++++[DataReceiving] Round=%d %X",
+					gRecv.nReceiveStatus >> 16,
+					bRoundCount);
+					gLog->Write(LOG_SYSTEM, m_log);
+
+					if((gRecv.nReceiveStatus & 0xffff0000) == 0x010000)
 		{
 					pNetComm->StartRecvTask();
 		}
 				pNetComm->StartRoundRecv();
-				sprintf(m_log, "[DataReceiving] Round=%d %s FilmID=%04X",
-					gRecv.nReceiveStatus >> 8,
+				    }
+				}
+				
+				//pNetComm->StartRoundRecv();
+				sprintf(m_log, "[DataReceiving] Round=%d %s FilmID=%04X Round flag:%X",
+					gRecv.nReceiveStatus >> 16,
 			gRecv.strFilmName.c_str(),
-					gRecv.nFileID);
+					gRecv.nFileID,
+					bRoundCount);
 				gLog->Write(LOG_SYSTEM, m_log);
 			}
 			if (!(gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0))
@@ -318,7 +348,6 @@ int main(int argc, char **argv)
 			gRecv.nTotalSegment = pPat->TotalSegment();
 			if(bRoundCount)
 			{
-				bRoundCount = false;
 // 				gRecv.nReceiveSegment = gRecv.nTotalSegment - gRecv.nLostSegment;
 				sprintf(m_log, "[DataReceived] Status=%d, Round=%d, CRCErr=%d, TotalSeg=%d, LostSeg=%d, ReceivedSeg=%d, FilmID=%04X",
 					gRecv.nReceiveStatus & 0x0000ffff,
@@ -336,40 +365,61 @@ int main(int argc, char **argv)
 				//If Received full DCP, check and unzip subtitle zip file
 				if (gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0)
 				{
-					printf("unzip ZM file\n");
+					sprintf(m_log, "[DataReceived] Send lost Report while no lost.");
+					gLog->Write(LOG_SYSTEM, m_log);
+					//Send Lost Report
+					pPat->SendLostReport();
+					
+					sprintf(m_log, "[DataReceived] unzip ZM file");
+					gLog->Write(LOG_SYSTEM, m_log);
 					gRecv.nReceiveLength = gRecv.nFileLength;
 					pPat->UnzipSubtitle();
-					printf("Get MD5 file\n");
 
+				//sleep(5);
+				pPat->IsPat();
+				bRoundCount = false;
+				bRecvData = false;
+					#if 0
+					printf("Get MD5 file\n");
 					//Do Md5 Request
 					printf("%d\n", gRecv.nReceiveStatus & 0xffff);
 					if((gRecv.nReceiveStatus & 0xffff) < 8)
 					{
 						if(pNetComm)
 						{
+							sprintf(m_log, "[DataReceived] Get MD5 while no lost in finish.");
+							gLog->Write(LOG_SYSTEM, m_log);
 							pNetComm->GetMD5File(gRecv.nFileID);
 							if(!pNetComm->IsConnect())
 								gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 11;
 						}
 					}
+					#endif
 				}
-				else
+				#if 1
+				else if(gRecv.nTotalSegment != 0)
 				{
 					//Send Lost Report
+					sprintf(m_log, "[DataReceived] Send lost Report while lost.");
+					gLog->Write(LOG_SYSTEM, m_log);
 					pPat->SendLostReport();
+				//sleep(5);
+				pPat->IsPat();
+				bRoundCount = false;
+				bRecvData = false;
 				}
-
+				#endif
 			}
 			}
 
 		if (gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0)
 		{
-			printf("Get MD5 file\n");
-
 			//Do Md5 Request
 			printf("%d\n", gRecv.nReceiveStatus & 0xffff);
 			if((gRecv.nReceiveStatus & 0xffff) < 8)
 			{
+				sprintf(m_log, "[DataReceived] Get MD5 while no lost outside finish.");
+				gLog->Write(LOG_SYSTEM, m_log);
 				if(pNetComm)
 					pNetComm->GetMD5File(gRecv.nFileID);
 			}
@@ -378,18 +428,34 @@ int main(int argc, char **argv)
 		{
 			//Received MD5File
 			//Do md5 parser and decrypt
-			printf("Md5 verify\n");
 			Md5Class* pMd5 = CreateMd5Class();
 			if(gMd5)
 			{
-				printf("Md5 parser\n");
+				sprintf(m_log, "[DataReceived] MD5 Parser outside finish.");
+				gLog->Write(LOG_SYSTEM, m_log);
 				pMd5->Md5Parser(gMd5);
 				gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 9;
-				if(pMd5->Md5Verify())
+				if(pMd5->Md5Verify(gRecv.nFileID))
 				{
+					sprintf(m_log, "[DataReceived] MD5 verify success outside finish.");
+					gLog->Write(LOG_SYSTEM, m_log);
 					gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 10;
+					//This function process lost file, and send lost file to Network Center.
+					pPat->GetLostSegment();
+					//=============================
 					gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 11;
 				}
+				else
+				{
+					sprintf(m_log, "[DataReceived] MD5 verify error outside finish.");
+					gLog->Write(LOG_SYSTEM, m_log);
+					gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 8;
+					pPat->GetLostSegment();
+					//=============================
+					gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 11;
+				}
+//			pPat->Stop();
+//			pPat->Start();
 			}
 		}
 		if(pCancel->IsCancel())
@@ -408,6 +474,8 @@ int main(int argc, char **argv)
 			gRecv.strUuid = "";
 			gRecv.strFilmName = "";
 			gRecv.strIssueDate = "";
+			
+			pCancel->ClearCancel();
 	}
 	}
 	return 0;
