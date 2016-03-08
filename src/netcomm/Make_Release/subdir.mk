@@ -38,10 +38,8 @@ INC += \
 -I../../../include/config \
 -I../../../../include/dcp \
 -I../../../../include/brunt \
--I../../../../include/xml \
--I../../../../public/boost_1_33_1 \
--I/usr/include/QtCore \
--I/usr/include/QtXml
+-I../../../include/xml \
+-I../../../../public/boost_1_33_1 
 
 CFLAGS += \
 -DDEBUG \

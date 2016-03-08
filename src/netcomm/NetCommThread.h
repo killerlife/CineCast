@@ -36,6 +36,7 @@ public:
 	bool LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis = false);
 	bool PkgSendConfirm(uint32 filmId);
 	bool IsConnect(){ return bConnected;};
+	bool DecryptRep();
 
 private:
 	virtual void doit();

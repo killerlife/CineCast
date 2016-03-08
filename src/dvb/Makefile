@@ -29,6 +29,7 @@ CLIB = \
 -lx86-Config \
 -lx86-iniFile \
 -lx86-Log \
+-lx86-externCall \
 -ldvbv5 \
 -lssl \
 -lcrypto \

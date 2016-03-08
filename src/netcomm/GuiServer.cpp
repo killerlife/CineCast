@@ -2219,6 +2219,7 @@ bool GuiThread::S_Get_TMS(char* buf)
 	return Write(buf, sendsize, sendsize);
 
 }
+
 bool GuiThread::R_GetRaidInfo(char* buf)
 {
 	RaidDetailParser rdp;

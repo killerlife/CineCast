@@ -2255,6 +2255,74 @@ bool NetCommThread::DecryptRep(uint32 filmId)
 	return true;
 }
 
+bool NetCommThread::DecryptRep()
+{
+	char str[512];
+	if(!bConnected)
+	{
+		sprintf(str, "[NetCommThread] DecryptRep: remote not connect.");
+		if (gLog)
+		{
+			gLog->Write(LOG_NETCOMMU, str);
+		}
+		return false;
+	}
+	DPRINTF("DecryptRep\n");
+
+	//construct preamble
+	struct INET_DESCRIPTOR inet_descriptor;
+	inet_descriptor.flag = ENC_SESSIONKEY;
+	inet_descriptor.command = NET_DECRYPT_UPLOAD;
+	inet_descriptor.subCommand = 0x00;
+	inet_descriptor.payloadLength = sizeof(struct L_MD5_RESULT_REPORT);
+
+	bMd5Rep = false;
+
+	struct L_MD5_RESULT_REPORT m_md5Report;
+	//construct md5 request
+	m_md5Report.filmID = gRecv.nFileID;
+
+	//TODO: add some md5 decrypt result into struct
+	//
+	DPRINTF("FILMID %ld\n", gRecv.nFileID);
+	Md5Class *pMd5 = CreateMd5Class();
+	if(pMd5->bMd5Success)
+		m_md5Report.md5Result = 0;
+	else
+		m_md5Report.md5Result = 1;
+	m_md5Report.rollBackLen = pMd5->nRollBackLen;
+	//
+
+	m_md5Report.crc32 = calc_crc32((uint8*)&m_md5Report,
+		sizeof(L_MD5_RESULT_REPORT) - 4);
+
+	//Encrypt md5 request with AES128 ECB
+	aes_encrypt((uint8*)m_authRep.sessionKey, 
+		(uint8*)&m_md5Report, 
+		(uint8*)&m_md5Report,
+		sizeof(struct L_MD5_RESULT_REPORT));
+
+	//Send md5 request to remote
+	size_t send_size = 0;
+
+	t_timeout tm = 10000;
+	if(m_authSocket.Send((char*)&inet_descriptor,
+		sizeof(struct INET_DESCRIPTOR),
+		send_size,
+		&tm) < 0)
+		return false;
+	send_size = 0;
+	tm = 10000;
+	if(m_authSocket.Send((char*)&m_md5Report,
+		sizeof(struct L_MD5_RESULT_REPORT),
+		send_size,
+		&tm) < 0)
+		return false;
+
+	return true;
+}
+
+
 bool NetCommThread::UpdateRep(uint8* sn)
 {
 	if(!bConnected)

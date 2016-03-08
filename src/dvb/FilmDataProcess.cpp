@@ -1,6 +1,7 @@
 ﻿#include "FilmDataProcess.h"
 #include "DataProcessThread.h"
 #include "../netcomm/NetCommThread.h"
+#include "PATDataProcess.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -18,7 +19,7 @@ using namespace brunt;
 extern ILog* gLog;
 extern NetCommThread *pNetComm;
 extern std::vector<std::string> gRunPathList;
-extern bool bRecvData;
+// extern bool bRecvData;
 
 FilmDataThread::FilmDataThread(): m_ReciveLength(0), m_status(STOP),
 m_pZtBuf(0), m_pFilter(0), m_pFilmFile(NULL), m_nSegBasic(0), 
@@ -59,10 +60,12 @@ FilmDataThread::~FilmDataThread()
 		delete m_pFilter;
 		m_pFilter = NULL;
 	}
+#if 0
 	if (m_sLostBuf.m_buf)
 	{
 		delete[] m_sLostBuf.m_buf;
 	}
+#endif
 	FreeBufPool();
 	//ReleaseLog(pLog);
 }
@@ -126,13 +129,15 @@ bool FilmDataThread::Init(void *param1, void *param2)
 	m_nZtBufSize = sec_nums;
 
 	m_pZtBuf = new uint8[m_nZtBufSize];
+#if 0
 	m_sLostBuf.m_size = m_nZtBufSize
 		+ 4 + 4 + 8 + 4 + 4 + 4 + 4;
 	//ID + count + receive bytes + status + reserved + msg length + msg buffer + crc32
 	m_sLostBuf.m_buf = new uint8[m_sLostBuf.m_size + 100];
+	memset(m_sLostBuf.m_buf, 0, m_sLostBuf.m_size);
+#endif
 
 	memset(m_pZtBuf, 0, m_nZtBufSize);
-	memset(m_sLostBuf.m_buf, 0, m_sLostBuf.m_size);
 
 	FILE *fp;
 	if((fp = fopen(m_strZtFileName.c_str(), "rb")) > 0)
@@ -242,6 +247,8 @@ void FilmDataThread::doit()
 	m_pDataThread->start();
 #endif // 0
 
+	bool *pBData = CreateFilmDataFlag();
+
 #ifdef USE_SIM
 	FILE *fp;
 	int cc = 0;
@@ -322,7 +329,7 @@ void FilmDataThread::doit()
 						uint16 pll = *(buff + 4);
 						w_size = pl - pll - 6;
 						filmId = getBits(buff + 5, 0, 32);
-						bRecvData = true;
+// 						bRecvData = true;
 						#if 0
 						if(pos == 0)
 						    pos = seg_num;
@@ -387,6 +394,7 @@ void FilmDataThread::doit()
 						m_CRCError++;
 						m_LostSegment++;
 					}
+					*pBData = true;
 				#else
 					m_ReciveSegment++;//= w_size;
 					//m_ReciveLength += w_size;
@@ -634,142 +642,26 @@ void FilmDataThread::pushIntoDataBuf(struct FilmDataBuf* pBuf)
 	m_dataMutex = 0;
 }
 
-#if 0
-struct LostBuf* FilmDataThread::GetLostSegment()
-{
-	int64 sec_nums = (m_pPmtDescriptor->fileDescriptor->FileLength + 
-		m_pPmtDescriptor->fileDescriptor->SegmentLength - 1) /
-		m_pPmtDescriptor->fileDescriptor->SegmentLength;
-	
-	UpdateFile();
-	uint64 ReceiveBytes = 0;
-	uint32 LostSegments = 0;
-	uint32 ReceiveSegments = 0;
-	L_LOST_INFO* pLost = (L_LOST_INFO*)m_sLostBuf.m_buf;
-	uint32 nPos = (uint32)((uint8*)&(pLost->pLost) - (m_sLostBuf.m_buf));
-
-	int i;
-	for (i = 0; i < m_nZtBufSize - 1; i++)
-	{
-		uint8 ch;
-		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
-		for(int j = 0; j < 8; j++)
-		{
-			if(ch&0x1)
-			{
-				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
-				ReceiveSegments++;
-			}
-			else
-			{
-				LostSegments++;
-			}
-			ch >>=1;
-		}
-	}
-	int64 nums = sec_nums%8;
-	if(nums == 0)
-	{
-		uint8 ch;
-		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
-		for (int j = 0; j < 8; j++)
-		{
-			if (ch&0x1)
-			{
-				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
-				ReceiveSegments++;
-			}
-			else
-			{
-				LostSegments++;
-			}
-			ch >>= 1;
-		}
-	}
-	else
-	{
-		uint8 ch;
-		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
-		for(int j = 0; j < nums; j++)
-		{
-			if (ch&0x1)
-			{
-				ReceiveBytes += m_pPmtDescriptor->fileDescriptor->SegmentLength;
-				ReceiveSegments++;
-			}
-			else
-				LostSegments++;
-			ch >>= 1;
-		}
-	}
-	uint32 nName = m_strFileNameReport.size();
-	memcpy(m_sLostBuf.m_buf + nPos + m_nZtBufSize, &nName, sizeof(uint32));
-	memcpy(m_sLostBuf.m_buf + nPos + m_nZtBufSize + sizeof(uint32), m_strFileNameReport.c_str(), nName);
-	nName += m_sLostBuf.m_size + sizeof(uint32);
-	m_ReciveLength = ReceiveBytes;
-	m_ReciveSegment = ReceiveSegments;
-	m_LostSegment = LostSegments;
-	L_LOST_INFO *info = (L_LOST_INFO*)m_sLostBuf.m_buf;
-	info->filmID = filmId;
-	info->lostNum = LostSegments;
-	info->receivedByteCount = ReceiveBytes;
-	info->recvState = 5;
-	info->lostLength = m_nZtBufSize;//m_sLostBuf.m_size;
-	
-	info->reserved = m_pPmtDescriptor->fileDescriptor->SegmentLength;
-	char str[512];
-	if (gLog)
-	{
-		sprintf(str, "[FilmData] FilmID=%04X, PID=%04X, %s"
-			, filmId
-			, m_pPmtDescriptor->ElementaryPid
-			, m_strFileName.c_str());
-		gLog->Write(LOG_DVB, str);
-		sprintf(str, "[FilmData] TotalSeg=%d, LostSeg=%d, CRCSeg=%d, SegLen=%d",
-			m_TotalSegment,
-			m_LostSegment,
-			m_CRCError,
-			m_pPmtDescriptor->fileDescriptor->SegmentLength);
-		gLog->Write(LOG_DVB, str);
-	}
-	if(pNetComm)
-	{
-		//TODO: send lost report to remote
-#if 0
-		sprintf(str, "%s.lost", m_strZtFileName.c_str());
-		FILE *fp = fopen(str, "rb");
-		if(fp)
-		{
-			fwrite((char*)info, m_sLostBuf.m_size, 1, fp);
-			fclose(fp);
-		}
-#endif
-		//--------------------------------
-		pNetComm->ReportLost((char*)info, m_sLostBuf.m_size, nName);
-	}
-	return &m_sLostBuf;
-}
-
-#endif
-
 std::string FilmDataThread::GetLostSegment()
 {
 	int64 sec_nums = (m_pPmtDescriptor->fileDescriptor->FileLength + 
 		m_pPmtDescriptor->fileDescriptor->SegmentLength - 1) /
 		m_pPmtDescriptor->fileDescriptor->SegmentLength;
-
+	
 	UpdateFile();
 	uint64 ReceiveBytes = 0;
 	uint32 LostSegments = 0;
 	uint32 ReceiveSegments = 0;
+#if 0
 	L_LOST_INFO* pLost = (L_LOST_INFO*)m_sLostBuf.m_buf;
 	uint32 nPos = (uint32)((uint8*)&(pLost->pLost) - (m_sLostBuf.m_buf));
+#endif
 
 	int i;
 	for (i = 0; i < m_nZtBufSize - 1; i++)
 	{
 		uint8 ch;
-		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		ch = /*m_sLostBuf.m_buf[nPos + i] =*/ m_pZtBuf[i];
 		for(int j = 0; j < 8; j++)
 		{
 			if(ch&0x1)
@@ -788,7 +680,7 @@ std::string FilmDataThread::GetLostSegment()
 	if(nums == 0)
 	{
 		uint8 ch;
-		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		ch = /*m_sLostBuf.m_buf[nPos + i] = */m_pZtBuf[i];
 		for (int j = 0; j < 8; j++)
 		{
 			if (ch&0x1)
@@ -806,7 +698,7 @@ std::string FilmDataThread::GetLostSegment()
 	else
 	{
 		uint8 ch;
-		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		ch = /*m_sLostBuf.m_buf[nPos + i] = */m_pZtBuf[i];
 		for(int j = 0; j < nums; j++)
 		{
 			if (ch&0x1)
@@ -870,7 +762,7 @@ void FilmDataThread::UpdateInfo()
 	for (i = 0; i < m_nZtBufSize - 1; i++)
 	{
 		uint8 ch;
-		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		ch = /*m_sLostBuf.m_buf[nPos + i] =*/ m_pZtBuf[i];
 		for(int j = 0; j < 8; j++)
 		{
 			if(ch&0x1)
@@ -889,7 +781,7 @@ void FilmDataThread::UpdateInfo()
 	if(nums == 0)
 	{
 		uint8 ch;
-		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		ch = /*m_sLostBuf.m_buf[nPos + i] =*/ m_pZtBuf[i];
 		for (int j = 0; j < 8; j++)
 		{
 			if (ch&0x1)
@@ -907,7 +799,7 @@ void FilmDataThread::UpdateInfo()
 	else
 	{
 		uint8 ch;
-		ch = m_sLostBuf.m_buf[nPos + i] = m_pZtBuf[i];
+		ch = /*m_sLostBuf.m_buf[nPos + i] = */m_pZtBuf[i];
 		for(int j = 0; j < nums; j++)
 		{
 			if (ch&0x1)

@@ -357,13 +357,19 @@ uint64 PMTDataThread::GetLostSegment()
 	if(m_mutex == 1)
 		return nLostCount;
 	m_strReportFileList = ""; 
+	bool bFound = false;
+	uint32 id = 0;
 	for(itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
 	{
 		FilmDataThread* thread = *itor;
 		m_strReportFileList += thread->GetLostSegment();
 		m_strReportFileList += " ";
 		nLostCount += thread->LostSegment();
-		m_FilmId = thread->GetFilmId();
+		if((id = thread->GetFilmId()) != 0)
+		{
+			m_FilmId = id;
+			bFound = true;
+		}
 
 		std::string assetmap = thread->FindAssetmap();
 		if(assetmap != "")
@@ -382,6 +388,8 @@ uint64 PMTDataThread::GetLostSegment()
 			}
 		}
 	}
+	if (!bFound)
+		m_FilmId = gRecv.nFileID;
 
 	for(int i = 0; i < dcp.size(); i++)
 	{

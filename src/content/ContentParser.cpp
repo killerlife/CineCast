@@ -165,6 +165,7 @@ void ContentParser::findXmlFiles(const std::string& path, std::vector<std::strin
 {
 	fs::path thepath(path);
 	vector<string> childFiles;
+	DPRINTF("[ContentParser] findXmlFiles %s\n", path.c_str());
 
 	//	cout << "findPKLFiles(" <<path << ")" << endl;
 
@@ -206,6 +207,7 @@ bool ContentParser::open(const std::string& path)
 		DPRINTF("[ContentParse] .RecvStatus not exist\n");
 		return false;
 	}
+	DPRINTF("[ContentParse] RecvStatus found.\n");
 
 	m_status.path = path;
 
@@ -314,7 +316,7 @@ int ContentParser::parseProgramInfo(DcpInfo& info, int index /* = 0 */)
 		info.pklFile = m_pklList[index];
 
 		QFile file(info.pklFile.c_str());
-		DPRINTF("%s\n", info.pklFile.c_str());
+		DPRINTF("[ContentParser] parseProgramInfo: %s\n", info.pklFile.c_str());
 		if(!file.open(QFile::ReadOnly|QFile::Text))
 			return -1;
 		
@@ -359,11 +361,13 @@ int ContentParser::parseProgramInfo(DcpInfo& info, int index /* = 0 */)
 					if(b.text() == "text/xml;asdcpKind=CPL")
 					{
 						b = a.firstChildElement("OriginalFileName");
+						if(b.isNull())
+							continue;
 						std::string p = m_status.path;
 						if(p.at(p.length() - 1) != '/')
 							p += '/';
 						p += b.text().toStdString();
-						DPRINTF("%s\n", p.c_str());
+						DPRINTF("[ContentParser] parseProgramInfo: OriginalFileName is %s\n", p.c_str());
 
 						info.stereoScopic = "2D";
 						FILE *fp = fopen(p.c_str(), "rb");

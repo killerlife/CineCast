@@ -31,3 +31,5 @@ private:
 	uint8 m_buffer[4096];
 // 	ILog* pLog;
 };
+FinishDataThread* CreateFinish();
+void ReleaseFinish(FinishDataThread* pFinish);

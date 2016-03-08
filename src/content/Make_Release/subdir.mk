@@ -32,18 +32,23 @@ INCLUDE += \
  -I/usr/include/QtCore \
  -I/usr/include/QtXml
  
+CFLAGS += \
+-fPIC \
+-O3 \
+-Wall 
+
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ../%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	$(CC) -fPIC $(INCLUDE) -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(CC) $(CFLAGS) $(INCLUDE) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
 %.o: ../%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	$(CC) -fPIC $(INCLUDE) -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(CC) $(CFLAGS) $(INCLUDE) -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

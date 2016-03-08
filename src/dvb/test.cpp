@@ -33,7 +33,7 @@ TUNER_CONF gTuner;
 char bTunerChange = 0;
 char *gMd5 = NULL;
 
-bool bRecvData = false;
+// bool bRecvData = false;
 
 NotifyDataThread *pNotify;
 StartDataThread *pStart;
@@ -48,36 +48,29 @@ std::vector<std::string> gRunPathList;
 static void handle_sigint(int sig)
 {
 	//usleep(10000);
-	printf("stop 1\n");
 	pNotify->Stop();
-	printf("stop 2\n");
 	pStart->Stop();
-	printf("stop 3\n");
 	pFinish->Stop();
-	printf("stop 4\n");
 	pCancel->Stop();
-	printf("stop 5\n");
 	pPat->Stop();
-	printf("stop 6\n");	
 	guiServer->Stop();
-	printf("stop 7\n");	
 	pNetComm->Stop();
 	sleep(1);
 
 
-#if 0
+#if 1
 	printf("delete 1\n");
-	delete pNotify;
+	ReleaseNotify(pNotify);
 	printf("delete 2\n");
-	delete pStart;
+	ReleaseStart(pStart);
 	printf("delete 3\n");
-	delete pFinish;
+	ReleaseFinish(pFinish);
 	printf("delete 5\n");
 	delete pPat;
 	printf("delete 4\n");
-	delete pCancel;
+	ReleaseCancel(pCancel);
 	printf("delete 6\n");
-	delete guiServer;
+	ReleaseGuiServer(guiServer);
 	sleep(1);
 #endif
 	printf("release main\n");
@@ -118,6 +111,8 @@ int main(int argc, char **argv)
 {
 	char m_log[512];
 	volatile bool bRoundCount = false;
+	uint32 nTimeOut = 70; //Use this for judge Transfer is finish
+	bool *pBData = CreateFilmDataFlag();
 
 	//====================================================================
 	//Change work directory to "/storage"
@@ -143,10 +138,10 @@ int main(int argc, char **argv)
 	pTuner->SetTunerConf(gTuner);
 	pTuner->Zapto(gTuner);
 
-	pStart = new StartDataThread;
+	pStart = CreateStart();
 	pNotify = CreateNotify();
-	pFinish = new FinishDataThread;
-	pCancel = new CancelDataThread;
+	pFinish = CreateFinish();
+	pCancel = CreateCancel();
 	pPat = new PATDataThread;
 	guiServer = CreateGuiServer();
 	pNetComm = new NetCommThread;
@@ -199,36 +194,42 @@ int main(int argc, char **argv)
 
 	signal(SIGINT, handle_sigint);
 
+	//------------------------------------------
+	//Init status to IDLE
 	gRecv.nReceiveStatus = 0x0000 + 0x00; //IDLE
+	//------------------------------------------
 
-	int nHeartBreat = 0;
+	//--------------------------------------------
+	//Mount removable disk and raid array
 	mke2fs fs;
 	bool bMountRD = fs.MountDisk(DISK_REMOVEABLE);
 	bool bMountRaid = fs.MountDisk(DISK_RAID);
+	//--------------------------------------------
 
+	//--------------------------------------------
+	//Clear Run Path List
 	gRunPathList.clear();
+	//--------------------------------------------
 
 	int nAutoDelCounter = 0;
 	while(1)
 	{
 		sleep(5);
-		#if 0
-		nHeartBreat++;
-		if (nHeartBreat>=(120/5))
-		{
-			nHeartBreat = 0;
-			if (pNetComm)
-				pNetComm->HeartBreat();
-		}
-		#endif
+
+		//------------------------------------------
 		//If tuner configuration change, call Zapto.
 		if (bTunerChange)
 		{
 			pTuner->Zapto(gTuner);
 			bTunerChange = 0;
 		}
+		//------------------------------------------
 
+		//-------------------------------------------------------
 		//Use counter to make sure start auto delete previous DCP
+		//Timeout is 300 seconds.
+		//After deleted, timer stop.
+		//Delete files what it's not in RunPathList
 		if(pPat->IsPmtReady() && nAutoDelCounter <= 60)
 		{
 			nAutoDelCounter++;
@@ -238,7 +239,9 @@ int main(int argc, char **argv)
 				co.AutoDelete(0, gRunPathList);
 			}
 		}
+		//-------------------------------------------------------
 
+		//---------------------------------
 		//Get satellite status and log it.
 		gInfo = pTuner->GetTunerInfo();
 		sprintf(m_log, "[Satellite] status=%02X, agc=%3u%%, snr=%3u%%, ber=%d, unc=%d, lock=%02X",
@@ -249,7 +252,10 @@ int main(int argc, char **argv)
 			gInfo.nUNC,
 			gInfo.nLock);
 		gLog->Write(LOG_SYSTEM, m_log);
+		//--------------------------------
 
+		//-----------------------------------------
+		//Get receive status from DVB
 		gRecv.nCrcErrorSegment = pPat->CRCError();
 		gRecv.nFileID = pNotify->GetFilmId();
 		gRecv.nFileLength = pPat->FileLength();
@@ -257,12 +263,19 @@ int main(int argc, char **argv)
 		gRecv.nReceiveLength = pPat->ReciveLength();
 		gRecv.nReceiveSegment = pPat->ReciveSegment();
 		gRecv.nTotalSegment = pPat->TotalSegment();
-
 		gRecv.strCreator = pStart->GetCreator();
 		gRecv.strIssuer = pStart->GetIssuer();
 		gRecv.strUuid = pStart->GetUUID();
 		gRecv.strFilmName = pStart->GetFilmName();
 		gRecv.strIssueDate = pStart->GetIssueDate();
+		//------------------------------------------
+	
+
+
+		//---------------------------------------------------
+		//1. Check remote connection and report status to GUI
+		//2. Check removable disk status and report to GUI
+		//3. Check raid array status and report to GUI
 		if(pNetComm)
 		{
 			if (pNetComm->IsConnect())
@@ -278,18 +291,19 @@ int main(int argc, char **argv)
 		{
 			gRecv.strExtend += "|RAIDDISK:0";
 		}
+		//----------------------------------------------------
 
+
+
+		//-----------------------------------------------------------
+		//Process START from DVB
  		if(pStart->IsStart())
 		{
+			//-------------------------------------------------
+			//Add the round counter and write to log
 			if(bRoundCount == false)
 		{
-//				bRoundCount = true;
-				#if 0
-				if((gRecv.nReceiveStatus & 0xffff0000) == 0)
-				gRecv.nReceiveStatus += 0x010000;
-				else
-				#endif
-				{
+				//Add counter while both PAT and PMT are ready
 				    if(pPat->IsPmtReady() & pPat->IsPat())
 				    {
 					gRecv.nReceiveStatus += 0x010000;
@@ -300,15 +314,15 @@ int main(int argc, char **argv)
 					bRoundCount);
 					gLog->Write(LOG_SYSTEM, m_log);
 
+					//Get task start time for heart beat
 					if((gRecv.nReceiveStatus & 0xffff0000) == 0x010000)
 		{
 					pNetComm->StartRecvTask();
 		}
+					//Get Round start time for heart beat
 				pNetComm->StartRoundRecv();
 				    }
-				}
 				
-				//pNetComm->StartRoundRecv();
 				sprintf(m_log, "[DataReceiving] Round=%d %s FilmID=%04X Round flag:%X",
 					gRecv.nReceiveStatus >> 16,
 			gRecv.strFilmName.c_str(),
@@ -316,39 +330,50 @@ int main(int argc, char **argv)
 					bRoundCount);
 				gLog->Write(LOG_SYSTEM, m_log);
 			}
+			//-------------------------------------------------
+
+
+			//=================================================
+			//Set status to data receive
 			if (!(gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0))
 			{
-				printf("set state 1 %x %x\n", gRecv.nReceiveSegment, gRecv.nTotalSegment);
 				gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 1;
 			}
-#if 0
-			if(gRecv.nReceiveSegment != gRecv.nTotalSegment)
- 			gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 0x01;
-			else if(gRecv.nReceiveSegment == 0)
-				gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 0x01;
-#endif
+			//=================================================
 		}
+		//------------START-----------------------------------------------
 
+
+
+		//===================================================================================
+		//Process FINISH from DVB
 		if(pFinish->IsFinish())
 		{
+			//-----------------------------------------------------------
+			//Set status to data received and lost analysis
 			if (!(gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0))
 			{
 				printf("set state 2\n");
 			gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 2; //STOP
 			gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 3; //STOP
 			}
+			//-----------------------------------------------------------
 			
+			//-----------------------------------------------------------
 			//This function process lost file, and send lost file to Network Center.
 			pPat->GetLostSegment();
-			//=============================
+			//-----------------------------------------------------------
 
+			//-----------------------------------------------------------
+			//Update status from DVB
 			gRecv.nLostSegment = pPat->LostSegment();
 			gRecv.nReceiveLength = pPat->ReciveLength();
 			gRecv.nReceiveSegment = pPat->ReciveSegment();
 			gRecv.nTotalSegment = pPat->TotalSegment();
+			//-----------------------------------------------------------
+
 			if(bRoundCount)
 			{
-// 				gRecv.nReceiveSegment = gRecv.nTotalSegment - gRecv.nLostSegment;
 				sprintf(m_log, "[DataReceived] Status=%d, Round=%d, CRCErr=%d, TotalSeg=%d, LostSeg=%d, ReceivedSeg=%d, FilmID=%04X",
 					gRecv.nReceiveStatus & 0x0000ffff,
 					gRecv.nReceiveStatus >> 16,
@@ -359,59 +384,49 @@ int main(int argc, char **argv)
 					gRecv.nFileID);
 				gLog->Write(LOG_SYSTEM, m_log);
 
-				//Send Lost Report
-				//pPat->SendLostReport();
-
-				//If Received full DCP, check and unzip subtitle zip file
+				//-----------------------------------------------------------
+				//If  full received DCP
+				//1. Send lost file to remote center
+				//2. Check and unzip subtitle zip file
 				if (gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0)
 				{
 					sprintf(m_log, "[DataReceived] Send lost Report while no lost.");
 					gLog->Write(LOG_SYSTEM, m_log);
+
 					//Send Lost Report
 					pPat->SendLostReport();
 					
 					sprintf(m_log, "[DataReceived] unzip ZM file");
 					gLog->Write(LOG_SYSTEM, m_log);
 					gRecv.nReceiveLength = gRecv.nFileLength;
+
+					//Unzip subtitle zip file
 					pPat->UnzipSubtitle();
 
-				//sleep(5);
+					//Clear PAT status and enable round counter
 				pPat->IsPat();
 				bRoundCount = false;
-				bRecvData = false;
-					#if 0
-					printf("Get MD5 file\n");
-					//Do Md5 Request
-					printf("%d\n", gRecv.nReceiveStatus & 0xffff);
-					if((gRecv.nReceiveStatus & 0xffff) < 8)
-					{
-						if(pNetComm)
-						{
-							sprintf(m_log, "[DataReceived] Get MD5 while no lost in finish.");
-							gLog->Write(LOG_SYSTEM, m_log);
-							pNetComm->GetMD5File(gRecv.nFileID);
-							if(!pNetComm->IsConnect())
-								gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 11;
-						}
-					}
-					#endif
+// 					bRecvData = false;
 				}
-				#if 1
+				//If not a full received DCP, send lost file to remote center
 				else if(gRecv.nTotalSegment != 0)
 				{
-					//Send Lost Report
 					sprintf(m_log, "[DataReceived] Send lost Report while lost.");
 					gLog->Write(LOG_SYSTEM, m_log);
 					pPat->SendLostReport();
-				//sleep(5);
 				pPat->IsPat();
 				bRoundCount = false;
-				bRecvData = false;
+// 					bRecvData = false;
 				}
-				#endif
+				//-----------------------------------------------------------
 			}
 			}
+		//=================FINISH============================================================
 
+
+
+		//-----------------------------------------------------------------------------------
+		//If full received DCP, get md5 file from remote center
 		if (gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0)
 		{
 			//Do Md5 Request
@@ -424,6 +439,12 @@ int main(int argc, char **argv)
 					pNetComm->GetMD5File(gRecv.nFileID);
 			}
 		}
+		//-----------------------------------------------------------------------------------
+
+		//===================================================================================
+		//If received md5 file
+		//1. Verify md5
+		//2. Update status
 		if ((gRecv.nReceiveStatus & 0xffff) == 0x08)
 		{
 			//Received MD5File
@@ -440,6 +461,8 @@ int main(int argc, char **argv)
 					sprintf(m_log, "[DataReceived] MD5 verify success outside finish.");
 					gLog->Write(LOG_SYSTEM, m_log);
 					gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 10;
+					//=============================
+					//Do know why, maybe remove this
 					//This function process lost file, and send lost file to Network Center.
 					pPat->GetLostSegment();
 					//=============================
@@ -450,14 +473,20 @@ int main(int argc, char **argv)
 					sprintf(m_log, "[DataReceived] MD5 verify error outside finish.");
 					gLog->Write(LOG_SYSTEM, m_log);
 					gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 8;
+					//=============================
+					//Do know why, maybe remove this
 					pPat->GetLostSegment();
 					//=============================
 					gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 11;
 				}
-//			pPat->Stop();
-//			pPat->Start();
+				if(pNetComm)
+					pNetComm->DecryptRep();
 			}
 		}
+		//===================================================================================
+
+		//-----------------------------------------------------------------------------------
+		//Process CANCEL from DVB
 		if(pCancel->IsCancel())
 		{
 			gRecv.nReceiveStatus  = 0;
@@ -476,7 +505,62 @@ int main(int argc, char **argv)
 			gRecv.strIssueDate = "";
 			
 			pCancel->ClearCancel();
+			pPat->Restart();
+
+			sprintf(m_log, "[CineCast] Received Cancel from satellite, restart PAT Thread.");
+			gLog->Write(LOG_SYSTEM, m_log);
+		}
+		//-----------------------------------------------------------------------------------
+
+
+		//===================================================================================
+		//If task finished, reset PAT and round counter for next task.
+		if((gRecv.nReceiveStatus & 0xffff) == 11)
+		{
+			gRecv.nReceiveStatus = 11;
+			pPat->Restart();
+
+			sprintf(m_log, "[CineCast] Task finished, restart PAT Thread.");
+			gLog->Write(LOG_SYSTEM, m_log);
+		}
+		//===================================================================================
+
+		//-----------------------------------------------------------------------------------
+		//If no data from filmdata after 300 second, reset Task to IDLE status
+		if(*pBData)
+		{
+			nTimeOut = 0;
+			*pBData = false;
+		}
+		else
+		{
+			if(nTimeOut <= 60)
+				nTimeOut++;
+			if(nTimeOut == 60)
+			{
+				gRecv.nReceiveStatus  = 0;
+				gRecv.nCrcErrorSegment = 0;
+				gRecv.nFileID = 0;
+				gRecv.nFileLength = 0;
+				gRecv.nLostSegment = 0;
+				gRecv.nReceiveLength = 0;
+				gRecv.nReceiveSegment = 0;
+				gRecv.nTotalSegment = 0;
+
+				gRecv.strCreator = "";
+				gRecv.strIssuer = "";
+				gRecv.strUuid = "";
+				gRecv.strFilmName = "";
+				gRecv.strIssueDate = "";
+
+				pPat->Restart();
+
+				sprintf(m_log, "[CineCast] Task receive timeout, restart PAT Thread.");
+				gLog->Write(LOG_SYSTEM, m_log);
 	}
+			*pBData = false;
+		}
+		//-----------------------------------------------------------------------------------
 	}
 	return 0;
 }

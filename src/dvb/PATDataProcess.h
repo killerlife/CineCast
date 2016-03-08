@@ -16,6 +16,7 @@ public:
 	virtual ~PATDataThread();
 	bool Init(void *param1, void *param2);
 	bool Start();
+	bool Restart();
 	bool Stop();
 	uint64 ReciveLength();
 	uint64 FileLength();
@@ -53,5 +54,7 @@ private:
 	std::string m_strReportFileList;
 	uint32 m_FilmId;
 	volatile bool m_bPat;
+	bool bIdle;
 // 	ILog *pLog;
 };
+bool *CreateFilmDataFlag();

@@ -58,6 +58,7 @@ bool NotifyDataThread::Stop()
 		return true;
 	m_status = STOP;
 	m_pFilter->Stop();
+	CActiveThread::stop();
 	return true;
 }
 

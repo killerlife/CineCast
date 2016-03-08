@@ -15,8 +15,15 @@
 
 extern ILog* gLog;
 extern NetCommThread *pNetComm;
+extern RECEIVE_INFO gRecv;
+bool gFilmDataFlag = false;
 
-PATDataThread::PATDataThread():m_status(0), m_PatId(0xfe), m_pManager(NULL)
+bool *CreateFilmDataFlag()
+{
+	return &gFilmDataFlag;
+}
+
+PATDataThread::PATDataThread():m_status(0), m_PatId(0xfe), m_pManager(NULL), bIdle(false)
 {
 	m_pFilter = new Filter;
 	//pLog = CreateLog();
@@ -36,18 +43,54 @@ PATDataThread::~PATDataThread()
 bool PATDataThread::Init(void *param1, void *param2)
 {
 	m_PatId = *(uint16*)param1;
+	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+	m_pFilter->SetFilterID(m_PatId, 0x00);
 	return Start();
 }
 
 bool PATDataThread::Start()
 {
-	Stop();
-	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
-	m_pFilter->SetFilterID(m_PatId, 0x00);
 	m_status = RUN;
+	if(gLog)
+		gLog->Write(LOG_DVB, "[PATDataThread] Start: Run.");
 	return true;
 }
 
+bool PATDataThread::Restart()
+{
+	m_status = IDLE;
+	if(gLog)
+		gLog->Write(LOG_DVB, "[PATDataThread] Restart: Processing.");
+
+	std::list<PMTDataThread*>::iterator itor;
+	int i = 0;
+	char str[50];
+	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor, i++)
+	{
+		PMTDataThread *pmtThread = *itor;
+		pmtThread->Stop();
+		if(gLog)
+		{
+			sprintf(str, "[PATDataThread] Restart: %d:%d PMT stopped", i, m_pmtList.size());
+			gLog->Write(LOG_DVB, str);
+		}
+		delete pmtThread;
+		if(gLog)
+		{
+			sprintf(str, "[PATDataThread] Restart: %d:%d PMT deleted", i, m_pmtList.size());
+			gLog->Write(LOG_DVB, str);
+		}
+	}
+	m_pmtList.clear();
+	m_pmtIdList.clear();
+	if(gLog)
+		gLog->Write(LOG_DVB, "[PATDataThread] Restart: All Clear.");
+	while(bIdle == false)
+	{
+		usleep(200);
+	}
+	m_status = RUN;
+}
 bool PATDataThread::IsPat()
 {
     bool bRes = m_bPat;
@@ -57,23 +100,42 @@ bool PATDataThread::IsPat()
 
 bool PATDataThread::Stop()
 {
-	DPRINTF("[PAT] stop\n");
 	if(m_status == STOP)
 		return true;
+
+	if(gLog)
+		gLog->Write(LOG_DVB, "[PATDataThread] Stop: Processing.");
 
 	m_status = STOP;
 
 	m_pFilter->Stop();
 
+	if(gLog)
+		gLog->Write(LOG_DVB, "[PATDataThread] Stop: Filter stopped.");
+
 	std::list<PMTDataThread*>::iterator itor;
-	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
+	int i = 0;
+	char str[50];
+	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor, i++)
 	{
 		PMTDataThread *pmtThread = *itor;
 		pmtThread->Stop();
+		if(gLog)
+		{
+			sprintf(str, "[PATDataThread] Stop: %d:%d PMT stopped", i, m_pmtList.size());
+			gLog->Write(LOG_DVB, str);
+		}
 		delete pmtThread;
+		if(gLog)
+		{
+			sprintf(str, "[PATDataThread] Stop: %d:%d PMT deleted", i, m_pmtList.size());
+			gLog->Write(LOG_DVB, str);
+		}
 	}
 	m_pmtList.clear();
 	m_pmtIdList.clear();
+	if(gLog)
+		gLog->Write(LOG_DVB, "[PATDataThread] Stop: All Clear.");
 
 	return true;
 }
@@ -88,9 +150,6 @@ void PATDataThread::doit()
 	//pLog->Write(LOG_DVB, "[PAT Descriptor] Run");
 	//syslog(LOG_INFO|LOG_USER, "[PAT Descriptor] Run");
 
-#if 1
-	m_pManager = brunt::createThreadManager();
-#endif // 0
 	while(1)
 	{
 		switch(m_status)
@@ -98,6 +157,10 @@ void PATDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
+			bIdle = false;
+			if(m_pManager == NULL)
+				m_pManager = brunt::createThreadManager();
+
 #ifdef USE_SIM
 			fp = fopen("pat", "rb");
 			if(fp <= 0)
@@ -179,12 +242,28 @@ void PATDataThread::doit()
 			break;
 		case STOP:
 #if 1
+			bIdle = false;
+			if(m_pManager != NULL)
+			{
 			m_pManager->terminate();
 			brunt::releaseThreadManager(m_pManager);
 			m_pManager = NULL;
+				if(gLog)
+					gLog->Write(LOG_DVB, "[PATDataThread] Stop: Release ThreadManager.");
+			}
 #endif // 0
 			return;
 		case IDLE:
+			if(m_pManager != NULL)
+			{
+				m_pManager->terminate();
+				brunt::releaseThreadManager(m_pManager);
+				m_pManager = NULL;
+				if(gLog)
+					gLog->Write(LOG_DVB, "[PATDataThread] IDLE: Release ThreadManager.");
+			}
+			bIdle = true;
+			usleep(200);
 			break;
 		}
 	}
@@ -261,13 +340,22 @@ uint64 PATDataThread::GetLostSegment()
 	std::list<PMTDataThread*>::iterator itor;
 	uint64 nLostCount = 0;
 	m_strReportFileList = "";
+	bool bFound = false;
+	uint32 id = 0;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
 		nLostCount +=(*itor)->GetLostSegment();
 		m_strReportFileList += (*itor)->GetReportFileList();
 		m_strReportFileList += " ";
-		m_FilmId = (*itor)->GetFilmId();
+		if((id = (*itor)->GetFilmId()) != 0)
+		{
+		    bFound = true;
+		    m_FilmId = id;
+		}
+		//m_FilmId = (*itor)->GetFilmId();
 	}
+	if(!bFound)
+	    m_FilmId = gRecv.nFileID;
 	return nLostCount;
 }
 
@@ -289,12 +377,16 @@ bool PATDataThread::SendLostReport()
 	char str[200], str1[200];
 
 	sprintf(str, "/tmp/lost%ld.zip ", m_FilmId);
+	std::string cmd = "rm -rf ";
+	cmd = cmd + str;
+	system(cmd.c_str());
+	
 	//Construct zip command and zip all zt file to one archive file
 	if(m_strReportFileList.find(".zt") == std::string::npos)
 	{
 	    return SendLostReport(m_FilmId);
 	}
-	std::string cmd = "zip -f ";
+	cmd = "zip ";
 	cmd = cmd + str + m_strReportFileList;
 	system(cmd.c_str());
 
@@ -400,7 +492,7 @@ bool PATDataThread::SendLostReport(uint32 filmId)
 		FILE *fp = fopen(str, "rb");
 		if(fp <= 0)
 		{
-			sprintf(str1, "[PATDataThread] Unable open %s.", str);
+			sprintf(str1, "[PATDataThread] SendLostReport(id): Unable open %s.", str);
 			if(gLog)
 				gLog->Write(LOG_ERROR, str1);
 			DPRINTF("%s\n", str1);

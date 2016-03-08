@@ -9,6 +9,17 @@
 //#include <log/Log.h>
 #include <syslog.h>
 
+StartDataThread gStart;
+StartDataThread* CreateStart()
+{
+	return &gStart;
+}
+
+void ReleaseStart(StartDataThread* pStart)
+{
+
+}
+
 StartDataThread::StartDataThread():m_status(0), m_pid(0), bStart(false)
 {
 	m_pStartDescriptor = NULL;

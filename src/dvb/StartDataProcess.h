@@ -41,3 +41,5 @@ private:
 	bool bStart;
 //	ILog* pLog;
 };
+StartDataThread* CreateStart();
+void ReleaseStart(StartDataThread* pStart);

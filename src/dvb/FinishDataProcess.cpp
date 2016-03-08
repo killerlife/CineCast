@@ -9,6 +9,17 @@
 #include <syslog.h>
 //#include <log/Log.h>
 
+FinishDataThread gFinish;
+FinishDataThread* CreateFinish()
+{
+	return &gFinish;
+}
+
+void ReleaseFinish(FinishDataThread* pFinish)
+{
+
+}
+
 FinishDataThread::FinishDataThread():m_bFinish(false), m_status(0), m_pid(0)
 {
 	m_pFilter = new Filter;

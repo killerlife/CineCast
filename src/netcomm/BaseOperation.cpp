@@ -1360,6 +1360,7 @@ Md5Class* CreateMd5Class()
 void ReleaseMd5Class(Md5Class* pMd5)
 {
 }
+
 void RaidDetailParser::DetailParser(std::string strDetail)
 {
 	strRaidLevel = "";

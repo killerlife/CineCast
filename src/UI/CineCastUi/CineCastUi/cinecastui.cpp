@@ -255,14 +255,14 @@ void CineCastUi::UiFilter()
 
 void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 {
-	if(3==nIndex)                    //лҳ3Żȡ־
+	if(3==nIndex)                    //л?3???
 	{
 		if (m_ConnectStatus == 2)
-		   setupForm->TMS_start();   //ȡ־ʱ
+		   setupForm->TMS_start();   //???
 	}
 	else
 	{
-	       setupForm->TMS_stop();    //رջȡ־ʱ 
+	       setupForm->TMS_stop();    //????? 
 	}
 	switch(nIndex)
 	{

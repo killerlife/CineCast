@@ -302,19 +302,17 @@
 <context>
     <name>Disk</name>
     <message>
-        <location filename="disk.cpp" line="33"/>
+        <location filename="disk.cpp" line="34"/>
         <source>Do you want to Format HDD_Disk</source>
         <translation>请确认格式化可抽取硬盘</translation>
     </message>
     <message>
-        <location filename="disk.cpp" line="57"/>
         <source>Format successful</source>
-        <translation>命令发送成功</translation>
+        <translation type="obsolete">命令发送成功</translation>
     </message>
     <message>
-        <location filename="disk.cpp" line="70"/>
         <source>Reboot failed,network errors, operation failed</source>
-        <translation>网络错误导致命令发送失败</translation>
+        <translation type="obsolete">网络错误导致命令发送失败</translation>
     </message>
 </context>
 <context>

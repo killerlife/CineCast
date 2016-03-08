@@ -276,10 +276,20 @@ int CLogFileOperation::Read(const int type, TLogQueryResultArray & result)
 			g_LogAll += res.text.c_str();
 	}
 #else
+		if(buf[0] != 0x0a)
+		{
+		//printf("befor atoi %02x %02x %02x\n", buf[0], buf[1], buf[2]);	
 		int log_type = (LOGTYPE)atoi(buf);
+		//printf("befor atoi %d\n", log_type);	
 		pfile = strstr(buf," ");
+		//printf("befor ++pfile\n");	
 		pMove = strstr(++pfile," ");	
+		//printf("befor copy\n");	
 		memcpy(str,pfile,pMove - pfile);
+		//printf("after copy\n");	
+		//str[pMove - pfile] = 0;
+		//printf("%d %s %s\n", log_type, str, pMove);
+		#if 1
 		if ((LOGTYPE)type == LOG_ALL || (LOGTYPE)type == log_type)
 		{
 			str_LOG += str;
@@ -291,6 +301,8 @@ int CLogFileOperation::Read(const int type, TLogQueryResultArray & result)
 			g_LogAll += " ";
 			g_LogAll += pMove;
 		}
+#endif
+	}
 #endif
 	}
 		

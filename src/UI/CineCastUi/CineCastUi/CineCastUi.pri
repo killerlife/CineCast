@@ -6,6 +6,8 @@
 #Header files
 HEADERS += ./cinecastui.h \
     ./content.h \
+    ./copyfilm.h \
+    ./delconfirm.h \
     ./disk.h \
     ./live.h \
     ./raid.h \
@@ -16,6 +18,8 @@ HEADERS += ./cinecastui.h \
 #Source files
 SOURCES += ./cinecastui.cpp \
     ./content.cpp \
+    ./copyfilm.cpp \
+    ./delconfirm.cpp \
     ./disk.cpp \
     ./live.cpp \
     ./main.cpp \
@@ -27,6 +31,8 @@ SOURCES += ./cinecastui.cpp \
 #Forms
 FORMS += ./cinecastui.ui \
     ./content.ui \
+    ./copyfilm.ui \
+    ./delconfirm.ui \
     ./disk.ui \
     ./live.ui \
     ./raid.ui \

@@ -36,6 +36,7 @@ public:
 	}
 };
 
+#if 0
 struct LostBuf
 {
 	uint32 m_size;
@@ -55,6 +56,7 @@ public:
 		}
 	}
 };
+#endif
 
 class DataProcessThread;
 
@@ -128,7 +130,7 @@ private:
 	std::string m_strZtFileName;
 	int m_nZtBufSize;
 	uint8 *m_pZtBuf;
-	struct LostBuf m_sLostBuf;
+	//struct LostBuf m_sLostBuf;
 	Filter* m_pFilter;
 	uint8 m_buffer[4096];
 	uint32 m_nSegBasic;
