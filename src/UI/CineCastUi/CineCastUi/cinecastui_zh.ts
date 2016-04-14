@@ -304,7 +304,10 @@
     <message>
         <location filename="disk.cpp" line="34"/>
         <source>Do you want to Format HDD_Disk</source>
-        <translation>请确认格式化可抽取硬盘</translation>
+        <translation>注意：
+必须在空闲状态下才能格式化硬盘
+在接收过程中无法格式化硬盘。
+请确认格式化可抽取硬盘</translation>
     </message>
     <message>
         <source>Format successful</source>

@@ -16,7 +16,7 @@ public:
 	virtual ~PATDataThread();
 	bool Init(void *param1, void *param2);
 	bool Start();
-	bool Restart();
+	bool Reset();
 	bool Stop();
 	uint64 ReciveLength();
 	uint64 FileLength();
@@ -55,6 +55,8 @@ private:
 	uint32 m_FilmId;
 	volatile bool m_bPat;
 	bool bIdle;
+	uint32* pDebugCmd;
 // 	ILog *pLog;
 };
+
 bool *CreateFilmDataFlag();

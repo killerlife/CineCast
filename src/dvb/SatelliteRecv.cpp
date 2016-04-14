@@ -22,6 +22,12 @@
 #include <log/Log.h>
 
 extern ILog* gLog;
+static uint32 gDebugCmd = 0;
+
+uint32* GetDebugCommand()
+{
+	return &gDebugCmd;
+}
 
 class Tuner : public ITuner
 {

@@ -45,6 +45,9 @@ void Setup::Init()
 	ui.textBrowser->setStyleSheet("QTextBrowser{font-size:18px;font-family:'Book Antiqua';}");
 	ui.pushButton_3->setVisible(false);
 	ui.pushButton_4->setVisible(false);
+#ifndef WIN32
+	ui.groupBox_2->setVisible(false);
+#endif
 }
 
 
@@ -54,6 +57,7 @@ void Setup::timerEvent(QTimerEvent * te)
 	if(te->timerId() == m_TMS_timer && m_ConnectStatus == 2)
 	{
          this->getTMS();      //ȡ־
+         TMS_stop();
 	}
 }
 
@@ -811,4 +815,157 @@ void Setup::TMS_stop()    //رջȡ־ʱ
 //	printf("Setup::TMS_stop()\n");
 //	printf("m_TMS_timer=%d\n",m_TMS_timer);
 
+}
+
+
+void Setup::on_pushButton_5_clicked()
+{
+	char *buf = new char[1024];
+	KL *pKL = (KL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KL);
+	*((uint32*)pos) = 0x10000002;
+
+	pKL->m_length = sizeof(uint32);
+
+	int sendsize=sizeof(KL)+sizeof(uint32);
+	pSocket->write(buf, sendsize);
+	pSocket->waitForBytesWritten(5000);
+	pSocket->waitForReadyRead(5000);
+	int i= pSocket->read(buf, 1024);
+}
+
+void Setup::on_pushButton_6_clicked()
+{
+	char *buf = new char[1024];
+	KL *pKL = (KL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KL);
+	*((uint32*)pos) = 0x10000001;
+
+	pKL->m_length = sizeof(uint32);
+
+	int sendsize=sizeof(KL)+sizeof(uint32);
+	pSocket->write(buf, sendsize);
+	pSocket->waitForBytesWritten(5000);
+	pSocket->waitForReadyRead(5000);
+	int i= pSocket->read(buf, 1024);
+}
+
+void Setup::on_pushButton_7_clicked()
+{
+	char *buf = new char[1024];
+	KL *pKL = (KL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KL);
+	*((uint32*)pos) = 0x10000003;
+
+	pKL->m_length = sizeof(uint32);
+
+	int sendsize=sizeof(KL)+sizeof(uint32);
+	pSocket->write(buf, sendsize);
+	pSocket->waitForBytesWritten(5000);
+	pSocket->waitForReadyRead(5000);
+	int i= pSocket->read(buf, 1024);
+}
+
+void Setup::on_pushButton_8_clicked()
+{
+	char *buf = new char[1024];
+	KL *pKL = (KL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KL);
+	*((uint32*)pos) = 0x10000004;
+
+	pKL->m_length = sizeof(uint32);
+
+	int sendsize=sizeof(KL)+sizeof(uint32);
+	pSocket->write(buf, sendsize);
+	pSocket->waitForBytesWritten(5000);
+	pSocket->waitForReadyRead(5000);
+	int i= pSocket->read(buf, 1024);
+}
+
+void Setup::on_pushButton_9_clicked()
+{
+	char *buf = new char[1024];
+	KL *pKL = (KL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KL);
+	*((uint32*)pos) = 0x10000005;
+
+	pKL->m_length = sizeof(uint32);
+
+	int sendsize=sizeof(KL)+sizeof(uint32);
+	pSocket->write(buf, sendsize);
+	pSocket->waitForBytesWritten(5000);
+	pSocket->waitForReadyRead(5000);
+	int i= pSocket->read(buf, 1024);
+}
+
+void Setup::on_pushButton_10_clicked()
+{
+	char *buf = new char[1024];
+	KL *pKL = (KL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KL);
+	*((uint32*)pos) = 0x10000006;
+
+	pKL->m_length = sizeof(uint32);
+
+	int sendsize=sizeof(KL)+sizeof(uint32);
+	pSocket->write(buf, sendsize);
+	pSocket->waitForBytesWritten(5000);
+	pSocket->waitForReadyRead(5000);
+	int i= pSocket->read(buf, 1024);
+}
+
+void Setup::on_pushButton_11_clicked()
+{
+	char *buf = new char[1024];
+	KL *pKL = (KL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KL);
+	*((uint32*)pos) = 0x10000007;
+
+	pKL->m_length = sizeof(uint32);
+
+	int sendsize=sizeof(KL)+sizeof(uint32);
+	pSocket->write(buf, sendsize);
+	pSocket->waitForBytesWritten(5000);
+	pSocket->waitForReadyRead(5000);
+	int i= pSocket->read(buf, 1024);
+}
+
+void Setup::on_pushButton_12_clicked()
+{
+	char *buf = new char[1024];
+	KL *pKL = (KL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KL);
+	*((uint32*)pos) = 0;
+
+	pKL->m_length = sizeof(uint32);
+
+	int sendsize=sizeof(KL)+sizeof(uint32);
+	pSocket->write(buf, sendsize);
+	pSocket->waitForBytesWritten(5000);
+	pSocket->waitForReadyRead(5000);
+	int i= pSocket->read(buf, 1024);
 }

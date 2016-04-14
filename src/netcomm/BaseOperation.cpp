@@ -86,7 +86,7 @@ std::list<NETWORK_CONF>& NetOperation::GetNetConfig()
 			else
 					nc.nDhcp = 0;
 
-			ini->read(" ", "DEVICE", nc.strDevName);
+			ini->read(" ", "NAME", nc.strDevName);
 			ini->read(" ", "IPADDR", nc.strIp);
 			if(ini->read(" ", "PREFIX", tmp))
 				nc.strNetmask = prefix2mask(atoi(tmp.c_str()));
@@ -114,7 +114,7 @@ std::list<NETWORK_CONF>& NetOperation::GetNetConfig()
 			}
 			else
 				nc.nDhcp = 0;
-				ini->read(" ", "DEVICE", nc.strDevName);
+			ini->read(" ", "NAME", nc.strDevName);
 				ini->read(" ", "IPADDR", nc.strIp);
 			if(ini->read(" ", "PREFIX", tmp))
 				nc.strNetmask = prefix2mask(atoi(tmp.c_str()));
@@ -766,7 +766,7 @@ void mke2fs::doit()
 {
 	ICMyini* ini = createMyini();
 	bool bRead = false;
-	std::string tmp;
+	std::string tmp, cmd;
 	int res = 0;
 	char str[512];
 	if(ini)
@@ -819,21 +819,25 @@ void mke2fs::doit()
 			return;
 		}
 
-		tmp = "mkfs.ext3 " + tmp;
-		fp = popen(tmp.c_str(), "r");
+		cmd = "/sbin/mkfs.ext3 " + tmp;
+		fp = popen(cmd.c_str(), "r");
 		setvbuf(fp, NULL, _IONBF, 0);
 		sout.clear();
-		memset(out, 0, 80);
+		memset(out, 0, 1024);
 		while(fgets(out+1, sizeof(out-1), fp) != NULL)
 		{
 			m_Status = 1;
 			out[0] = 1;
 			sout += (out+1);
+			printf("%s", out+1);
 		}
 		out[0] = -1;
 		pclose(fp);
 		m_Status = 0;
 		fp = NULL;
+
+		cmd = "/sbin/tune2fs -O ^has_journal " + tmp;
+		system(cmd.c_str());
 
 		MountDisk(DISK_REMOVEABLE);
 		chdir("/storage");
@@ -851,11 +855,11 @@ void mke2fs::doit()
 				sout += (out+1);
 				return;
 			}
-	tmp = "mkfs.ext3 " + tmp;
-	fp = popen(tmp.c_str(), "r");
+			cmd = "/sbin/mkfs.ext3 " + tmp;
+			fp = popen(cmd.c_str(), "r");
 	setvbuf(fp, NULL, _IONBF, 0);
 	sout.clear();
-	memset(out, 0, 80);
+			memset(out, 0, 1024);
 	while(fgets(out+1, sizeof(out-1), fp) != NULL)
 	{
 		m_Status = 1;
@@ -868,6 +872,10 @@ void mke2fs::doit()
 	pclose(fp);
 	m_Status = 0;
 	fp = NULL;
+
+			cmd = "/sbin/tune2fs -O ^has_journal " + tmp;
+			system(cmd.c_str());
+
 			MountDisk(DISK_RAID);
 		}
 		else
@@ -946,11 +954,11 @@ bool mke2fs::MountDisk(DISK_TYPE type)
 	switch(m_type)
 	{
 	case DISK_REMOVEABLE:
-		res = mount(tmp.c_str(), "/storage", "ext3", MS_SYNCHRONOUS, NULL);
+		res = mount(tmp.c_str(), "/storage", "ext4", MS_NOATIME|MS_NODIRATIME, NULL);
 		break;
 	case DISK_RAID:
 		if(tmp != "")
-			res = mount(tmp.c_str(), "/raid", "ext3", MS_SYNCHRONOUS, NULL);
+			res = mount(tmp.c_str(), "/raid", "ext4", MS_NOATIME|MS_NODIRATIME, NULL);
 		else
 		{
 			sprintf(str, "[mke2fs] MountDisk: no raid array.");

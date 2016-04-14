@@ -182,8 +182,7 @@ void CZSocket::SetBlocking(bool bBlock)
 	else
 		socket_setnonblocking(&m_socket);
 //     u_long argp = !bBlock;
-// 	ioctlsocket(m_socket, FIONBIO, &argp);
-}
+// 	ioctlsocket(m_socket, FIONBIO, &argp);}
 
 int CZSocket::Wait(int type, t_timeout* tm)
 {

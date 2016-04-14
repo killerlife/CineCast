@@ -4,7 +4,7 @@
 #include <list>
 #include <thread/activeThread/activeThreadManager_i.h>
 #include "zSocket.h"
-
+#include "../dvb/mytype.h"
 
 //һ߳,ļר
 class CopyThread: public brunt::CActiveThread
@@ -132,7 +132,10 @@ private:
 	bool M_GetContent_RAID(char* buf);     //rename
 	bool M_GetDiskInfo_RAID(char* buf);    //rename
 
+	bool R_SetDebugCmd(char* buf);
+
 private:
+	uint32* pDebugCmd;
 	int m_status;
 	bool bStop;
 	ContentOperation* m_Content;

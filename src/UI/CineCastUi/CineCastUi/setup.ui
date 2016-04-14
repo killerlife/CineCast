@@ -1,4 +1,4 @@
-<ui version="4.0" >
+﻿<ui version="4.0" >
  <class>SetupClass</class>
  <widget class="QWidget" name="SetupClass" >
   <property name="geometry" >
@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>1111</width>
-    <height>602</height>
+    <height>666</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -994,6 +994,71 @@
          </widget>
         </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2" >
+     <property name="title" >
+      <string>GroupBox</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_4" >
+      <item>
+       <widget class="QPushButton" name="pushButton_12" >
+        <property name="text" >
+         <string>StopDEBUG</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_6" >
+        <property name="text" >
+         <string>Notify</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_5" >
+        <property name="text" >
+         <string>Start</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_7" >
+        <property name="text" >
+         <string>PAT</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_8" >
+        <property name="text" >
+         <string>PMT</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_9" >
+        <property name="text" >
+         <string>DAT</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_10" >
+        <property name="text" >
+         <string>FINISH</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_11" >
+        <property name="text" >
+         <string>CANCEL</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

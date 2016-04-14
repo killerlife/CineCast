@@ -113,6 +113,7 @@ int main(int argc, char **argv)
 	volatile bool bRoundCount = false;
 	uint32 nTimeOut = 70; //Use this for judge Transfer is finish
 	bool *pBData = CreateFilmDataFlag();
+	uint32 prevFilmID = 0;
 
 	//====================================================================
 	//Change work directory to "/storage"
@@ -200,10 +201,68 @@ int main(int argc, char **argv)
 	//------------------------------------------
 
 	//--------------------------------------------
-	//Mount removable disk and raid array
+	//1.Mount removable disk and raid array
+	//2. Check removable disk status and report to GUI
+	//3. Check raid array status and report to GUI
 	mke2fs fs;
+	while(1)
+	{
 	bool bMountRD = fs.MountDisk(DISK_REMOVEABLE);
 	bool bMountRaid = fs.MountDisk(DISK_RAID);
+
+		if(bMountRD == false)
+		{
+			gRecv.strExtend += "REMOVEABLEDISK:0|";
+			sleep(5);
+		}
+		else
+		{
+			std::string tmp, s;
+			char c;
+			for(int i = 0; i < gRecv.strExtend.size(); i++)
+			{
+				c = gRecv.strExtend.at(i);
+				if(c != '|')
+				{
+					tmp += c;
+				}
+				else
+				{
+					if(tmp != "REMOVEABLEDISK:0")
+						s = s + tmp + "|";
+					tmp.clear();
+				}
+			}
+			gRecv.strExtend = s;
+		}
+		if(bMountRaid == false)
+		{
+			gRecv.strExtend += "RAIDDISK:0|";
+			sleep(5);
+		}
+		else
+		{
+			std::string tmp, s;
+			char c;
+			for(int i = 0; i < gRecv.strExtend.size(); i++)
+			{
+				c = gRecv.strExtend.at(i);
+				if(c != '|')
+				{
+					tmp += c;
+				}
+				else
+				{
+					if(tmp != "RAIDDISK:0")
+						s = s + tmp + "|";
+					tmp.clear();
+				}
+			}
+			gRecv.strExtend = s;
+		}
+		if(bMountRaid == true && bMountRD == true)
+			break;
+	}
 	//--------------------------------------------
 
 	//--------------------------------------------
@@ -274,37 +333,47 @@ int main(int argc, char **argv)
 
 		//---------------------------------------------------
 		//1. Check remote connection and report status to GUI
-		//2. Check removable disk status and report to GUI
-		//3. Check raid array status and report to GUI
 		if(pNetComm)
 		{
 			if (pNetComm->IsConnect())
-				gRecv.strExtend = "REMOTE:1";
+				gRecv.strExtend = "REMOTE:1|";
 			else
-				gRecv.strExtend = "REMOTE:0";
-		}
-		if(bMountRD == false)
-		{
-			gRecv.strExtend += "|REMOVEABLEDISK:0";
-		}
-		if(bMountRaid == false)
-		{
-			gRecv.strExtend += "|RAIDDISK:0";
+				gRecv.strExtend = "REMOTE:0|";
 		}
 		//----------------------------------------------------
 
 
+		//===========================================================
+		//Process Notify from DVB
+		if(pNotify->IsNotify())
+		{
+			if (prevFilmID != pNotify->GetFilmId())
+		{
+				//Reset Pat and another things
+				sprintf(m_log, "[DataReceiving] Get difference FilmID %d %d, may be a new DCP.", prevFilmID, pNotify->GetFilmId());
+				gLog->Write(LOG_SYSTEM, m_log);
+				prevFilmID = pNotify->GetFilmId();
+				pPat->Reset();
+				gRecv.nReceiveStatus = 0;
+
+				//Reset Auto delete counter
+				nAutoDelCounter = 0;
+		}
+		}
+		//===========================================================
+
 
 		//-----------------------------------------------------------
 		//Process START from DVB
- 		if(pStart->IsStart())
+ 		if(pStart->IsStart() && ((gRecv.nReceiveStatus & 0xffff) != 11))
 		{
+			pPat->Start();
 			//-------------------------------------------------
 			//Add the round counter and write to log
 			if(bRoundCount == false)
 		{
 				//Add counter while both PAT and PMT are ready
-				    if(pPat->IsPmtReady() & pPat->IsPat())
+				if(pPat->IsPmtReady() && pPat->IsPat())
 				    {
 					gRecv.nReceiveStatus += 0x010000;
 				bRoundCount = true;
@@ -355,7 +424,6 @@ int main(int argc, char **argv)
 			{
 				printf("set state 2\n");
 			gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 2; //STOP
-			gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 3; //STOP
 			}
 			//-----------------------------------------------------------
 			
@@ -394,6 +462,7 @@ int main(int argc, char **argv)
 					gLog->Write(LOG_SYSTEM, m_log);
 
 					//Send Lost Report
+					gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 3; //STOP
 					pPat->SendLostReport();
 					
 					sprintf(m_log, "[DataReceived] unzip ZM file");
@@ -413,6 +482,7 @@ int main(int argc, char **argv)
 				{
 					sprintf(m_log, "[DataReceived] Send lost Report while lost.");
 					gLog->Write(LOG_SYSTEM, m_log);
+					gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 3; //STOP
 					pPat->SendLostReport();
 				pPat->IsPat();
 				bRoundCount = false;
@@ -427,10 +497,10 @@ int main(int argc, char **argv)
 
 		//-----------------------------------------------------------------------------------
 		//If full received DCP, get md5 file from remote center
-		if (gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0)
+		if (gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0 && (gRecv.nReceiveStatus & 0x0000ffff) > 2)
 		{
 			//Do Md5 Request
-			printf("%d\n", gRecv.nReceiveStatus & 0xffff);
+// 			printf("%d\n", gRecv.nReceiveStatus & 0xffff);
 			if((gRecv.nReceiveStatus & 0xffff) < 8)
 			{
 				sprintf(m_log, "[DataReceived] Get MD5 while no lost outside finish.");
@@ -489,6 +559,7 @@ int main(int argc, char **argv)
 		//Process CANCEL from DVB
 		if(pCancel->IsCancel())
 		{
+			prevFilmID = 0;
 			gRecv.nReceiveStatus  = 0;
 			gRecv.nCrcErrorSegment = 0;
 			gRecv.nFileID = 0;
@@ -503,9 +574,10 @@ int main(int argc, char **argv)
 			gRecv.strUuid = "";
 			gRecv.strFilmName = "";
 			gRecv.strIssueDate = "";
+			bRoundCount = false;
 			
 			pCancel->ClearCancel();
-			pPat->Restart();
+//			pPat->Reset();
 
 			sprintf(m_log, "[CineCast] Received Cancel from satellite, restart PAT Thread.");
 			gLog->Write(LOG_SYSTEM, m_log);
@@ -517,50 +589,13 @@ int main(int argc, char **argv)
 		//If task finished, reset PAT and round counter for next task.
 		if((gRecv.nReceiveStatus & 0xffff) == 11)
 		{
-			gRecv.nReceiveStatus = 11;
-			pPat->Restart();
-
+// 			gRecv.nReceiveStatus = 11;
+			pPat->Reset();
 			sprintf(m_log, "[CineCast] Task finished, restart PAT Thread.");
 			gLog->Write(LOG_SYSTEM, m_log);
 		}
 		//===================================================================================
 
-		//-----------------------------------------------------------------------------------
-		//If no data from filmdata after 300 second, reset Task to IDLE status
-		if(*pBData)
-		{
-			nTimeOut = 0;
-			*pBData = false;
-		}
-		else
-		{
-			if(nTimeOut <= 60)
-				nTimeOut++;
-			if(nTimeOut == 60)
-			{
-				gRecv.nReceiveStatus  = 0;
-				gRecv.nCrcErrorSegment = 0;
-				gRecv.nFileID = 0;
-				gRecv.nFileLength = 0;
-				gRecv.nLostSegment = 0;
-				gRecv.nReceiveLength = 0;
-				gRecv.nReceiveSegment = 0;
-				gRecv.nTotalSegment = 0;
-
-				gRecv.strCreator = "";
-				gRecv.strIssuer = "";
-				gRecv.strUuid = "";
-				gRecv.strFilmName = "";
-				gRecv.strIssueDate = "";
-
-				pPat->Restart();
-
-				sprintf(m_log, "[CineCast] Task receive timeout, restart PAT Thread.");
-				gLog->Write(LOG_SYSTEM, m_log);
-	}
-			*pBData = false;
-		}
-		//-----------------------------------------------------------------------------------
 	}
 	return 0;
 }

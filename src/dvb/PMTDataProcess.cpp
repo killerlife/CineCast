@@ -18,6 +18,7 @@ m_pManager(NULL), bThreadStart(false),
 m_mutex(0)
 {
 	m_pFilter = new Filter;
+	pDebugCmd = GetDebugCommand();
 	//pLog = CreateLog();
 }
 
@@ -84,6 +85,10 @@ bool PMTDataThread::Stop()
 	return true;
 }
 
+#include <log/Log.h>
+#include <log/LogStruct.h>
+extern ILog* gLog;
+
 void PMTDataThread::doit()
 {
 #ifdef USE_SIM
@@ -96,7 +101,8 @@ void PMTDataThread::doit()
 
 	char str[200];
 	sprintf(str, "[PMT Descriptor] Run 0x%x", this);
-	//pLog->Write(LOG_DVB, str);
+	if(gLog)
+		gLog->Write(LOG_DVB, str);
 	//syslog(LOG_INFO|LOG_USER, "[PMT Descriptor] Run 0x%x", this);
 	while(1)
 	{
@@ -243,6 +249,97 @@ void PMTDataThread::doit()
 				}
 #endif
 				m_mutex = 0;
+			}
+			else
+			{
+#if 1
+				if((*pDebugCmd) == D_PMT)
+				{
+					{
+						for(int i = 0; i < 10; i++)
+						{
+							struct PmtDescriptor *pPmtDescriptor = 
+								new struct PmtDescriptor;
+							pPmtDescriptor->StreamType = 0;
+							pPmtDescriptor->ElementaryPid = 0x21+i;
+
+							//search pmt list for current pmt
+							std::list<struct PmtDescriptor*>::iterator itor;
+							bool bFind = false;
+							for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
+							{
+								struct PmtDescriptor* pPmt = *itor;
+								if (pPmt->ElementaryPid == pPmtDescriptor->ElementaryPid)
+								{
+									bFind = true;
+									break;
+								}
+							}
+							if(bFind)
+							{
+								delete pPmtDescriptor;
+							}
+							else
+							{
+								pPmtDescriptor->subfolderCountDescriptor = 
+									new struct SubfolderCountDescriptor;
+								pPmtDescriptor->subfolderCountDescriptor->DescriptorTag = 0;
+								pPmtDescriptor->subfolderCountDescriptor->DescriptorLength = 1;
+								pPmtDescriptor->subfolderCountDescriptor->SubfolderCount = 1;
+
+								if (pPmtDescriptor->subfolderCountDescriptor->SubfolderCount > 0)
+								{
+									pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor = 
+										new struct SubfolderDescriptor[pPmtDescriptor->subfolderCountDescriptor->SubfolderCount];
+									for (int j = 0; j < pPmtDescriptor->subfolderCountDescriptor->SubfolderCount; j++)
+									{
+										pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].DescriptorTag = 0;
+										pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].DescriptorLength = 1;
+
+										pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].SubfolderName = 
+											new char[10];
+										memcpy(pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].SubfolderName,
+											"20160324\\",
+											9);;
+										pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].SubfolderName
+											[9] = '\0';
+									}
+								}
+
+								pPmtDescriptor->fileDescriptor = new struct FileDescriptor;
+								pPmtDescriptor->fileDescriptor->DescriptorTag = 0;
+								pPmtDescriptor->fileDescriptor->DescriptorLength = 1;
+								pPmtDescriptor->fileDescriptor->FileLength = 1000000000;
+								pPmtDescriptor->fileDescriptor->SegmentLength = 532;
+								pPmtDescriptor->fileDescriptor->Option = 0;
+
+								pPmtDescriptor->fileDescriptor->FileName = 
+									new char[100];
+								sprintf(pPmtDescriptor->fileDescriptor->FileName, "LEONIS_TEST%d.test", i);
+
+								m_pmtList.push_back(pPmtDescriptor);
+#if 1
+								sprintf(str, "[PMT Descriptor] Create FilmData 0x%x", pPmtDescriptor->ElementaryPid);
+								//pLog->Write(LOG_DVB, str);
+								//syslog(LOG_INFO|LOG_USER, str);
+								FilmDataThread *pFilmDataThread = new FilmDataThread;
+								pFilmDataThread->Init((void*) pPmtDescriptor, NULL);
+								//pFilmDataThread->Start();
+
+								if(pFilmDataThread->status() == brunt::thread_ready)
+								{
+									pFilmDataThread->start();
+									DPRINTF("%s\n", pPmtDescriptor->fileDescriptor->FileName);
+								}
+
+								m_filmList.push_back(pFilmDataThread);
+#endif
+							}
+						}
+					}
+					*pDebugCmd = 0;
+				}
+#endif
 			}
 			break;
 		case STOP:

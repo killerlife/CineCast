@@ -260,6 +260,11 @@ bool ContentParser::open(const std::string& path)
 	{
 		FILE *fp = fopen(filesXml[k].c_str(), "rb");
 		fs::path path(filesXml[k]);
+		if(fs::file_size(path) > 1024*5000)
+		{
+			fclose(fp);
+			continue;
+		}
 		char *buf = new char[fs::file_size(path)];
 		fread(buf, fs::file_size(path), 1, fp);
 		if(strstr(buf, "PackingList")!=NULL)
@@ -372,6 +377,11 @@ int ContentParser::parseProgramInfo(DcpInfo& info, int index /* = 0 */)
 						info.stereoScopic = "2D";
 						FILE *fp = fopen(p.c_str(), "rb");
 						fs::path path(p);
+						if(fs::file_size(path) > 1024*5000)
+						{
+							fclose(fp);
+							return 0;
+						}
 						char *buf = new char[fs::file_size(path)];
 						memset(buf, 0, fs::file_size(path));
 						fread(buf, fs::file_size(path), 1, fp);

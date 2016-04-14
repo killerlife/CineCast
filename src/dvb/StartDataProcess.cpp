@@ -15,6 +15,8 @@ StartDataThread* CreateStart()
 	return &gStart;
 }
 
+extern uint32 gDebugID;
+
 void ReleaseStart(StartDataThread* pStart)
 {
 
@@ -25,6 +27,7 @@ StartDataThread::StartDataThread():m_status(0), m_pid(0), bStart(false)
 	m_pStartDescriptor = NULL;
 	m_pFileDescriptor = NULL;
 	m_pFilter = new Filter;
+	pDebugCmd = GetDebugCommand();
 	//pLog = CreateLog();
 }
 
@@ -254,6 +257,21 @@ void StartDataThread::doit()
 					
 					bStart = true;
 				}
+			}
+			else
+			{
+#if 1
+				if((*pDebugCmd) == D_START)
+				{
+					m_filmName = "LEONIS Test";
+					m_uuid = "0000-0000-0000-0000-0000";
+					m_creator = "LEONIS";
+					m_issuer = "LEONIS";
+					m_issueDate = "2016-3-24";
+					bStart = true;
+					*pDebugCmd = 0;
+				}
+#endif // 0
 			}
 			break;
 		case STOP:

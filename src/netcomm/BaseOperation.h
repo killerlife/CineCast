@@ -90,7 +90,7 @@ private:
 
 private:
 	FILE *fp;
-	char out[80];
+	char out[1024];
 	std::string sout;
 	uint8 m_Status;
 	DISK_TYPE m_type;

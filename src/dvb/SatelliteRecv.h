@@ -226,3 +226,12 @@ public:
 	virtual uint64 FileLength() = 0;
 };
 
+#define D_NOTIFY	(0x10000001)
+#define D_START		(0x10000002)
+#define D_PAT		(0x10000003)
+#define D_PMT		(0x10000004)
+#define D_DAT		(0x10000005)
+#define D_FINISH	(0x10000006)
+#define D_CANCEL	(0x10000007)
+
+uint32* GetDebugCommand();

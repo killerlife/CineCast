@@ -30,6 +30,9 @@ CineCastUi::~CineCastUi()
 
 void CineCastUi::Init()
 {
+#ifndef WIN32
+	setWindowFlags(Qt::WindowStaysOnTopHint);
+#endif
 	this->setWindowState(Qt::WindowFullScreen);
 	ui.label_LOGO->setStyleSheet("QLabel{color:white}");
 //  	this->setStyleSheet("background-color:#336699");     //#0099CCƫ #3366CCƫ
@@ -104,6 +107,7 @@ void CineCastUi::timerEvent(QTimerEvent * te)
 		case 0:
 			pix.load(QString::fromUtf8(":/CineCastUi/Resources/recv.png"));
 			ui.label->setPixmap(pix);
+			socket.close();
 			socket.connectToHost(rIp, 10003);
 			m_ConnectStatus = 1;
 			
@@ -161,7 +165,10 @@ void CineCastUi::Connected()
 // 	m_network_timer = -1;
 
 
-// 	m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
+	if (m_UpdateSatellite_timer < 0)
+	{
+		m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
+	}
 }
 
 #include "../../../netcomm/UiProtocal.h"

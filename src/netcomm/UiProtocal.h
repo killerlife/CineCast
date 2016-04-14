@@ -71,6 +71,8 @@ typedef enum
 
 	R_GET_RAID_INFO = 0x400,
 
+	R_SET_DEBUG_CMD = 0x500,
+
 } UiProtocalKey;
 
 

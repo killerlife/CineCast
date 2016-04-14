@@ -210,6 +210,10 @@ int ContentManager::getProgramFileList(int nSrc, int type, std::vector<InfoData>
 		// 			continue;
 
 		InfoData viewInfo;
+		//Fix NULL PKL
+		if(info.id == "")
+			continue;
+		//Fix End
 		viewInfo.pData[0] = info.id;
 		viewInfo.pData[1] = info.fileName;
 		viewInfo.pData[2] = info.progress;
@@ -220,13 +224,25 @@ int ContentManager::getProgramFileList(int nSrc, int type, std::vector<InfoData>
 		sscanf(info.duration.c_str(), "%ld.%03d", &a, &b);
 		viewInfo.pData[6] = FormatTime(a*1000+b, false);
 		viewInfo.pData[7] = info.stereoScopic;
+		//Fix NULL PKL
+		if(info.issuer == "")
+			continue;
+		//Fix End
 		viewInfo.pData[8] = info.issuer;
+		//Fix NULL PKL
+		if(info.issueDate == "")
+			continue;
+		//Fix End
 		viewInfo.pData[9] = info.issueDate;
 		viewInfo.pData[10] = info.country;
 		viewInfo.pData[11] = info.receiveSegment;
 		viewInfo.pData[12] = info.totalSegment;
 		viewInfo.pData[13] = info.dateTime;
 		viewInfo.pData[14] = info.rootpath;//programList[i];
+		//Fix NULL PKL
+		if(info.creator == "")
+			continue;
+		//Fix End
 		viewInfo.pData[15] = info.creator;
 
 		ProgramList.push_back(viewInfo);

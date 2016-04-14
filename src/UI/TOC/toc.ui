@@ -1,0 +1,296 @@
+<ui version="4.0" >
+ <class>TOCClass</class>
+ <widget class="QWidget" name="TOCClass" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1056</width>
+    <height>533</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>TOC</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" >
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5" >
+     <item>
+      <widget class="QLabel" name="label" >
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="pixmap" >
+        <pixmap>:/TOC/Resources/logobig.png</pixmap>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2" >
+       <property name="font" >
+        <font>
+         <family>Book Antiqua</family>
+         <pointsize>32</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="text" >
+        <string>Test Operation Center</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTreeWidget" name="treeWidget" >
+     <column>
+      <property name="text" >
+       <string>ID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Version</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>LoginTime</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>LogType</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>HBCycle</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>ComType</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>HDDNum</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Cap</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>UpdateStatus</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox" >
+     <property name="title" >
+      <string>SatelliteOperation</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout" >
+      <item>
+       <widget class="QPushButton" name="pushButtonNext" >
+        <property name="text" >
+         <string>Next</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_4" >
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonNotify" >
+        <property name="text" >
+         <string>Notify</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonStart" >
+        <property name="text" >
+         <string>Start</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonPAT" >
+        <property name="text" >
+         <string>PAT</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonPMT" >
+        <property name="text" >
+         <string>PMT</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonData" >
+        <property name="text" >
+         <string>Data</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonFinish" >
+        <property name="text" >
+         <string>Finish</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_3" >
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonCancel" >
+        <property name="text" >
+         <string>Cancel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_2" >
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButtonDelFilm" >
+        <property name="text" >
+         <string>DelFilm</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3" >
+     <item>
+      <widget class="QGroupBox" name="groupBox_2" >
+       <property name="title" >
+        <string>NetworkOperation</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2" >
+        <item>
+         <widget class="QPushButton" name="pushButtonMD5" >
+          <property name="text" >
+           <string>MD5</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonLog" >
+          <property name="text" >
+           <string>Log</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonReboot" >
+          <property name="text" >
+           <string>Reboot</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_4" >
+       <property name="title" >
+        <string>Protocol</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_6" >
+        <item>
+         <widget class="QPushButton" name="pushButtonProtocol" >
+          <property name="text" >
+           <string>Protocol</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_3" >
+       <property name="title" >
+        <string>TMSOperation</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_4" >
+        <item>
+         <widget class="QPushButton" name="pushButtonGetFilmList" >
+          <property name="text" >
+           <string>GetFilmList</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line" >
+          <property name="orientation" >
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEditUUID" />
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonGetFilmInfo" >
+          <property name="text" >
+           <string>GetFilmInfo</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTextBrowser" name="textBrowser" />
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11" />
+ <resources>
+  <include location="toc.qrc" />
+ </resources>
+ <connections/>
+</ui>

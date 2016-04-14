@@ -126,6 +126,20 @@ void aes_decrypt(uint8* key, uint8* in, uint8* out, uint32 size)
 	EVP_CIPHER_CTX_cleanup(&ctx);
 }
 
+void save_proto(const char *headbuf, int headsize, int ID, const char* bodybuf, int bodysize)
+{
+	char fn[256];
+	sprintf(fn, "/var/log/CineCast/%s_%02d.pro", getDateTime().c_str(), ID);
+	FILE *fp = fopen(fn, "wb");
+	if(fp)
+	{
+		fwrite(headbuf, headsize, 1, fp);
+		if(bodybuf != NULL)
+			fwrite(bodybuf, bodysize, 1, fp);
+		fclose(fp);
+	}
+}
+
 class HeartThread: public brunt::CActiveThread
 {
 public:
@@ -378,6 +392,10 @@ bool NetCommThread::Login()
 	//Send login request to remote
 	size_t send_size = 0;
 	t_timeout tm = 10000;
+
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)&req, sizeof(struct L_LOGIN_REQ));
+
 	if(m_loginSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
@@ -407,6 +425,9 @@ bool NetCommThread::Login()
 		get_size,
 		&tm) < 0)
 		return false;
+
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)&m_loginRep, sizeof(struct R_LOGIN_REP));
 
 	char str[512];
 	if(inet_descriptor.subCommand != 0)
@@ -542,6 +563,10 @@ bool NetCommThread::Auth()
 	size_t send_size = 0;
 
 	t_timeout tm = 10000;
+
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)buf, inet_descriptor.payloadLength);
+
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
@@ -580,6 +605,9 @@ bool NetCommThread::Auth()
 		delete[] buf;
 		return false;
 	}
+
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)buf, inet_descriptor.payloadLength);
 
 // 	DPRINTF("auth %04x\n", inet_descriptor.payloadLength);
 // 	print_hex((char*)buf, inet_descriptor.payloadLength);
@@ -657,6 +685,10 @@ bool NetCommThread::GetMD5File(uint32 filmId)
 	size_t send_size = 0;
 
 	t_timeout tm = 10000;
+
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)&m_md5Req, sizeof(struct L_MD5_KEY_REQ));
+
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
@@ -742,6 +774,10 @@ bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 
 	size_t send_size = 0;
 	t_timeout tm = 10000;
+
+	save_proto((char*)&inet_descriptor, sizeof(INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)buf, inet_descriptor.payloadLength);
+
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
@@ -939,6 +975,10 @@ bool NetCommThread::HeartBreat()
 	//Send md5 request to remote
 	size_t send_size = 0;
 // 	DPRINTF("Send head\n");
+
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)buf, inet_descriptor.payloadLength);
+
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size) < 0)
@@ -1081,7 +1121,21 @@ void NetCommThread::doit()
 						memset(&addr_in, 0, sizeof(sockaddr_in));
 						addr_in.sin_family = AF_INET;
 						addr_in.sin_port = htons(port);
-						addr_in.sin_addr.s_addr = inet_addr(url.c_str());
+						struct hostent *he;
+						if((he = gethostbyname(url.c_str())) == NULL)
+							if(gLog)
+								gLog->Write(LOG_NETCOMMU, "[NetCommThread] gethostbyname error.");
+						struct in_addr **addr_list = (struct in_addr**)he->h_addr_list;
+						char ip[100];
+						for(int i = 0; addr_list[i] != NULL; i++)
+						{
+							strcpy(ip, inet_ntoa(*addr_list[i]));
+							break;
+						}
+						sprintf(str, "[NetCommThread] %s resolved to %s.", url.c_str(), ip);
+						if(gLog)
+							gLog->Write(LOG_ERROR, str);
+						addr_in.sin_addr.s_addr = inet_addr(ip);
 						int error = 0;
 						do
 						{
@@ -1212,17 +1266,23 @@ bool NetCommThread::RecvFilter()
 				switch(m_inetDesc.command)
 				{
 	case NET_HEARTBEAT_REQ:
+
+		save_proto((char*)&m_inetDesc, sizeof(struct INET_DESCRIPTOR), m_inetDesc.command,
+			NULL, 0);
+
 		DPRINTF("Receive heartbreat request\n");
 		HeartBreat();
 		break;
 	case NET_HEARTBEAT_CONFIRM:
+
+		save_proto((char*)&m_inetDesc, sizeof(struct INET_DESCRIPTOR), m_inetDesc.command,
+			NULL, 0);
+
 		DPRINTF("Receive heartbreat confirm\n");
 		break;
 				case NET_MD5_REP:
 					{
 			DPRINTF("Receive Md5 responsed\n");
-			
-			print_hex((char*)&m_inetDesc, sizeof(m_inetDesc));
 			
 			char *buf1 = NULL;
 			bool bNew = false;
@@ -1252,6 +1312,9 @@ bool NetCommThread::RecvFilter()
 				}
 				DPRINTF("MD5 Responsed length:%d\n", get_size);
 
+				save_proto((char*)&m_inetDesc, sizeof(struct INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if (m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1276,6 +1339,10 @@ bool NetCommThread::RecvFilter()
 						confirm.crc32 = calc_crc32((uint8 *)&confirm,
 							sizeof(L_MD5_KEY_CONFIRM) - 4);
 						size_t send_size = 0;
+					
+					save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command, 
+						(char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM));
+
 						m_authSocket.Send((const char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), send_size);
 						m_authSocket.Send((const char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM), send_size);
 
@@ -1336,6 +1403,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw (-1);
 				}
+				
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if (m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1386,6 +1457,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw (-1);
 				}
+
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if (m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1432,6 +1507,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw (-1);
 				}
+
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if (m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1487,6 +1566,9 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw (-1);
 				}
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if (m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1542,6 +1624,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw (-1);
 				}
+
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if (m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1605,6 +1691,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw (-1);
 				}
+
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if (m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1660,6 +1750,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw (-1);
 				}
+				
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if (m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1711,6 +1805,10 @@ bool NetCommThread::RecvFilter()
 				delete[] buf1;
 				throw -1;
 			}
+
+			save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+				(char*)buf1, m_inetDesc.payloadLength);
+
 			if(m_inetDesc.flag != ENC_NONE)
 			{
 			    aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1771,6 +1869,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw -1;
 		}
+
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if(m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1786,6 +1888,8 @@ bool NetCommThread::RecvFilter()
 				uint32 crc32 = calc_crc32((uint8*)buf1, m_inetDesc.payloadLength - sizeof(uint32));
 				char* pCrc32 = buf1 + m_inetDesc.payloadLength - sizeof(uint32);
 #endif
+
+				gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 6;
 				if(crc32 != *(uint32*)pCrc32)
 				{
 					char str[512];
@@ -1831,6 +1935,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw -1;
 }
+
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if(m_inetDesc.flag != ENC_NONE)
 {
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1892,6 +2000,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw -1;
 				}
+				
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if(m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -1956,6 +2068,10 @@ bool NetCommThread::RecvFilter()
 						delete[] buf1;
 					throw -1;
 				}
+
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
 				if(m_inetDesc.flag != ENC_NONE)
 				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
@@ -2053,6 +2169,7 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 			pLog->Query(LOG_ALL, &timeAfter, &timeBefore, ra);
 		log = g_LogAll;
 		char *buf = new char[log.size() + 100];
+		//char *buf = new char[nEnd - nBegin + 100];
 		if (buf)
 		{
 			INET_DESCRIPTOR inet_desc;
@@ -2065,6 +2182,9 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 
 			L_LOG_REP* logRep = (L_LOG_REP*)buf;
 			int pos;
+			if(log.size() > 100000)
+			    logRep->fileSize = 100000;
+			else
 			logRep->fileSize = log.size();
 			pos = sizeof(logRep->fileSize);
 			logRep->logStart = nBegin;
@@ -2074,8 +2194,10 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 			logRep->uploadLength = log.size();
 			pos += sizeof(logRep->uploadLength);
 
-			memcpy(buf + pos, log.c_str(), log.size());
-			pos += log.size();
+			//memcpy(buf + pos, log.c_str(), log.size());
+			memcpy(buf + pos, log.c_str() + log.size() - logRep->fileSize, logRep->fileSize);
+			//pos += log.size();
+			pos += logRep->fileSize;
 
 			uint32 crc = calc_crc32((uint8*)buf, pos);
 			memcpy(buf + pos, &crc, sizeof(crc));
@@ -2092,6 +2214,10 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 			
 			size_t send_size = 0;
 			t_timeout tm = 1000;
+
+			save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command,
+				(char*)buf, inet_desc.payloadLength);
+
 			if(m_authSocket.Send((char*)&inet_desc,
 				sizeof(struct INET_DESCRIPTOR),
 				send_size, &tm) < 0)
@@ -2137,6 +2263,10 @@ bool NetCommThread::PkgSendConfirm(uint32 filmId)
 
 			size_t send_size = 0;
 		t_timeout tm = 1000;
+		
+		save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command,
+			(char*)buf, inet_desc.payloadLength);
+
 		if(m_authSocket.Send((char*)&inet_desc,
 			sizeof(struct INET_DESCRIPTOR),
 			send_size, &tm) < 0)
@@ -2239,6 +2369,10 @@ bool NetCommThread::DecryptRep(uint32 filmId)
 	size_t send_size = 0;
 
 	t_timeout tm = 10000;
+
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)&m_md5Report, sizeof(struct L_MD5_RESULT_REPORT));
+
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
@@ -2306,6 +2440,10 @@ bool NetCommThread::DecryptRep()
 	size_t send_size = 0;
 
 	t_timeout tm = 10000;
+	
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)&m_md5Report, sizeof(struct L_MD5_RESULT_REPORT));
+
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
@@ -2406,6 +2544,10 @@ bool NetCommThread::UpdateRep(uint8* sn)
 	size_t send_size = 0;
 
 	t_timeout tm = 10000;
+
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)&m_upRep, sizeof(struct L_REMOTE_UPGRADE_PUSH_REP));
+
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,

@@ -570,29 +570,38 @@ bool TmsThread::content_req(char* buf)
 							if (info.pData[2] == "100")
 							{
 								QDomElement dcp = doc.createElement("dcp");
-								list.appendChild(dcp);
 
 								QDomText txt;
 								QDomElement item;
+								if (info.pData[0] == "")
+									continue;
 								item = doc.createElement("uuid");
 								dcp.appendChild(item);
 								txt = doc.createTextNode(info.pData[0].c_str());
 								item.appendChild(txt);
 
+								if (info.pData[9] == "")
+									continue;
 								item = doc.createElement("issueDate");
 								dcp.appendChild(item);
 								txt = doc.createTextNode(info.pData[9].c_str());
 								item.appendChild(txt);
 
+								if (info.pData[8] == "")
+									continue;
 								item = doc.createElement("issuer");
 								dcp.appendChild(item);
 								txt = doc.createTextNode(info.pData[8].c_str());
 								item.appendChild(txt);
 
+								if (info.pData[15] == "")
+									continue;
 								item = doc.createElement("creator");
 								dcp.appendChild(item);
 								txt = doc.createTextNode(info.pData[15].c_str());
 								item.appendChild(txt);
+
+								list.appendChild(dcp);
 								dcp_cnt++;
 							}
 						}

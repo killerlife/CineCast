@@ -53,5 +53,6 @@ private:
 	volatile uint8 m_mutex;
 	std::string m_strReportFileList;
 	uint32 m_FilmId;
+	uint32* pDebugCmd;
 // 	ILog *pLog;
 };

@@ -157,6 +157,7 @@ private:
 	
 	volatile bool bSequence;
 	uint32 m_lastSegNum;
+	uint32* pDebugCmd;
 	
 // 	ILog *pLog;
 };

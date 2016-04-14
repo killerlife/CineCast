@@ -32,6 +32,7 @@ m_freeMutex(0), m_dataMutex(0), m_ztPos(-1),m_writeMutex(0), m_Ready(false)
 	m_strFileName.clear();
 	m_strZtFileName.clear();
 	m_pFilter = new Filter;
+	pDebugCmd = GetDebugCommand();
 	//pLog = CreateLog();
 // 	m_pManager = brunt::createThreadManager();
 }
@@ -194,8 +195,7 @@ bool FilmDataThread::Start()
 // 	brunt::ThreadRunPolicy policy;
 // 	policy.order = 0;
 // 	policy.policy = brunt::POLICY_ERROR_EXIT;
-// 	brunt::CThreadRunInfo threadInfo(m_pDataThread, policy);
-// 	m_pManager->addThread(threadInfo); 
+// 	brunt::CThreadRunInfo threadInfo(m_pDataThread, policy);// 	m_pManager->addThread(threadInfo); 
 // 	m_pManager->setParallelNum(0, 1);
 // 	m_pManager->run();
 
@@ -233,12 +233,15 @@ bool FilmDataThread::Stop()
 	return true;
 }
 
+extern uint32 gDebugID;
+
 void FilmDataThread::doit()
 {
 #if 1
 	char str[200];
 	sprintf(str, "[FilmData] Run 0x%x", m_pPmtDescriptor->ElementaryPid);
-	//pLog->Write(LOG_DVB, str);
+	if(gLog)
+		gLog->Write(LOG_DVB, str);
 
 #if 0
 	m_pDataThread = new DataProcessThread;
@@ -399,6 +402,23 @@ void FilmDataThread::doit()
 					m_ReciveSegment++;//= w_size;
 					//m_ReciveLength += w_size;
 				#endif
+				}
+				else
+				{
+#if 1
+					if ((*pDebugCmd) == D_DAT)
+					{
+						memset(m_pZtBuf, 0xff, m_nZtBufSize);
+						if(m_ReciveSegment < m_TotalSegment)
+						{
+							m_ReciveSegment = m_TotalSegment;
+							filmId = gDebugID;
+							m_LostSegment = 0;
+							m_CRCError = 0;
+							*pDebugCmd = 0;
+						}
+					}
+#endif // 0
 				}
 #else
 				pBuf->count = 4096;

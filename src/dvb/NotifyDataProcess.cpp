@@ -19,9 +19,12 @@ void ReleaseNotify(NotifyDataThread* pNotify)
 {
 }
 
+uint32 gDebugID = 201603024;
+
 NotifyDataThread::NotifyDataThread():m_status(0), bMatch(false), m_machineId(0), m_pid(0), m_filmId(0)
 {
 	m_pFilter = new Filter;
+	pDebugCmd = GetDebugCommand();
 // 	pLog = CreateLog();
 }
 
@@ -148,6 +151,17 @@ void NotifyDataThread::doit()
 					printf("crc no match\n");
 				}
 #endif
+			}
+			else
+			{
+#if 1
+				if((*pDebugCmd) == D_NOTIFY)
+				{
+					m_filmId = gDebugID;
+					bMatch = true;
+					*pDebugCmd = 0;
+				}
+#endif // 0
 			}
 			break;
 		case STOP:

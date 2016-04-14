@@ -9,9 +9,21 @@
 #include <log/Log.h>
 #include <syslog.h>
 
+CancelDataThread gCancel;
+
+CancelDataThread* CreateCancel()
+{
+	return &gCancel;
+}
+
+void ReleaseCancel(CancelDataThread* pCancel)
+{
+}
+
 CancelDataThread::CancelDataThread():m_bCancel(false), m_status(0), m_pid(0)
 {
 	m_pFilter = new Filter;
+	pDebugCmd = GetDebugCommand();
 // 	pLog = CreateLog();
 }
 
@@ -102,6 +114,16 @@ void CancelDataThread::doit()
 					printf("crc no match\n");
 				}
 #endif
+			}
+			else
+			{
+#if 1
+				if ((*pDebugCmd) == D_CANCEL)
+				{
+					m_bCancel = true;
+					*pDebugCmd = 0;
+				}
+#endif // 0
 			}
 			break;
 		case STOP:

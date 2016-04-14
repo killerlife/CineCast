@@ -29,7 +29,9 @@ private:
 	uint16 m_pid;
 	Filter* m_pFilter;
 	uint8 m_buffer[4096];
+	uint32* pDebugCmd;
 // 	ILog* pLog;
 };
+
 FinishDataThread* CreateFinish();
 void ReleaseFinish(FinishDataThread* pFinish);

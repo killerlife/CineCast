@@ -9,9 +9,11 @@
 #include <stdlib.h>
 #include <syslog.h>
 #include <log/Log.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <netcomm/message.h>
 #include "ini.h"
+#include "../externcall/ExternCall.h"
 
 extern ILog* gLog;
 extern NetCommThread *pNetComm;
@@ -26,6 +28,7 @@ bool *CreateFilmDataFlag()
 PATDataThread::PATDataThread():m_status(0), m_PatId(0xfe), m_pManager(NULL), bIdle(false)
 {
 	m_pFilter = new Filter;
+	pDebugCmd = GetDebugCommand();
 	//pLog = CreateLog();
 }
 
@@ -45,22 +48,27 @@ bool PATDataThread::Init(void *param1, void *param2)
 	m_PatId = *(uint16*)param1;
 	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
 	m_pFilter->SetFilterID(m_PatId, 0x00);
-	return Start();
+	return true;
+	//Use Start function to start thread.
+	//return Start();
 }
 
 bool PATDataThread::Start()
 {
+	if(m_status != RUN)
+	{
 	m_status = RUN;
 	if(gLog)
 		gLog->Write(LOG_DVB, "[PATDataThread] Start: Run.");
+	}
 	return true;
 }
 
-bool PATDataThread::Restart()
+bool PATDataThread::Reset()
 {
 	m_status = IDLE;
 	if(gLog)
-		gLog->Write(LOG_DVB, "[PATDataThread] Restart: Processing.");
+		gLog->Write(LOG_DVB, "[PATDataThread] Reset: Processing.");
 
 	std::list<PMTDataThread*>::iterator itor;
 	int i = 0;
@@ -71,26 +79,28 @@ bool PATDataThread::Restart()
 		pmtThread->Stop();
 		if(gLog)
 		{
-			sprintf(str, "[PATDataThread] Restart: %d:%d PMT stopped", i, m_pmtList.size());
+			sprintf(str, "[PATDataThread] Reset: %d:%d PMT stopped", i, m_pmtList.size());
 			gLog->Write(LOG_DVB, str);
 		}
 		delete pmtThread;
 		if(gLog)
 		{
-			sprintf(str, "[PATDataThread] Restart: %d:%d PMT deleted", i, m_pmtList.size());
+			sprintf(str, "[PATDataThread] Reset: %d:%d PMT deleted", i, m_pmtList.size());
 			gLog->Write(LOG_DVB, str);
 		}
 	}
 	m_pmtList.clear();
 	m_pmtIdList.clear();
 	if(gLog)
-		gLog->Write(LOG_DVB, "[PATDataThread] Restart: All Clear.");
+		gLog->Write(LOG_DVB, "[PATDataThread] Reset: All Clear.");
 	while(bIdle == false)
 	{
 		usleep(200);
 	}
-	m_status = RUN;
+	//Disable for change function to reset
+	//m_status = RUN;
 }
+
 bool PATDataThread::IsPat()
 {
     bool bRes = m_bPat;
@@ -239,6 +249,49 @@ void PATDataThread::doit()
 					}
 				}
 			}
+			else
+			{
+#if 1
+				if(*(pDebugCmd) == D_PAT)
+				{
+					m_bPat = true;
+					std::list<uint16>::iterator itor;
+					bool bFind = false;
+					uint16 pmtId = 0x20;
+					for (itor = m_pmtIdList.begin(); itor != m_pmtIdList.end(); ++itor)
+					{
+						uint16 id = *itor;
+						if(id == pmtId)
+						{
+							bFind = true;
+							break;
+						}
+					}
+					if (!bFind)
+					{
+						m_pmtIdList.push_back(pmtId);
+
+						char str[200];
+						sprintf(str, "[PAT Descriptor] Create PMT Descriptor: %d", pmtId);
+						//pLog->Write(LOG_DVB, str);
+						//syslog(LOG_INFO|LOG_USER, "[PAT Descriptor] Create PMT Descriptor: %d", pmtId); 
+
+						PMTDataThread *thread = new PMTDataThread;
+						thread->Init(&pmtId, NULL);
+						brunt::ThreadRunPolicy policy;
+						policy.order = 0;
+						policy.policy = brunt::POLICY_ERROR_EXIT;
+
+						brunt::CThreadRunInfo threadInfo(thread, policy);
+						m_pManager->addThread(threadInfo); 
+						m_pManager->setParallelNum(0, m_pmtIdList.size());
+						m_pManager->run();
+						m_pmtList.push_back(thread);
+					}
+					*pDebugCmd = 0;
+				}
+#endif // 0
+			}
 			break;
 		case STOP:
 #if 1
@@ -376,20 +429,39 @@ bool PATDataThread::SendLostReport()
 {
 	char str[200], str1[200];
 
+	//====================================================================
+	//Change work directory to "/storage"
+	chdir("/storage");
+	//====================================================================
+
 	sprintf(str, "/tmp/lost%ld.zip ", m_FilmId);
-	std::string cmd = "rm -rf ";
+	std::string cmd = "/bin/rm -rf ";
 	cmd = cmd + str;
 	system(cmd.c_str());
+	if(gLog)
+		gLog->Write(LOG_SYSTEM, cmd.c_str());
 	
 	//Construct zip command and zip all zt file to one archive file
 	if(m_strReportFileList.find(".zt") == std::string::npos)
 	{
 	    return SendLostReport(m_FilmId);
 	}
-	cmd = "zip ";
+	cmd = "/bin/zip ";
 	cmd = cmd + str + m_strReportFileList;
+#if 1
+	IExternCall *pEc = CreateExternCall();
+	pEc->RunCommand(cmd.c_str());
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+	if(gLog)
+		gLog->Write(LOG_SYSTEM, pEc->GetOutput().c_str());
+#else
 	system(cmd.c_str());
-
+	if(gLog)
+		gLog->Write(LOG_SYSTEM, cmd.c_str());
+#endif
 	struct stat mstat;
 	sprintf(str, "/tmp/lost%ld.zip", m_FilmId);
 	if (stat(str, &mstat) == -1)

@@ -36,6 +36,7 @@ private:
 	Filter* m_pFilter;
 	uint8 m_buffer[4096];
 	uint32 m_filmId;
+	uint32* pDebugCmd;
 // 	ILog* pLog;
 };
 

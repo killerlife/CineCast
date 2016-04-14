@@ -1,4 +1,4 @@
-#include "ExternCall.h"
+﻿#include "ExternCall.h"
 #include <thread/activeThread/activeThread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +24,7 @@ private:
 	virtual void doit();
 
 private:
-	char buf[200];
+	char buf[1024];
 	bool m_bFinish;
 	std::string m_strCmd;
 	std::string m_strOut;
@@ -97,14 +97,14 @@ void ExternCall::doit()
 	}
 	setvbuf(fp, NULL, _IONBF, 0);
 	m_strOut.clear();
-	memset(buf, 0, 200);
+	memset(buf, 0, 1024);
 	char* pOut = NULL;
-	while((pOut = fgets(buf, 200, fp)) != NULL)
+	while((pOut = fgets(buf, 1024, fp)) != NULL)
 	{
 		std::string s(pOut);
 		m_strOut += s;
 // 		DPRINTF("%s", m_strOut.c_str());
-		memset(buf, 0, 200);
+		memset(buf, 0, 1024);
 	}
 	m_bFinish = true;
 	pclose(fp);

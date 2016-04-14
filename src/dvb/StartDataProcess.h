@@ -39,7 +39,9 @@ private:
 	uint8 m_buffer[4096];
 	std::string m_filmName, m_uuid, m_creator, m_issuer, m_issueDate;
 	bool bStart;
+	uint32* pDebugCmd;
 //	ILog* pLog;
 };
+
 StartDataThread* CreateStart();
 void ReleaseStart(StartDataThread* pStart);
