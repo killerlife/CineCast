@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CineCastUi", "CineCastUi\CineCastUi.vcproj", "{3BEC7D70-9D4E-4F1F-A86F-77745C9E3C0C}"
+	GlobalSection(Qt) = preSolution
+		Integration = True
+	EndGlobalSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3BEC7D70-9D4E-4F1F-A86F-77745C9E3C0C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3BEC7D70-9D4E-4F1F-A86F-77745C9E3C0C}.Debug|Win32.Build.0 = Debug|Win32
+		{3BEC7D70-9D4E-4F1F-A86F-77745C9E3C0C}.Release|Win32.ActiveCfg = Release|Win32
+		{3BEC7D70-9D4E-4F1F-A86F-77745C9E3C0C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -24,6 +24,7 @@ public:
 	uint64 ReciveLength(){ return 0; };
 	uint64 FileLength(){return 0;};
 	uint32 GetFilmId(){ return m_filmId;};
+	void Cancel() { m_filmId = 0; };
 
 private:
 	virtual void doit();

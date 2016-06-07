@@ -67,10 +67,6 @@ bool NotifyDataThread::Stop()
 
 void NotifyDataThread::doit()
 {
-#ifdef USE_SIM
-	FILE *fp;
-#endif
-
 // 	pLog->Write(LOG_DVB, "[Notify Descriptor] Run");
 	//syslog(LOG_INFO|LOG_USER, "[Notify Descriptor] Run");
 	while(1)
@@ -80,19 +76,8 @@ void NotifyDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-#ifdef USE_SIM
-			fp = fopen("notify", "rb");
-			if(fp <= 0)
-			{
-				printf("open file error\n");
-				m_status = STOP;
-				break;
-			}
-			count = fread(m_buffer, 1, 4096, fp);
-			fclose(fp);
-#else
+
 			if (m_pFilter->ReadFilter(m_buffer, count))
-#endif
 			{
     				//DPRINTF("[Notify Descriptor] Get Data\n");
 				//do crc32 check
@@ -145,23 +130,18 @@ void NotifyDataThread::doit()
 						break;
 					}
 				}
-#ifdef DEBUG
-				else
-				{
-					printf("crc no match\n");
-				}
-#endif
 			}
 			else
 			{
-#if 1
+				//--------------------------------------------------------
+				//                Network Simulator
 				if((*pDebugCmd) == D_NOTIFY)
 				{
 					m_filmId = gDebugID;
 					bMatch = true;
 					*pDebugCmd = 0;
 				}
-#endif // 0
+				//--------------------------------------------------------
 			}
 			break;
 		case STOP:

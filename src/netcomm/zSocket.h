@@ -1,4 +1,4 @@
-#ifndef _ZZSOCKET_H_20080606__
+﻿#ifndef _ZZSOCKET_H_20080606__
 #define _ZZSOCKET_H_20080606__
 
 #include <string>
@@ -39,6 +39,7 @@ public:
 	int Connect(const sockaddr_in *addr_in, t_timeout* tm = 0);
 	int Send(const char* buff, int size, size_t& sent, t_timeout* tm = 0);
 	int Receive(char* buff, int size, size_t& getsize, t_timeout* tm = 0);
+	int Receive2(char* buff, int size, size_t& getsize, t_timeout* tm = 0);
 	int SendTo(const char* buff, int size, size_t& sent, const sockaddr_in *addr_in, t_timeout* tm = 0);
 	int ReceiveFrom( char* buff, int size, size_t& getsize, const sockaddr_in *addr_in, t_timeout* tm = 0);
 	int Wait(int type, t_timeout* tm = 0);

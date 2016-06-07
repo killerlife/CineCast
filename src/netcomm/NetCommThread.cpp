@@ -48,6 +48,8 @@ enum ENCRYPTION
 	ENC_SESSIONKEY
 };
 
+char gVersion[16];
+
 #include <time.h>
 string getDateTime()
 {
@@ -128,6 +130,7 @@ void aes_decrypt(uint8* key, uint8* in, uint8* out, uint32 size)
 
 void save_proto(const char *headbuf, int headsize, int ID, const char* bodybuf, int bodysize)
 {
+#ifdef DEBUG
 	char fn[256];
 	sprintf(fn, "/var/log/CineCast/%s_%02d.pro", getDateTime().c_str(), ID);
 	FILE *fp = fopen(fn, "wb");
@@ -138,6 +141,7 @@ void save_proto(const char *headbuf, int headsize, int ID, const char* bodybuf, 
 			fwrite(bodybuf, bodysize, 1, fp);
 		fclose(fp);
 	}
+#endif
 }
 
 class HeartThread: public brunt::CActiveThread
@@ -155,6 +159,7 @@ private:
 
 private:
     NetCommThread* pNetCom;
+	bool bExit;
 };
 
 HeartThread::HeartThread()
@@ -164,6 +169,7 @@ HeartThread::HeartThread()
 
 HeartThread::~HeartThread()
 {
+	Stop();
     cleanThread();
 }
 
@@ -203,7 +209,7 @@ bool HeartThread::Start()
 		}
 		return false; 
 	}
-
+	bExit = false;
 	return true;
 }
 
@@ -214,24 +220,41 @@ void HeartThread::cleanThread()
 
 bool HeartThread::Stop()
 {
+	bExit = true;
 }
 
 void HeartThread::doit()
 {
 	char str[512];
 
-	while(1)
+	int i = 0;
+	while(!bExit)
 	{
-	    sleep(120);
+		i++;
+		if(i > 120*1000)
+	{
 	    if(pNetCom)
 	    {
 		pNetCom->HeartBreat();
 	    }
+			i = 0;
+	}
+		else
+			usleep(1000);
 	}
 }
 
+NetCommThread gNetComm;
+NetCommThread* CreateNetComm()
+{
+	return &gNetComm;
+}
+void ReleaseNetComm(NetCommThread* pNet)
+{
 
-NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false), pHeartThread(NULL)
+}
+
+NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false), pHeartThread(NULL), bPause(false)
 {
 	string s = getDateTime();
 	memset(m_loginReq.startupTime, 0, 20);
@@ -239,6 +262,27 @@ NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(fals
 	m_loginReq.loginCount = 0;
 	nRecvLength = 0;
 	
+	ICMyini* ini = createMyini();
+	bool bRead = false;
+	if(ini)
+	{
+		memset(gVersion, 0, 16);
+		if (ini->load("/etc/CineCast/Version"))
+		{
+			std::string tmp;
+			if(ini->read("General", "Version", tmp))
+			{
+				memcpy(gVersion, tmp.c_str(), tmp.size());
+				bRead = true;
+			}
+		}
+	}
+	if (!bRead)
+	{
+		memcpy(m_loginReq.version, "0.0.0.0", 7);
+		gLog->Write(LOG_NETCOMMU, "[NetCommThread] read version failed");
+	}
+
 	pHeartThread = new HeartThread;
 	pHeartThread->Init(this);
 }
@@ -246,7 +290,10 @@ NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(fals
 NetCommThread::~NetCommThread()
 {
 	if(pHeartThread)
+	{
+		pHeartThread->Stop();
 		delete pHeartThread;
+	}
 		
 	cleanThread();
 }
@@ -306,16 +353,17 @@ bool NetCommThread::Start()
 
 void NetCommThread::cleanThread()
 {
-	m_status = STOP;
-	CActiveThread::stop();
-
+	m_status = NET_STOP;
 	m_loginSocket.Destroy();
 	m_authSocket.Destroy();
+	CActiveThread::stop();
+	m_status = STOP;
 }
 
 bool NetCommThread::Stop()
 {
 	m_status = NET_STOP;
+
 	usleep(100000);
 
 	m_loginSocket.Destroy();
@@ -374,6 +422,8 @@ bool NetCommThread::Login()
 		memcpy(m_loginReq.version, "0.0.0.0", 7);
 		gLog->Write(LOG_NETCOMMU, "[NetCommThread] read version failed");
 	}
+
+	memcpy(gVersion, m_loginReq.version, 16);
 
 	m_loginReq.crc32 = calc_crc32((uint8*)&m_loginReq,
 		sizeof(L_LOGIN_REQ) - 4);
@@ -1028,6 +1078,12 @@ void NetCommThread::doit()
 
 	while(1)
 	{
+		if(bPause)
+		{
+			usleep(100000);
+		}
+		else
+		{
 		switch(m_status)
 		{
 		case NET_RUN:
@@ -1123,8 +1179,11 @@ void NetCommThread::doit()
 						addr_in.sin_port = htons(port);
 						struct hostent *he;
 						if((he = gethostbyname(url.c_str())) == NULL)
+							{
 							if(gLog)
 								gLog->Write(LOG_NETCOMMU, "[NetCommThread] gethostbyname error.");
+								throw -1;
+							}
 						struct in_addr **addr_list = (struct in_addr**)he->h_addr_list;
 						char ip[100];
 						for(int i = 0; addr_list[i] != NULL; i++)
@@ -1214,7 +1273,7 @@ void NetCommThread::doit()
 			catch(int&)
 			{
 				m_status = NET_RUN;
-				sleep(1);
+					sleep(10);
 				sprintf(str, "[NetCommThread] Connect to login server %s:%d error.", m_loginRep.serverIP, m_loginRep.port);
 				if(gLog)
 					gLog->Write(LOG_ERROR, str);
@@ -1228,8 +1287,10 @@ void NetCommThread::doit()
 				}
 				catch (int&)
 				{
+						DPRINTF("throw\n");
 					bConnected = false;
 					m_authSocket.Destroy();
+						if(m_status == NET_READ)
 					m_status = NET_RUN;
 				}
 			}
@@ -1238,11 +1299,25 @@ void NetCommThread::doit()
 			//Not need, we already process the reboot command in recvfilter
 			break;
 		case NET_STOP:
+				DPRINTF("STOP\n");
 			return;
 		default:
 			break;
 		}
 	}
+}
+}
+
+void NetCommThread::CloseConnect()
+{
+	bPause = true;
+	m_loginSocket.Destroy();
+	m_authSocket.Destroy();
+}
+
+void NetCommThread::StartConnect()
+{
+	bPause = false;
 }
 
 bool NetCommThread::RecvFilter()
@@ -1259,10 +1334,14 @@ bool NetCommThread::RecvFilter()
 
 				t_timeout tm = 1000;
 
-				if(m_authSocket.Receive((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), get_size, &tm) < 0)
+	int err = m_authSocket.Receive2((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), get_size, &tm);
+	if( err ==  -1)
 				{
-		throw (-1);
+		return false;
 				}
+	if( err  < 0)
+		throw -1;
+
 				switch(m_inetDesc.command)
 				{
 	case NET_HEARTBEAT_REQ:

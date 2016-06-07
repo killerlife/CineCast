@@ -24,11 +24,11 @@ extern std::vector<std::string> gRunPathList;
 FilmDataThread::FilmDataThread(): m_ReciveLength(0), m_status(STOP),
 m_pZtBuf(0), m_pFilter(0), m_pFilmFile(NULL), m_nSegBasic(0), 
 m_ReciveSegment(0), m_LostSegment(0), m_CRCError(0), m_TotalSegment(0), 
-m_freeMutex(0), m_dataMutex(0), m_ztPos(-1),m_writeMutex(0), m_Ready(false)
+m_freeMutex(0), m_dataMutex(0), m_ztPos(-1),m_writeMutex(0), m_Ready(false),
+bFinish(false)
 {
 	m_pDataThread = NULL;
 	m_pPmtDescriptor = NULL;
-// 	m_pObserver = NULL;
 	m_strFileName.clear();
 	m_strZtFileName.clear();
 	m_pFilter = new Filter;
@@ -252,14 +252,13 @@ void FilmDataThread::doit()
 
 	bool *pBData = CreateFilmDataFlag();
 
-#ifdef USE_SIM
-	FILE *fp;
-	int cc = 0;
 	while(1)
-#else
-	while(1)
-#endif
 	{
+		if(bFinish)
+		{
+			printf("m_status :STOP\n");
+			m_status = STOP;
+		}
 		switch (m_status)
 		{
 		case RUN:
@@ -289,31 +288,12 @@ void FilmDataThread::doit()
 					}
 				}
 				#endif
-#ifdef USE_SIM
-				char fn[20];
-				sprintf(fn, "data-23");
-				//sprintf(fn, "data-%X", m_pPmtDescriptor->ElementaryPid);
-// 				DPRINTF("open: %s\n", fn);
-
-				fp = fopen(fn, "rb");
-				if(fp <= 0)
-				{
-					PushIntoFreeBuf(pBuf);
-// 					printf("open file error\n");
-// 					m_status = STOP;
-					break;
-				}
-				pBuf->count = fread(pBuf->pBuf, 1, m_allocSize, fp);
-				fclose(fp);
-				pushIntoDataBuf(pBuf);
-#else
 //				DPRINTF("[Film Data] Ready read 0x%x\n", m_pPmtDescriptor->ElementaryPid);
 #if 1
 				uint8 buff[4096];
 				uint16 count = 4096;
 				if (m_pFilter->ReadFilter(buff, count))
 				{
-				#if 1
 					uint16 len = getBits(buff, 12, 12);
 					uint32 crc = calc_crc32(buff, len - 1) & 0xffffffff;
 					uint32 crc1 = ((*((buff + len - 1)) << 24)|
@@ -333,31 +313,12 @@ void FilmDataThread::doit()
 						w_size = pl - pll - 6;
 						filmId = getBits(buff + 5, 0, 32);
 // 						bRecvData = true;
-						#if 0
-						if(pos == 0)
-						    pos = seg_num;
-						else
-						{
-						    if(++pos != seg_num)
-						    {
-							miss_count += seg_num - pos + 1;
-							//DPRINTF("[DataProcess] miss segment %ld\n", miss_count);
-						    }
 						    
-						}
-						#endif
 						uint64 pos = (uint64) seg_num * m_pPmtDescriptor->fileDescriptor->SegmentLength;
 	
 						//write data to file
 						if (m_pFilmFile > 0)
 						{	
-							#if 0
- 							DPRINTF("-------------------------------------------------->\nwrite %llX to %s\n%llX %X\n",
- 								pos,
- 								pFilmThread->m_pPmtDescriptor->fileDescriptor->FileName,
- 								pFilmThread->m_pPmtDescriptor->fileDescriptor->FileLength,
- 								seg_num);
-							#endif
 							if(!haveSegment(seg_num))
 							{
 							WriteFile(pos,
@@ -395,30 +356,30 @@ void FilmDataThread::doit()
 					else
 					{
 						m_CRCError++;
-						m_LostSegment++;
+						//Doesn't need to update lost segment while CRC error.
+						//So disable it.
+						//m_LostSegment++;
 					}
 					*pBData = true;
-				#else
-					m_ReciveSegment++;//= w_size;
-					//m_ReciveLength += w_size;
-				#endif
 				}
 				else
 				{
-#if 1
+					//--------------------------------------------------------
+					//                Network Simulator
 					if ((*pDebugCmd) == D_DAT)
 					{
 						memset(m_pZtBuf, 0xff, m_nZtBufSize);
 						if(m_ReciveSegment < m_TotalSegment)
 						{
 							m_ReciveSegment = m_TotalSegment;
+							m_ReciveLength = m_pPmtDescriptor->fileDescriptor->FileLength;
 							filmId = gDebugID;
 							m_LostSegment = 0;
 							m_CRCError = 0;
 							*pDebugCmd = 0;
 						}
 					}
-#endif // 0
+					//--------------------------------------------------------
 				}
 #else
 				pBuf->count = 4096;
@@ -432,7 +393,6 @@ void FilmDataThread::doit()
 				}
 				else
 					PushIntoFreeBuf(pBuf);
-#endif
 #endif
 			}		
 			break;
@@ -737,6 +697,15 @@ std::string FilmDataThread::GetLostSegment()
 	m_LostSegment = LostSegments;
 	bSequence = false;
 
+	if(ReceiveSegments == m_TotalSegment)
+	{
+		m_ReciveLength = m_pPmtDescriptor->fileDescriptor->FileLength;
+		m_ReciveSegment = m_TotalSegment;
+		m_LostSegment = 0;
+		m_CRCError = 0;
+		bFinish = true;
+	}
+
 	//Move Update file to /home/leonis/update
 	if(m_ReciveSegment == m_TotalSegment)
 	{
@@ -757,7 +726,9 @@ std::string FilmDataThread::GetLostSegment()
 			, m_pPmtDescriptor->ElementaryPid
 			, m_strFileName.c_str());
 		gLog->Write(LOG_DVB, str);
-		sprintf(str, "[FilmData] TotalSeg=%d, LostSeg=%d, CRCSeg=%d, SegLen=%d",
+		sprintf(str, "[FilmData] TotalLen=%lld, RecvLen=%lld, TotalSeg=%d, LostSeg=%d, CRCSeg=%d, SegLen=%d",
+			m_pPmtDescriptor->fileDescriptor->FileLength,
+			m_ReciveLength,
 			m_TotalSegment,
 			m_LostSegment,
 			m_CRCError,
@@ -835,6 +806,15 @@ void FilmDataThread::UpdateInfo()
 	m_ReciveLength = ReceiveBytes;
 	m_ReciveSegment = ReceiveSegments;
 	m_LostSegment = LostSegments;
+	if(ReceiveSegments == m_TotalSegment)
+	{
+		m_ReciveLength = m_pPmtDescriptor->fileDescriptor->FileLength;
+		m_ReciveSegment = m_TotalSegment;
+		m_LostSegment = 0;
+		m_CRCError = 0;
+		bFinish = true;
+		printf("Receive Length: %lld\n", m_ReciveLength);
+	}
 	char str[512];
 	if (gLog)
 	{
@@ -843,7 +823,9 @@ void FilmDataThread::UpdateInfo()
 			, m_pPmtDescriptor->ElementaryPid
 			, m_strFileName.c_str());
 		gLog->Write(LOG_DVB, str);
-		sprintf(str, "[FilmData] TotalSeg=%d, LostSeg=%d, CRCSeg=%d, SegLen=%d",
+		sprintf(str, "[FilmData] TotalLen=%lld, RecvLen=%lld, TotalSeg=%d, LostSeg=%d, CRCSeg=%d, SegLen=%d",
+			m_pPmtDescriptor->fileDescriptor->FileLength,
+			m_ReciveLength,
 			m_TotalSegment,
 			m_LostSegment,
 			m_CRCError,

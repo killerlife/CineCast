@@ -66,6 +66,8 @@ bool ExternCall::RunCommand(std::string strCmdLine)
 bool ExternCall::RunCommand()
 {
 	char str[256];
+	m_strOut.clear();
+
 	if (!(status() == thread_stopped || status() == thread_ready))
 	{
 		sprintf(str, "[ExternCall] RunCommand: Thread not ready, status = %d.", status());

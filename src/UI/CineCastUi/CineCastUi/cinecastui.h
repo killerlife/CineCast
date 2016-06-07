@@ -60,6 +60,7 @@ private:
 	QTcpSocket socket;
 	int m_network_timer;
     int m_UpdateSatellite_timer;   //ʱѯ״̬ʱ
+	int m_time_timer;
 };
 
 #endif // CINECASTUI_H

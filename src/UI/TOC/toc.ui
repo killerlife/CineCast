@@ -1,4 +1,4 @@
-<ui version="4.0" >
+﻿<ui version="4.0" >
  <class>TOCClass</class>
  <widget class="QWidget" name="TOCClass" >
   <property name="geometry" >
@@ -21,7 +21,7 @@
         <string/>
        </property>
        <property name="pixmap" >
-        <pixmap>:/TOC/Resources/logobig.png</pixmap>
+        <pixmap resource="toc.qrc" >:/TOC/Resources/logobig.png</pixmap>
        </property>
       </widget>
      </item>

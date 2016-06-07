@@ -1,4 +1,4 @@
-<ui version="4.0" >
+﻿<ui version="4.0" >
  <class>ContentClass</class>
  <widget class="QWidget" name="ContentClass" >
   <property name="geometry" >
@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>834</width>
-    <height>388</height>
+    <height>410</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -38,6 +38,9 @@
            <layout class="QHBoxLayout" name="horizontalLayout_5" >
             <item>
              <widget class="QLabel" name="label_HDD" >
+              <property name="enabled" >
+               <bool>false</bool>
+              </property>
               <property name="font" >
                <font>
                 <family>Book Antiqua</family>
@@ -72,6 +75,9 @@
             </item>
             <item>
              <widget class="QGroupBox" name="groupBox" >
+              <property name="enabled" >
+               <bool>false</bool>
+              </property>
               <property name="title" >
                <string>Disk Space(MB)</string>
               </property>
@@ -106,21 +112,21 @@
                  <item>
                   <widget class="QLabel" name="label_3" >
                    <property name="text" >
-                    <string>0</string>
+                    <string>--</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QLabel" name="label_4" >
                    <property name="text" >
-                    <string>0</string>
+                    <string>--</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QLabel" name="label_6" >
                    <property name="text" >
-                    <string>0</string>
+                    <string>--</string>
                    </property>
                   </widget>
                  </item>
@@ -149,11 +155,6 @@
             </property>
             <column>
              <property name="text" >
-              <string>Status</string>
-             </property>
-            </column>
-            <column>
-             <property name="text" >
               <string>Progress</string>
              </property>
             </column>
@@ -165,11 +166,6 @@
             <column>
              <property name="text" >
               <string>RecvTime</string>
-             </property>
-            </column>
-            <column>
-             <property name="text" >
-              <string>2D/3D</string>
              </property>
             </column>
             <column>
@@ -237,6 +233,25 @@
              </spacer>
             </item>
             <item>
+             <widget class="QLabel" name="label_13" >
+              <property name="minimumSize" >
+               <size>
+                <width>300</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="frameShape" >
+               <enum>QFrame::Box</enum>
+              </property>
+              <property name="frameShadow" >
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="alignment" >
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="pushButton_DeleteDir_HDD" >
               <property name="minimumSize" >
                <size>
@@ -255,30 +270,19 @@
               </property>
              </widget>
             </item>
-            <item>
-             <spacer name="horizontalSpacer_7" >
-              <property name="orientation" >
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0" >
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
            </layout>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="Line" name="line" >
-          <property name="orientation" >
-           <enum>Qt::Vertical</enum>
+         <widget class="QGroupBox" name="groupBox_3" >
+          <property name="maximumSize" >
+           <size>
+            <width>1</width>
+            <height>16777215</height>
+           </size>
           </property>
-         </widget>
-        </item>
+          <layout class="QHBoxLayout" name="horizontalLayout_9" >
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2" >
           <item>
@@ -520,6 +524,16 @@
            </layout>
           </item>
          </layout>
+        </item>
+       </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line" >
+          <property name="orientation" >
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

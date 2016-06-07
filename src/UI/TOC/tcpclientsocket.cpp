@@ -1,12 +1,12 @@
-#include "tcpclientsocket.h"
+ï»¿#include "tcpclientsocket.h"
 #include "crc32.h" 
-#include "my_aes.h"   //AES¼ÓÃÜ
+#include "my_aes.h"   //AES
 
 #include <QtGlobal>
 #include "IDManager.h"
 #include "baseoperation.h"
 
-char retKL[32];                //·¢ËÍÊı¾İµÈ´ı·µ»Ø,³É¹¦¾ÍÌî³äKL½á¹¹Ìå        
+char retKL[32];                //İµÈ´,É¹KLá¹¹        
  
 
 #include <QHostAddress>
@@ -16,21 +16,21 @@ TcpClientSocket::TcpClientSocket(int socketDescriptor,QObject *parent) :
 {   
     this->setSocketDescriptor(socketDescriptor);
 
-     printf("TcpClientSocket::TcpClientSocket() QThreadID=%d,QThreadÖ¸Õë=%d\n",QThread::currentThreadId(),QThread::currentThread());
+     printf("TcpClientSocket::TcpClientSocket() QThreadID=%d,QThreadÖ¸=%d\n",QThread::currentThreadId(),QThread::currentThread());
     this->socketID=socketDescriptor;
 
-    connect(this,SIGNAL(readyRead()),this,SLOT(slot_dataReceived()));           //¶ÁÈ¡ÆÕÍ¨Êı¾İ×Ô¼ºÅĞ¶Ï, 
+    connect(this,SIGNAL(readyRead()),this,SLOT(slot_dataReceived()));           //È¡Í¨Ô¼Ğ¶, 
 
-    connect(this,SIGNAL(disconnected()),this,SLOT(slot_Disconnected()));   //¹Ø±ÕÁ¬½ÓÊ±£¬·¢ËÍ¶Ï¿ªÁ¬½ÓĞÅºÅ
+    connect(this,SIGNAL(disconnected()),this,SLOT(slot_Disconnected()));   //Ø±Ê±Í¶Ï¿Åº
 
 	connect(this, SIGNAL(error(QAbstractSocket::SocketError)),
 		this, SLOT(Error(QAbstractSocket::SocketError)));
 
 
     char* psrc="test.tgz";
-    strcpy(this->pathname_updatefile,psrc);   //³õÊ¼»¯Éı¼¶°üÂ·¾¶Ãû
+    strcpy(this->pathname_updatefile,psrc);   //Ê¼Â·
 
-    flag_update=0;   //±¾Ïß³ÌµÄÉı¼¶×´Ì¬,Î´¿ªÊ¼0,ÕıÔÚÖ´ĞĞÉı¼¶,1 Éı¼¶Íê³É2,
+    flag_update=0;   //ß³Ìµ×´Ì¬,Î´Ê¼0,Ö´,1 2,
 }
 
 TcpClientSocket::~TcpClientSocket()
@@ -55,7 +55,7 @@ void TcpClientSocket::slot_dataReceived()
 	if(isblocking==true)  
 	{
 		static int NumDataReceived=0;
-		printf("Sever:  ´¥·¢ĞÂµÄReceivedĞÅºÅ=%d\n",NumDataReceived++);  //»º´æ´óĞ¡
+		printf("Sever:  ÂµReceivedÅº=%d\n",NumDataReceived++);  //Ğ¡
 		return;
 	}
 
@@ -75,19 +75,19 @@ void TcpClientSocket::slot_dataReceived()
 		}
 	}
 
-	//¶ÁÈ¡¹Ì¶¨Êı¾İ°ü  
+	//È¡Ì¶İ°  
 	while(bytesAvailable()>=sizeof(KH)) 
 	{
-		printf("Sever:  bytesAvailable()=%d\n",bytesAvailable());  //»º´æ´óĞ¡
-		int size_head=sizeof(KH);   //ÏÈ¶ÁÈ¡°üÍ·½âÎö³ö°ü´óĞ¡,bytesAvailable();
+		printf("Sever:  bytesAvailable()=%d\n",bytesAvailable());  //Ğ¡
+		int size_head=sizeof(KH);   //È¶È¡Í·Ğ¡,bytesAvailable();
 		KH *pKH = (KH*)c_buf;
 		//int i=this->read(buf,size_head);// read(buf,bytesAvailable());  
 
-		int nread=sizeof(KH);     //ÏëÒª¶ÁÈ¡µÄÊı¾İ´óĞ¡
-		char* tmp=c_buf;             //»º´æµØÖ·
+		int nread=sizeof(KH);     //ÒªÈ¡İ´Ğ¡
+		char* tmp=c_buf;             //Ö·
 		while(nread>0)
 		{
-			if(bytesAvailable()==0)        //Èç¹ûÃ»ÓĞÓĞĞ§Êı¾İ
+			if(bytesAvailable()==0)        //Ã»Ğ§
 			{
 				isblocking=true;
 				bool ret=waitForReadyRead(30000);
@@ -102,7 +102,7 @@ void TcpClientSocket::slot_dataReceived()
 					return;
 				}
 			}
-			int i=read(tmp,nread);   //¶ÁÈ¡ÍêÕû´óĞ¡µÄ·½·¨
+			int i=read(tmp,nread);   //È¡Ğ¡Ä·
 			tmp+=i;
 			nread-=i;
 		}
@@ -114,7 +114,7 @@ void TcpClientSocket::slot_dataReceived()
 				char buf[1024];   
 				read(buf,1024); 
 			}
-			return;  //Èç¹û²»ÊÇ°üÍ·±êÊ¶·û
+			return;  //Ç°Í·Ê¶
 		}
 		else  
 		{
@@ -132,14 +132,14 @@ void TcpClientSocket::slot_dataReceived()
 			}
 
 			pKH = (KH *)m_buf;
-			int cmd_size=pKH->cmd_length;     //µÃµ½±¨ÎÄ³¤¶È¡£
+			int cmd_size=pKH->cmd_length;     //ÃµÄ³È¡
 
-			//Ñ­»·¶ÁÈ¡Ö±µ½µÃµ½ÍêÕûÊı¾İ
-			int nread=pKH->cmd_length;                //ÏëÒª¶ÁÈ¡µÄÊı¾İ´óĞ¡
-			char* tmp=m_buf + sizeof(KH);             //»º´æµØÖ·
+			//Ñ­È¡Ö±Ãµ
+			int nread=pKH->cmd_length;                //ÒªÈ¡İ´Ğ¡
+			char* tmp=m_buf + sizeof(KH);             //Ö·
 			while(nread>0)
 			{
-				if(bytesAvailable()==0)        //Èç¹ûÃ»ÓĞÓĞĞ§Êı¾İ
+				if(bytesAvailable()==0)        //Ã»Ğ§
 				{
 					isblocking=true;
 					bool ret=waitForReadyRead(30000);
@@ -154,7 +154,7 @@ void TcpClientSocket::slot_dataReceived()
 						return;
 					}
 				}
-				int i=read(tmp, nread);   //¶ÁÈ¡ÍêÕû´óĞ¡µÄ·½·¨
+				int i=read(tmp, nread);   //È¡Ğ¡Ä·
 				tmp+=i;
 				nread-=i;
 			}
@@ -180,9 +180,9 @@ void TcpClientSocket::slot_dataReceived()
 					}
 					pos = (uint8*)m_buf + sizeof(KH);
 					uint32 CRCsize=pKH->cmd_length - sizeof(uint32);
-					uint32 CRC32=Get_CRC32_fromBuffer(0,(uint8*)pos, CRCsize);   //ÖØĞÂ¼ÆËãCRC
+					uint32 CRC32=Get_CRC32_fromBuffer(0,(uint8*)pos, CRCsize);   //Â¼CRC
 
-					uint32 CRC32_recv;        //È¡½ÓÊÕµ½µÄCRC
+					uint32 CRC32_recv;        //È¡ÕµCRC
 					char* pCRC32=m_buf + sizeof(KH) + pKH->cmd_length - sizeof(uint32);
 					memcpy(&CRC32_recv, pCRC32, sizeof(uint32));
 					if(CRC32!=CRC32_recv)
@@ -211,9 +211,9 @@ void TcpClientSocket::slot_dataReceived()
 					}
 					pos = (uint8*)m_buf + sizeof(KH);
 					uint32 CRCsize=pKH->cmd_length - sizeof(uint32);
-					uint32 CRC32=Get_CRC32_fromBuffer(0,(uint8*)pos, CRCsize);   //ÖØĞÂ¼ÆËãCRC
+					uint32 CRC32=Get_CRC32_fromBuffer(0,(uint8*)pos, CRCsize);   //Â¼CRC
 
-					uint32 CRC32_recv;        //È¡½ÓÊÕµ½µÄCRC
+					uint32 CRC32_recv;        //È¡ÕµCRC
 					char* pCRC32=m_buf + sizeof(KH) + pKH->cmd_length - sizeof(uint32);
 					memcpy(&CRC32_recv, pCRC32, sizeof(uint32));
 					if(CRC32!=CRC32_recv)
@@ -272,7 +272,7 @@ void TcpClientSocket::slot_dataReceived()
 					md5_res_process();
 				}
 				break;
-			case CMD_LOGFILE_BACK:                  //ÈÕÖ¾±¨ÎÄ»Ø´«,ÎÄ¼ş¿ÉÄÜ±È½Ï´ó,ÌØÊâ´¦Àí
+			case CMD_LOGFILE_BACK:                  //Ö¾Ä»Ø´,Ä¼Ü±È½Ï´,â´¦
 				{
 					uint8* pos=(uint8*)(m_buf+sizeof(KH));
 					int len=pKH->cmd_length;
@@ -308,10 +308,10 @@ void TcpClientSocket::slot_dataReceived()
 		}
 #if 0
 		printf("Sever:  switch(pKH->cmd):=%X\n",pKH->cmd);
-		//¸ù¾İÃüÁîÀàĞÍµ÷ÓÃÏàÓ¦´¦Àíº¯Êı
+		//ÍµÓ¦íº¯
 		switch(pKH->cmd)
 		{
-		case CMD_UPDATE_BACK:               //Éı¼¶ÎÄ¼ş°üÍÆËÍËÍ·´À¡
+		case CMD_UPDATE_BACK:               //Ä¼Í·
 			update_file_back_process();               break;
 		case CMD_LOGFILE_BACK:
 			log_back_process(); break;
@@ -339,27 +339,27 @@ void TcpClientSocket::slot_Disconnected()
 
 
 
-    //¶Ï¿ªÁ¬½ÓÊ±£¬·¢ËÍ¶Ï¿ªĞÅºÅ
+    //Ï¿Ê±Í¶Ï¿Åº
     emit signal_socketDisConnect(this->socketID,this);    
-	//¶Ï¿ªÄÄ¸öÁ¬½Ó,Í¬Ê±·¢ËÍÆä¶ÔÏóÖ¸Õë,·½±ãÔÚQTcpserverµÄÁ´±íÀïÃæ¶ÔÓ¦Ö¸Õë
+	//Ï¿Ä¸,Í¬Ê±Ö¸,QTcpserverÓ¦Ö¸
 }
 
 
 
-void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //Ìî³äCRC×Ö¶Î,È»ºó¼ÓÃÜ·¢ËÍ pos±íÊ¾¼ÓÃÜÆ«ÒÆ
+void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //CRCÖ¶,È»Ü· posÊ¾Æ«
 {
 	   printf("Sever:crc_encry_send()--START\n");
-	   KH *pKH = (KH*)buf;        //×Ô¶¨Òå±£Áô×Ö
-       pKH->rev=CMD_REV;          //Ìî³ä×Ô¶¨Òå±£Áô×ÖÎŞÓÃ
+	   KH *pKH = (KH*)buf;        //Ô¶å±£
+       pKH->rev=CMD_REV;          //Ô¶å±£
        pKH->pkgHead=PKG_HEAD;
  
-	   //×öCRCĞ£Ñé
+	   //CRCĞ£
 	   if(pKH->cmd_length == 0)
 	   {
 		   SaveProto(buf);
 		   write(buf,size);
-		   flush();                 //new Ò²Ğí¿ÉÒÔ¼Ó¿ìÇå¿ÕĞ´»º´æ
-		   //socket.bytesToWrite ()·µ»ØÕıÔÚµÈ´ı±»Ğ´µÄÊı¾İµÄ×Ö½ÚÊı£¬Ò²¾ÍÊÇÊä³ö»º´æµÄ´óĞ¡¡£Ò²¿ÉÒÔĞ´Ñ­»·ÅĞ¶ÏÕâ¸öÖµÎª0,±íÃ÷ÒÑ¾­·¢ËÍ
+		   flush();                 //new Ò²Ô¼Ó¿Ğ´
+		   //socket.bytesToWrite ()ÚµÈ´Ğ´İµÖ½Ò²Ä´Ğ¡Ò²Ğ´Ñ­Ğ¶ÖµÎª0,Ñ¾
 		   waitForBytesWritten(-1);
 		   printf("bytesToWrite=%d\n",bytesToWrite());
 		   printf("Sever:crc_encry_send()--END\n");
@@ -373,14 +373,14 @@ void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //Ìî³äCRC×Ö¶Î
 
 		   char* pCRC32=buf+size-sizeof(uint32);
 		   memcpy(pCRC32,&CRC32,sizeof(uint32));
-		   //×öÍêCRCĞ£ÑéÖ®ºó¼ÓÃÜ·¢ËÍ
-		   //¸ù¾İ±¨ÎÄÀàĞÍµ÷ÓÃÏàÓ¦µÄ¼ÓÃÜ·½·¨
+		   //CRCĞ£Ö®Ü·
+		   //İ±ÍµÓ¦Ä¼Ü·
 		   uint8* pos=(uint8*)(buf+sizeof(KH));
 		   pKH->flag_pwd=KEY_MEET;
 		   int len=pKH->cmd_length;
-		   if(pKH->cmd==CMD_LOGIN_BACK||pKH->cmd==CMD_AUTHEN_BACK);  //Èç¹ûÊÇµÇÂ¼/ÈÏÖ¤·´À¡MachineID×Ö¶Î²»¼ÓÃÜ,Ìø¹ı
+		   if(pKH->cmd==CMD_LOGIN_BACK||pKH->cmd==CMD_AUTHEN_BACK);  //ÇµÂ¼/Ö¤MachineIDÖ¶Î²,
 		   {
-			   pKH->flag_pwd=KEY_HARD;   //Èç¹ûÊÇµÇÂ¼ºÍÈÏÖ¤·´À¡¾ÍÓÃÓ²¼şÖ¸ÎÆ,·ñÔòÓÃ»áÎîÃÜÔ¿
+			   pKH->flag_pwd=KEY_HARD;   //ÇµÂ¼Ö¤Ó²Ö¸,Ã»Ô¿
 		   }
 
 		   if(size> sizeof(KH))
@@ -393,7 +393,7 @@ void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //Ìî³äCRC×Ö¶Î
 			   case KEY_MEET: MyAes_ctr_encrypt(pos,len,(uint8*)this->MeetKey);break;
 			   default:	break;
 			   }
-			   printf("Client: receive: ¼ÓÃÜ·½Ê½=%d ¼ÓÃÜÃÜÔ¿:",pKH->flag_pwd);
+			   printf("Client: receive: Ü·Ê½=%d Ô¿:",pKH->flag_pwd);
 			   for(int i=0;i<16;i++)
 			   {  
 				   printf("%02X ",(unsigned char)this->HardKey[i]);
@@ -404,8 +404,8 @@ void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //Ìî³äCRC×Ö¶Î
 
 		   SaveProto(buf);
 		   write(buf,size);
-		   flush();                 //new Ò²Ğí¿ÉÒÔ¼Ó¿ìÇå¿ÕĞ´»º´æ
-		   //socket.bytesToWrite ()·µ»ØÕıÔÚµÈ´ı±»Ğ´µÄÊı¾İµÄ×Ö½ÚÊı£¬Ò²¾ÍÊÇÊä³ö»º´æµÄ´óĞ¡¡£Ò²¿ÉÒÔĞ´Ñ­»·ÅĞ¶ÏÕâ¸öÖµÎª0,±íÃ÷ÒÑ¾­·¢ËÍ
+		   flush();                 //new Ò²Ô¼Ó¿Ğ´
+		   //socket.bytesToWrite ()ÚµÈ´Ğ´İµÖ½Ò²Ä´Ğ¡Ò²Ğ´Ñ­Ğ¶ÖµÎª0,Ñ¾
 		   waitForBytesWritten(-1);
 		   printf("bytesToWrite=%d\n",bytesToWrite());
 		   printf("Sever:crc_encry_send()--END\n");
@@ -416,16 +416,16 @@ void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //Ìî³äCRC×Ö¶Î
 void TcpClientSocket::heart_breat_process()
 {
 	printf("login_request_process()_process\n");
-	//¹¹½¨ĞÄÌøµÚÒ»²¿·Ö½á¹¹¼ş
+	//Ò»Ö½á¹¹
 	HEARTBREAT_1* p = (HEARTBREAT_1*)m_buf;
 	char* pos = m_buf;
 
-	int len = sizeof(HEARTBREAT_1) - sizeof(KH); //µÚÒ»²¿·Ö²»º¬KHµÄ³¤¶È
+	int len = sizeof(HEARTBREAT_1) - sizeof(KH); //Ò»Ö²KHÄ³
 
-	char* pos2 = pos + sizeof(HEARTBREAT_1); //È¡±ä³¤µÄÎÄ¼şÃû
+	char* pos2 = pos + sizeof(HEARTBREAT_1); //È¡ä³¤Ä¼
 	if(p->filmNameLength > 0)
 	{
-		//ÔÚ´ËÈ¡£¬Ä¿Ç°Ã»È¡
+		//Ú´È¡Ä¿Ç°Ã»È¡
 		//char *dest = new char[p->filmNameLength];
 		//memcpy(dest, pos2, p->filmNameLength);
 		pos2 += p->filmNameLength;
@@ -441,9 +441,9 @@ void TcpClientSocket::heart_breat_process()
 		printf("FILE: %s,LINE: %d \n" ,__FILE__, __LINE__); 
 	}
 	
-	p->kh.cmd = 0x0033; //ĞÄÌøÈ·ÈÏ
+	p->kh.cmd = 0x0033; //È·
 	p->kh.cmd_length = 0;
-	crc_encry_send((char*)&p->kh, sizeof(KH), 0);    //Ìí¼ÓĞ£Ñé ¼ÓÃÜ£¬·¢ËÍ //¼ÓÃÜÆ«ÒÆÎª0,±¨ÎÄÈ«²¿¼ÓÃÜ
+	crc_encry_send((char*)&p->kh, sizeof(KH), 0);    //Ğ£ Ü£ //Æ«Îª0,È«
 }
 
 void TcpClientSocket::heart_breat_request()
@@ -454,28 +454,28 @@ void TcpClientSocket::heart_breat_request()
 	crc_encry_send((char*)p, sizeof(KH), 0);
 }
 
-void TcpClientSocket::login_request_process()    //µÇÂ¼ÇëÇó ´¦Àí 
+void TcpClientSocket::login_request_process()    //Â¼  
 {
         LOGINREQUEST* p=(LOGINREQUEST*)m_buf;
-        int ID=p->Machine_ID;   //»ñÈ¡½ÓÊÕ»úID,Èç¹ûIDÃ»ÓĞ×¢²á,
-        bool retID=GetIDManager()->GetHardKeyById(ID,this->HardKey);  //Í¨¹ıÉè±¸ID²éÕÒ¶ÔÓ¦µÄÓ²¼şÖ¸ÎÆ    
+        int ID=p->Machine_ID;   //È¡Õ»ID,IDÃ»×¢,
+        bool retID=GetIDManager()->GetHardKeyById(ID,this->HardKey);  //Í¨è±¸IDÒ¶Ó¦Ó²Ö¸    
 		
-     //ÅĞ¶Ï½ÓÊÕ»úÊÇ·ñIDÒÑ¾­×¢²á,·µ»Ø´íÎó±í Ìî³äkh.cmd_Sub
-     //Èç¹ûÒÑ¾­×¢²áµ÷ÓÃ¶ÔÓ¦µÄÓ²¼şÖ¸ÎÆ½âÃÜ
+     //Ğ¶Ï½Õ»Ç·IDÑ¾×¢,Ø´ kh.cmd_Sub
+     //Ñ¾×¢Ã¶Ó¦Ó²Ö¸Æ½
 
 	 //if(m_ConnectStatus==2)
 	{
         LOGINBACK Loginback;
-		memset(&Loginback,0,sizeof(LOGINBACK));   //³õÊ¼»¯£¬±£Ö¤ÓÃ²»µ½µÄ×Ö½ÚÎª0
+		memset(&Loginback,0,sizeof(LOGINBACK));   //Ê¼Ö¤Ã²Ö½Îª0
 		Loginback.kh.pkgHead=PKG_HEAD;
 		Loginback.kh.flag_pwd=KEY_HARD;
 		Loginback.kh.cmd=CMD_LOGIN_BACK;
 		Loginback.kh.cmd_Sub=CMD_ZERO;
 		Loginback.kh.cmd_length=sizeof(LOGINBACK)-sizeof(KH);
         
-       QHostInfo info=QHostInfo::fromName(QHostInfo::localHostName()); //¶¨ÒåÒ»¸öHostInfoµÄ¶ÔÏóÈ»ºó¶ÔÕâ¸ö¶ÔÏóµÄfromNameº¯Êı½øĞĞ³õÊ¼»¯
-	   QHostAddress address=info.addresses().first();                    //info.addresses() ·µ»ØÒ»¸öµØÖ·±í£¬ÎÒÃÇÈ¡µÚÒ»¸ö
-       QString strIP="192.168.1.81";//address.toString();
+       QHostInfo info=QHostInfo::fromName(QHostInfo::localHostName()); //Ò»HostInfoÄ¶È»fromNameĞ³Ê¼
+	   QHostAddress address=info.addresses().first();                    //info.addresses() Ò»Ö·í£¬È¡Ò»
+       QString strIP="192.168.64.122";//address.toString();
 	   printf("Sever:IP=%s\n",strIP.toStdString().c_str());
 
        char *ptmp=&(Loginback.ReSeverIP[0]);
@@ -483,8 +483,8 @@ void TcpClientSocket::login_request_process()    //µÇÂ¼ÇëÇó ´¦Àí
 // 	   strcpy(ptmp, "169.254.1.110");
        Loginback.ReSeverPort=10099;    
 
-	   QDate Date =QDate::currentDate();//»ñÈ¡ÏµÍ³ÏÖÔÚµÄÊ±¼ä
-	   QTime Time =QTime::currentTime();//»ñÈ¡ÏµÍ³ÏÖÔÚµÄÊ±¼ä
+	   QDate Date =QDate::currentDate();//È¡ÏµÍ³ÚµÊ±
+	   QTime Time =QTime::currentTime();//È¡ÏµÍ³ÚµÊ±
 
        Loginback.Year=Date.year();
        Loginback.Month=Date.month();                
@@ -498,57 +498,57 @@ void TcpClientSocket::login_request_process()    //µÇÂ¼ÇëÇó ´¦Àí
 	   printf("Sever:Time:%d %d %d \n",Time.hour(),Time.minute(),Time.second());
 
 
-        if(retID==true)     //Èç¹ûIDÒÑ¾­±»×¢²á
+        if(retID==true)     //IDÑ¾×¢
 		{
-			printf("µÇÂ¼ÇëÇó½á¹û:ÒÑ×¢²áµÄÉè±¸ID\n");
-		    Loginback.kh.cmd_Sub=CMD_ZERO;              //³É¹¦×¢²á
+			printf("Â¼:×¢è±¸ID\n");
+		    Loginback.kh.cmd_Sub=CMD_ZERO;              //É¹×¢
 		}
 		else
 		{
-			printf("µÇÂ¼ÇëÇó½á¹û:Î´×¢²áµÄÉè±¸ID\n");
-		    Loginback.kh.cmd_Sub=0X27;                   //Î´×¢²áIDÓëÖ¸ÎÆ,´ıÖÆ×÷´íÎó±í
+			printf("Â¼:Î´×¢è±¸ID\n");
+		    Loginback.kh.cmd_Sub=0X27;                   //Î´×¢IDÖ¸,
 		}
 
 	   char* psend=(char*)&Loginback;
 	   int   sendsize=sizeof(LOGINBACK);
-       crc_encry_send(psend,sendsize,sizeof(uint32));   //Ìí¼ÓĞ£Ñé ¼ÓÃÜ£¬·¢ËÍ
+       crc_encry_send(psend,sendsize,sizeof(uint32));   //Ğ£ Ü£
 	   
-	   if(retID==false)     //Èç¹ûIDÒÑ¾­Î´×¢²á
+	   if(retID==false)     //IDÑ¾Î´×¢
 	   {
-		   //·¢ËÍÍê·´À¡ĞÅºÅºó¶Ï¿ªÁ´½Ó£»
-           disconnectFromHost();           //ÏÈ¶Ï¿ªÁ¬½Ó
-           waitForDisconnected(-1);        //×èÈûµÈ´ı¹Ø±Õ
-		   printf("Î´×¢²áIDµÄµÇÂ¼ÇëÇó,×Ô¶¯¶Ï¿ªÁ´½Ó\n");
+		   //ê·´ÅºÅºÏ¿Ó£
+           disconnectFromHost();           //È¶Ï¿
+           waitForDisconnected(-1);        //È´Ø±
+		   printf("Î´×¢IDÄµÂ¼,Ô¶Ï¿\n");
 	   }
 	   
 	   //flag_login=true;
 	}
-       //do_send_file();   //·¢ËÍÎÄ¼ş²âÊÔ
+       //do_send_file();   //Ä¼
 } 
 
-void TcpClientSocket::authon_request_process()     //ÈÏÖ¤ÇëÇó´¦Àí 
+void TcpClientSocket::authon_request_process()     //Ö¤ 
 {   
-      AuthenREQUEST* p=(AuthenREQUEST*)m_buf;  //ÏÈ·ÖÎöÈÏÖ¤ÇëÇóĞÅÏ¢
+      AuthenREQUEST* p=(AuthenREQUEST*)m_buf;  //È·Ö¤Ï¢
 // 	  memset(buf, 0, 10*1024);
 
       AuthenREQUEST tmp;
-      memcpy(&tmp,p,sizeof(AuthenREQUEST));  //Ìî³ä¶ÔÏó
-      this->AuthenRequest=tmp;                //Ìî³äµ½µ±Ç°¶ÔÏó±£´æ
+      memcpy(&tmp,p,sizeof(AuthenREQUEST));  //
+      this->AuthenRequest=tmp;                //äµ½Ç°í®†í³´
 
-      //·¢ËÍĞÅºÅÍ¨Öªtcpserver->¸üĞÂui      //ÈÏÖ¤ĞÅÏ¢¸Ä±äÁË
-      //¶Ï¿ªÁ¬½ÓÒ²Òª¸üĞÂ
+      //ÅºÍ¨Öªtcpserver->ui      //Ö¤Ï¢Ä±
+      //Ï¿Ò²Òª
 /*
-//ÈÏÖ¤·´À¡ authentication feedback
+//Ö¤ authentication feedback
 typedef struct _AuthenBACK_
 {
 	KH kh;
-	char    MeetKey[16];          //»áßíÃÜÔ¿128Î»×Ö¶Î£¬½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³£¬Êı¾İ²¹°ü×ÓÏµÍ³Óë½ÓÊÕ»úºóĞø±¨ÎÄµÄ¼ÓÃÜÃÜÔ¿¡£
-    char    RandomCode[16];       //Ëæ»úÂë128Î»×Ö¶Î£¬ÔÚÖØÒª±¨ÎÄÖĞĞ¯´ø£¬ÒÔ¹©½ÓÊÕ»úÑéÖ¤¡£
-    uint32  Model_Log;            //ÈÕÖ¾Ä£Ê½32Î»ÎŞ·ûºÅÕûĞÍ£¬½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³Ïò½ÓÊÕ»úÈ·ÈÏÆäÉÏ±¨µÄÈÕÖ¾Ä£Ê½¡£
-    uint32  reserved;             //±£Áô×Ö  
-    uint32  BeatCycle;            //ĞÄÌøÖÜÆÚ 32Î»ÎŞ·ûºÅÕûĞÍ£¬½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³Ïò½ÓÊÕ»úÈ·ÈÏÆäÉÏ±¨µÄĞÄÌøÖÜÆÚ¡£
-    uint32  Model_Connect;        //Á¬½Ó·½Ê½ 32Î»ÎŞ·ûºÅÕûĞÍ£¬½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³Ïò½ÓÊÕ»úÈ·ÈÏÆäÉÏ±¨µÄÁ¬½Ó·½Ê½¡£
-	uint32  CRC32;                //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+	char    MeetKey[16];          //Ô¿128Î»Ö¶Î£Õ»Ô¶Î¬ÏµÍ³İ²ÏµÍ³Õ»ÄµÄ¼Ô¿
+    char    RandomCode[16];       //128Î»Ö¶Î£ÒªĞ¯Ô¹Õ»Ö¤
+    uint32  Model_Log;            //Ö¾Ä£Ê½32Î»Ş·Í£Õ»Ô¶Î¬ÏµÍ³Õ»È·Ï±Ö¾Ä£Ê½
+    uint32  reserved;             //  
+    uint32  BeatCycle;            // 32Î»Ş·Í£Õ»Ô¶Î¬ÏµÍ³Õ»È·Ï±Ú¡
+    uint32  Model_Connect;        //Ó·Ê½ 32Î»Ş·Í£Õ»Ô¶Î¬ÏµÍ³Õ»È·Ï±Ó·Ê½
+	uint32  CRC32;                //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }AuthenBACK;
 */
      AuthenBACK AuthenBack;
@@ -562,28 +562,28 @@ typedef struct _AuthenBACK_
 	 char MeetKey_tmp[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68};
      memcpy(AuthenBack.MeetKey,MeetKey_tmp,sizeof(MeetKey_tmp));
      
-	 //Ò²±£´æµ½µ±Ç°Socket¶ÔÏó
-     memcpy(this->MeetKey,MeetKey_tmp,sizeof(MeetKey_tmp));   //×÷ÎªÒÔºóµÄ¼ÓÃÜÃÜÔ¿
+	 //Ò²æµ½Ç°Socket
+     memcpy(this->MeetKey,MeetKey_tmp,sizeof(MeetKey_tmp));   //ÎªÔºÄ¼Ô¿
 
-     //getRandomCode(char Rando¡¢Code[16]);    //Client¶Ë ¼ÆËãËæ»úÂë--Ôİ²»
+     //getRandomCode(char RandoCode[16]);    //Client --İ²
      getRandomCode(RandomCode_tmp);
 
      memcpy(AuthenBack.RandomCode,RandomCode_tmp,sizeof(RandomCode_tmp));
-     AuthenBack.Model_Log=1;                   //ÃüÁî½ÓÊÕ»ú,ÉÏ±¨ÈÕÖ¾
-     AuthenBack.BeatCycle=5;                   //ÃüÁî½ÓÊÕ»ú,ÉÏ±¨ĞÄÌø±¨ÎÄµÄÖÜÆÚ  //¸ÄÊÖ¶¯Éè¶¨ 
+     AuthenBack.Model_Log=1;                   //Õ»,Ï±Ö¾
+     AuthenBack.BeatCycle=5;                   //Õ»,Ï±Äµ  //Ö¶è¶¨ 
      AuthenBack.Model_Connect=1;
 
 	 char* psend=(char*)&AuthenBack;
 	 int   sendsize=sizeof(AuthenBACK);
-     crc_encry_send(psend,sendsize,0);    //Ìí¼ÓĞ£Ñé ¼ÓÃÜ£¬·¢ËÍ //¼ÓÃÜÆ«ÒÆÎª0,±¨ÎÄÈ«²¿¼ÓÃÜ
+     crc_encry_send(psend,sendsize,0);    //Ğ£ Ü£ //Æ«Îª0,È«
 
-    //do_send_file(); //·¢ËÍÎÄ¼ş²âÊÔ
-    //´¥·¢ĞÅºÅ²âÊÔ
+    //do_send_file(); //Ä¼
+    //ÅºÅ²
 
-	// emit signal_authenRequest();         //´¦ÀíĞÂµÄÈÏÖ¤ÇëÇó,¸üĞÂUI 
+	// emit signal_authenRequest();         //ÂµÖ¤,UI 
 
 	 heart_breat_request();
-	 //¸üĞÂÔ¶³ÌÉı¼¶µÄ¿Í»§¶ËÁĞ±í
+	 //Ô¶Ä¿Í»Ğ±
 	 emit signal_CMD_SocketToUI(this->socketID,SK_UPDATE_TREEWIDGET_LIST,0); 
 
 }
@@ -597,53 +597,53 @@ int getfilesize(char* name)
     return ftell(fp);    //return NULL;
 }
 
-void TcpClientSocket::update_file_back_process()   //Éı¼¶ÎÄ¼ş°üÍÆËÍºó·´À¡ ´¦Àí
+void TcpClientSocket::update_file_back_process()   //Ä¼Íº 
 {
 
 /*
 	typedef struct _UpdateFileBACK_
 {
 	KH kh;
-    uint32  UpdateCheckResult;     //32Î»ÎŞ·ûºÅÕûĞÍ£¬Éı¼¶È·ÈÏ¡£ÖµÎª0±íÊ¾Éı¼¶°üÓĞĞ§£¬1±íÊ¾Éı¼¶°üÎŞĞ§¡£
-    uint32  reserved;               //±£Áô×Ö¶Î
-    char  OldVersion[16];          //128Î»×Ö¶Î£¬½ÓÊÕÈí¼şÉı¼¶Ç°µÄ°æ±¾ĞÅÏ¢¡£
-    char  UpdateSerialNo[16];      //128Î»×Ö¶Î£¬½ÓÊÕµÄÈí¼şÉı¼¶°üĞòÁĞºÅ¡£
-    char  reserved2[16];           //±£Áô×Ö¶Î
-	uint32  CRC32;                  //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+    uint32  UpdateCheckResult;     //32Î»Ş·Í£È·Ï¡ÖµÎª0Ê¾Ğ§1Ê¾Ğ§
+    uint32  reserved;               //Ö¶
+    char  OldVersion[16];          //128Î»Ö¶Î£Ç°Ä°æ±¾Ï¢
+    char  UpdateSerialNo[16];      //128Î»Ö¶Î£ÕµĞºÅ¡
+    char  reserved2[16];           //Ö¶
+	uint32  CRC32;                  //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }UpdateFileBACK;
 */
 
       //UpdateFileBACK
 	  printf("authon_request_process()\n");
-      UpdateFileBACK* p=(UpdateFileBACK*)buf;  //ÏÈ·ÖÎöÈÏÖ¤ÇëÇóĞÅÏ¢
+      UpdateFileBACK* p=(UpdateFileBACK*)buf;  //È·Ö¤Ï¢
 
       UpdateFileBACK tmp;
-      memcpy(&tmp,p,sizeof(UpdateFileBACK));  //Ìî³ä¶ÔÏó
-      this->UpdateFileBack=tmp;                //Ìî³äµ½µ±Ç°¶ÔÏó±£´æ
+      memcpy(&tmp,p,sizeof(UpdateFileBACK));  //
+      this->UpdateFileBack=tmp;                //äµ½Ç°í®†í³´
 
-      //·ÖÎöÉı¼¶ÎÄ¼ş·´À¡±¨ÎÄ£¬Èç¹ûÉı¼¶°üÓĞĞ§,·¢ËÍ¿ªÊ¼Éı¼¶µÄÇëÇóÃüÁî
+      //Ä¼Ä£Ğ§,Í¿Ê¼
       if(p->UpdateCheckResult==0)
 	  {
-	       printf("Éı¼¶°üÓĞĞ§\n");
-           do_update_start(); //ÃüÁî½ÓÊÕ»ú,¿ÉÒÔÉı¼¶
+	       printf("Ğ§\n");
+           do_update_start(); //Õ»,
 	  }
-	  else   //=1Éı¼¶°üÎŞĞ§
+	  else   //=1Ğ§
 	  {
-	       printf("Éı¼¶°üÎŞĞ§\n");
-           //·¢ËÍĞÅºÅ¸øUIÌáÊ¾Éı¼¶Ê§°Ü  ´ıÊµÏÖ
+	       printf("Ğ§\n");
+           //ÅºÅ¸UIÊ¾Ê§  Êµ
 	  }
 }
 
 
-//ÈÕÖ¾±¨ÎÄ»Ø´«,ÎÄ¼ş¿ÉÄÜ±È½Ï´ó,ÌØÊâ´¦Àí
+//Ö¾Ä»Ø´,Ä¼Ü±È½Ï´,â´¦
 void TcpClientSocket::log_back_process()
 {
 	KH *pKH = (KH*)m_buf;
-	//ÔÚ´ËµÃµ½ËùÓĞÈÕÖ¾·´À¡±¨ÎÄ,°üÀ¨ÈÕÖ¾ĞÅÏ¢Í·
+	//Ú´ËµÃµÖ¾,Ö¾Ï¢Í·
 	LOGBACKINFO* p=(LOGBACKINFO*)(m_buf + sizeof(KH));
 
-	char* pLog= (char*)p + sizeof(LOGBACKINFO);   //ÈÕÖ¾ÄÚÈİµØÖ· ÔÚ´Ë´¦Àí
-	//·¢ËÍ¸øUIÏÔÊ¾
+	char* pLog= (char*)p + sizeof(LOGBACKINFO);   //Ö¾İµÖ· Ú´Ë´
+	//Í¸UIÊ¾
 
 	emit signal_CMD_SocketToUI(this->socketID, SK_UPDATE_TEXTBROWSER, (int)pLog); 
 }
@@ -651,25 +651,25 @@ void TcpClientSocket::log_back_process()
 void TcpClientSocket::log_process()
 {
 	KH *pKH = (KH*)buf;
-	uint32 cmd_size=pKH->cmd_length;     //µÃµ½±¨ÎÄ³¤¶È¡£
+	uint32 cmd_size=pKH->cmd_length;     //ÃµÄ³È¡
 #if 0
-	char* bufLog=new char[cmd_size];     //ÉêÇëÄÚ´æ±£´æÈÕÖ¾Ò»°ã²»»áÌ«´ó
-	memcpy(bufLog,buf,sizeof(KH));       //±¨ÎÄÍ·
+	char* bufLog=new char[cmd_size];     //Ú´æ±£Ö¾Ò»ã²»Ì«
+	memcpy(bufLog,buf,sizeof(KH));       //Í·
 
-	//¶ÁÈ¡ÈÕÖ¾·´À¡°üÎÄ¼şÍ·
-	int nread=cmd_size;              //ÏëÒª¶ÁÈ¡ÈÕÖ¾±¨ÎÄ
-	char* tmp=bufLog+sizeof(KH);   //»º´æµØÖ·
+	//È¡Ö¾Ä¼Í·
+	int nread=cmd_size;              //ÒªÈ¡Ö¾
+	char* tmp=bufLog+sizeof(KH);   //Ö·
 	while(nread>0)
 	{
-		if(bytesAvailable()==0)        //Èç¹ûÃ»ÓĞÓĞĞ§Êı¾İ
+		if(bytesAvailable()==0)        //Ã»Ğ§
 		{
 			isblocking=true;
 			bool ret=waitForReadyRead(30000);
 			isblocking=false;
 			if(!ret)
 			{
-				printf("µÈ´ı,Ã»ÓĞĞÂµÄÊı¾İµ½À´:ÍË³ö\n");
-				printf("FILE: %s,LINE: %d \n" ,__FILE__, __LINE__);     //½ö½öÎÄ¼şÓëĞĞºÅ
+				printf("È´,Ã»Âµİµ:Ë³\n");
+				printf("FILE: %s,LINE: %d \n" ,__FILE__, __LINE__);     //Ä¼Ğº
 
 				while(bytesAvailable()>0)
 				{
@@ -681,20 +681,20 @@ void TcpClientSocket::log_process()
 				return;
 			}
 		}
-		int i=read(tmp,nread);   //¶ÁÈ¡ÍêÕû´óĞ¡µÄ·½·¨
+		int i=read(tmp,nread);   //È¡Ğ¡Ä·
 		tmp+=i;
 		nread-=i;
 	} 
-	//ÔÚ´ËµÃµ½ËùÓĞÈÕÖ¾·´À¡±¨ÎÄ,°üÀ¨ÈÕÖ¾ĞÅÏ¢Í·
+	//Ú´ËµÃµÖ¾,Ö¾Ï¢Í·
 	LOGBACKINFO* p=(LOGBACKINFO*)bufLog;
 	uint32 LogSize=p->LogLengthCurr	;
 
-	char* pCRC=(char*)(bufLog+sizeof(LOGBACKINFO)+LogSize);  //CRCĞ£ÑéÂëµØÖ·
-	uint32  CRCrecv=0x999;//Ô­À´CRC
-	memcpy(&CRCrecv,pCRC,sizeof(uint32));    //È¡µÃÔ­À´µÄCRCĞ£ÑéÂë
+	char* pCRC=(char*)(bufLog+sizeof(LOGBACKINFO)+LogSize);  //CRCĞ£Ö·
+	uint32  CRCrecv=0x999;//Ô­CRC
+	memcpy(&CRCrecv,pCRC,sizeof(uint32));    //È¡Ô­CRCĞ£
 
 
-	//ÖØĞÂCRCĞ£ÑéÂë
+	//CRCĞ£
 	char* pbuf=bufLog+sizeof(KH);           
 	uint32 CRCsize=cmd_size-sizeof(KH)-sizeof(uint32);
 	uint32 CRC32_info=Get_CRC32_fromBuffer(0,(uint8*)pbuf,CRCsize);
@@ -704,8 +704,8 @@ void TcpClientSocket::log_process()
 		printf("Server:LOGrecv CRC32 Error\n");
 	}
 
-	char* pLog=bufLog+sizeof(LOGBACKINFO);   //ÈÕÖ¾ÄÚÈİµØÖ· ÔÚ´Ë´¦Àí
-	//·¢ËÍ¸øUIÏÔÊ¾
+	char* pLog=bufLog+sizeof(LOGBACKINFO);   //Ö¾İµÖ· Ú´Ë´
+	//Í¸UIÊ¾
 #endif
 
 }
@@ -714,26 +714,26 @@ void TcpClientSocket::log_process()
 
 
 
-void TcpClientSocket::do_send_file()   //Éı¼¶ÎÄ¼ş°üÍÆËÍ
+void TcpClientSocket::do_send_file()   //Ä¼
 {
 /*
-//Éı¼¶°üÍÆËÍ±¨ÎÄ (½ö°üº¬ÎÄ¼şĞÅÏ¢,ÎÄ¼şÄÚÈİºóĞø´«Êä)  Éı¼¶°üUpgradepackage
+//Í± (Ä¼Ï¢,Ä¼İº)  Upgradepackage
 typedef struct _UpdateFileINFO_
 {
 	KH kh;
-    uint64  reserved;               //±£Áô×Ö  
-	char    UpdateSerialNo[16];    //128Î»×Ö¶Î£¬Èí¼şÉı¼¶°üµÄĞòÁĞºÅ¡£
-    char    reserved2[16];          //±£Áô×Ö¶Î2 
-    uint32  DescriptionLength;     //32Î»ÎŞ·ûºÅÕûĞÍ£¬Éı¼¶Èí¼şÃèÊöĞÅÏ¢³¤¶È¡£
-    char    Description[256];      //¿É±ä³¤×Ö¶Î£¬Éı¼¶Èí¼şÃèÊöĞÅÏ¢¡£(Ôİ¶¨256Î»×Ö·û´®)
-    uint32  FID;                   //32Î»ÎŞ·ûºÅÕûĞÍ£¬´«ËÍÉı¼¶Èí¼şÓëÅäÖÃÎÄ¼şµÄIDºÅ¡£
-    uint32  UpdateFileNameLength;  //32Î»ÎŞ·ûºÅÕûĞÍ£¬Éı¼¶Èí¼şÎÄ¼şÃû³¤¶È¡£
-    char    UpdateFileName[256];   //¿É±ä³¤×Ö¶Î£¬Éı¼¶Èí¼şÎÄ¼şÃû¡£   (Ôİ¶¨256Î»×Ö·û´®)
-    uint32  UpdateFileLength;      //32Î»ÎŞ·ûºÅÕûĞÍ£¬×î´ó¿ÉÒÔ±íÊ¾4GB,Éı¼¶Èí¼şÎÄ¼ş³¤¶È¡£ÈçÉı¼¶Èí¼şÍ¨¹ı»¥ÁªÍø´«ËÍ£¬ĞèÖ¸Ã÷Éı¼¶Èí¼şÎÄ¼ş³¤¶È£»ÈçÉı¼¶Èí¼şÍ¨¹ıÎÀĞÇĞÅµÀ´«ËÍ£¬¸ÃÏîÈ¡ÖµÎª0¡£
-    //char UpdateFile[1024];       //¿É±ä³¤×Ö¶Î£¬Éı¼¶Èí¼şÎÄ¼ş¡£ÈçÉı¼¶Èí¼şÍ¨¹ı»¥ÁªÍø´«ËÍ£¬´ËÏîÎª´«ËÍµÄÉı¼¶Èí¼şÎÄ¼şµÄ£»ÈçÉı¼¶Èí¼şÍ¨¹ıÎÀĞÇĞÅµÀ´«ËÍ£¬´ËÏî²»´æÔÚ¡£
-	//uint32  CRC32;               //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+    uint64  reserved;               //  
+	char    UpdateSerialNo[16];    //128Î»Ö¶Î£ĞºÅ¡
+    char    reserved2[16];          //Ö¶2 
+    uint32  DescriptionLength;     //32Î»Ş·Í£Ï¢È¡
+    char    Description[256];      //É±ä³¤Ö¶Î£Ï¢(İ¶256Î»Ö·)
+    uint32  FID;                   //32Î»Ş·Í£Ä¼IDÅ¡
+    uint32  UpdateFileNameLength;  //32Î»Ş·Í£Ä¼È¡
+    char    UpdateFileName[256];   //É±ä³¤Ö¶Î£Ä¼   (İ¶256Î»Ö·)
+    uint32  UpdateFileLength;      //32Î»Ş·Í£Ô±Ê¾4GB,Ä¼È¡Í¨Í£Ö¸Ä¼È£Í¨ÅµÍ£È¡ÖµÎª0
+    //char UpdateFile[1024];       //É±ä³¤Ö¶Î£Ä¼Í¨Í£ÎªÍµÄ¼Ä£Í¨ÅµÍ£î²»Ú¡
+	//uint32  CRC32;               //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }UpdateFileINFO;
-//´«ËÍÍê³É½á¹¹ÌåÒÔÉÏºó,ÔÚ´«ËÍÎÄ¼ş±¾Éí,È»ºó´«ËÍÎÄ¼şCRCĞ£ÑéÂë
+//É½á¹¹Ïº,Ú´Ä¼,È»Ä¼CRCĞ£
 */
 
     UpdateFileINFO UpFileInfo;
@@ -751,12 +751,12 @@ typedef struct _UpdateFileINFO_
 	UpFileInfo.UpdateFileNameLength=256;
 
 	char* p1=UpFileInfo.UpdateFileName;
-	//char Filename[256]="test.tgz";  //Òª´«ËÍµÄÉı¼¶°üÎÄ¼şÃû 
-	char* Filename=this->pathname_updatefile;   //°üº¬Â·¾¶
-    printf("Éı¼¶°üÎÄ¼şÂ·¾¶=%s\n",Filename);
+	//char Filename[256]="test.tgz";  //ÒªÍµÄ¼ 
+	char* Filename=this->pathname_updatefile;   //Â·
+    printf("Ä¼Â·=%s\n",Filename);
 
 
-    //´ÓÂ·¾¶ÌáÈ¡Ä©¶ËÎÄ¼şÃû---Ìî³äµ½Éı¼¶°üÎÄ¼ş½á¹¹Ìå
+    //Â·È¡Ä©Ä¼---äµ½Ä¼á¹¹
 	char* ptmp=Filename; 
 	char* pname=Filename;
     for(int i=0;i<256;i++)
@@ -770,10 +770,10 @@ typedef struct _UpdateFileINFO_
 
 
     strcpy(p1,pname+1); 
-    printf("Éı¼¶°üÎÄ¼şÃûUpdateFileName=%s\n",p1);
+    printf("Ä¼UpdateFileName=%s\n",p1);
 
-    //ĞòÁĞºÅ11Î»Êı×Ö
-    char* p2=UpFileInfo.UpdateSerialNo;     //ÓÃÉı¼¶°üÎÄ¼şÃûÈ¥µôtgzÑ¹Ëõ°üºó×º×÷ÎªĞòÁĞºÅ
+    //Ğº11Î»
+    char* p2=UpFileInfo.UpdateSerialNo;     //Ä¼È¥tgzÑ¹×ºÎªĞº
     strcpy(p2,pname+1);
     char tmp[20];
     strcpy(tmp,p2);
@@ -781,33 +781,33 @@ typedef struct _UpdateFileINFO_
     for(int i=0;i<15;i++)
     {
         if(tmp[i]=='.'&&tmp[i+1]=='t'&&tmp[i+2]=='g'&&tmp[i+3]=='z')
-            tmp[i]='\0';   //½Ø¶Ï×Ö·û´®
+            tmp[i]='\0';   //Ø¶Ö·
     }
     tmp[15]='\0';
     strcpy(p2,tmp);
 
 	p2[15]='\0';
-	printf("Éı¼¶°üĞòÁĞºÅUpdateSerialNo=%s\n",p2);   
+	printf("ĞºUpdateSerialNo=%s\n",p2);   
 
 
-    int FileLength=getfilesize(Filename);   //»ñÈ¡Ä³¸öÎÄ¼ş´óĞ¡
+    int FileLength=getfilesize(Filename);   //È¡Ä³Ä¼Ğ¡
 	UpFileInfo.UpdateFileLength=FileLength;
-	printf("Éı¼¶°üFilename=%s,FileLength=%d\n",Filename,FileLength);
+	printf("Filename=%s,FileLength=%d\n",Filename,FileLength);
 
-    //Õû¸öÃüÁî³¤¶È
+    //î³¤
 	UpFileInfo.kh.cmd_length=sizeof(UpdateFileINFO)-sizeof(KH)+FileLength+sizeof(uint32);
     
-	  //ÏÈ¼ÆËãÎÄ¼şÍ·ĞÅÏ¢µÄCRC32
+	  //È¼Ä¼Í·Ï¢CRC32
 	  char* pbuf=(char*)&UpFileInfo;            
 	  uint32 CRCsize=sizeof(UpdateFileINFO);
 	  uint32 CRC32_info=Get_CRC32_fromBuffer(0,(uint8*)pbuf,CRCsize);
 	  printf("Sever:send CRC32_of_Fileinfo=%X\n",CRC32_info);
 
-      this->UpdateFileInfo=UpFileInfo;   //±£´æÎÄ¼şĞÅÏ¢µ½µ±Ç°½á¹¹Ìå,
+      this->UpdateFileInfo=UpFileInfo;   //Ä¼Ï¢Ç°á¹¹,
 
 
 
-    //ÒÀ´Î´«ËÍÎÄ¼şĞÅÏ¢,ÎÄ¼şÄÚÈİ±¾Éí,ÎÄ¼şCRCĞ£Ñé
+    //Î´Ä¼Ï¢,Ä¼İ±,Ä¼CRCĞ£
 	write((char*)&UpFileInfo,sizeof(UpdateFileINFO));
 	flush();   
 	waitForBytesWritten(-1);
@@ -815,35 +815,35 @@ typedef struct _UpdateFileINFO_
 	 FILE *fp = fopen(Filename,"rb");
     if(!fp)
     {
-		printf("ÎÄ¼ş¶ÁÈ¡´íÎó\n");
+		printf("Ä¼È¡\n");
         return;
     }
 
 	char buffer[1024*40];//1024*50
-    uint64 percent=0;    //ÎÄ¼ş´«ËÍ°Ù·Ö±È
-     flag_update=1;   //ÕıÔÚÉı¼¶
+    uint64 percent=0;    //Ä¼Í°Ù·Ö±
+     flag_update=1;   //
 
-	uint32 sendsize=0;      //¼ÇÂ¼¶ÁÈ¡µ½µÄÎÄ¼ş´óĞ¡  ×î´ó4G
+	uint32 sendsize=0;      //Â¼È¡Ä¼Ğ¡  4G
     while(!feof(fp))
     {
         /* read to buffer */
        int count = fread(buffer, sizeof(char),sizeof(buffer),fp);
-       CRC32_info=Get_CRC32_fromBuffer(CRC32_info,(uint8*)buffer,count);   //°Ñ¼ÆËãCRCÒ²·Åµ½ÕâÀï
+       CRC32_info=Get_CRC32_fromBuffer(CRC32_info,(uint8*)buffer,count);   //Ñ¼CRCÒ²Åµ
 
 //	    printf("Sever:send count=%d\n",count);
 //	    printf("Sever:send CRC32_of_Fileinfo=%X\n",CRC32_info);
 //      write buffer to file
- 	    write(buffer,count);    //bugÔÚ´Ë´¦  ²»ÄÜwrite(buffer,sizeof(buffer));
+ 	    write(buffer,count);    //bugÚ´Ë´  write(buffer,sizeof(buffer));
 	    flush();
         waitForBytesWritten(-1);
 
         sendsize+=count; 
         percent=10000*(float)sendsize/(float)FileLength;
 
-            if(percent%100==0)    //²»ÓÃÆµ·±·¢ËÍĞÅºÅ
+            if(percent%100==0)    //ÆµÅº
             {
           //      printf("percent=%d\n",percent);
-            //·¢ËÍĞÅºÅ¸øUI¸üĞÂ½ø¶ÈÌõ
+            //ÅºÅ¸UIÂ½
             emit signal_CMD_SocketToUI(this->socketID,SK_UPDATE_PROGRESSBAR,percent/100);
             }
 
@@ -863,17 +863,17 @@ typedef struct _UpdateFileINFO_
 
 
 
-void TcpClientSocket::do_update_start() //ÃüÁî½ÓÊÕ»ú,¿ÉÒÔÉı¼¶
+void TcpClientSocket::do_update_start() //Õ»,
 {
 /*
-//½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³ÔÚ½ÓÊÕµ½Ô¶³ÌÉı¼¶°üĞ¯¾ì·´À¡±¨ÎÄºóÏò½ÓÊÕ»ú·¢³öµÄÉı¼¶ÇëÇó¡£
-//ÃüÁî½ÓÊÕ»ú¿ªÊ¼Éı¼¶
+//Õ»Ô¶Î¬ÏµÍ³Ú½ÕµÔ¶Ğ¯ì·´ÄºÕ»
+//Õ»Ê¼
 typedef struct _UpdateSTART_
 {
 	KH kh;
-    uint32  UpdateSerialNo;          //128Î»×Ö¶Î£¬½ÓÊÕÈí¼şÉı¼¶ºóµÄ°æ±¾ĞÅÏ¢¡£
+    uint32  UpdateSerialNo;          //128Î»Ö¶Î£Ä°æ±¾Ï¢
     uint32  reserved;
-	uint32  CRC32;                   //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+	uint32  CRC32;                   //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }UpdateSTART;
 */
      UpdateSTART UpdateStart;
@@ -884,29 +884,29 @@ typedef struct _UpdateSTART_
 	 UpdateStart.kh.cmd_Sub=CMD_ZERO;
 	 UpdateStart.kh.cmd_length=sizeof(UpdateSTART)-sizeof(KH);
 
-	 //getUpdateSerialNo();²»ÓÃÁË   //·¢ËÍÎÄ¼şµÄÊ±ºò±£´æµ½µ±Ç°Ïß³Ì¶ÔÏó¾ÍĞĞ
+	 //getUpdateSerialNo();   //Ä¼Ê±íª†í³´æµ½Ç°ß³Ì¶
 
      memcpy(UpdateStart.UpdateSerialNo,this->UpdateFileInfo.UpdateSerialNo,16);
 
      
-	 flag_update=2;   //µ½´Ë¿ÉÒÔÈÏÎªÉı¼¶Íê³É,ÒòÎª±ê×¼ÀïÃæÃ»ÓĞ½ÓÊÕ»úÉı¼¶²Ù×÷ºóµÄ·µ»ØÖµ¡£
-    // emit signal_authenRequest(); //¸üĞÂÈÏÖ¤ÁĞ±íUI 
+	 flag_update=2;   //Ë¿Îª,Îª×¼Ã»Ğ½Õ»Ä·Öµ
+    // emit signal_authenRequest(); //Ö¤Ğ±UI 
 
-	 //¸üĞÂÔ¶³ÌÉı¼¶µÄ¿Í»§¶ËÁĞ±í
+	 //Ô¶Ä¿Í»Ğ±
 	 emit signal_CMD_SocketToUI(this->socketID,SK_UPDATE_TREEWIDGET_LIST,0); 
 
 	 char* psend=(char*)&UpdateStart;
 	 int   sendsize=sizeof(UpdateSTART);
-     crc_encry_send(psend,sendsize,0);    //Ìí¼ÓĞ£Ñé ¼ÓÃÜ£¬·¢ËÍ //¼ÓÃÜÆ«ÒÆÎª0,±¨ÎÄÈ«²¿¼ÓÃÜ
+     crc_encry_send(psend,sendsize,0);    //Ğ£ Ü£ //Æ«Îª0,È«
 }
 
-//ÏÈÓÃÈ«¾Ö±äÁ¿´«µİÈÕÖ¾ÇëÇó±¨ÎÄ½á¹¹Ìå;--¸ÄQVariant·¢ËÍĞÅºÅ
-void TcpClientSocket::do_get_Log()   //ÊÖ¶¯»ñÈ¡ÈÕÖ¾
+//È«Ö±Ö¾Ä½á¹¹;--QVariantÅº
+void TcpClientSocket::do_get_Log()   //Ö¶È¡Ö¾
 {
-    //ÒÑ¾­ÔÚUIÀïÃæÌî³äºÃÁË Ê±¼ä ÀàĞÍµÈ
+    //Ñ¾UI Ê± Íµ
 	LOGREQUEST LOGRequest=this->LOGRequest;
     
-	//Ìî³ä±¨ÎÄÍ·
+	//ä±¨Í·
 	LOGRequest.kh.pkgHead=PKG_HEAD;
 	LOGRequest.kh.flag_pwd=KEY_MEET;
 	LOGRequest.kh.cmd=CMD_LOG_REQUEST;
@@ -957,14 +957,14 @@ void TcpClientSocket::do_reboot()
 	crc_encry_send((char*)&RebootReq, sendsize, 0);
 }
 
-void TcpClientSocket::do_Log()   //ÊÖ¶¯»ñÈ¡ÈÕÖ¾
+void TcpClientSocket::do_Log()   //Ö¶È¡Ö¾
 {
-	//ÒÑ¾­ÔÚUIÀïÃæÌî³äºÃÁË Ê±¼ä ÀàĞÍµÈ
+	//Ñ¾UI Ê± Íµ
 	LOGREQUEST LOGRequest=this->LOGRequest;
 	LOGRequest.DateStart = 0;
 	LOGRequest.DateEnd = 1000;
 	LOGRequest.LogType = 0;
-	//Ìî³ä±¨ÎÄÍ·
+	//ä±¨Í·
 	LOGRequest.kh.pkgHead=PKG_HEAD;
 	LOGRequest.kh.flag_pwd=KEY_MEET;
 	LOGRequest.kh.cmd=CMD_LOGFILE_REQUEST;
@@ -978,23 +978,23 @@ void TcpClientSocket::do_Log()   //ÊÖ¶¯»ñÈ¡ÈÕÖ¾
 	crc_encry_send(psend,sendsize,0);  
 }
 
-//¼Ó×Ö·û´®´«²Î£¿ char* buf,int size
-void TcpClientSocket::UIcmd_process(int SocketID,int cmdtype,QByteArray ba)   //	´¦ÀíUI·¢¹ıÀ´µÄÃüÁî
+//Ö·Î£ char* buf,int size
+void TcpClientSocket::UIcmd_process(int SocketID,int cmdtype,QByteArray ba)   //	UI
 {
 
 	 if(SocketID!=this->socketDescriptor())  
 //if(SocketID!=this->socketID)  
 
-		return;  //Èç¹û²»ÊÇ·¢¸øµ±Ç°socketÏß³ÌµÄÃüÁîÔòÍË³ö
+		return;  //Ç·Ç°socketß³ÌµË³
 
         printf("TcpClientSocket::UIcmd_process()\n");
 
         switch(cmdtype)
 		{
-            case UI_SEND_UPDATE_FILE:       //·¢ËÍÉı¼¶ÎÄ¼ş°ü
+            case UI_SEND_UPDATE_FILE:       //Ä¼
 			     do_send_file();   break;
 			case UI_GET_LOG:
-                 do_get_Log();     break;   //ÊÖ¶¯»ñÈ¡ÈÕÖ¾
+                 do_get_Log();     break;   //Ö¶È¡Ö¾
 			case UI_GET_MD5RES:
 				do_get_md5res(); break;
 			case UI_REBOOT:
@@ -1023,14 +1023,14 @@ void TcpClientSocket::UIcmd_process(int SocketID,int cmdtype,QByteArray ba)   //
 
 void TcpClientSocket::md5_process()
 {
-	//¹¹½¨ĞÄÌøµÚÒ»²¿·Ö½á¹¹¼ş
+	//Ò»Ö½á¹¹
 	struct MD5H {
 		KH kh;
 		uint32 filmID;
 		uint32 len;
 		uint32 CRC;
 	};
-	char md5[] = "<EncodeInfo><EncodeFileList ID=\"20160324\" Name=\"Test\"><ChallengeCode>123<ChallengeCode>"
+	char md5[] = "<EncodeInfo><EncodeFileList ID=\"20160324\" Name=\"Test\"><ChallengeCode>123</ChallengeCode>"
 		"</EncodeFileList></EncodeInfo>";
 	struct MD5H* p = (MD5H*)m_buf;
 	char* pos = m_buf + sizeof(MD5H);
@@ -1043,7 +1043,7 @@ void TcpClientSocket::md5_process()
 	p->kh.flag_pwd = 2;
 	p->kh.cmd = 0x0025;
 	p->kh.cmd_length = sizeof(MD5H) - sizeof(KH) + p->len + 4;
-	crc_encry_send((char*)&p->kh, sizeof(MD5H) + p->len + 4, 0);    //Ìí¼ÓĞ£Ñé ¼ÓÃÜ£¬·¢ËÍ //¼ÓÃÜÆ«ÒÆÎª0,±¨ÎÄÈ«²¿¼ÓÃÜ
+	crc_encry_send((char*)&p->kh, sizeof(MD5H) + p->len + 4, 0);    //Ğ£ Ü£ //Æ«Îª0,È«
 }
 
 void TcpClientSocket::lost_report_process()

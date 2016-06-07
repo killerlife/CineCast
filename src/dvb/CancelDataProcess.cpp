@@ -68,10 +68,6 @@ bool CancelDataThread::Stop()
 
 void CancelDataThread::doit()
 {
-#ifdef USE_SIM
-	FILE *fp;
-#endif
-
 	//pLog->Write(LOG_DVB, "[Cancel Descriptor] Run");
 	//syslog(LOG_INFO|LOG_USER, "[Cancel Descriptor] Run");
 
@@ -82,19 +78,8 @@ void CancelDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-#ifdef USE_SIM
-			fp = fopen("cancel", "rb");
-			if(fp <= 0)
-			{
-				printf("open file error\n");
-				m_status = STOP;
-				break;
-			}
-			count = fread(m_buffer, 1, 4096, fp);
-			fclose(fp);
-#else
+
 			if (m_pFilter->ReadFilter(m_buffer, count))
-#endif
 			{
 				//do crc32 check
 				uint16 len = getBits(m_buffer, 12, 12);
@@ -108,28 +93,20 @@ void CancelDataThread::doit()
 				{
 					m_bCancel = true;
 				}
-#ifdef DEBUG
-				else
-				{
-					printf("crc no match\n");
-				}
-#endif
 			}
 			else
 			{
-#if 1
+				//--------------------------------------------------------
+				//                Network Simulator
 				if ((*pDebugCmd) == D_CANCEL)
 				{
 					m_bCancel = true;
 					*pDebugCmd = 0;
 				}
-#endif // 0
+				//--------------------------------------------------------
 			}
 			break;
 		case STOP:
-#ifdef DEBUG
-			printf("stop cancel\n");
-#endif
 			return;
 		case IDLE:
 			break;

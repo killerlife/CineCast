@@ -362,6 +362,9 @@
               <property name="enabled" >
                <bool>false</bool>
               </property>
+              <property name="toolTip" >
+               <string>Remote connection status, it'll turn green after connected</string>
+              </property>
               <property name="pixmap" >
                <pixmap resource="cinecastui.qrc" >:/CineCastUi/Resources/Remote.png</pixmap>
               </property>

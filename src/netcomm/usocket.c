@@ -1,4 +1,4 @@
-/*=========================================================================*\
+﻿/*=========================================================================*\
 * Socket compatibilization module for Unix
 * LuaSocket toolkit
 *
@@ -120,6 +120,7 @@ void socket_destroy(p_socket ps) {
         socket_setblocking(ps);
         close(*ps);
         *ps = SOCKET_INVALID;
+		printf("close \n");
     }
 }
 

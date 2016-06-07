@@ -52,7 +52,7 @@ static void handle_sigint(int sig)
 	pStart->Stop();
 	pFinish->Stop();
 	pCancel->Stop();
-	pPat->Stop();
+	//pPat->Stop(); //Don't call stop, because it'll automatic call while class destroy.
 	guiServer->Stop();
 	pNetComm->Stop();
 	sleep(1);
@@ -265,15 +265,23 @@ int main(int argc, char **argv)
 	}
 	//--------------------------------------------
 
-	//--------------------------------------------
-	//Clear Run Path List
-	gRunPathList.clear();
-	//--------------------------------------------
-
 	int nAutoDelCounter = 0;
+	USB usb;
 	while(1)
 	{
 		sleep(5);
+
+		//------------------------------------------
+		if(usb.USB_Mount())
+		{
+			if(usb.ReadyUpdate())
+			{
+				//////////////////////////////////////////////////////////////////////////
+				// TODO: Tell UI the update file is ready!
+				//////////////////////////////////////////////////////////////////////////
+			}
+		}
+		//------------------------------------------
 
 		//------------------------------------------
 		//If tuner configuration change, call Zapto.
@@ -355,9 +363,15 @@ int main(int argc, char **argv)
 				prevFilmID = pNotify->GetFilmId();
 				pPat->Reset();
 				gRecv.nReceiveStatus = 0;
+				bRoundCount = false;
 
 				//Reset Auto delete counter
 				nAutoDelCounter = 0;
+
+				//--------------------------------------------
+				//Clear Run Path List
+				gRunPathList.clear();
+				//--------------------------------------------
 		}
 		}
 		//===========================================================
@@ -416,8 +430,9 @@ int main(int argc, char **argv)
 
 		//===================================================================================
 		//Process FINISH from DVB
-		if(pFinish->IsFinish())
+		if(pFinish->IsFinish() && ((gRecv.nReceiveStatus & 0xffff) != 11))
 		{
+//			prevFilmID = gRecv.nFileID;
 			//-----------------------------------------------------------
 			//Set status to data received and lost analysis
 			if (!(gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0))
@@ -497,8 +512,9 @@ int main(int argc, char **argv)
 
 		//-----------------------------------------------------------------------------------
 		//If full received DCP, get md5 file from remote center
-		if (gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0 && (gRecv.nReceiveStatus & 0x0000ffff) > 2)
+		if ((gRecv.nReceiveSegment == gRecv.nTotalSegment) && (gRecv.nTotalSegment != 0) && (gRecv.nReceiveStatus & 0x0000ffff) > 2)
 		{
+//			pPat->Reset();
 			//Do Md5 Request
 // 			printf("%d\n", gRecv.nReceiveStatus & 0xffff);
 			if((gRecv.nReceiveStatus & 0xffff) < 8)
@@ -569,6 +585,9 @@ int main(int argc, char **argv)
 			gRecv.nReceiveSegment = 0;
 			gRecv.nTotalSegment = 0;
 
+			pStart->Cancel();
+			pNotify->Cancel();
+
 			gRecv.strCreator = "";
 			gRecv.strIssuer = "";
 			gRecv.strUuid = "";
@@ -577,7 +596,8 @@ int main(int argc, char **argv)
 			bRoundCount = false;
 			
 			pCancel->ClearCancel();
-//			pPat->Reset();
+			pPat->Reset();
+			pPat->Clear();
 
 			sprintf(m_log, "[CineCast] Received Cancel from satellite, restart PAT Thread.");
 			gLog->Write(LOG_SYSTEM, m_log);

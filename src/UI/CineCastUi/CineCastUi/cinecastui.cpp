@@ -36,7 +36,9 @@ void CineCastUi::Init()
 	this->setWindowState(Qt::WindowFullScreen);
 	ui.label_LOGO->setStyleSheet("QLabel{color:white}");
 //  	this->setStyleSheet("background-color:#336699");     //#0099CCƫ #3366CCƫ
+//   	this->setStyleSheet("background-color:#BBBBBB");     //#0099CCƫ #3366CCƫ
 	ui.tabWidget->setTabShape(QTabWidget::Triangular);
+	ui.tabWidget->setMovable(false);
 // 	ui.tabWidget->setStyleSheet("QTabBar{color:white;border-color:#333333}");
 
 	connect(&socket, SIGNAL(error(QAbstractSocket::SocketError)),
@@ -45,61 +47,91 @@ void CineCastUi::Init()
 	m_network_timer = startTimer(1000);  //״̬ʱ //old 500
 	m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
 
-	statusForm = new Status;
+	statusForm = new Status(ui.tabWidget);
 	statusWid =  ui.mdiArea_statue->addSubWindow(statusForm);
 	statusWid->setWindowFlags(Qt::FramelessWindowHint);
 	statusWid->showMaximized();
-	statusWid->setStyleSheet("background-color:#cccccc");
+// 	statusWid->setStyleSheet("background-color:#cccccc");
 	statusWid->show();
 
 	setupForm = new Setup(&socket);
 	setupWid = ui.mdiArea_Setup->addSubWindow(setupForm);
 	setupWid->setWindowFlags(Qt::FramelessWindowHint);
 	setupWid->showMaximized();
-	setupWid->setStyleSheet("background-color:#cccccc");
+// 	setupWid->setStyleSheet("background-color:#cccccc");
 	setupWid->show();
 
-	diskForm = new Disk(&socket);
+	diskForm = new Disk(&socket, ui.tabWidget);
 	diskWid = ui.mdiArea_Maintain->addSubWindow(diskForm);
 	diskWid->setWindowFlags(Qt::FramelessWindowHint);
 	diskWid->showMaximized();
-	diskWid->setStyleSheet("background-color:#cccccc");
+// 	diskWid->setStyleSheet("background-color:#cccccc");
 	diskWid->show();
 
-	contentForm = new Content(&socket);
+	contentForm = new Content(&socket, ui.tabWidget);
 	contentWid = ui.mdiArea_ContentManagement->addSubWindow(contentForm);
 	contentWid->setWindowFlags(Qt::FramelessWindowHint);
 	contentWid->showMaximized();
-	contentWid->setStyleSheet("background-color:#cccccc");
+// 	contentWid->setStyleSheet("background-color:#cccccc");
 	contentWid->show();
 
 	raidForm = new Raid(&socket);
+	liveForm = new Live(&socket);
+	tkrForm = new Tkr(&socket);
+	
+#ifdef FULL_VERSION
 	raidWid = ui.mdiArea_RAID->addSubWindow(raidForm);
 	raidWid->setWindowFlags(Qt::FramelessWindowHint);
 	raidWid->showMaximized();
 	raidWid->setStyleSheet("background-color:#cccccc");
 	raidWid->show();
 
-	liveForm = new Live(&socket);
 	liveWid = ui.mdiArea_Live->addSubWindow(liveForm);
 	liveWid->setWindowFlags(Qt::FramelessWindowHint);
 	liveWid->showMaximized();
 	liveWid->setStyleSheet("background-color:#cccccc");
 	liveWid->show();
 
-	tkrForm = new Tkr(&socket);
 	tkrWid = ui.mdiArea_TKR->addSubWindow(tkrForm);
 	tkrWid->setWindowFlags(Qt::FramelessWindowHint);
 	tkrWid->showMaximized();
 	tkrWid->setStyleSheet("background-color:#cccccc");
 	tkrWid->show();
+#else
+	ui.label->setVisible(false);
+	ui.tabWidget->removeTab(6);
+	ui.tabWidget->removeTab(5);
+	ui.tabWidget->removeTab(4);
+#endif
 	ui.tabWidget->setCurrentIndex(0);
+
+	ui.label_Version->setStyleSheet("QLabel{color:white}");
+
+	m_time_timer = startTimer(500);
+	ui.pushButton_Reboot->setToolTip(tr("Reboot Machine"));
+	ui.pushButton_Shutdown->setToolTip(tr("Shutdown Machine"));
 }
 
+extern bool bFormat;
 void CineCastUi::timerEvent(QTimerEvent * te)
 {
 	extern QString rIp;
 	QPixmap pix;
+	if(te->timerId() == m_time_timer)
+	{
+		QTime t = QTime::currentTime();
+		ui.label_time->setText(t.toString("hh:mm:ss"));
+		if(bFormat)
+		{
+			ui.pushButton_Reboot->setEnabled(false);
+			ui.pushButton_Shutdown->setEnabled(false);
+		}
+		else
+		{
+			ui.pushButton_Reboot->setEnabled(true);
+			ui.pushButton_Shutdown->setEnabled(true);
+		}
+	}
 	if(te->timerId() == m_network_timer)
 	{
 		switch(m_ConnectStatus)
@@ -165,10 +197,10 @@ void CineCastUi::Connected()
 // 	m_network_timer = -1;
 
 
-	if (m_UpdateSatellite_timer < 0)
-	{
-		m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
-	}
+// 	if (m_UpdateSatellite_timer < 0)
+// 	{
+// 		m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
+// 	}
 }
 
 #include "../../../netcomm/UiProtocal.h"
@@ -179,6 +211,20 @@ void CineCastUi::UiFilter()
 {
 	KL *pKL = (KL*)buf;
 	int i;
+
+	//Get Version 
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = S_GET_VERSION;
+	pKL->m_length = 1;
+	buf[sizeof(KL)] = 1;
+	socket.write(buf, sizeof(KL) + 1);
+	socket.waitForBytesWritten(-1);
+	socket.waitForReadyRead(-1);
+	i = socket.read(buf, 2048);
+	if(pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_GET_VERSION)
+	{
+		ui.label_Version->setText(buf + sizeof(KL));
+	}
 
 	//Get Satellite Status
 	pKL->m_pkgHead = 0x7585;
@@ -262,57 +308,69 @@ void CineCastUi::UiFilter()
 
 void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 {
-	if(3==nIndex)                    //л?3???
-	{
-		if (m_ConnectStatus == 2)
-		   setupForm->TMS_start();   //???
-	}
-	else
-	{
-	       setupForm->TMS_stop();    //????? 
-	}
 	switch(nIndex)
 	{
 	case 0:
-		//if(m_network_timer == -1)
-		//	m_network_timer = startTimer(500);
 		raidForm->Stop();
+		setupForm->TMS_stop();    //????? 
+		if (m_UpdateSatellite_timer < 0)
+		{
+			m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
+		}
 		break;
 	case 1: //Content Page
+		if(m_UpdateSatellite_timer > 0)
+		{
+			killTimer(m_UpdateSatellite_timer);
+			m_UpdateSatellite_timer = -1;
+		}
 		raidForm->Stop();
+		setupForm->TMS_stop();    //????? 
 		if (m_ConnectStatus == 2)
 		{
-		//	killTimer(m_network_timer);
-		//	m_network_timer = -1;
-		 //   contentForm->LoadContent_HDD();   //ŵUpdateContentUI
-		 //   contentForm->LoadContent_USB();   //new
             contentForm->UpdateContentUI();
 		}
 		break;
 	case 2:
-		raidForm->Stop();
-		if(m_ConnectStatus == 2)
+		if(m_UpdateSatellite_timer > 0)
 		{
-		//	killTimer(m_network_timer);
-		//	m_network_timer = -1;
+			killTimer(m_UpdateSatellite_timer);
+			m_UpdateSatellite_timer = -1;
 		}
+		raidForm->Stop();
+		setupForm->TMS_stop();    //????? 
+		diskForm->SetStatus(statusForm->m_Status);
 		break;
 	case 3: //Setup Page
+		if(m_UpdateSatellite_timer > 0)
+		{
+			killTimer(m_UpdateSatellite_timer);
+			m_UpdateSatellite_timer = -1;
+		}
 		raidForm->Stop();
 		if(m_ConnectStatus == 2)
 		{
-		//	killTimer(m_network_timer);
-		//	m_network_timer = -1;
 			setupForm->LoadConfig();
+			setupForm->TMS_start();   //???
 	}
 		break;
 	case 4:
+		if(m_UpdateSatellite_timer > 0)
+		{
+			killTimer(m_UpdateSatellite_timer);
+			m_UpdateSatellite_timer = -1;
+		}
 		if (m_ConnectStatus == 2)
 		{
 			raidForm->Start();
 		}
 		break;
 	default:
+		if(m_UpdateSatellite_timer > 0)
+		{
+			killTimer(m_UpdateSatellite_timer);
+			m_UpdateSatellite_timer = -1;
+		}
 		raidForm->Stop();
 	}
 }

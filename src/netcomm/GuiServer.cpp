@@ -679,6 +679,8 @@ bool GuiThread::UiProcessFilter()
 				return C_GetTuner(buf);
 			case S_SET_CONFIG:
 				return C_SetTuner(buf);
+			case S_GET_VERSION:
+				return S_GetVersion(buf);
 			case N_GET_CONFIG:
 				return N_GetConfig(buf);
 			case N_SET_CONFIG:
@@ -687,6 +689,8 @@ bool GuiThread::UiProcessFilter()
 				return N_GetRemote(buf);
 			case N_SET_REMOTE:
 				return N_SetRemote(buf);
+			case N_GET_STATUS:
+				return N_GetStatus(buf);
 
 			case M_UPDATE_PROGRAM_LIST_HDD:
                return M_UpdateProgramList_HDD(buf);          //UpdateProgramListË¢Ó²Ð±í£¬Ô±? 
@@ -1017,7 +1021,7 @@ bool GuiThread::N_GetConfig(char* buf)
 
 	std::list<NETWORK_CONF> m_list = no.GetNetConfig();
 
-	SL Dhcp, DevName, Ip, Netmask, Gateway;
+	SL Dhcp, DevName, Ip, Netmask, Gateway, Connected, Dns1, Dns2;
 
 	KL *pKL = (KL*)buf;
 
@@ -1042,6 +1046,15 @@ bool GuiThread::N_GetConfig(char* buf)
 
 		Gateway.m_sID = NET_GATEWAY;
 		Gateway.m_length = nc.strGateway.size();
+
+		Connected.m_sID = NET_CONNECTED;
+		Connected.m_length = nc.strConnected.size();
+
+		Dns1.m_sID = REMOTE_DNS;
+		Dns1.m_length = nc.strDns1.size();
+
+		Dns2.m_sID = REMOTE_DNS;
+		Dns2.m_length = nc.strDns2.size();
 
 		memcpy(pos, &Dhcp, sizeof(Dhcp));
 		pos += sizeof(Dhcp);
@@ -1068,6 +1081,60 @@ bool GuiThread::N_GetConfig(char* buf)
 		memcpy(pos, nc.strGateway.c_str(), Gateway.m_length);
 		pos += Gateway.m_length;
 
+		memcpy(pos, &Connected, sizeof(Connected));
+		pos += sizeof(Connected);
+		memcpy(pos, nc.strConnected.c_str(), Connected.m_length);
+		pos += Connected.m_length;
+
+		memcpy(pos, &Dns1, sizeof(Dns1));
+		pos += sizeof(Dns1);
+		memcpy(pos, nc.strDns1.c_str(), Dns1.m_length);
+		pos += Dns1.m_length;
+
+		memcpy(pos, &Dns2, sizeof(Dns2));
+		pos += sizeof(Dns2);
+		memcpy(pos, nc.strDns2.c_str(), Dns2.m_length);
+		pos += Dns2.m_length;
+	}
+
+	int sendsize = (int)((char*)pos - buf);
+	pKL->m_length = sendsize - sizeof(KL);
+
+	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::N_GetStatus(char* buf)
+{
+	NetOperation no;
+
+	std::list<NETWORK_STATUS> m_list = no.GetNetStatus();
+
+	SL DevName, Connected;
+
+	KL *pKL = (KL*)buf;
+
+	void* pos = buf + sizeof(KL);
+
+	std::list<NETWORK_STATUS>::iterator itor;
+	for (itor = m_list.begin(); itor != m_list.end(); ++itor)
+	{
+		NETWORK_STATUS nc = *itor;
+
+		DevName.m_sID = NET_DEV_NAME;
+		DevName.m_length = nc.strDevName.size();
+
+		Connected.m_sID = NET_CONNECTED;
+		Connected.m_length = nc.strConnected.size();
+
+		memcpy(pos, &DevName, sizeof(DevName));
+		pos += sizeof(DevName);
+		memcpy(pos, nc.strDevName.c_str(), DevName.m_length);
+		pos += DevName.m_length;
+
+		memcpy(pos, &Connected, sizeof(Connected));
+		pos += sizeof(Connected);
+		memcpy(pos, nc.strConnected.c_str(), Connected.m_length);
+		pos += Connected.m_length;
 	}
 
 	int sendsize = (int)((char*)pos - buf);
@@ -1085,115 +1152,6 @@ bool GuiThread::N_SetConfig(char* buf)
 	int len = pKL->m_length;
 	int pos = sizeof(KL);
 	NETWORK_CONF nc;
-	while(len > 0)
-	{
-		SL * sl = (SL*)(buf + pos);
-		std::string tmp;
-		pos += sizeof(SL);
-		len -= sizeof(SL);
-		if (sl->m_length > 0)
-		{
-			char *s = new char[sl->m_length+1];
-			memset(s, 0, sl->m_length+1);
-			memcpy(s, buf+pos, sl->m_length);
-			tmp = s;
-			pos += sl->m_length;
-			len -= sl->m_length;
-			delete[] s;
-		}
-		else
-		{
-			tmp = "";
-		}
-
-		switch(sl->m_sID)
-		{
-		case NET_DHCP:
-			memcpy(&nc.nDhcp, buf + pos - sl->m_length, sl->m_length);
-			break;
-		case  NET_DEV_NAME:
-			nc.strDevName = tmp;
-			break;
-		case NET_IP:
-			nc.strIp = tmp;
-			break;
-		case NET_NETMASK:
-			nc.strNetmask = tmp;
-			break;
-		case NET_GATEWAY:
-			nc.strGateway = tmp;
-			m_list.push_back(nc);
-			break;
-		}
-	}
-
-	pKL->m_length = 1;
-	buf[sizeof(KL)] = 1;
-	int setsize = sizeof(KL) + 1;
-
-	bool res = Write(buf, setsize, setsize);
-	NetOperation no;
-	no.SetNetConfig(m_list);
-	return res;
-}
-
-bool GuiThread::N_GetRemote(char* buf)
-{
-	NetOperation no;
-
-	REMOTE_CONF rc = no.GetRemoteConfig();
-
-	SL Dns1, Dns2, Remote, Port;
-
-	KL *pKL = (KL*)buf;
-
-	void* pos = buf + sizeof(KL);
-
-	Dns1.m_sID = REMOTE_DNS;
-	Dns1.m_length = rc.strDns1.size();
-
-	Dns2.m_sID = REMOTE_DNS;
-	Dns2.m_length = rc.strDns2.size();
-
-	Remote.m_sID = REMOTE_SERVER;
-	Remote.m_length = rc.strRemote.size();
-
-	Port.m_sID = REMOTE_PORT;
-	Port.m_length = sizeof(rc.nPort);
-
-	memcpy(pos, &Dns1, sizeof(Dns1));
-	pos += sizeof(Dns1);
-	memcpy(pos, rc.strDns1.c_str(), Dns1.m_length);
-	pos += Dns1.m_length;
-
-	memcpy(pos, &Dns2, sizeof(Dns2));
-	pos += sizeof(Dns2);
-	memcpy(pos, rc.strDns2.c_str(), Dns2.m_length);
-	pos += Dns2.m_length;
-
-	memcpy(pos, &Remote, sizeof(Remote));
-	pos += sizeof(Remote);
-	memcpy(pos, rc.strRemote.c_str(), Remote.m_length);
-	pos += Remote.m_length;
-
-	memcpy(pos, &Port, sizeof(Port));
-	pos += sizeof(Port);
-	memcpy(pos, &rc.nPort, sizeof(rc.nPort));
-	pos += Port.m_length;
-
-	int sendsize = (int)((char*)pos - buf);
-	pKL->m_length = sendsize - sizeof(KL);
-
-	return Write(buf, sendsize, sendsize);
-}
-
-bool GuiThread::N_SetRemote(char* buf)
-{
-	REMOTE_CONF rc;
-
-	KL *pKL = (KL*) buf;
-	int len = pKL->m_length;
-	int pos = sizeof(KL);
 	int dns = 0;
 	while(len > 0)
 	{
@@ -1218,6 +1176,143 @@ bool GuiThread::N_SetRemote(char* buf)
 
 		switch(sl->m_sID)
 		{
+		case NET_DHCP:
+			dns = 0;
+			memcpy(&nc.nDhcp, buf + pos - sl->m_length, sl->m_length);
+			break;
+		case  NET_DEV_NAME:
+			nc.strDevName = tmp;
+			break;
+		case NET_IP:
+			nc.strIp = tmp;
+			break;
+		case NET_NETMASK:
+			nc.strNetmask = tmp;
+			break;
+		case NET_GATEWAY:
+			nc.strGateway = tmp;
+			break;
+		case REMOTE_DNS:
+			if(dns == 0)
+			{
+				nc.strDns1 = tmp;
+				dns++;
+			}
+			else
+			{
+				nc.strDns2 = tmp;
+				dns = 0;
+			m_list.push_back(nc);
+				DPRINTF("%s %s %s %s %s %s\n",
+					nc.strDevName.c_str(),
+					nc.strIp.c_str(),
+					nc.strNetmask.c_str(),
+					nc.strGateway.c_str(),
+					nc.strDns1.c_str(),
+					nc.strDns2.c_str());
+			}		
+			break;
+		}
+	}
+
+	pKL->m_length = 1;
+	buf[sizeof(KL)] = 1;
+	int setsize = sizeof(KL) + 1;
+
+	bool res = Write(buf, setsize, setsize);
+	NetOperation no;
+	no.SetNetConfig(m_list);
+	return res;
+}
+
+bool GuiThread::N_GetRemote(char* buf)
+{
+	NetOperation no;
+
+	REMOTE_CONF rc = no.GetRemoteConfig();
+
+	SL /*Dns1, Dns2, */Remote, Port;
+
+	KL *pKL = (KL*)buf;
+
+	void* pos = buf + sizeof(KL);
+
+/*
+	Dns1.m_sID = REMOTE_DNS;
+	Dns1.m_length = rc.strDns1.size();
+
+	Dns2.m_sID = REMOTE_DNS;
+	Dns2.m_length = rc.strDns2.size();
+*/
+
+	Remote.m_sID = REMOTE_SERVER;
+	Remote.m_length = rc.strRemote.size();
+
+	Port.m_sID = REMOTE_PORT;
+	Port.m_length = sizeof(rc.nPort);
+
+/*
+	memcpy(pos, &Dns1, sizeof(Dns1));
+	pos += sizeof(Dns1);
+	memcpy(pos, rc.strDns1.c_str(), Dns1.m_length);
+	pos += Dns1.m_length;
+
+	memcpy(pos, &Dns2, sizeof(Dns2));
+	pos += sizeof(Dns2);
+	memcpy(pos, rc.strDns2.c_str(), Dns2.m_length);
+	pos += Dns2.m_length;
+*/
+
+	memcpy(pos, &Remote, sizeof(Remote));
+	pos += sizeof(Remote);
+	memcpy(pos, rc.strRemote.c_str(), Remote.m_length);
+	pos += Remote.m_length;
+
+	memcpy(pos, &Port, sizeof(Port));
+	pos += sizeof(Port);
+	memcpy(pos, &rc.nPort, sizeof(rc.nPort));
+	pos += Port.m_length;
+
+	int sendsize = (int)((char*)pos - buf);
+	pKL->m_length = sendsize - sizeof(KL);
+
+	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::N_SetRemote(char* buf)
+{
+	REMOTE_CONF rc;
+
+	KL *pKL = (KL*) buf;
+	int len = pKL->m_length;
+	int pos = sizeof(KL);
+/*
+	int dns = 0;
+*/
+	while(len > 0)
+	{
+		SL * sl = (SL*)(buf + pos);
+		std::string tmp;
+		pos += sizeof(SL);
+		len -= sizeof(SL);
+		if (sl->m_length > 0)
+		{
+			char *s = new char[sl->m_length+1];
+			memset(s, 0, sl->m_length+1);
+			memcpy(s, buf+pos, sl->m_length);
+			tmp = s;
+			pos += sl->m_length;
+			len -= sl->m_length;
+			delete[] s;
+		}
+		else
+		{
+			tmp = "";
+		}
+
+		switch(sl->m_sID)
+		{
+/*
 		case REMOTE_DNS:
 			if(dns == 0)
 			{
@@ -1227,6 +1322,7 @@ bool GuiThread::N_SetRemote(char* buf)
 			else
 				rc.strDns2 = tmp;
 			break;
+*/
 		case  REMOTE_SERVER:
 			rc.strRemote = tmp;
 			break;
@@ -1981,11 +2077,19 @@ bool GuiThread::S_FormatResult(char* buf)
 
 	std::string s = m_mkfs->GetSOutput();
 	pKL->m_length = s.size();
+#if 1
+	int sendsize = sizeof(KL);
+	Write(buf, sendsize, sendsize);
+	
+	sendsize = s.size();
+	return Write((char*)s.c_str(), sendsize, sendsize);
+#else
 	void* pos = buf + sizeof(KL);
 	memcpy(pos, s.c_str(), pKL->m_length);
 	int sendsize = sizeof(KL) + pKL->m_length;
 
 	return Write(buf, sendsize, sendsize);
+#endif
 }
 
 bool GuiThread::S_FormatStatus(char* buf)
@@ -2307,6 +2411,7 @@ bool GuiThread::R_GetRaidInfo(char* buf)
 
 	return Write(buf, sendsize, sendsize);
 }
+
 bool GuiThread::R_SetDebugCmd(char* buf)
 {
 	REMOTE_CONF rc;
@@ -2336,3 +2441,12 @@ bool GuiThread::R_SetDebugCmd(char* buf)
 	return res;
 }
 
+bool GuiThread::S_GetVersion(char* buf)
+{
+	extern char gVersion[16];
+	KL *pKL = (KL*) buf;
+	pKL->m_length = 16;
+	memcpy(buf + sizeof(KL), gVersion, 16);
+	int sendsize = sizeof(KL) + 16;
+	return Write(buf, sendsize, sendsize);
+}

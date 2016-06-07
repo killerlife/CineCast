@@ -125,7 +125,6 @@ private:
 
 private:
 	int m_status;
-// 	IFilmDataObserver *m_pObserver;
 	std::string m_strFileName, m_strFileNameReport;
 	std::string m_strZtFileName;
 	int m_nZtBufSize;
@@ -150,7 +149,7 @@ private:
 	brunt::IThreadManager* m_pManager;
 	DataProcessThread* m_pDataThread;
 
-	bool bStop;
+	bool bStop, bFinish;
 
 	uint64 m_ztPos;
 	bool m_Ready;

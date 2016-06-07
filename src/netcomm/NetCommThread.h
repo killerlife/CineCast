@@ -37,6 +37,8 @@ public:
 	bool PkgSendConfirm(uint32 filmId);
 	bool IsConnect(){ return bConnected;};
 	bool DecryptRep();
+	void CloseConnect();
+	void StartConnect();
 
 private:
 	virtual void doit();
@@ -72,4 +74,7 @@ private:
 	std::string m_strUpdateFile;
 	uint64 nRecvLength;
 	HeartThread* pHeartThread;
+	bool bPause;
 };
+NetCommThread* CreateNetComm();
+void ReleaseNetComm(NetCommThread* pNet);

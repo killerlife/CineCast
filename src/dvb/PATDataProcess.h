@@ -18,6 +18,7 @@ public:
 	bool Start();
 	bool Reset();
 	bool Stop();
+	void Clear();
 	uint64 ReciveLength();
 	uint64 FileLength();
 	uint64 ReciveSegment();
@@ -56,6 +57,12 @@ private:
 	volatile bool m_bPat;
 	bool bIdle;
 	uint32* pDebugCmd;
+	uint64 nLostSegment;
+	uint64 nTotalSegment;
+	uint64 nCrc;
+	uint64 nReceiveSegment;
+	uint64 nFileLength;
+	uint64 nReceiveLength;
 // 	ILog *pLog;
 };
 

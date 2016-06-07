@@ -56,17 +56,11 @@ bool PMTDataThread::Stop()
 
 	m_status = STOP;
 	m_pFilter->Stop();
-#ifdef DEBUG
-	printf("PMT stop\n");
-#endif
 
 	std::list<FilmDataThread*>::iterator itor;
 	for (itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
 	{
 		FilmDataThread *filmThread = *itor;
-#ifdef DEBUG
-		printf("Film Thread stop\n");
-#endif // DEBUG
 		filmThread->Stop();
 		while(!filmThread->isStop()) usleep(100000);
 		filmThread->stop();
@@ -91,10 +85,6 @@ extern ILog* gLog;
 
 void PMTDataThread::doit()
 {
-#ifdef USE_SIM
-	FILE *fp;
-	printf("start pmt thread manager\n");
-#endif
 #if 0
 	m_pManager = brunt::createThreadManager();
 #endif // 0
@@ -111,20 +101,8 @@ void PMTDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-#ifdef USE_SIM
-// 			printf("again\n");
-			fp = fopen("pmt", "rb");
-			if(fp <= 0)
-			{
-				printf("open file error\n");
-				m_status = STOP;
-				break;
-			}
-			count = fread(m_buffer, 1, 4096, fp);
-			fclose(fp);
-#else
+
 			if (m_pFilter->ReadFilter(m_buffer, count))
-#endif
 			{
 				m_mutex = 1;
 				//DPRINTF("[PMT Descriptor] Get Data\n");
@@ -223,7 +201,7 @@ void PMTDataThread::doit()
 							pbuf += (pPmtDescriptor->fileDescriptor->DescriptorLength - 10);
 
 							m_pmtList.push_back(pPmtDescriptor);
-#if 1
+
 							sprintf(str, "[PMT Descriptor] Create FilmData 0x%x", pPmtDescriptor->ElementaryPid);
 							//pLog->Write(LOG_DVB, str);
 							//syslog(LOG_INFO|LOG_USER, str);
@@ -238,21 +216,15 @@ void PMTDataThread::doit()
 							}
 
 							m_filmList.push_back(pFilmDataThread);
-#endif
 						}
 					}
 				}
-#ifdef DEBUG
-				else
-				{
-					printf("pmt crc error\n");
-				}
-#endif
 				m_mutex = 0;
 			}
 			else
 			{
-#if 1
+				//--------------------------------------------------------
+				//                Network Simulator
 				if((*pDebugCmd) == D_PMT)
 				{
 					{
@@ -318,7 +290,7 @@ void PMTDataThread::doit()
 								sprintf(pPmtDescriptor->fileDescriptor->FileName, "LEONIS_TEST%d.test", i);
 
 								m_pmtList.push_back(pPmtDescriptor);
-#if 1
+
 								sprintf(str, "[PMT Descriptor] Create FilmData 0x%x", pPmtDescriptor->ElementaryPid);
 								//pLog->Write(LOG_DVB, str);
 								//syslog(LOG_INFO|LOG_USER, str);
@@ -333,13 +305,12 @@ void PMTDataThread::doit()
 								}
 
 								m_filmList.push_back(pFilmDataThread);
-#endif
 							}
 						}
 					}
 					*pDebugCmd = 0;
 				}
-#endif
+				//--------------------------------------------------------
 			}
 			break;
 		case STOP:

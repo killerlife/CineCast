@@ -26,6 +26,7 @@ public:
 	std::string GetIssuer() {return m_issuer;};
 	std::string GetIssueDate() {return m_issueDate;};
 	bool IsStart();
+	void Cancel();
 
 private:
 	virtual void doit();

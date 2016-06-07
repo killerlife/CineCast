@@ -25,14 +25,21 @@ public:
 	REMOTE_CONF& GetRemoteConfig();
 	bool SetRemoteConfig(REMOTE_CONF &m_remoteConf);
 
+	std::list<NETWORK_STATUS>& GetNetStatus();
+
 private:
 	std::list<NETWORK_CONF> m_list;
+	std::list<NETWORK_STATUS> m_slist;
+
 	REMOTE_CONF m_rc;
 
 private:
 	int calcmask(std::string mask);
 	int calccount(int n);
 	std::string prefix2mask(int n);
+	NETWORK_CONF GetNetConfig(std::string dev);
+	REMOTE_CONF GetDns(std::string dev);
+	NETWORK_STATUS GetNetStatus(std::string dev);
 };
 
 class SatelliteConfOperation
@@ -115,11 +122,22 @@ public:
 class USB
 {
 public:
-	USB(){};
+	USB(){bCopy = false;};
 	virtual ~USB(){};
-	void USB_Mount();
-	void USB_UnMount();
-	void USB_UpdateSpace();
+	bool USB_Mount();
+	bool USB_UnMount();
+
+	bool ReadyUpdate();
+	std::string GetMountPoint();
+
+private:
+	bool find_dir(std::string dir);
+
+private:
+	std::string strMounted;
+	std::vector<std::string>m_dir;
+	bool bMount;
+	bool bCopy;
 };
 
 

@@ -13,11 +13,10 @@ DESTDIR = ../debug
 QT += network
 CONFIG += debug
 DEFINES += QT_NETWORK_LIB
-INCLUDEPATH += ../../../../../include \
+INCLUDEPATH += ./../../../../include \
     ./GeneratedFiles \
     ./GeneratedFiles/Debug \
-    . \
-    ../../../../include
+    .
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/debug
 OBJECTS_DIR += debug

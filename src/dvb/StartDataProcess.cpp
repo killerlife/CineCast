@@ -87,10 +87,6 @@ bool StartDataThread::Stop()
 
 void StartDataThread::doit()
 {
-#ifdef USE_SIM
-	FILE *fp;
-#endif
-
 	//pLog->Write(LOG_DVB, "[Start Descriptor] Run");
 	syslog(LOG_INFO|LOG_USER, "[Start Descriptor] Run");
 
@@ -101,19 +97,8 @@ void StartDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-#ifdef USE_SIM
-			fp = fopen("start", "rb");
-			if(fp <= 0)
-			{
-				printf("open file error\n");
-				m_status = STOP;
-				break;
-			}
-			count = fread(m_buffer, 1, 4096, fp);
-			fclose(fp);
-#else
+
 			if (m_pFilter->ReadFilter(m_buffer, count))
-#endif
 			{
 				//DPRINTF("[Start Descriptor] Get Data\n");
 				//do crc32 check
@@ -260,7 +245,8 @@ void StartDataThread::doit()
 			}
 			else
 			{
-#if 1
+				//--------------------------------------------------------
+				//                Network Simulator
 				if((*pDebugCmd) == D_START)
 				{
 					m_filmName = "LEONIS Test";
@@ -271,7 +257,7 @@ void StartDataThread::doit()
 					bStart = true;
 					*pDebugCmd = 0;
 				}
-#endif // 0
+				//--------------------------------------------------------
 			}
 			break;
 		case STOP:
@@ -282,3 +268,11 @@ void StartDataThread::doit()
 	}
 }
 
+void StartDataThread::Cancel()
+{
+	m_creator = "";
+	m_filmName = "";
+	m_uuid = "";
+	m_issuer = "";
+	m_issueDate = "";
+}

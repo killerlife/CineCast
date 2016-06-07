@@ -4,7 +4,7 @@
 #include <QTextStream>
 
 Status::Status(QWidget *parent)
-	: QWidget(parent)
+	: QWidget(parent), p(parent)
 {
 	ui.setupUi(this);
 	Init();
@@ -31,6 +31,7 @@ void Status::Init()
 	ui.progressBar_siganl_Quality->setStyleSheet("QProgressBar{font-size: 18px; font-family:'Book Antiqua';}");
 	ui.progressBar_Revceiver_length->setStyleSheet("QProgressBar{font-size: 18px; font-family:'Book Antiqua';}");
 	ui.textBrowser->setStyleSheet("QTextBrowser{font-size: 18px; font-family:'Book Antiqua';}");
+	ui.textBrowser->setFocusPolicy(Qt::NoFocus);
 
 	ui.label_10->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
 	ui.label_12->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua';}");
@@ -66,6 +67,8 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	{
 		ui.progressBar_Revceiver_length->setValue(tInfo->nReceiveLength*10000/tInfo->nFileLength);
 	}
+	else
+		ui.progressBar_Revceiver_length->setValue(0);
 	QString txt;
 	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
 	QString creator = gbk->toUnicode(tInfo->strCreator.c_str());
@@ -82,6 +85,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		.arg(QString::number(tInfo->nLostSegment))
 		.arg(QString::number(tInfo->nReceiveStatus>>16));
 	ui.textBrowser->setText(txt);
+	m_Status = tInfo->nReceiveStatus & 0xffff;
 	switch(tInfo->nReceiveStatus & 0xffff)
 	{
 	case 0:
@@ -361,7 +365,23 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		if((tInfo->nFileID % 1000) >= 900)
 			ui.label_38->setText(tr("Get update file. To update system, please reboot system."));
 		else
+		{
 		ui.label_38->setText(tr("Please power-off and take out the removeable disk."));
+			txt = QString(tr("Film Name: %1<br>UUID: %2<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
+				.arg(tInfo->strFilmName.c_str())
+				.arg(tInfo->strUuid.c_str())
+				.arg(creator)
+				.arg(issuer)
+				.arg(tInfo->strIssueDate.c_str())
+				.arg(QString::number(tInfo->nTotalSegment))
+				.arg(QString::number(tInfo->nReceiveSegment))
+				.arg(0)
+				.arg(0)
+				.arg(QString::number(tInfo->nReceiveStatus>>16));
+			ui.textBrowser->setText(txt);
+			s.sprintf("%lld/%lld", tInfo->nFileLength, tInfo->nFileLength);
+			ui.label_Receiver->setText(s);
+		}
 		
 		break;
 	}
@@ -370,5 +390,13 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	else
 		ui.label_40->setEnabled(false);
 	if(tInfo->strExtend.find("REMOVEABLEDISK:0") != std::string::npos)
+	{
+		ui.label_38->setStyleSheet("QLabel{font-size: 40px; font-family:'Book Antiqua'; color:#FF2222;}");
 		ui.label_38->setText(tr("Mount removeable disk error, please check disk."));
+		((QTabWidget*)p)->setTabEnabled(1, false);
+		((QTabWidget*)p)->setTabEnabled(2, false);
+		((QTabWidget*)p)->setTabEnabled(3, false);
+		ui.groupBox_satellite->setEnabled(false);
+		ui.groupBox_Filme->setEnabled(false);
+	}
 }

@@ -92,7 +92,7 @@ public:
 
 
 private:
-    ContentItem* item_HDD[100];    //ٸʵ֣ӰƬļб
+//     ContentItem* item_HDD[100];    //ٸʵ֣ӰƬļб
     ContentItem* item_USB[100];    //ٸʵ
 
 	int m_query_timer;      //ʱѯ
@@ -101,6 +101,7 @@ private:
 
 	Ui::ContentClass ui;
 	QTcpSocket *pSocket;
+	QWidget* p;
 
 private:
 	void Init();

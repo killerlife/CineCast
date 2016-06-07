@@ -1,4 +1,4 @@
-<ui version="4.0" >
+﻿<ui version="4.0" >
  <class>DiskClass</class>
  <widget class="QWidget" name="DiskClass" >
   <property name="geometry" >
@@ -71,6 +71,13 @@
          <widget class="QTextBrowser" name="textBrowser" />
         </item>
        </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label" >
+        <property name="alignment" >
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

@@ -80,6 +80,8 @@ private:
 	bool S_GetSatellite(char* buf);
 	bool S_GetReceive(char* buf);
 	
+	bool S_GetVersion(char* buf);
+
 	bool C_GetTuner(char* buf);
 	bool C_SetTuner(char* buf);
 	
@@ -87,6 +89,7 @@ private:
 	bool N_SetConfig(char* buf);
 	bool N_GetRemote(char* buf);
 	bool N_SetRemote(char* buf);
+	bool N_GetStatus(char* buf);
 
 	//bool M_GetContent(char* buf);
 	//bool M_GetDiskInfo(char* buf);

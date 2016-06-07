@@ -15,6 +15,7 @@ typedef enum
 	S_GET_REMOTE,
 	S_GET_HARDDRIVER,
 	S_GET_TMS,
+	S_GET_VERSION,
 
 	//0x150 Config function
 	S_GET_CONFIG = 0x150, //include DelSys/FEC/MOD/ROL/POL
@@ -25,6 +26,7 @@ typedef enum
 
 	N_GET_REMOTE,	//remote ip
 	N_SET_REMOTE,
+	N_GET_STATUS,
 
 	//0x200 Manager function
 	M_GET_USB_MOUNT = 0x200,
@@ -72,6 +74,7 @@ typedef enum
 	R_GET_RAID_INFO = 0x400,
 
 	R_SET_DEBUG_CMD = 0x500,
+
 
 } UiProtocalKey;
 
@@ -170,6 +173,7 @@ typedef enum
 	NET_IP,
 	NET_NETMASK,
 	NET_GATEWAY,
+	NET_CONNECTED,
 	
 	REMOTE_CONFIG = 0x60,
 	REMOTE_DNS,
@@ -249,12 +253,20 @@ typedef struct tuner_conf {
 	};
 } TUNER_CONF;
 
+typedef struct network_status {
+	std::string strDevName;
+	std::string strConnected;
+} NETWORK_STATUS;
+
 typedef struct network_conf {
 	uint8 nDhcp;
 	std::string strDevName;
 	std::string strIp;
 	std::string strNetmask;
 	std::string strGateway;
+	std::string strConnected;
+	std::string strDns1;
+	std::string strDns2;
 } NETWORK_CONF;
 
 typedef struct remote_conf {

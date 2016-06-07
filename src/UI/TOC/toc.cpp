@@ -1,4 +1,4 @@
-#include "toc.h"
+ï»¿#include "toc.h"
 #include "CTcpServer.h"
 #include <QtXml/QDomDocument>
 
@@ -37,25 +37,25 @@ void TOC::Init(void)
 void TOC::StartServer(void)
 {         
 	//server = new CTcpServer(this,port); 
-	server_login = new CTcpServer(this,8000);     //µÇÂ½´¦Àí
+	server_login = new CTcpServer(this,8000);     //Â½
 
 // 	connect(server_login,SIGNAL(signal_updateServerUI(QString,int)),this,SLOT(slot_updateServerUI(QString,int)));
-	//¿Í»§¶ËÓÐÔö¼õ,¶Ï¿ª»òÐÂÁ¬½Ó,·¢ËÍÐÅºÅ£¬Í¨Öª½çÃæ,Ë¢ÐÂ¿Í»§¶ËÐÅÏ¢ÁÐ±í
+	//Í»,Ï¿,ÅºÅ£Í¨Öª,Ë¢Â¿Í»Ï¢Ð±
 // 	connect(server_login,SIGNAL(signal_clientChange()),this,SLOT(updateClientList()));
 
 
 	//new
-	server_main = new CTcpServer(this,10099);   //Ö÷·þÎñ
+	server_main = new CTcpServer(this,10099);   //
 // 	connect(server_main,SIGNAL(signal_updateServerUI(QString,int)),this,SLOT(slot_updateServerUI(QString,int)));
 // 	connect(server_main,SIGNAL(signal_clientChange()),this,SLOT(updateClientList()));
 
 
 
-	//¹ØÁªÐÅºÅÖ±½Ó²Ù×÷socketÏß³Ì£¬CTcpServer×÷ÎªÖÐ×ª
+	//ÅºÖ±Ó²socketß³Ì£CTcpServerÎª×ª
 	connect(this,SIGNAL(UIcmd_toSocket(int,int,QByteArray)),server_login,SIGNAL(UIcmd_toSocket(int,int,QByteArray)));
 	connect(this,SIGNAL(UIcmd_toSocket(int,int,QByteArray)),server_main,SIGNAL(UIcmd_toSocket(int,int,QByteArray)));
 
-	//´¦ÀíÀ´×ÔsoetckÏß³ÌÍ¨¹ýCTcpServerÖÐ×ªµÄÐÅºÅ
+	//soetckß³Í¨CTcpServer×ªÅº
 	connect(server_login,SIGNAL(signal_CMD_SocketToUI(int,int,int)),this,SLOT(slot_CMD_SocketToUI_process(int,int,int)));
 	connect(server_main,SIGNAL(signal_CMD_SocketToUI(int,int,int)),this,SLOT(slot_CMD_SocketToUI_process(int,int,int)));
 
@@ -65,7 +65,7 @@ void TOC::StartServer(void)
 	connect(server_login,SIGNAL(signal_CMD_TcpServertoUI(int,int)),this,SLOT(slot_CMD_TcpServertoUI_process(int,int)));
 }
 
-void TOC::slot_CMD_SocketToUI_process(int SocketID,int cmdtype,int val)   //socket·¢¹ýÀ´µÄÃüÁî´¦Àí
+void TOC::slot_CMD_SocketToUI_process(int SocketID,int cmdtype,int val)   //socketî´¦
 {
 	switch(cmdtype)
 	{
@@ -82,7 +82,7 @@ void TOC::slot_CMD_SocketToUI_process(int SocketID,int cmdtype,int val)   //sock
 	}
 }
 
-void TOC::slot_CMD_TcpServertoUI_process(int SocketID,int cmdtype)       //·þÎñÆ÷·¢¸øUI
+void TOC::slot_CMD_TcpServertoUI_process(int SocketID,int cmdtype)       //UI
 {
 	switch(cmdtype)
 	{
@@ -112,9 +112,9 @@ void ContentItem::MakeItem()
 {
 	pData[0]=QString::number(AuthenRequest.Machine_ID);
 	AuthenRequest.SoftVersion[15]='\0';
-	AuthenRequest.Time_Login[15]='\0';
-	pData[1]=AuthenRequest.SoftVersion;  //±£Ö¤ÊÇ×Ö·û´®
-	pData[2]=AuthenRequest.Time_Login;   //±£Ö¤ÊÇ×Ö·û´®
+	//AuthenRequest.Time_Login[15]='\0';
+	pData[1]=AuthenRequest.SoftVersion;  //Ö¤Ö·
+	pData[2]=AuthenRequest.Time_Login;   //Ö¤Ö·
 	pData[3]=QString::number(AuthenRequest.Model_Log);
 	pData[4]=QString::number(AuthenRequest.BeatCycle);
 	pData[5]=QString::number(AuthenRequest.Model_Connect);
@@ -140,9 +140,9 @@ void ContentItem::MakeItem()
 
 	switch(flag)
 	{
-	case 0: setText(8,"IDLE");    break;  //¿ÕÐé
-	case 1: setText(8,"Waiting"); break;  //ÕýÔÚÉý¼¶
-	case 2: setText(8,"OK");    break;  //Éý¼¶Íê³É
+	case 0: setText(8,"IDLE");    break;  //
+	case 1: setText(8,"Waiting"); break;  //
+	case 2: setText(8,"OK");    break;  //
 	default:	break;
 	}
 }
@@ -153,7 +153,7 @@ void TOC::on_pushButtonMD5_clicked()
 	ContentItem* item =(ContentItem*)ui.treeWidget->currentItem();
 	if(item == NULL)
 		return;
-	int SockID=item->tcpClientSocket->socketID;   //²»ÄÜµ÷ÓÃº¯Êý£¬µ÷ÓÃ±äÁ¿
+	int SockID=item->tcpClientSocket->socketID;   //ÜµÃºÃ±
 	emit UIcmd_toSocket(SockID, UI_GET_MD5RES, ba);
 }
 

@@ -34,6 +34,7 @@
 #define ETH "/etc/sysconfig/network-scripts/ifcfg-enp6s"
 #define ETHA "/etc/sysconfig/network-scripts/ifcfg-"
 #define RESOLV "/etc/resolv.conf"
+#include "NetCommThread.h"
 
 using namespace brunt;
 namespace fs = boost::filesystem;
@@ -71,6 +72,7 @@ std::list<NETWORK_CONF>& NetOperation::GetNetConfig()
 			eth0 = "enp6s0";
 			eth1 = "enp6s1";
 		}
+#if 0
 		sprintf(fn, "/etc/sysconfig/network-scripts/ifcfg-%s", eth0.c_str());
 			if(ini->load(fn))
 			{
@@ -128,8 +130,420 @@ std::list<NETWORK_CONF>& NetOperation::GetNetConfig()
 				ini->read(" ", "GATEWAY", nc.strGateway);
 				m_list.push_back(nc);
 			}
+#endif
+		NETWORK_CONF nc;
+		nc = GetNetConfig(eth0);
+		if(nc.strDevName != "")
+			m_list.push_back(nc);
+		NETWORK_CONF nc2;
+		nc2 = GetNetConfig(eth1);
+		if(nc2.strDevName != "")
+			m_list.push_back(nc2);
+
 		}
 	return m_list;
+}
+
+std::list<NETWORK_STATUS>& NetOperation::GetNetStatus()
+{
+	ICMyini* ini = createMyini();
+	char fn[1024];
+	m_slist.clear();
+	std::string eth0, eth1;
+
+	if (ini)
+	{
+		if (ini->load("/etc/CineCast/CineCast.cfg"))
+		{
+			std::string tmp;
+			if(ini->read(" ", "ETH0", tmp))
+				eth0 = tmp;
+			if(ini->read(" ", "ETH1", tmp))
+				eth1 = tmp;
+		}
+		else
+		{
+			eth0 = "enp6s0";
+			eth1 = "enp6s1";
+		}
+		NETWORK_STATUS nc;
+		nc = GetNetStatus(eth0);
+		if(nc.strDevName != "")
+			m_slist.push_back(nc);
+		NETWORK_STATUS nc2;
+		nc2 = GetNetStatus(eth1);
+		if(nc2.strDevName != "")
+			m_slist.push_back(nc2);
+
+	}
+	return m_slist;
+}
+
+NETWORK_CONF NetOperation::GetNetConfig(std::string dev)
+{
+	IExternCall* pEc = CreateExternCall();
+	char cmd[200];
+	NETWORK_CONF nc;
+	if(dev.size() > 10)
+	{
+		DPRINTF("Invaild network device %s\n", dev.c_str());
+		nc.strConnected = "NODEV";
+		nc.strDevName = "NODEV";
+		usleep(100*1000);
+		return nc;
+	}
+	sprintf(cmd, "nmcli device show %s", dev.c_str());
+	pEc->RunCommand(cmd);
+	DPRINTF("%s\n", cmd);
+
+	std::string s;
+	while(1)
+	{
+		if(pEc->IsFinish())
+		{
+			s = pEc->GetOutput();
+			size_t pos;
+			if((pos = s.find("GENERAL.状态:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				std::string ss = buf;
+				if(ss.find("100") != std::string::npos)
+					nc.strConnected = "TRUE";
+				else
+					nc.strConnected = "FALSE";
+			}
+			if((pos = s.find("GENERAL.STATE:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				std::string ss = buf;
+				if(ss.find("100") != std::string::npos)
+					nc.strConnected = "TRUE";
+				else
+					nc.strConnected = "FALSE";
+			}
+			DPRINTF("%s\n", nc.strConnected.c_str());
+			break;
+		}
+	}
+	if (nc.strConnected == "" || nc.strConnected.empty())
+	{
+		DPRINTF("%s\n", nc.strConnected.c_str());
+		nc.strConnected = "NODEV";
+		nc.strDevName = "NODEV";
+		usleep(100*1000);
+		return nc;
+	}
+
+	nc.strDevName = dev.c_str();
+	usleep(100*1000);
+	//return nc;
+
+	sprintf(cmd, "nmcli con show %s", dev.c_str());
+	pEc->RunCommand(cmd);
+
+	DPRINTF("%s\n", cmd);
+	while(1)
+	{
+		if (pEc->IsFinish())
+		{
+			s = pEc->GetOutput();
+			size_t pos;
+			if ((pos = s.find("ipv4.method:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				if(strncmp(buf, "auto", 4) == 0)
+					nc.nDhcp = 1;
+				else
+					nc.nDhcp = 0;
+				DPRINTF("%s\n", buf);
+			}
+#if 0
+			if ((pos = s.find("connection.id:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				nc.strDevName = dev;
+			}
+#endif
+			if ((pos = s.find("ipv4.addresses:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				std::string ss = buf;
+				if(ss.find("ipv4") != std::string::npos)
+				{
+					if ((pos = s.find("IP4.ADDRESS[1]:")) != std::string::npos)
+					{
+						char buf[50];
+						sscanf(s.c_str() + pos + 40, "%s", buf);
+						char buff[50];
+						memset(buff, 0, 50);
+						int i;
+						for (i = 0; i < strlen(buf); i++)
+						{
+							if(buf[i] != '/')
+								buff[i] = buf[i];
+							else
+							{
+								nc.strIp = buff;
+								DPRINTF("%s\n", buff);
+								break;
+							}
+						}
+						memset(buff, 0, 50);
+						int j = 0;
+						i++;
+						for(;i < strlen(buf); i++, j++)
+						{
+							buff[j] = buf[i];
+							nc.strNetmask = prefix2mask(atoi(buff));
+							DPRINTF("%s\n", nc.strNetmask.c_str());
+						}
+					}
+					else if ((pos = s.find("IP4.地址[1]:")) != std::string::npos)
+					{
+						char buf[50];
+						sscanf(s.c_str() + pos + 40, "%s", buf);
+						char buff[50];
+						memset(buff, 0, 50);
+						int i;
+						for (i = 0; i < strlen(buf); i++)
+						{
+							if(buf[i] != '/')
+								buff[i] = buf[i];
+							else
+							{
+								nc.strIp = buff;
+								DPRINTF("%s\n", buff);
+								break;
+							}
+						}
+						memset(buff, 0, 50);
+						int j = 0;
+						i++;
+						for(;i < strlen(buf); i++, j++)
+						{
+							buff[j] = buf[i];
+							nc.strNetmask = prefix2mask(atoi(buff));
+							DPRINTF("%s\n", nc.strNetmask.c_str());
+						}
+					}
+				}
+				else
+				{
+					char buff[50];
+					memset(buff, 0, 50);
+					int i;
+					for (i = 0; i < strlen(buf); i++)
+					{
+						if(buf[i] != '/')
+							buff[i] = buf[i];
+						else
+						{
+							nc.strIp = buff;
+							DPRINTF("%s\n", buff);
+							break;
+						}
+					}
+					memset(buff, 0, 50);
+					int j = 0;
+					i++;
+					for(;i < strlen(buf); i++, j++)
+					{
+						buff[j] = buf[i];
+						nc.strNetmask = prefix2mask(atoi(buff));
+						DPRINTF("%s\n", nc.strNetmask.c_str());
+					}
+				}
+			}
+			else{
+			}
+			if ((pos = s.find("ipv4.gateway:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				nc.strGateway = buf;
+				if(nc.strGateway.find("--") != std::string::npos)
+				{
+					nc.strGateway = "";
+					if ((pos = s.find("IP4.GATEWAY:")) != std::string::npos)
+					{
+						char buf[50];
+						sscanf(s.c_str() + pos + 40, "%s", buf);
+						nc.strGateway = buf;
+						DPRINTF("%s\n", buf);
+					}
+					else if ((pos = s.find("IP4.网关:")) != std::string::npos)
+					{
+						char buf[50];
+						sscanf(s.c_str() + pos + 40, "%s", buf);
+						nc.strGateway = buf;
+						DPRINTF("%s\n", buf);
+					}
+					if(nc.strGateway.find("IP") != std::string::npos)
+					{
+						nc.strGateway = "";
+					}
+				}
+				DPRINTF("%s\n", buf);
+			}
+			if ((pos = s.find("ipv4.dns:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				std::string ss = buf;
+				if(ss.find("ipv4.dns-search:") == std::string::npos)
+				{
+					char buff[50];
+					memset(buff, 0, 50);
+					for(int i = 0; i < strlen(buf); i++)
+					{
+						if(buf[i] != ',')
+						{
+							buff[i] = buf[i];
+						}
+						else
+							break;
+					}
+					nc.strDns1 = buff;
+					DPRINTF("%s\n", buff);
+				}
+				else if ((pos = s.find("IP4.DNS[1]:")) != std::string::npos)
+				{
+					char buf[50];
+					sscanf(s.c_str() + pos + 40, "%s", buf);
+					nc.strDns1 = buf;
+					DPRINTF("%s\n", buf);
+				}
+			}
+			if(nc.nDhcp == 1)
+			{
+				if ((pos = s.find("IP4.DNS[1]:")) != std::string::npos)
+				{
+					char buf[50];
+					sscanf(s.c_str() + pos + 40, "%s", buf);
+					nc.strDns1 = buf;
+					DPRINTF("%s\n", buf);
+				}
+			}
+
+			if ((pos = s.find("IP4.DNS[2]:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				nc.strDns2 = buf;
+				DPRINTF("%s\n", buf);
+			}
+			usleep(100*1000);
+			return nc;
+		}
+	}
+	usleep(100*1000);
+	return nc;
+}
+
+NETWORK_STATUS NetOperation::GetNetStatus(std::string dev)
+{
+	IExternCall* pEc = CreateExternCall();
+	char cmd[200];
+	NETWORK_STATUS nc;
+	if(dev.size() > 10)
+	{
+		DPRINTF("Invaild network device %s\n", dev.c_str());
+		nc.strConnected = "NODEV";
+		usleep(100*1000);
+		return nc;
+	}
+	sprintf(cmd, "nmcli device show %s", dev.c_str());
+	pEc->RunCommand(cmd);
+	DPRINTF("%s\n", cmd);
+
+	std::string s;
+	while(1)
+	{
+		if(pEc->IsFinish())
+		{
+			s = pEc->GetOutput();
+			size_t pos;
+			if((pos = s.find("GENERAL.状态:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				DPRINTF("%s\n", buf);
+				std::string ss = buf;
+				if(ss.find("100") != std::string::npos)
+					nc.strConnected = "TRUE";
+				else
+					nc.strConnected = "FALSE";
+				nc.strDevName = dev;
+			}
+			if((pos = s.find("GENERAL.STATE:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				DPRINTF("%s\n", buf);
+				std::string ss = buf;
+				if(ss.find("100") != std::string::npos)
+					nc.strConnected = "TRUE";
+				else
+					nc.strConnected = "FALSE";
+				nc.strDevName = dev;
+			}
+			break;
+		}
+	}
+	usleep(100*1000);
+	if (nc.strConnected == "" || nc.strConnected.empty())
+	{
+		nc.strConnected = "NODEV";
+		return nc;
+	}
+	return nc;
+}
+
+
+REMOTE_CONF NetOperation::GetDns(std::string dev)
+{
+	IExternCall* pEc = CreateExternCall();
+	char cmd[200];
+	REMOTE_CONF nc;
+	if(dev.size() > 10)
+	{
+		usleep(100*1000);
+		return nc;
+	}
+	sprintf(cmd, "nmcli con show %s", dev.c_str());
+	pEc->RunCommand(cmd);
+	std::string s;
+
+	while(1)
+	{
+		if (pEc->IsFinish())
+		{
+			s = pEc->GetOutput();
+			size_t pos;
+		
+			if ((pos = s.find("IP4.DNS[1]:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				nc.strDns1 = buf;
+				DPRINTF("%s\n", buf);
+			}
+			if ((pos = s.find("IP4.DNS[2]:")) != std::string::npos)
+			{
+				char buf[50];
+				sscanf(s.c_str() + pos + 40, "%s", buf);
+				nc.strDns2 = buf;
+				DPRINTF("%s\n", buf);
+			}
+			usleep(100*1000);
+			return nc;
+		}
+	}
 }
 
 REMOTE_CONF& NetOperation::GetRemoteConfig()
@@ -138,15 +552,32 @@ REMOTE_CONF& NetOperation::GetRemoteConfig()
 	char fn[200];
 	if (ini)
 	{
-		sprintf(fn, "%s%d", ETH, 0);
-		if(ini->load(fn))
+		std::string eth0, eth1;
+		if (ini->load("/etc/CineCast/CineCast.cfg"))
 		{
 			std::string tmp;
-			if(ini->read(" ", "DNS1", tmp))
-				m_rc.strDns1 = tmp;
-			if(ini->read(" ", "DNS2", tmp))
-				m_rc.strDns2 = tmp;
+			if(ini->read(" ", "ETH0", tmp))
+				eth0 = tmp;
+			if(ini->read(" ", "ETH1", tmp))
+				eth1 = tmp;
 		}
+		else
+		{
+			eth0 = "enp6s0";
+			eth1 = "enp6s1";
+		}
+		REMOTE_CONF nc1 = GetDns(eth0);
+		if(nc1.strDns1 != "")
+			m_rc.strDns1 = nc1.strDns1;
+		if(nc1.strDns2 != "")
+			m_rc.strDns2 = nc1.strDns2;
+		
+		REMOTE_CONF nc2 = GetDns(eth1);
+		if(nc2.strDns1 != "")
+			m_rc.strDns1 = nc2.strDns1;
+		if(nc2.strDns2 != "")
+			m_rc.strDns2 = nc2.strDns2;
+
 		if(ini->load("/etc/CineCast/CineCast.cfg"))
 		{
 			std::string tmp;
@@ -159,10 +590,16 @@ REMOTE_CONF& NetOperation::GetRemoteConfig()
 	return m_rc;
 }
 
+extern NetCommThread *pNetComm;
+
 bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 {
 	ICMyini *ini = createMyini();
 	char fn[1024];
+
+	//////////////////////////////////////////////////////////////////////////
+	pNetComm->CloseConnect();
+	//////////////////////////////////////////////////////////////////////////
 
 	m_list.clear();
 	std::list<NETWORK_CONF>::iterator itor;
@@ -179,11 +616,17 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 			nc.strDevName.c_str());
 
 		std::string tmp;
+		#if 0
 		if (nc.nDhcp)
-			tmp = "dhcp";
+		{
+			ini->write(" ", "BOOTPROTO", "dhcp");
+			ini->write(" ", "IPADDR", " ");
+			ini->write(" ", "PREFIX", " ");
+			ini->write(" ", "GATEWAY", " ");
+		}
 		else
 		{
-			tmp = "none";
+			ini->write(" ", "BOOTPROTO", "none");
 			if(!nc.strIp.empty())
 				ini->write(" ", "IPADDR", nc.strIp.c_str());
 			if(!nc.strNetmask.empty())
@@ -196,23 +639,33 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 			if(!nc.strGateway.empty())
 				ini->write(" ", "GATEWAY", nc.strGateway.c_str());
 		}
-		ini->write(" ", "BOOTPROTO", tmp.c_str());
-		DPRINTF("%s\n", fn);
+		ini->save(fn);
+		#endif
 
 		if(nc.nDhcp)
 		{
-			sprintf(fn, "nmcli ");
+			sprintf(fn, "nmcli connection modify %s ipv4.method auto ipv4.address '' ipv4.gateway ''", nc.strDevName.c_str());
+			DPRINTF("%s\n", fn);
+			system(fn);
 		}
 		else
 		{
 			sprintf(fn,
-				"nmcli connection modify %s ipv4.address '%s/%d' ipv4.gateway '%s'",
+				"nmcli connection modify %s ipv4.method manual ipv4.address '%s/%d' ipv4.gateway '%s'",
 				nc.strDevName.c_str(),
 				nc.strIp.c_str(),
 				calcmask(nc.strNetmask),
 				nc.strGateway.c_str());
 			DPRINTF("%s\n", fn);
 			system(fn);
+		}
+		sprintf(fn,
+			"nmcli con mod %s ipv4.dns \"%s %s\"",
+			nc.strDevName.c_str(),
+			nc.strDns1.c_str(),
+			nc.strDns2.c_str());
+		DPRINTF("%s\n", fn);
+		system(fn);
 
 			sprintf(fn,
 				"nmcli con up %s",
@@ -220,8 +673,11 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 			DPRINTF("%s\n", fn);
 			system(fn);
 		}
-		ini->save(fn);
-	}
+
+	//////////////////////////////////////////////////////////////////////////
+	//
+	pNetComm->StartConnect();
+	//////////////////////////////////////////////////////////////////////////
 }
 
 int NetOperation::calcmask(std::string mask)
@@ -351,7 +807,7 @@ bool NetOperation::SetRemoteConfig(REMOTE_CONF &m_remoteConf)
 		ini->write(" ", "PORT", fn);
 		ini->save("/etc/CineCast/CineCast.cfg");
 	}
-#if 1
+#if 0
 	ICMyini* ini2 = createMyini();
 	if (ini2)
 	{
@@ -414,6 +870,12 @@ bool NetOperation::SetRemoteConfig(REMOTE_CONF &m_remoteConf)
 	}
 	}
 #endif
+	//////////////////////////////////////////////////////////////////////////
+	pNetComm->CloseConnect();
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	pNetComm->StartConnect();
+	//////////////////////////////////////////////////////////////////////////
 	return true;
 }
 
@@ -654,6 +1116,11 @@ void ContentOperation::FindDir(std::string dir)
 	try
 	{
 		m_dir.push_back(dir);
+		sprintf(str, "[ContentOperation] FindDir: %s.", dir.c_str());
+		if (gLog)
+		{
+			gLog->Write(LOG_NETCOMMU, str);
+		}
 
 		fs::directory_iterator end_itr;
 		for(fs::directory_iterator itr(p); itr != end_itr; ++itr)
@@ -717,7 +1184,10 @@ bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList)
 					{
 						char cmd[512];
 						sprintf(cmd, "rm -rf %s", m_dir.at(i).c_str());
-						//DPRINTF("%s\n", cmd);
+						if (gLog)
+						{
+							gLog->Write(LOG_NETCOMMU, cmd);
+						}
 						system(cmd);
 					}
 				}
@@ -728,6 +1198,7 @@ bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList)
 		}
 	}
 }
+
 mke2fs::mke2fs():fp(NULL), m_Status(0)
 {
 
@@ -824,6 +1295,7 @@ void mke2fs::doit()
 		setvbuf(fp, NULL, _IONBF, 0);
 		sout.clear();
 		memset(out, 0, 1024);
+		m_Status = 1;
 		while(fgets(out+1, sizeof(out-1), fp) != NULL)
 		{
 			m_Status = 1;
@@ -860,13 +1332,14 @@ void mke2fs::doit()
 	setvbuf(fp, NULL, _IONBF, 0);
 	sout.clear();
 			memset(out, 0, 1024);
+			m_Status = 1;
 	while(fgets(out+1, sizeof(out-1), fp) != NULL)
 	{
 		m_Status = 1;
 		out[0] = 1;
  		sout += (out+1);
 		//out = buf;
-// 		DPRINTF("%s", out.c_str());
+// 				 		printf("%s", out+1);
 	}
 	out[0] = -1;
 	pclose(fp);
@@ -954,11 +1427,11 @@ bool mke2fs::MountDisk(DISK_TYPE type)
 	switch(m_type)
 	{
 	case DISK_REMOVEABLE:
-		res = mount(tmp.c_str(), "/storage", "ext4", MS_NOATIME|MS_NODIRATIME, NULL);
+		res = mount(tmp.c_str(), "/storage", "ext2", MS_NOATIME|MS_NODIRATIME, NULL);
 		break;
 	case DISK_RAID:
 		if(tmp != "")
-			res = mount(tmp.c_str(), "/raid", "ext4", MS_NOATIME|MS_NODIRATIME, NULL);
+			res = mount(tmp.c_str(), "/raid", "ext2", MS_NOATIME|MS_NODIRATIME, NULL);
 		else
 		{
 			sprintf(str, "[mke2fs] MountDisk: no raid array.");
@@ -1002,112 +1475,119 @@ void System::SetDateTime(char* stime)
 #include <stdlib.h>
 
 //new class
-void USB::USB_Mount()
+bool USB::USB_Mount()
 {
-	//mnt?????usb   /mnt/usb /media/G
+	m_dir.clear();
+	std::string path = "/var/run/media/cinecast";
+	bMount = find_dir(path);
+	if(!bMount)
+		bCopy = false;
+	return bMount;
+}
 
-
-/*   //old
-	system("mkdir -p /media/usb");   
-	system("mount -t vfat /dev/sdc1 /media/usb");
-    //system("mount -t vfat /dev/sdd1 /media/usb");
-	//mount -t ntfs /dev/sdc1 /mnt/usb
-	//mount -t vfat /dev/sdc1 /mnt/usb
-	system("ls /media");
-	system("ls /media/usb");
-    
-    printf("USB mount Successful \n");
-*/
-
-
-/*
-		FILE *fp;                      //  /etc/mtabļ  ȡ̷
-		char buf[1024*10]={'\0'};     //   ȫ
-
-		if((fp=fopen("/etc/mtab","rb"))==NULL)
+bool USB::find_dir(std::string dir)
+{
+	char str[512];
+	fs::path p(dir);
+	try
+	{
+		sprintf(str, "[USB] find_dir: %s", dir.c_str());
+		if (gLog)
 		{
-		printf("File open error:/etc/mtab");
-		exit(0);
+			gLog->Write(LOG_NETCOMMU, str);
 		}
-		// while ((ch=fgetc(fp))!=EOF)
 
-		char* pTXT=buf;
-		while ((*pTXT=fgetc(fp))!=EOF)
+		if(!fs::exists(p))
 		{
-		   pTXT++;
+			DPRINTF("path no exists\n");
+			return false;
 		}
-		*pTXT='\0';    //Ѿȡȫıݣַβ
-        fclose(fp);    //ļԹر
-
-		printf("mtab:%s\n",buf);  
-
-        char* p=buf;   //"/dev/sdc1" "/dev/sdd1" "/dev/sdf1" ַ?
-        char* ptmp;
-
-		int i;
-		//ӵ豸УҪųsda,sdb
-		for(i=0;i<sizeof(buf);i++)
+		fs::directory_iterator end_itr;
+		for(fs::directory_iterator itr(p); itr != end_itr; ++itr)
 		{
-			//д1    //Чд2
-             if(*p=='/'&&*(p+1)=='d'&&*(p+2)=='e'&&*(p+3)=='v'&&*(p+4)=='/'&&*(p+5)=='s'&&*(p+6)=='d') 
+			try
+			{
+				if(fs::is_directory(*itr))
+				{
+					sprintf(str, "[USB] MountDir: %s", (*itr).path().native().c_str());
+					if (gLog)
+		{
+						gLog->Write(LOG_NETCOMMU, str);
+					}
+					m_dir.push_back((*itr).path().native().c_str());
+					return true;
+				}
+		}
+			catch(const fs::filesystem_error& e)
+			{
+				sprintf(str, "[USB] FindDir: Skip the IO error, except: %s.", e.what());
+				if (gLog)
+		{
+					gLog->Write(LOG_ERROR, str);
+				}
+				DPRINTF("[USB] FindDir: Skip the IO error, except: %s.\n", e.what());
+		}
+		}
+	}
+	catch(const fs::filesystem_error& e)
+		{
+		sprintf(str, "[USB] FindDir: except: %s.", e.what());
+		if (gLog)
 			 {
-                 ptmp=p;
+			gLog->Write(LOG_ERROR, str);
+		}
+		DPRINTF("[USB] FindDir: except: %s.\n", e.what());
 			 }
-
-             p++;
+	return false;
 		}
 
-        char str_devname[10];   //¼ջõ?/dev/sdc1"
-        str_devname[9]='\0';
-        memcpy(str_devname,ptmp,9);  
-		printf("devname=:%s\n",str_devname);
-
-
-		if(str_devname[7]=='a'||str_devname[7]=='b')   //ųsda,sdb
+bool USB::USB_UnMount()
 		{
-		    printf("no usb device\n");   //жûм⵽usb?
 		}
 
-        char str_cmd[256]="mount -t vfat ";   //ƴϵͳ
-        strcat(str_cmd,str_devname);
-        strcat(str_cmd, " /media/usb");
-
-		system("mkdir -p /media/usb");   
-		system(str_cmd);
-		//system("mount -t vfat /dev/sdd1 /media/usb");
-		system("ls /media");
-		system("ls /media/usb");
-		printf("USB mount Successful \n");
-
-*/
+std::string USB::GetMountPoint()
+{
+	std::string s;
+	if(m_dir.size() > 0)
+		return m_dir.at(0);
+	else
+		return s;
 }
 
-/*
-busy 
-umount /dev/sdc1umount /backup
-?busy?
-fuser -m /dev/sdc1
-???sdb1????
-?fuser -km /dev/sdc1
-???/dev/sdc1????
-umount /dev/sdc1umount /backup
-mount /dev/sdc1 /backup
-*/
-
-
-void USB::USB_UnMount()
+bool USB::ReadyUpdate()
 {
-    system("umount /media/usb");
-	//system("rm -rf /media/usb");   //ֹûжؾͱɾ
-	system("ls /media");
-	//system("ls /media/usb");
-
-    printf("USB unMount Successful \n");
+	char cmd[500];
+	if(bCopy)
+		return true;
+	else
+	{
+		if(bMount)
+		{
+			std::string src = m_dir.at(0);
+			src += "/leonisupdate.zt";
+			fs::path src_path(src);
+			if(!fs::exists(src_path))
+			{
+				sprintf(cmd, "[USB] no src: %s", src.c_str());
+				if (gLog)
+{
+					gLog->Write(LOG_ERROR, cmd);
+				}
+				DPRINTF("[USB] no src: %s\n", src.c_str());
+				return false;
 }
-
-void USB::USB_UpdateSpace()     //???????????
+			sprintf(cmd, "cp -f %s /home/leonis/update/leonisupdate.zt", src.c_str());
+			system(cmd);
+			std::string dest = "/home/leonis/update/leonisupdate.zt";
+			fs::path dest_path(dest);
+			if(fs::exists(dest_path))
 {
-
+				bCopy = true;
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 Md5Class::Md5Class():bMd5Success(false), nRollBackLen(0)

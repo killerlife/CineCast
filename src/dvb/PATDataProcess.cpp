@@ -25,7 +25,17 @@ bool *CreateFilmDataFlag()
 	return &gFilmDataFlag;
 }
 
-PATDataThread::PATDataThread():m_status(0), m_PatId(0xfe), m_pManager(NULL), bIdle(false)
+PATDataThread::PATDataThread():
+	m_status(0),
+	m_PatId(0xfe),
+	m_pManager(NULL),
+	bIdle(false),
+	nLostSegment(0),
+	nTotalSegment(0),
+	nCrc(0),
+	nReceiveSegment(0),
+	nFileLength(0),
+	nReceiveLength(0)
 {
 	m_pFilter = new Filter;
 	pDebugCmd = GetDebugCommand();
@@ -57,6 +67,12 @@ bool PATDataThread::Start()
 {
 	if(m_status != RUN)
 	{
+		nLostSegment = 0;
+		nTotalSegment = 0;
+		nCrc = 0;
+		nReceiveSegment = 0;
+		nFileLength = 0;
+		nReceiveLength = 0;
 	m_status = RUN;
 	if(gLog)
 		gLog->Write(LOG_DVB, "[PATDataThread] Start: Run.");
@@ -152,11 +168,6 @@ bool PATDataThread::Stop()
 
 void PATDataThread::doit()
 {
-#ifdef USE_SIM
-	FILE *fp;
-	printf("start pat thread manager\n");
-#endif
-	
 	//pLog->Write(LOG_DVB, "[PAT Descriptor] Run");
 	//syslog(LOG_INFO|LOG_USER, "[PAT Descriptor] Run");
 
@@ -171,19 +182,7 @@ void PATDataThread::doit()
 			if(m_pManager == NULL)
 				m_pManager = brunt::createThreadManager();
 
-#ifdef USE_SIM
-			fp = fopen("pat", "rb");
-			if(fp <= 0)
-			{
-				printf("open file error\n");
-				m_status = STOP;
-				break;
-			}
-			count = fread(m_buffer, 1, 4096, fp);
-			fclose(fp);
-#else
 			if (m_pFilter->ReadFilter(m_buffer, count))
-#endif
 			{
 				//DPRINTF("[PAT Descriptor] Get Data\n");
 				//do crc32 check
@@ -251,7 +250,8 @@ void PATDataThread::doit()
 			}
 			else
 			{
-#if 1
+				//--------------------------------------------------------
+				//                Network Simulator
 				if(*(pDebugCmd) == D_PAT)
 				{
 					m_bPat = true;
@@ -290,11 +290,10 @@ void PATDataThread::doit()
 					}
 					*pDebugCmd = 0;
 				}
-#endif // 0
+				//--------------------------------------------------------
 			}
 			break;
 		case STOP:
-#if 1
 			bIdle = false;
 			if(m_pManager != NULL)
 			{
@@ -304,7 +303,6 @@ void PATDataThread::doit()
 				if(gLog)
 					gLog->Write(LOG_DVB, "[PATDataThread] Stop: Release ThreadManager.");
 			}
-#endif // 0
 			return;
 		case IDLE:
 			if(m_pManager != NULL)
@@ -322,82 +320,114 @@ void PATDataThread::doit()
 	}
 }
 
+void PATDataThread::Clear()
+{
+	nLostSegment = nTotalSegment = nCrc = nReceiveSegment = nFileLength = nReceiveLength = 0;
+}
+
 uint64 PATDataThread::ReciveLength()
 {
-	uint64 length = 0;
+// 	uint64 length = 0;
 	std::list<PMTDataThread*>::iterator itor;
+	if(m_pmtList.size() > 0)
+	{
+		nReceiveLength = 0;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
-		length += (*itor)->ReciveLength();
+			nReceiveLength += (*itor)->ReciveLength();
 	}
-	return length;
+	}
+	return nReceiveLength;
 }
 
 uint64 PATDataThread::FileLength()
 {
-	uint64 length = 0;
+// 	uint64 length = 0;
 	std::list<PMTDataThread*>::iterator itor;
+	if(m_pmtList.size() > 0)
+	{
+		nFileLength = 0;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
-		length += (*itor)->FileLength();
+			nFileLength += (*itor)->FileLength();
 	}
-	return length;
+	}
+	return nFileLength;
 }
 
 uint64 PATDataThread::ReciveSegment()
 {
-	uint64 length = 0;
+// 	uint64 length = 0;
 	std::list<PMTDataThread*>::iterator itor;
+	if(m_pmtList.size() > 0)
+	{
+		nReceiveSegment = 0;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
-		length += (*itor)->ReciveSegment();
+			nReceiveSegment += (*itor)->ReciveSegment();
 	}
-	return length;
+	}
+	return nReceiveSegment;
 }
 
 uint64 PATDataThread::LostSegment()
 {
-	uint64 length = 0;
+// 	uint64 length = 0;
 	std::list<PMTDataThread*>::iterator itor;
+	if(m_pmtList.size() > 0)
+	{
+		nLostSegment = 0;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
-		length += (*itor)->LostSegment();
+			nLostSegment += (*itor)->LostSegment();
 	}
-	return length;
+	}
+	return nLostSegment;
 }
 
 uint64 PATDataThread::CRCError()
 {
-	uint64 length = 0;
+// 	uint64 length = 0;
 	std::list<PMTDataThread*>::iterator itor;
+	if(m_pmtList.size() > 0)
+	{
+		nCrc = 0;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
-		length += (*itor)->CRCError();
+			nCrc += (*itor)->CRCError();
 	}
-	return length;
+	}
+	return nCrc;
 }
 
 uint64 PATDataThread::TotalSegment()
 {
-	uint64 length = 0;
+// 	uint64 length = 0;
 	std::list<PMTDataThread*>::iterator itor;
+	if(m_pmtList.size() > 0)
+	{
+		nTotalSegment = 0;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
-		length += (*itor)->TotalSegment();
+			nTotalSegment += (*itor)->TotalSegment();
+		}
 	}
-	return length;
+	return nTotalSegment;
 }
 
 uint64 PATDataThread::GetLostSegment()
 {
 	std::list<PMTDataThread*>::iterator itor;
-	uint64 nLostCount = 0;
+// 	uint64 nLostCount = 0;
 	m_strReportFileList = "";
 	bool bFound = false;
 	uint32 id = 0;
+	if(m_pmtList.size() > 0)
+	{
+		nLostSegment = 0;
 	for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
 	{
-		nLostCount +=(*itor)->GetLostSegment();
+			nLostSegment +=(*itor)->GetLostSegment();
 		m_strReportFileList += (*itor)->GetReportFileList();
 		m_strReportFileList += " ";
 		if((id = (*itor)->GetFilmId()) != 0)
@@ -407,9 +437,10 @@ uint64 PATDataThread::GetLostSegment()
 		}
 		//m_FilmId = (*itor)->GetFilmId();
 	}
+	}
 	if(!bFound)
 	    m_FilmId = gRecv.nFileID;
-	return nLostCount;
+	return nLostSegment;
 }
 
 bool PATDataThread::UnzipSubtitle()

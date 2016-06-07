@@ -44,6 +44,65 @@
       </widget>
      </item>
      <item>
+      <spacer name="horizontalSpacer" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_time" >
+       <property name="font" >
+        <font>
+         <family>Book Antiqua</family>
+         <pointsize>25</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="text" >
+        <string>00:00:00</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_Version" >
+       <property name="font" >
+        <font>
+         <family>Book Antiqua</family>
+         <pointsize>20</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_2" >
        <property name="orientation" >
         <enum>Qt::Horizontal</enum>
@@ -148,7 +207,7 @@ QTabWidget#Tab1>QTabBar::tab:last:pressed
       <enum>QTabWidget::Triangular</enum>
      </property>
      <property name="currentIndex" >
-      <number>3</number>
+      <number>0</number>
      </property>
      <property name="iconSize" >
       <size>
@@ -163,7 +222,7 @@ QTabWidget#Tab1>QTabBar::tab:last:pressed
       <bool>false</bool>
      </property>
      <property name="movable" stdset="0" >
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <widget class="QWidget" name="tab_1" >
       <attribute name="title" >
