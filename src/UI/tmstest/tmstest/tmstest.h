@@ -1,4 +1,4 @@
-#ifndef TMSTEST_H
+﻿#ifndef TMSTEST_H
 #define TMSTEST_H
 
 #include <QtGui/QMainWindow>
@@ -18,6 +18,7 @@ private:
 	QTcpSocket dev;
 
 private slots:
+	void on_pushButton_3_clicked();
 	void on_pushButton_2_clicked();
 	void on_pushButton_clicked();
 	void connected();

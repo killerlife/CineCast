@@ -1,4 +1,4 @@
-<ui version="4.0" >
+﻿<ui version="4.0" >
  <class>tmstestClass</class>
  <widget class="QMainWindow" name="tmstestClass" >
   <property name="geometry" >
@@ -14,10 +14,13 @@
   </property>
   <widget class="QWidget" name="centralWidget" >
    <widget class="QPushButton" name="pushButton" >
+    <property name="enabled" >
+     <bool>false</bool>
+    </property>
     <property name="geometry" >
      <rect>
-      <x>30</x>
-      <y>20</y>
+      <x>510</x>
+      <y>10</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -29,14 +32,67 @@
    <widget class="QPushButton" name="pushButton_2" >
     <property name="geometry" >
      <rect>
-      <x>190</x>
+      <x>300</x>
       <y>10</y>
       <width>75</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text" >
-     <string>PushButton</string>
+     <string>TMS Test</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>281</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="textBrowser" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>581</width>
+      <height>161</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_2" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>210</y>
+      <width>281</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3" >
+    <property name="geometry" >
+     <rect>
+      <x>300</x>
+      <y>210</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>GetInfo</string>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="textBrowser_2" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>581</width>
+      <height>181</height>
+     </rect>
     </property>
    </widget>
   </widget>

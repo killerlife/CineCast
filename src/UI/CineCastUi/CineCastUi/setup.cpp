@@ -1418,6 +1418,7 @@ void Setup::on_pushButton_12_clicked()
 	pSocket->waitForReadyRead(-1);
 	int i= pSocket->read(buf, 1024);
 }
+
 void Setup::on_radioButtonDhcp_toggled(bool)
 {
 	Interface1Enable(false);

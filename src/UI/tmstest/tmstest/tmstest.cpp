@@ -334,14 +334,15 @@ void tmstest::on_pushButton_clicked()
 
 void tmstest::on_pushButton_2_clicked()
 {
-	dev.connectToHost("169.254.1.230", 20080);
+	dev.connectToHost(ui.lineEdit->text(), 20080);
 }
 
 void tmstest::connected()
 {
 	login();
 
-	ftp();
+	//ftp();
+	list();
 }
 
 void tmstest::login()
@@ -357,6 +358,7 @@ void tmstest::login()
 	dev.write(buf, 3+ 4+ i+4);
 	dev.waitForBytesWritten(-1);
 	dev.waitForReadyRead(-1);
+	memset(buf, 0, 100);
 	i = dev.read(buf, 1024);
 }
 
@@ -398,7 +400,13 @@ void tmstest::list()
 	dev.write(buf, 3+ 4+ i+4);
 	dev.waitForBytesWritten(-1);
 	dev.waitForReadyRead(-1);
-	i = dev.read(buf, 1024);
+	i = dev.read(buf, 4+2+1);
+	int len = *(uint32*)(buf+3);
+	char *str = new char[len+4];
+	i = dev.read(str, len+4);
+	str[len] = '\0';
+	ui.textBrowser->setText(str);
+	delete[] str;
 }
 
 void tmstest::ftp()
@@ -420,7 +428,8 @@ void tmstest::ftp()
 	resp.appendChild(list);
 
 	QDomText txt;
-	txt = doc.createTextNode("urn:uuid:8ab8ea15-2a40-4816-b731-52f7c943c301");
+	QString fuid = ui.lineEdit_2->text();
+	txt = doc.createTextNode(fuid);
 	list.appendChild(txt);
 
 	QString s = doc.toString();
@@ -437,5 +446,15 @@ void tmstest::ftp()
 	dev.write(buf, setsize);
 	dev.waitForBytesWritten(-1);
 	dev.waitForReadyRead(-1);
-	int i = dev.read(buf, 1024);
+	int i = dev.read(buf, 4+2+1);
+	len = *(uint32*)(buf+3);
+	char *str = new char[len+4];
+	i = dev.read(str, len+4);
+	str[len] = '\0';
+	ui.textBrowser_2->setText(str);
+}
+
+void tmstest::on_pushButton_3_clicked()
+{
+	ftp();
 }
