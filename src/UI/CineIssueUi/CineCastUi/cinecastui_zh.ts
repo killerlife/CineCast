@@ -14,36 +14,36 @@
         <translation>关闭接收机</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="370"/>
+        <location filename="cinecastui.cpp" line="381"/>
         <source>Do you want to Reboot</source>
         <translation>请确认重启系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="394"/>
-        <location filename="cinecastui.cpp" line="428"/>
+        <location filename="cinecastui.cpp" line="405"/>
+        <location filename="cinecastui.cpp" line="439"/>
         <source>Reboot successful</source>
         <translation>重启成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="402"/>
-        <location filename="cinecastui.cpp" line="436"/>
+        <location filename="cinecastui.cpp" line="413"/>
+        <location filename="cinecastui.cpp" line="447"/>
         <source>Reboot failed,network errors, operation failed</source>
         <translation>网络错误导致重启失败</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="453"/>
+        <location filename="cinecastui.cpp" line="464"/>
         <source>Do you want to Shutdown</source>
         <translation>请确认关闭系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="477"/>
-        <location filename="cinecastui.cpp" line="509"/>
+        <location filename="cinecastui.cpp" line="488"/>
+        <location filename="cinecastui.cpp" line="520"/>
         <source>Shutdown successful</source>
         <translation>关机成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="483"/>
-        <location filename="cinecastui.cpp" line="515"/>
+        <location filename="cinecastui.cpp" line="494"/>
+        <location filename="cinecastui.cpp" line="526"/>
         <source>Shutdown failed,network errors, operation failed</source>
         <translation>网络错误导致关机失败</translation>
     </message>
@@ -363,18 +363,18 @@
 </translation>
     </message>
     <message>
-        <location filename="disk.cpp" line="246"/>
-        <location filename="disk.cpp" line="248"/>
+        <location filename="disk.cpp" line="247"/>
+        <location filename="disk.cpp" line="249"/>
         <source>Information</source>
         <translation>提示</translation>
     </message>
     <message>
-        <location filename="disk.cpp" line="246"/>
+        <location filename="disk.cpp" line="247"/>
         <source>Format complete!</source>
         <translation>格式化完成！</translation>
     </message>
     <message>
-        <location filename="disk.cpp" line="248"/>
+        <location filename="disk.cpp" line="249"/>
         <source>No Disk!</source>
         <translation>没有插硬盘，无法格式化！</translation>
     </message>
@@ -773,287 +773,287 @@
 <context>
     <name>Setup</name>
     <message>
-        <location filename="setup.cpp" line="443"/>
-        <location filename="setup.cpp" line="953"/>
+        <location filename="setup.cpp" line="456"/>
+        <location filename="setup.cpp" line="966"/>
         <source>auto</source>
         <translation>自动</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1156"/>
+        <location filename="setup.cpp" line="1169"/>
         <source>Save</source>
         <translation>保存设置</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1156"/>
+        <location filename="setup.cpp" line="1169"/>
         <source>Save success! It will be reboot and make sure the setting works.</source>
         <translation>保存成功！设备将自动重启以使改动生效。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1178"/>
-        <location filename="setup.cpp" line="1212"/>
+        <location filename="setup.cpp" line="1191"/>
+        <location filename="setup.cpp" line="1225"/>
         <source>Reboot successful</source>
         <translation>重启成功</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1186"/>
-        <location filename="setup.cpp" line="1220"/>
+        <location filename="setup.cpp" line="1199"/>
+        <location filename="setup.cpp" line="1233"/>
         <source>Reboot failed,network errors, operation failed</source>
         <translation>重启失败，请检查网络连接</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="919"/>
-        <location filename="setup.cpp" line="925"/>
-        <location filename="setup.cpp" line="939"/>
-        <location filename="setup.cpp" line="945"/>
-        <location filename="setup.cpp" line="1543"/>
-        <location filename="setup.cpp" line="1553"/>
-        <location filename="setup.cpp" line="1566"/>
-        <location filename="setup.cpp" line="1579"/>
-        <location filename="setup.cpp" line="1598"/>
-        <location filename="setup.cpp" line="1611"/>
-        <location filename="setup.cpp" line="1624"/>
-        <location filename="setup.cpp" line="1637"/>
-        <location filename="setup.cpp" line="1667"/>
-        <location filename="setup.cpp" line="1677"/>
-        <location filename="setup.cpp" line="1690"/>
-        <location filename="setup.cpp" line="1703"/>
-        <location filename="setup.cpp" line="1733"/>
-        <location filename="setup.cpp" line="1743"/>
-        <location filename="setup.cpp" line="1756"/>
-        <location filename="setup.cpp" line="1769"/>
-        <location filename="setup.cpp" line="1799"/>
-        <location filename="setup.cpp" line="1809"/>
-        <location filename="setup.cpp" line="1822"/>
-        <location filename="setup.cpp" line="1835"/>
-        <location filename="setup.cpp" line="1865"/>
-        <location filename="setup.cpp" line="1875"/>
-        <location filename="setup.cpp" line="1888"/>
-        <location filename="setup.cpp" line="1901"/>
-        <location filename="setup.cpp" line="1920"/>
-        <location filename="setup.cpp" line="1933"/>
-        <location filename="setup.cpp" line="1946"/>
-        <location filename="setup.cpp" line="1959"/>
-        <location filename="setup.cpp" line="1989"/>
-        <location filename="setup.cpp" line="1999"/>
-        <location filename="setup.cpp" line="2012"/>
-        <location filename="setup.cpp" line="2025"/>
-        <location filename="setup.cpp" line="2055"/>
-        <location filename="setup.cpp" line="2065"/>
-        <location filename="setup.cpp" line="2078"/>
-        <location filename="setup.cpp" line="2091"/>
-        <location filename="setup.cpp" line="2121"/>
-        <location filename="setup.cpp" line="2131"/>
-        <location filename="setup.cpp" line="2144"/>
-        <location filename="setup.cpp" line="2157"/>
-        <location filename="setup.cpp" line="2405"/>
-        <location filename="setup.cpp" line="2412"/>
-        <location filename="setup.cpp" line="2425"/>
-        <location filename="setup.cpp" line="2431"/>
-        <location filename="setup.cpp" line="2660"/>
-        <location filename="setup.cpp" line="2666"/>
+        <location filename="setup.cpp" line="932"/>
+        <location filename="setup.cpp" line="938"/>
+        <location filename="setup.cpp" line="952"/>
+        <location filename="setup.cpp" line="958"/>
+        <location filename="setup.cpp" line="1559"/>
+        <location filename="setup.cpp" line="1569"/>
+        <location filename="setup.cpp" line="1582"/>
+        <location filename="setup.cpp" line="1595"/>
+        <location filename="setup.cpp" line="1614"/>
+        <location filename="setup.cpp" line="1627"/>
+        <location filename="setup.cpp" line="1640"/>
+        <location filename="setup.cpp" line="1653"/>
+        <location filename="setup.cpp" line="1683"/>
+        <location filename="setup.cpp" line="1693"/>
+        <location filename="setup.cpp" line="1706"/>
+        <location filename="setup.cpp" line="1719"/>
+        <location filename="setup.cpp" line="1749"/>
+        <location filename="setup.cpp" line="1759"/>
+        <location filename="setup.cpp" line="1772"/>
+        <location filename="setup.cpp" line="1785"/>
+        <location filename="setup.cpp" line="1815"/>
+        <location filename="setup.cpp" line="1825"/>
+        <location filename="setup.cpp" line="1838"/>
+        <location filename="setup.cpp" line="1851"/>
+        <location filename="setup.cpp" line="1881"/>
+        <location filename="setup.cpp" line="1891"/>
+        <location filename="setup.cpp" line="1904"/>
+        <location filename="setup.cpp" line="1917"/>
+        <location filename="setup.cpp" line="1936"/>
+        <location filename="setup.cpp" line="1949"/>
+        <location filename="setup.cpp" line="1962"/>
+        <location filename="setup.cpp" line="1975"/>
+        <location filename="setup.cpp" line="2005"/>
+        <location filename="setup.cpp" line="2015"/>
+        <location filename="setup.cpp" line="2028"/>
+        <location filename="setup.cpp" line="2041"/>
+        <location filename="setup.cpp" line="2071"/>
+        <location filename="setup.cpp" line="2081"/>
+        <location filename="setup.cpp" line="2094"/>
+        <location filename="setup.cpp" line="2107"/>
+        <location filename="setup.cpp" line="2137"/>
+        <location filename="setup.cpp" line="2147"/>
+        <location filename="setup.cpp" line="2160"/>
+        <location filename="setup.cpp" line="2173"/>
+        <location filename="setup.cpp" line="2421"/>
+        <location filename="setup.cpp" line="2428"/>
+        <location filename="setup.cpp" line="2441"/>
+        <location filename="setup.cpp" line="2447"/>
+        <location filename="setup.cpp" line="2676"/>
+        <location filename="setup.cpp" line="2682"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="110"/>
+        <location filename="setup.cpp" line="112"/>
         <source>Frequency</source>
         <translation>频率</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="121"/>
+        <location filename="setup.cpp" line="123"/>
         <source>Symbol Rate</source>
         <translation>符号率</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="132"/>
+        <location filename="setup.cpp" line="134"/>
         <source>Remote</source>
         <translation>远程主机</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="143"/>
+        <location filename="setup.cpp" line="145"/>
         <source>Port</source>
         <translation>端口号</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="154"/>
-        <location filename="setup.cpp" line="209"/>
+        <location filename="setup.cpp" line="156"/>
+        <location filename="setup.cpp" line="211"/>
         <source>IP Address</source>
         <translation>IP地址</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="165"/>
-        <location filename="setup.cpp" line="220"/>
+        <location filename="setup.cpp" line="167"/>
+        <location filename="setup.cpp" line="222"/>
         <source>Netmask</source>
         <translation>子网掩码</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="176"/>
-        <location filename="setup.cpp" line="231"/>
+        <location filename="setup.cpp" line="178"/>
+        <location filename="setup.cpp" line="233"/>
         <source>Gateway</source>
         <translation>网关</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="187"/>
-        <location filename="setup.cpp" line="242"/>
+        <location filename="setup.cpp" line="189"/>
+        <location filename="setup.cpp" line="244"/>
         <source>DNS 1</source>
         <translation>域名服务器1</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="198"/>
-        <location filename="setup.cpp" line="253"/>
+        <location filename="setup.cpp" line="200"/>
+        <location filename="setup.cpp" line="255"/>
         <source>DNS 2</source>
         <translation>域名服务器2</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="919"/>
-        <location filename="setup.cpp" line="2660"/>
+        <location filename="setup.cpp" line="932"/>
+        <location filename="setup.cpp" line="2676"/>
         <source>Frequency must above 12250000.</source>
         <translation>Ku波段下频率必须大于或等于12250000，将自动修改到合适数值。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="925"/>
-        <location filename="setup.cpp" line="2666"/>
+        <location filename="setup.cpp" line="938"/>
+        <location filename="setup.cpp" line="2682"/>
         <source>Frequency must less 13450000.</source>
         <translation>Ku波段下频率必须小于或等于13450000，将自动修改到合适数值。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="939"/>
+        <location filename="setup.cpp" line="952"/>
         <source>Frequencies must over zero.</source>
         <translation>频率必须大于0，将自动修改为合适值。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="945"/>
+        <location filename="setup.cpp" line="958"/>
         <source>symbol Rate must over zero.</source>
         <translation>符号率必须大于0，将自动修改为合适值。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1543"/>
-        <location filename="setup.cpp" line="1865"/>
+        <location filename="setup.cpp" line="1559"/>
+        <location filename="setup.cpp" line="1881"/>
         <source>The AAA range of IP address &quot;AAA.BBB.CCC.CCC&quot; is &quot;1-223&quot;</source>
         <translation>IP地址“AAA.BBB.CCC.DDD”的“AAA”段范围为“1-223”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1553"/>
-        <location filename="setup.cpp" line="1875"/>
+        <location filename="setup.cpp" line="1569"/>
+        <location filename="setup.cpp" line="1891"/>
         <source>The BBB range of IP address &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>IP地址“AAA.BBB.CCC.DDD”的“BBB”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1566"/>
-        <location filename="setup.cpp" line="1888"/>
+        <location filename="setup.cpp" line="1582"/>
+        <location filename="setup.cpp" line="1904"/>
         <source>The CCC range of IP address &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>IP地址“AAA.BBB.CCC.DDD”的“CCC”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1579"/>
-        <location filename="setup.cpp" line="1901"/>
+        <location filename="setup.cpp" line="1595"/>
+        <location filename="setup.cpp" line="1917"/>
         <source>The DDD range of IP address &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>IP地址“AAA.BBB.CCC.DDD”的“DDD”段范围为“0.255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1598"/>
-        <location filename="setup.cpp" line="1920"/>
+        <location filename="setup.cpp" line="1614"/>
+        <location filename="setup.cpp" line="1936"/>
         <source>The AAA range of Netmask &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>子网掩码“AAA.BBB.CCC.DDD”的“AAA”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1611"/>
-        <location filename="setup.cpp" line="1933"/>
+        <location filename="setup.cpp" line="1627"/>
+        <location filename="setup.cpp" line="1949"/>
         <source>The BBB range of Netmask &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>子网掩码“AAA.BBB.CCC.DDD”的“BBB”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1624"/>
-        <location filename="setup.cpp" line="1946"/>
+        <location filename="setup.cpp" line="1640"/>
+        <location filename="setup.cpp" line="1962"/>
         <source>The CCC range of Netmask &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>子网掩码“AAA.BBB.CCC.DDD”的“CCC”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1637"/>
-        <location filename="setup.cpp" line="1959"/>
+        <location filename="setup.cpp" line="1653"/>
+        <location filename="setup.cpp" line="1975"/>
         <source>The DDD range of Netmask &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>子网掩码“AAA.BBB.CCC.DDD”的“DDD”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1667"/>
-        <location filename="setup.cpp" line="1989"/>
+        <location filename="setup.cpp" line="1683"/>
+        <location filename="setup.cpp" line="2005"/>
         <source>The AAA range of Gateway &quot;AAA.BBB.CCC.CCC&quot; is &quot;1-223&quot;</source>
         <translation>网关地址“AAA.BBB.CCC.DDD”的“AAA”段范围为“1-223”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1677"/>
-        <location filename="setup.cpp" line="1999"/>
+        <location filename="setup.cpp" line="1693"/>
+        <location filename="setup.cpp" line="2015"/>
         <source>The BBB range of Gateway &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>网关地址“AAA.BBB.CCC.DDD”的“BBB”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1690"/>
-        <location filename="setup.cpp" line="2012"/>
+        <location filename="setup.cpp" line="1706"/>
+        <location filename="setup.cpp" line="2028"/>
         <source>The CCC range of Gateway &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>网关地址“AAA.BBB.CCC.DDD”的“CCC”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1703"/>
-        <location filename="setup.cpp" line="2025"/>
+        <location filename="setup.cpp" line="1719"/>
+        <location filename="setup.cpp" line="2041"/>
         <source>The DDD range of Gateway &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>网关地址“AAA.BBB.CCC.DDD”的“DDD”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1733"/>
-        <location filename="setup.cpp" line="1799"/>
-        <location filename="setup.cpp" line="2055"/>
-        <location filename="setup.cpp" line="2121"/>
+        <location filename="setup.cpp" line="1749"/>
+        <location filename="setup.cpp" line="1815"/>
+        <location filename="setup.cpp" line="2071"/>
+        <location filename="setup.cpp" line="2137"/>
         <source>The AAA range of DNS &quot;AAA.BBB.CCC.CCC&quot; is &quot;1-223&quot;</source>
         <translation>DNS地址“AAA.BBB.CCC.DDD”的“AAA”段范围为“1-223”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1743"/>
-        <location filename="setup.cpp" line="1809"/>
-        <location filename="setup.cpp" line="2065"/>
-        <location filename="setup.cpp" line="2131"/>
+        <location filename="setup.cpp" line="1759"/>
+        <location filename="setup.cpp" line="1825"/>
+        <location filename="setup.cpp" line="2081"/>
+        <location filename="setup.cpp" line="2147"/>
         <source>The BBB range of DNS &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>DNS地址“AAA.BBB.CCC.DDD”的“BBB”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1756"/>
-        <location filename="setup.cpp" line="1822"/>
-        <location filename="setup.cpp" line="2078"/>
-        <location filename="setup.cpp" line="2144"/>
+        <location filename="setup.cpp" line="1772"/>
+        <location filename="setup.cpp" line="1838"/>
+        <location filename="setup.cpp" line="2094"/>
+        <location filename="setup.cpp" line="2160"/>
         <source>The CCC range of DNS &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>DNS地址“AAA.BBB.CCC.DDD”的“CCC”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1769"/>
-        <location filename="setup.cpp" line="1835"/>
-        <location filename="setup.cpp" line="2091"/>
-        <location filename="setup.cpp" line="2157"/>
+        <location filename="setup.cpp" line="1785"/>
+        <location filename="setup.cpp" line="1851"/>
+        <location filename="setup.cpp" line="2107"/>
+        <location filename="setup.cpp" line="2173"/>
         <source>The DDD range of DNS &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>DNS地址“AAA.BBB.CCC.DDD”的“DDD”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2405"/>
+        <location filename="setup.cpp" line="2421"/>
         <source>Remote can not empty.</source>
         <translation>远程主机不能为空。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2412"/>
+        <location filename="setup.cpp" line="2428"/>
         <source>Doesn&apos;t support non ASCII.</source>
         <translation>不支持非英文字符。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2425"/>
-        <location filename="setup.cpp" line="2431"/>
+        <location filename="setup.cpp" line="2441"/>
+        <location filename="setup.cpp" line="2447"/>
         <source>Port range is &quot;1-65535&quot;</source>
         <translation>端口号取值范围为“1-65535”，已超出范围，将自动选择合适数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2568"/>
+        <location filename="setup.cpp" line="2584"/>
         <source>Connected.</source>
         <translation>已连接节目管理中心。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2573"/>
-        <location filename="setup.cpp" line="2580"/>
+        <location filename="setup.cpp" line="2589"/>
+        <location filename="setup.cpp" line="2596"/>
         <source>Connecting...</source>
         <translation>正在连接节目管理中心...</translation>
     </message>
@@ -1061,17 +1061,17 @@
 <context>
     <name>SetupClass</name>
     <message>
-        <location filename="setup.ui" line="13"/>
+        <location filename="setup.ui" line="19"/>
         <source>Setup</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="689"/>
+        <location filename="setup.ui" line="644"/>
         <source>Default</source>
         <translation>卫星默认设置</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="713"/>
+        <location filename="setup.ui" line="668"/>
         <source>Save</source>
         <translation>保存卫星设置</translation>
     </message>
@@ -1080,98 +1080,98 @@
         <translation type="obsolete">卫星</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="50"/>
+        <location filename="setup.ui" line="76"/>
         <source>Frequency:</source>
         <translation>频率:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="371"/>
+        <location filename="setup.ui" line="390"/>
         <source>Symbol Rate:</source>
         <translation>符号率:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="112"/>
+        <location filename="setup.ui" line="245"/>
         <source>Delivery System:</source>
         <translation>卫星系统:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="165"/>
-        <location filename="setup.ui" line="492"/>
+        <location filename="setup.ui" line="100"/>
+        <location filename="setup.ui" line="420"/>
         <source>999999999; </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="287"/>
+        <location filename="setup.ui" line="276"/>
         <source>DVB-S2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="292"/>
+        <location filename="setup.ui" line="281"/>
         <source>DVB-S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="81"/>
+        <location filename="setup.ui" line="134"/>
         <source>FEC:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="402"/>
+        <location filename="setup.ui" line="454"/>
         <source>Polarization:</source>
         <translation>极化方式:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="433"/>
+        <location filename="setup.ui" line="525"/>
         <source>Modulation:</source>
         <translation>调制方式:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="203"/>
+        <location filename="setup.ui" line="165"/>
         <source>1/2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="208"/>
+        <location filename="setup.ui" line="170"/>
         <source>2/3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="213"/>
+        <location filename="setup.ui" line="175"/>
         <source>3/4</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="218"/>
+        <location filename="setup.ui" line="180"/>
         <source>3/5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="223"/>
+        <location filename="setup.ui" line="185"/>
         <source>4/5</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="228"/>
+        <location filename="setup.ui" line="190"/>
         <source>5/6</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="233"/>
+        <location filename="setup.ui" line="195"/>
         <source>6/7</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="238"/>
+        <location filename="setup.ui" line="200"/>
         <source>7/8</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="243"/>
+        <location filename="setup.ui" line="205"/>
         <source>8/9</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="248"/>
+        <location filename="setup.ui" line="210"/>
         <source>9/10</source>
         <translation></translation>
     </message>
@@ -1180,82 +1180,82 @@
         <translation type="obsolete">自动</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="530"/>
+        <location filename="setup.ui" line="485"/>
         <source>V</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="535"/>
+        <location filename="setup.ui" line="490"/>
         <source>H</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="568"/>
+        <location filename="setup.ui" line="550"/>
         <source>QPSK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="573"/>
+        <location filename="setup.ui" line="555"/>
         <source>8PSK</source>
         <translation>AUTO</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="578"/>
+        <location filename="setup.ui" line="560"/>
         <source>16APSK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="583"/>
+        <location filename="setup.ui" line="565"/>
         <source>32APSK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="588"/>
+        <location filename="setup.ui" line="570"/>
         <source>QAM16</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="593"/>
+        <location filename="setup.ui" line="575"/>
         <source>QAM32</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="598"/>
+        <location filename="setup.ui" line="580"/>
         <source>QAM64</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="603"/>
+        <location filename="setup.ui" line="585"/>
         <source>QAM128</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="608"/>
+        <location filename="setup.ui" line="590"/>
         <source>QAM256</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="613"/>
+        <location filename="setup.ui" line="595"/>
         <source>QAMAUTO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="143"/>
+        <location filename="setup.ui" line="316"/>
         <source>Roll Off:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="325"/>
+        <location filename="setup.ui" line="341"/>
         <source>0.20</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="330"/>
+        <location filename="setup.ui" line="346"/>
         <source>0.25</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="335"/>
+        <location filename="setup.ui" line="351"/>
         <source>0.35</source>
         <translation></translation>
     </message>
@@ -1264,37 +1264,37 @@
         <translation type="obsolete">网络设备</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="1007"/>
-        <location filename="setup.ui" line="1318"/>
+        <location filename="setup.ui" line="949"/>
+        <location filename="setup.ui" line="1260"/>
         <source>DHCP</source>
         <translation>自动分配IP</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="1070"/>
-        <location filename="setup.ui" line="1387"/>
+        <location filename="setup.ui" line="1012"/>
+        <location filename="setup.ui" line="1329"/>
         <source>IP Address:</source>
         <translation>IP地址:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="1112"/>
-        <location filename="setup.ui" line="1429"/>
+        <location filename="setup.ui" line="1054"/>
+        <location filename="setup.ui" line="1371"/>
         <source>Netmask:</source>
         <translation>子网掩码:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="1154"/>
-        <location filename="setup.ui" line="1471"/>
+        <location filename="setup.ui" line="1096"/>
+        <location filename="setup.ui" line="1413"/>
         <source>Gateway:</source>
         <translation>网关:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="756"/>
+        <location filename="setup.ui" line="711"/>
         <source>Internet</source>
         <translation>节目管理中心设置</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="1196"/>
-        <location filename="setup.ui" line="1513"/>
+        <location filename="setup.ui" line="1138"/>
+        <location filename="setup.ui" line="1455"/>
         <source>DNS 1:</source>
         <translation></translation>
     </message>
@@ -1303,60 +1303,60 @@
         <translation type="obsolete">网络设置</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="991"/>
+        <location filename="setup.ui" line="933"/>
         <source>TMS Interface</source>
         <translation>TMS网络接口</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="1000"/>
-        <location filename="setup.ui" line="1311"/>
+        <location filename="setup.ui" line="942"/>
+        <location filename="setup.ui" line="1253"/>
         <source>Static</source>
         <translation>手动分配IP</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="931"/>
-        <location filename="setup.ui" line="1038"/>
-        <location filename="setup.ui" line="1355"/>
+        <location filename="setup.ui" line="873"/>
+        <location filename="setup.ui" line="980"/>
+        <location filename="setup.ui" line="1297"/>
         <source>Apply</source>
         <translation>应用</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="1089"/>
-        <location filename="setup.ui" line="1131"/>
-        <location filename="setup.ui" line="1173"/>
-        <location filename="setup.ui" line="1215"/>
-        <location filename="setup.ui" line="1257"/>
-        <location filename="setup.ui" line="1406"/>
-        <location filename="setup.ui" line="1448"/>
-        <location filename="setup.ui" line="1490"/>
-        <location filename="setup.ui" line="1532"/>
-        <location filename="setup.ui" line="1574"/>
+        <location filename="setup.ui" line="1031"/>
+        <location filename="setup.ui" line="1073"/>
+        <location filename="setup.ui" line="1115"/>
+        <location filename="setup.ui" line="1157"/>
+        <location filename="setup.ui" line="1199"/>
+        <location filename="setup.ui" line="1348"/>
+        <location filename="setup.ui" line="1390"/>
+        <location filename="setup.ui" line="1432"/>
+        <location filename="setup.ui" line="1474"/>
+        <location filename="setup.ui" line="1516"/>
         <source>000.000.000.000; </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="1238"/>
-        <location filename="setup.ui" line="1555"/>
+        <location filename="setup.ui" line="1180"/>
+        <location filename="setup.ui" line="1497"/>
         <source>DNS 2:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="setup.ui" line="1302"/>
+        <location filename="setup.ui" line="1244"/>
         <source>Internet Interface</source>
         <translation>互联网网络接口</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="770"/>
+        <location filename="setup.ui" line="725"/>
         <source>Remote:</source>
         <translation>远程主机:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="797"/>
+        <location filename="setup.ui" line="752"/>
         <source>Port:</source>
         <translation>端口号:</translation>
     </message>
     <message>
-        <location filename="setup.ui" line="877"/>
+        <location filename="setup.ui" line="819"/>
         <source>Reset</source>
         <translation>默认设置</translation>
     </message>
@@ -1396,38 +1396,60 @@
 <context>
     <name>Status</name>
     <message>
-        <location filename="status.cpp" line="55"/>
+        <location filename="status.cpp" line="57"/>
         <source>Yes</source>
         <translation>锁定</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="57"/>
+        <location filename="status.cpp" line="59"/>
         <source>No</source>
         <translation>未锁定</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="76"/>
-        <location filename="status.cpp" line="368"/>
+        <location filename="status.cpp" line="72"/>
+        <source> Bytes</source>
+        <translation> 字节</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="139"/>
+        <location filename="status.cpp" line="465"/>
         <source>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Creator: %2	Issuer: %3	IssueDate: %4
 Round: %9	Total Segment: %5	Received Segment: %6
-CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</source>
-        <oldsource>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Creator: %2	Issuer: %3	IssueDate: %4&lt;/pre&gt;&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Round: %9	Total Segment: %5	Received Segment: %6	CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</oldsource>
+RecvRate: %10 MB/S	CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</source>
+        <translation>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;创建: %2	发行: %3	发行时间: %4
+轮数: %9	分片总数: %5	已接收分片: %6
+接收速度: %10 MB/S	CRC错误: %7	已丢失分片:%8&lt;/pre&gt;</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="150"/>
+        <location filename="status.cpp" line="476"/>
+        <source>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Creator: %2	Issuer: %3	IssueDate: %4
+Round: %9	Total Segment: %5	Received Segment: %6	CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</source>
         <translation>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;创建: %2	发行: %3	发行时间: %4
 轮数: %9	分片总数: %5	已接收分片: %6
 CRC错误: %7	已丢失分片:%8&lt;/pre&gt;</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="364"/>
+        <source>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Creator: %2	Issuer: %3	IssueDate: %4
+Round: %9	Total Segment: %5	Received Segment: %6
+CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</source>
+        <oldsource>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Creator: %2	Issuer: %3	IssueDate: %4&lt;/pre&gt;&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Round: %9	Total Segment: %5	Received Segment: %6	CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</oldsource>
+        <translation type="obsolete">&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;创建: %2	发行: %3	发行时间: %4
+轮数: %9	分片总数: %5	已接收分片: %6
+CRC错误: %7	已丢失分片:%8&lt;/pre&gt;</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="439"/>
         <source>Get update file. To update system, please reboot system.</source>
         <translation>升级文件接收成功，请重启设备已完成升级。</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="367"/>
+        <location filename="status.cpp" line="463"/>
         <source>Please power-off and take out the removeable disk.</source>
         <translation>接收完成，请关机并取出可抽取硬盘。</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="389"/>
+        <location filename="status.cpp" line="499"/>
         <source>Mount removeable disk error, please check disk.</source>
         <translation>挂载可抽取硬盘失败，请检查硬盘是否插好。</translation>
     </message>
@@ -1459,7 +1481,7 @@ CRC错误: %7	已丢失分片:%8&lt;/pre&gt;</translation>
         <translation>未锁定</translation>
     </message>
     <message>
-        <location filename="status.ui" line="464"/>
+        <location filename="status.ui" line="477"/>
         <source>Receive</source>
         <translation>接收信息</translation>
     </message>
@@ -1483,67 +1505,72 @@ CRC错误: %7	已丢失分片:%8&lt;/pre&gt;</translation>
         <translation></translation>
     </message>
     <message>
-        <location filename="status.ui" line="294"/>
+        <location filename="status.ui" line="277"/>
+        <source>Recv/Total:</source>
+        <translation>已接收/总共:</translation>
+    </message>
+    <message>
+        <location filename="status.ui" line="293"/>
         <source>0/0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="status.ui" line="326"/>
+        <location filename="status.ui" line="339"/>
         <source>Status:</source>
         <translation>状态信息:</translation>
     </message>
     <message>
-        <location filename="status.ui" line="357"/>
+        <location filename="status.ui" line="370"/>
         <source>Remote connection status, it&apos;ll turn green after connected</source>
         <translation>平台连接状态指示，当连上节目管理中心时，图标变绿</translation>
     </message>
     <message>
-        <location filename="status.ui" line="404"/>
+        <location filename="status.ui" line="417"/>
         <source>Idle</source>
         <translation>空闲</translation>
     </message>
     <message>
-        <location filename="status.ui" line="524"/>
+        <location filename="status.ui" line="537"/>
         <source>Received</source>
         <translation>接收结束</translation>
     </message>
     <message>
-        <location filename="status.ui" line="584"/>
+        <location filename="status.ui" line="597"/>
         <source>Analysis</source>
         <translation>丢包分析</translation>
     </message>
     <message>
-        <location filename="status.ui" line="644"/>
+        <location filename="status.ui" line="657"/>
         <source>Report</source>
         <translation>丢包上报</translation>
     </message>
     <message>
-        <location filename="status.ui" line="704"/>
+        <location filename="status.ui" line="717"/>
         <source>Confirm</source>
         <translation>上报确认</translation>
     </message>
     <message>
-        <location filename="status.ui" line="764"/>
+        <location filename="status.ui" line="777"/>
         <source>MD5 Req.</source>
         <translation>MD5请求</translation>
     </message>
     <message>
-        <location filename="status.ui" line="824"/>
+        <location filename="status.ui" line="837"/>
         <source>MD5 Confirm</source>
         <translation>MD5确认</translation>
     </message>
     <message>
-        <location filename="status.ui" line="884"/>
+        <location filename="status.ui" line="897"/>
         <source>Verify</source>
         <translation>数据校验</translation>
     </message>
     <message>
-        <location filename="status.ui" line="944"/>
+        <location filename="status.ui" line="957"/>
         <source>Verified</source>
         <translation>校验成功</translation>
     </message>
     <message>
-        <location filename="status.ui" line="1004"/>
+        <location filename="status.ui" line="1017"/>
         <source>Finish</source>
         <translation>任务完成</translation>
     </message>

@@ -1,4 +1,4 @@
-<ui version="4.0" >
+﻿<ui version="4.0" >
  <class>StatusClass</class>
  <widget class="QWidget" name="StatusClass" >
   <property name="geometry" >
@@ -265,20 +265,19 @@
               </property>
              </widget>
             </item>
-           </layout>
-          </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_9" />
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10" >
-            <item>
-             <widget class="QProgressBar" name="progressBar_Revceiver_length" >
-              <property name="maximum" >
-               <number>10000</number>
+             <widget class="QLabel" name="label_Receiver_2" >
+              <property name="minimumSize" >
+               <size>
+                <width>80</width>
+                <height>0</height>
+               </size>
               </property>
-              <property name="value" >
-               <number>0</number>
+              <property name="text" >
+               <string>Recv/Total:</string>
+              </property>
+              <property name="alignment" >
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -295,6 +294,20 @@
               </property>
               <property name="alignment" >
                <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10" >
+            <item>
+             <widget class="QProgressBar" name="progressBar_Revceiver_length" >
+              <property name="maximum" >
+               <number>10000</number>
+              </property>
+              <property name="value" >
+               <number>0</number>
               </property>
              </widget>
             </item>

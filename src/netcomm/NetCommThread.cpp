@@ -883,7 +883,7 @@ bool NetCommThread::HeartBreat()
 	m_sHeart.snr = gInfo.nSNR;
 	m_sHeart.interfaceRate = gTuner.nSR/1000;
 	
-        m_sHeart.dataRate = (gRecv.nReceiveLength - nRecvLength)*8/1024/1024/120;
+        m_sHeart.dataRate = (gRecv.nReceiveLength - nRecvLength)*8/1000/1000/120;
 	nRecvLength = gRecv.nReceiveLength;
 	
 	if(m_sHeart.dataRate < 80)
@@ -1212,6 +1212,7 @@ void NetCommThread::doit()
 				catch(int&)
 				{
 					sleep(5);
+						bConnected = false;
 					sprintf(str, "[NetCommThread] Connect to login server %s:%d error.", url.c_str(), (uint16)port);
 					if(gLog)
 						gLog->Write(LOG_ERROR, str);
@@ -1222,6 +1223,7 @@ void NetCommThread::doit()
 		case NET_LOGIN:
 			if(Login() == false)
 			{
+					bConnected = false;
 				m_loginSocket.Destroy();
 				m_status = NET_RUN;
 				sleep(5);
@@ -1296,7 +1298,7 @@ void NetCommThread::doit()
 			}
 			break;
 		case NET_REBOOT_REQ:
-			//Not need, we already process the reboot command in recvfilter
+				//Don't need, we already process the reboot command in recvfilter
 			break;
 		case NET_STOP:
 				DPRINTF("STOP\n");
@@ -1313,6 +1315,7 @@ void NetCommThread::CloseConnect()
 	bPause = true;
 	m_loginSocket.Destroy();
 	m_authSocket.Destroy();
+	bConnected = false;
 }
 
 void NetCommThread::StartConnect()
@@ -1335,8 +1338,9 @@ bool NetCommThread::RecvFilter()
 				t_timeout tm = 1000;
 
 	int err = m_authSocket.Receive2((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), get_size, &tm);
-	if( err ==  -1)
+	if( err == CZSocket::WAIT_R_TIMEOUT)
 				{
+		DPRINTF("Receive timeout\n");
 		return false;
 				}
 	if( err  < 0)
@@ -1387,6 +1391,10 @@ bool NetCommThread::RecvFilter()
 					DPRINTF("Receive error\n");
 					if(bNew)
 						delete[] buf1;
+					if (gLog)
+					{
+						gLog->Write(LOG_ERROR, "MD5 Content Recevie < 0");
+					}
 					throw -1;
 				}
 				DPRINTF("MD5 Responsed length:%d\n", get_size);
@@ -1413,12 +1421,19 @@ bool NetCommThread::RecvFilter()
 						inet_desc.command = NET_MD5_CONFIRM;
 			inet_desc.subCommand = 0;
 						inet_desc.payloadLength = sizeof(L_MD5_KEY_CONFIRM);
+					inet_desc.flag = ENC_SESSIONKEY;
 					confirm.filmID = gRecv.nFileID;
 					DPRINTF("MD5 confirm %u\n", confirm.filmID);
 						confirm.crc32 = calc_crc32((uint8 *)&confirm,
 							sizeof(L_MD5_KEY_CONFIRM) - 4);
 						size_t send_size = 0;
 					
+					//Encrypt md5 request with AES128 ECB
+					aes_encrypt((uint8*)m_authRep.sessionKey, 
+						(uint8*)&confirm, 
+						(uint8*)&confirm,
+						sizeof(struct L_MD5_KEY_CONFIRM));
+
 					save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command, 
 						(char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM));
 
@@ -1427,24 +1442,80 @@ bool NetCommThread::RecvFilter()
 
 					R_MD5_KEY_REP *pMd5 = (R_MD5_KEY_REP*)buf1;
 					if(gMd5 != NULL)
+					{
 						delete[] gMd5;
+						gMd5 = NULL;
+					}
 
 					gMd5 = new char[pMd5->fileLength];
 					if(gMd5)
 					{
 						memcpy(gMd5, &pMd5->fileContent, pMd5->fileLength);
-						print_hex(gMd5, 0x10);
 						gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 0x08;
 						DPRINTF("Receive MD5File\n");
 					}
 					else
 					{
+						if (gLog)
+						{
+							gLog->Write(LOG_ERROR, "New MD5 buffer error");
+						}
 						DPRINTF("New gMd5 error\n");
 					}
 				}
 				else
 				{
 					DPRINTF("CRC ERROR recv %08X calac %08X\n", *pCrc32, crc32);
+					if (gLog)
+					{
+						gLog->Write(LOG_ERROR, "MD5 CRC error");
+					}
+					struct L_MD5_KEY_CONFIRM confirm;
+					struct INET_DESCRIPTOR inet_desc;
+					inet_desc.command = NET_MD5_CONFIRM;
+					inet_desc.subCommand = 0;
+					inet_desc.payloadLength = sizeof(L_MD5_KEY_CONFIRM);
+					inet_desc.flag = ENC_SESSIONKEY;
+					confirm.filmID = gRecv.nFileID;
+					DPRINTF("MD5 confirm %u\n", confirm.filmID);
+					confirm.crc32 = calc_crc32((uint8 *)&confirm,
+						sizeof(L_MD5_KEY_CONFIRM) - 4);
+					size_t send_size = 0;
+
+					//Encrypt md5 request with AES128 ECB
+					aes_encrypt((uint8*)m_authRep.sessionKey, 
+						(uint8*)&confirm, 
+						(uint8*)&confirm,
+						sizeof(struct L_MD5_KEY_CONFIRM));
+
+					save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command, 
+						(char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM));
+
+					m_authSocket.Send((const char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), send_size);
+					m_authSocket.Send((const char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM), send_size);
+
+					R_MD5_KEY_REP *pMd5 = (R_MD5_KEY_REP*)buf1;
+					if(gMd5 != NULL)
+					{
+						delete[] gMd5;
+						gMd5 = NULL;
+					}
+
+					gMd5 = new char[pMd5->fileLength];
+					if(gMd5)
+					{
+						memcpy(gMd5, &pMd5->fileContent, pMd5->fileLength);
+						gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 0x08;
+						DPRINTF("Receive MD5File\n");
+					}
+					else
+					{
+						if (gLog)
+						{
+							gLog->Write(LOG_ERROR, "New MD5 buffer error");
+						}
+						DPRINTF("New gMd5 error\n");
+					}
 				}
 				if(bNew)
 				{
@@ -1455,6 +1526,10 @@ bool NetCommThread::RecvFilter()
 			else
 			{
 				DPRINTF("new buf error\n");
+				if (gLog)
+				{
+					gLog->Write(LOG_ERROR, "MD5 new buffer error");
+				}
 			}		
 		}
 		break;
@@ -2260,7 +2335,7 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 			inet_desc.flag = ENC_SESSIONKEY;
 
 			L_LOG_REP* logRep = (L_LOG_REP*)buf;
-			int pos;
+			int pos = 0;
 			if(log.size() > 100000)
 			    logRep->fileSize = 100000;
 			else
@@ -2280,7 +2355,11 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 
 			uint32 crc = calc_crc32((uint8*)buf, pos);
 			memcpy(buf + pos, &crc, sizeof(crc));
-			pos++;
+			pos += sizeof(uint32);
+			char sss[50];
+			sprintf(sss, "LOG CRC: %08X pos %08X\n", crc, pos);
+			if(gLog)
+				gLog->Write(LOG_NETCOMMU, sss);
 
 			inet_desc.payloadLength = pos;
 			if (inet_desc.flag != ENC_NONE)

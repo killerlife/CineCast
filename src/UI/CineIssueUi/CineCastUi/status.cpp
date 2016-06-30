@@ -26,11 +26,13 @@ void Status::Init()
 	ui.label_8->setStyleSheet("QLabel{font-size: 14px; font-family:'Book Antiqua';}");
 	ui.label_9->setStyleSheet("QLabel{font-size: 14px; font-family:'Book Antiqua';}");
 	ui.label_Receiver->setStyleSheet("QLabel{font-size: 14px; font-family:'Book Antiqua';}");
+	ui.label_Receiver_2->setStyleSheet("QLabel{font-size: 14px; font-family:'Book Antiqua';}");
 	ui.label_filmName->setStyleSheet("QLabel{font-size: 14px; font-family:'Book Antiqua';}");
 	ui.progressBar_siganl_Strength->setStyleSheet("QProgressBar{font-size: 14px; font-family:'Book Antiqua';}");
 	ui.progressBar_siganl_Quality->setStyleSheet("QProgressBar{font-size: 14px; font-family:'Book Antiqua';}");
 	ui.progressBar_Revceiver_length->setStyleSheet("QProgressBar{font-size: 14px; font-family:'Book Antiqua';}");
 	ui.textBrowser->setStyleSheet("QTextBrowser{font-size: 14px; font-family:'Book Antiqua';}");
+	ui.textBrowser->setFocusPolicy(Qt::NoFocus);
 
 	ui.label_10->setStyleSheet("QLabel{font-size: 12px; font-family:'Book Antiqua';}");
 	ui.label_12->setStyleSheet("QLabel{font-size: 12px; font-family:'Book Antiqua';}");
@@ -61,8 +63,24 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 {
 	ui.label_filmName->setText(tInfo->strFilmName.c_str());
 	QString s;
-	s.sprintf("%lld/%lld", tInfo->nReceiveLength, tInfo->nFileLength);
-	ui.label_Receiver->setText(s);
+	s.sprintf("%lld", tInfo->nReceiveLength);
+	int n = s.size();
+	for(int i = 1; i <= (n-1)/3; i++)
+	{
+		s.insert(n - i * 3, ",");
+	}
+	QString dd = tr(" Bytes");
+	QString ss = s + dd;
+	s.sprintf("%lld", tInfo->nFileLength);
+	n = s.size();
+	for(int i = 1; i <= (n-1)/3; i++)
+	{
+		s.insert(n - i * 3, ",");
+	}
+	ss += " / ";
+	ss += s;
+	ss += dd;
+	ui.label_Receiver->setText(ss);
 	if(tInfo->nFileLength > 0)
 	{
 		ui.progressBar_Revceiver_length->setValue(tInfo->nReceiveLength*10000/tInfo->nFileLength);
@@ -73,15 +91,74 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
 	QString creator = gbk->toUnicode(tInfo->strCreator.c_str());
 	QString issuer = gbk->toUnicode(tInfo->strIssuer.c_str());
-	txt = QString(tr("<pre style=\"font-size: 14px; font-family:Book Antiqua\">Creator: %2\tIssuer: %3\tIssueDate: %4\nRound: %9\tTotal Segment: %5\tReceived Segment: %6\nCRC Error: %7\tLost Segment:%8</pre>"))
+	QString sRate;
+	size_t pos;
+	if ((pos = tInfo->strExtend.find("RATE:")) != std::string::npos)
+	{
+		sRate = tInfo->strExtend.c_str() + pos + 5;
+		QStringList slist = sRate.split("|");
+		sRate = slist.at(0);
+	}
+	else
+		sRate = "0";
+
+	QString round = QString::number(tInfo->nReceiveStatus>>16);
+	QString crc = QString::number(tInfo->nCrcErrorSegment);
+	QString total = QString::number(tInfo->nTotalSegment);
+	QString recvs = QString::number(tInfo->nReceiveSegment);
+	if(creator.isEmpty())
+	{
+		creator = "\t";
+#ifdef WIN32
+ 		round += "\t";
+#endif
+		issuer += "\t";
+#ifdef WIN32
+		crc += "\t";
+#endif
+		total += "\t";
+	}
+#ifdef WIN32
+	if((creator.toLocal8Bit().size() - round.toLocal8Bit().size()) >= 3)
+		round += "\t";
+#endif
+	if((issuer.toLocal8Bit().size() - total.toLocal8Bit().size()) > 4)
+	{
+		total += "\t";
+//		crc += "\t";
+	}
+	else if((total.toLocal8Bit().size() - issuer.toLocal8Bit().size()) >= 3)
+	{
+		issuer += "\t";
+	}
+#ifdef WIN32
+	if((total.size() - crc.size()) > 4)
+		crc += "\t";
+#endif
+#if 0
+	txt = QString(tr("<pre style=\"font-size: 14px; font-family:Book Antiqua\">Creator: %2\tIssuer: %3\tIssueDate: %4\nRound: %9\tTotal Segment: %5\tReceived Segment: %6\nRecvRate: %10 MB/S\tCRC Error: %7\tLost Segment:%8</pre>"))
 		.arg(creator)
 		.arg(issuer)
 		.arg(tInfo->strIssueDate.c_str())
-		.arg(QString::number(tInfo->nTotalSegment))
-		.arg(QString::number(tInfo->nReceiveSegment))
-		.arg(QString::number(tInfo->nCrcErrorSegment))
+		.arg(total)
+		.arg(recvs)
+		.arg(crc)
 		.arg(QString::number(tInfo->nLostSegment))
-		.arg(QString::number(tInfo->nReceiveStatus>>16));
+		.arg(round)
+		.arg(sRate);
+#else
+	round += "\t";
+	crc += "\t";
+	txt = QString(tr("<pre style=\"font-size: 14px; font-family:Book Antiqua\">Creator: %2\tIssuer: %3\tIssueDate: %4\nRound: %9\tTotal Segment: %5\tReceived Segment: %6\tCRC Error: %7\tLost Segment:%8</pre>"))
+		.arg(creator)
+		.arg(issuer)
+		.arg(tInfo->strIssueDate.c_str())
+		.arg(total)
+		.arg(recvs)
+		.arg(crc)
+		.arg(QString::number(tInfo->nLostSegment))
+		.arg(round);
+#endif
 	ui.textBrowser->setText(txt);
 	m_Status = tInfo->nReceiveStatus & 0xffff;
 	switch(tInfo->nReceiveStatus & 0xffff)
@@ -364,16 +441,52 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 			ui.label_38->setText(tr("Get update file. To update system, please reboot system."));
 		else
 		{
+			QString round = QString::number(tInfo->nReceiveStatus>>16);
+			QString crc = "0";
+			QString total = QString::number(tInfo->nTotalSegment);
+			QString recvs = QString::number(tInfo->nReceiveSegment);
+#ifdef WIN32
+			if((creator.toLocal8Bit().size() - round.toLocal8Bit().size()) >= 3)
+				round += "\t";
+#endif
+			if((issuer.toLocal8Bit().size() - total.toLocal8Bit().size()) > 4)
+			{
+				total += "\t";
+				//		crc += "\t";
+			}
+			else if((total.toLocal8Bit().size() - issuer.toLocal8Bit().size()) >= 3)
+			{
+				issuer += "\t";
+			}
+#ifdef WIN32
+			if((total.size() - crc.size()) > 4)
+				crc += "\t";
+#endif
 			ui.label_38->setText(tr("Please power-off and take out the removeable disk."));
-			txt = QString(tr("<pre style=\"font-size: 14px; font-family:Book Antiqua\">Creator: %2\tIssuer: %3\tIssueDate: %4\nRound: %9\tTotal Segment: %5\tReceived Segment: %6\nCRC Error: %7\tLost Segment:%8</pre>"))
+#if 0
+			txt = QString(tr("<pre style=\"font-size: 14px; font-family:Book Antiqua\">Creator: %2\tIssuer: %3\tIssueDate: %4\nRound: %9\tTotal Segment: %5\tReceived Segment: %6\nRecvRate: %10 MB/S\tCRC Error: %7\tLost Segment:%8</pre>"))
 				.arg(creator)
 				.arg(issuer)
 				.arg(tInfo->strIssueDate.c_str())
-				.arg(QString::number(tInfo->nTotalSegment))
-				.arg(QString::number(tInfo->nReceiveSegment))
+				.arg(total)
+				.arg(recvs)
+				.arg(crc)
 				.arg(0)
+				.arg(round)
+				.arg(sRate);
+#else
+			round += "\t";
+			crc += "\t";
+			txt = QString(tr("<pre style=\"font-size: 14px; font-family:Book Antiqua\">Creator: %2\tIssuer: %3\tIssueDate: %4\nRound: %9\tTotal Segment: %5\tReceived Segment: %6\tCRC Error: %7\tLost Segment:%8</pre>"))
+				.arg(creator)
+				.arg(issuer)
+				.arg(tInfo->strIssueDate.c_str())
+				.arg(total)
+				.arg(recvs)
+				.arg(crc)
 				.arg(0)
-				.arg(QString::number(tInfo->nReceiveStatus>>16));
+				.arg(round);
+#endif
 			ui.textBrowser->setText(txt);
 			s.sprintf("%lld/%lld", tInfo->nFileLength, tInfo->nFileLength);
 			ui.label_Receiver->setText(s);

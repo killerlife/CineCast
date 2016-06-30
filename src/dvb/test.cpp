@@ -114,7 +114,9 @@ int main(int argc, char **argv)
 	uint32 nTimeOut = 70; //Use this for judge Transfer is finish
 	bool *pBData = CreateFilmDataFlag();
 	uint32 prevFilmID = 0;
-
+	int64 sRecv = 0;
+	int64 nRate = 0;
+	int md5count = 0;
 	//====================================================================
 	//Change work directory to "/storage"
 	chdir("/storage");
@@ -351,6 +353,20 @@ int main(int argc, char **argv)
 		//----------------------------------------------------
 
 
+		//----------------------------------------------------
+		nRate = (gRecv.nReceiveLength - sRecv) * 8 / 1000 / 1000 / 5;
+		sRecv = gRecv.nReceiveLength;
+// 		if(nRate < 80)
+// 			nRate = 80;
+		if((gRecv.nReceiveStatus & 0xffff) == 1)
+		{
+			char ss[20];
+			sprintf(ss, "RATE:%d|", nRate);
+			gRecv.strExtend += ss;
+		}
+		//----------------------------------------------------
+
+
 		//===========================================================
 		//Process Notify from DVB
 		if(pNotify->IsNotify())
@@ -367,6 +383,9 @@ int main(int argc, char **argv)
 
 				//Reset Auto delete counter
 				nAutoDelCounter = 0;
+
+				//Reset MD5 Counter
+				md5count = 0;
 
 				//--------------------------------------------
 				//Clear Run Path List
@@ -523,6 +542,17 @@ int main(int argc, char **argv)
 				gLog->Write(LOG_SYSTEM, m_log);
 				if(pNetComm)
 					pNetComm->GetMD5File(gRecv.nFileID);
+				//////////////////////////////////////////////////////////////////////////
+				//MD5 Counter
+				if(md5count < 3)
+				{
+					md5count++;
+				}
+				else
+				{
+					gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) | 0x08;
+				}
+				//////////////////////////////////////////////////////////////////////////
 			}
 		}
 		//-----------------------------------------------------------------------------------

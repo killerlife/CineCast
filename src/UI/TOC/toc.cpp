@@ -30,7 +30,8 @@ TOC::~TOC()
 
 void TOC::Init(void)
 {
-	this->setWindowState(Qt::WindowFullScreen);
+// 	this->setWindowState(Qt::WindowFullScreen);
+	this->showMaximized();
 	StartServer();
 }
 
@@ -582,9 +583,9 @@ void TOC::on_pushButtonProtocol_clicked()
 			fclose(fp);
 
 			display += printfn(flist.at(i));
+			decrypt(buf, s.st_size);
 			display += print_hex2(buf, s.st_size);
 			display += print_kh(buf, s.st_size);
-			decrypt(buf, s.st_size);
 			display += print_crc(buf, s.st_size);
 
 			delete[] buf;
@@ -795,24 +796,38 @@ QString TOC::print_kh(char* buf, int len)
 
 extern void MyAes_ctr_decrypt(uint8* msg, uint32 fsize,uint8 key[16]);
 
+#include "IDManager.h"
+uint32 ID = 0;
 void TOC::decrypt(char* buf, int len)
 {
 	KH *pKh = (KH*)buf;
 	char *data;
 	int len1;
+	char *id = buf + sizeof(KH);
 	switch(pKh->cmd)
 	{
 	case 0x11:
 	case 0x13:
 		data = buf + sizeof(KH) + sizeof(uint32);
 		len1 = pKh->cmd_length - sizeof(uint32);
+		ID = *(uint32*)(id);
 		break;
 	default:
 		data = buf + sizeof(KH);
 		len1 = pKh->cmd_length;
 	}
 	int len_out;
-	unsigned char key[16] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68};
+	unsigned char key[20] = {0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68};
+	switch(pKh->cmd)
+	{
+	case 0x11:
+	case 0x12:
+	case 0x13:
+	case 0x14:
+		GetIDManager()->GetHardKeyById(ID, (char*)key);
+		break;
+	}
+	if(pKh->flag_pwd != 0)
 	MyAes_ctr_decrypt((uint8*)data, len1, key);
 }
 
@@ -906,9 +921,9 @@ QString TOC::print_crc(char *buf, int len)
 	s = tr("\n[ Verify ]-----------------------------------------------------------------------\n");
 	KH *pKh = (KH*)buf;
 	char *data = buf + sizeof(KH);
-	if(pKh->cmd_length < 0)
+	if(pKh->cmd_length <= 0)
 	{
-		s += tr(" NO DATA \n");
+		s += tr("\t NO DATA \n");
 		return s;
 	}
 

@@ -61,8 +61,24 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 {
 	ui.label_filmName->setText(tInfo->strFilmName.c_str());
 	QString s;
-	s.sprintf("%lld/%lld", tInfo->nReceiveLength, tInfo->nFileLength);
-	ui.label_Receiver->setText(s);
+	s.sprintf("%lld", tInfo->nReceiveLength);
+	int n = s.size();
+	for(int i = 1; i <= (n-1)/3; i++)
+	{
+		s.insert(n - i * 3, ",");
+	}
+	QString dd = tr(" Bytes");
+	QString ss = s + dd;
+	s.sprintf("%lld", tInfo->nFileLength);
+	n = s.size();
+	for(int i = 1; i <= (n-1)/3; i++)
+	{
+		s.insert(n - i * 3, ",");
+	}
+	ss += " / ";
+	ss += s;
+	ss += dd;
+	ui.label_Receiver->setText(ss);
 	if(tInfo->nFileLength > 0)
 	{
 		ui.progressBar_Revceiver_length->setValue(tInfo->nReceiveLength*10000/tInfo->nFileLength);
@@ -73,7 +89,30 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
 	QString creator = gbk->toUnicode(tInfo->strCreator.c_str());
 	QString issuer = gbk->toUnicode(tInfo->strIssuer.c_str());
-	txt = QString(tr("Film Name: %1<br>UUID: %2<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
+	QString sRate;
+	size_t pos;
+	if ((pos = tInfo->strExtend.find("RATE:")) != std::string::npos)
+	{
+		sRate = tInfo->strExtend.c_str() + pos + 5;
+		QStringList slist = sRate.split("|");
+		sRate = slist.at(0);
+	}
+	else
+		sRate = "0";
+#if 0
+	txt = QString(tr("Film Name: %1<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<br>RecvRate: %2 MB/S<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
+		.arg(tInfo->strFilmName.c_str())
+		.arg(sRate)
+		.arg(creator)
+		.arg(issuer)
+		.arg(tInfo->strIssueDate.c_str())
+		.arg(QString::number(tInfo->nTotalSegment))
+		.arg(QString::number(tInfo->nReceiveSegment))
+		.arg(QString::number(tInfo->nCrcErrorSegment))
+		.arg(QString::number(tInfo->nLostSegment))
+		.arg(QString::number(tInfo->nReceiveStatus>>16));
+#else
+	txt = QString(tr("Film Name: %1<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<br>UUID: %2<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
 		.arg(tInfo->strFilmName.c_str())
 		.arg(tInfo->strUuid.c_str())
 		.arg(creator)
@@ -84,6 +123,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		.arg(QString::number(tInfo->nCrcErrorSegment))
 		.arg(QString::number(tInfo->nLostSegment))
 		.arg(QString::number(tInfo->nReceiveStatus>>16));
+#endif
 	ui.textBrowser->setText(txt);
 	m_Status = tInfo->nReceiveStatus & 0xffff;
 	switch(tInfo->nReceiveStatus & 0xffff)
@@ -367,7 +407,20 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		else
 		{
 		ui.label_38->setText(tr("Please power-off and take out the removeable disk."));
-			txt = QString(tr("Film Name: %1<br>UUID: %2<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
+#if 0
+			txt = QString(tr("Film Name: %1<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<br>RecvRate: %2 MB/S<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
+				.arg(tInfo->strFilmName.c_str())
+				.arg(sRate)
+				.arg(creator)
+				.arg(issuer)
+				.arg(tInfo->strIssueDate.c_str())
+				.arg(QString::number(tInfo->nTotalSegment))
+				.arg(QString::number(tInfo->nReceiveSegment))
+				.arg(0)
+				.arg(0)
+				.arg(QString::number(tInfo->nReceiveStatus>>16));
+#else
+			txt = QString(tr("Film Name: %1<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<br>UUID: %2<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
 				.arg(tInfo->strFilmName.c_str())
 				.arg(tInfo->strUuid.c_str())
 				.arg(creator)
@@ -378,6 +431,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 				.arg(0)
 				.arg(0)
 				.arg(QString::number(tInfo->nReceiveStatus>>16));
+#endif
 			ui.textBrowser->setText(txt);
 			s.sprintf("%lld/%lld", tInfo->nFileLength, tInfo->nFileLength);
 			ui.label_Receiver->setText(s);

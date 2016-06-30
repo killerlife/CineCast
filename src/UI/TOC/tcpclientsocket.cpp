@@ -345,7 +345,7 @@ void TcpClientSocket::slot_Disconnected()
 }
 
 
-
+#include <Windows.h>
 void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //CRCֶ,Ȼܷ posʾƫ
 {
 	   printf("Sever:crc_encry_send()--START\n");
@@ -376,16 +376,19 @@ void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //CRCֶ,Ȼܷ 
 		   //CRCУܷ֮
 		   //ݱ͵Ӧļܷ
 		   uint8* pos=(uint8*)(buf+sizeof(KH));
-		   pKH->flag_pwd=KEY_MEET;
 		   int len=pKH->cmd_length;
-		   if(pKH->cmd==CMD_LOGIN_BACK||pKH->cmd==CMD_AUTHEN_BACK);  //ǵ¼/֤MachineIDֶβ,
+		   switch(pKH->cmd)//ǵ¼֤Ӳָ,ûԿ
 		   {
-			   pKH->flag_pwd=KEY_HARD;   //ǵ¼֤Ӳָ,ûԿ
+		   case CMD_LOGIN_BACK:
+		   case CMD_AUTHEN_BACK:
+			   pKH->flag_pwd = KEY_HARD;
+			   break;
+		   default:
+			   pKH->flag_pwd = KEY_MEET;
 		   }
 
 		   if(size> sizeof(KH))
 		   {
-			   pKH->flag_pwd=KEY_NO;
 			   switch(pKH->flag_pwd)
 			   {
 			   case KEY_NO:											             break;         
@@ -403,6 +406,23 @@ void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //CRCֶ,Ȼܷ 
 		   }
 
 		   SaveProto(buf);
+		   if(size > 1200)
+		   {
+			   int ss = size - 1024;
+			   write(buf, 1024);
+			   flush();                 //new ҲԼӿд
+			   //socket.bytesToWrite ()ڵȴдݵֽҲĴСҲдѭжֵΪ0,Ѿ
+			   waitForBytesWritten(-1);
+			   printf("bytesToWrite=%d\n",bytesToWrite());
+			   printf("Sever:crc_encry_send()--END\n");
+			   Sleep(500);
+			   write(buf + 1024, ss);
+			   flush();                 //new ҲԼӿд
+			   //socket.bytesToWrite ()ڵȴдݵֽҲĴСҲдѭжֵΪ0,Ѿ
+			   waitForBytesWritten(-1);
+		   }
+		   else
+		   {
 		   write(buf,size);
 		   flush();                 //new ҲԼӿд
 		   //socket.bytesToWrite ()ڵȴдݵֽҲĴСҲдѭжֵΪ0,Ѿ
@@ -410,6 +430,7 @@ void TcpClientSocket::crc_encry_send(char* buf,int size,int val)   //CRCֶ,Ȼܷ 
 		   printf("bytesToWrite=%d\n",bytesToWrite());
 		   printf("Sever:crc_encry_send()--END\n");
 	   }
+}
 }
 
 
@@ -1021,6 +1042,12 @@ void TcpClientSocket::UIcmd_process(int SocketID,int cmdtype,QByteArray ba)   //
 
 }
 
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <errno.h>
+
 void TcpClientSocket::md5_process()
 {
 	//һֽṹ
@@ -1030,6 +1057,25 @@ void TcpClientSocket::md5_process()
 		uint32 len;
 		uint32 CRC;
 	};
+	struct _stat st;
+	FILE *fp = fopen("md5.xml", "rb");
+	_stat("md5.xml", &st);
+	char* buf = new char[st.st_size + 100];
+	struct MD5H* p = (MD5H*)buf;
+	char* pos = buf + sizeof(MD5H);
+	p->filmID = 20160324;
+	p->len = st.st_size;
+	p->CRC = 0;
+	fread(pos, 1, st.st_size, fp);
+	pos += p->len;
+	fclose(fp);
+	p->kh.pkgHead = 0x55;
+	p->kh.flag_pwd = 2;
+	p->kh.cmd = 0x0025;
+	p->kh.cmd_length = sizeof(MD5H) - sizeof(KH) + p->len + 4;
+	crc_encry_send((char*)&p->kh, sizeof(MD5H) + p->len + 4, 0);    //У ܣ //ƫΪ0,ȫ
+	delete buf;
+	/*	
 	char md5[] = "<EncodeInfo><EncodeFileList ID=\"20160324\" Name=\"Test\"><ChallengeCode>123</ChallengeCode>"
 		"</EncodeFileList></EncodeInfo>";
 	struct MD5H* p = (MD5H*)m_buf;
@@ -1044,6 +1090,7 @@ void TcpClientSocket::md5_process()
 	p->kh.cmd = 0x0025;
 	p->kh.cmd_length = sizeof(MD5H) - sizeof(KH) + p->len + 4;
 	crc_encry_send((char*)&p->kh, sizeof(MD5H) + p->len + 4, 0);    //У ܣ //ƫΪ0,ȫ
+	*/
 }
 
 void TcpClientSocket::lost_report_process()

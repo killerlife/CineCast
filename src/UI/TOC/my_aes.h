@@ -1,4 +1,4 @@
-#ifndef MY_AES_H
+Ôªø#ifndef MY_AES_H
 #define MY_AES_H
 
 #include <openssl/rsa.h>
@@ -24,7 +24,7 @@ typedef long   long    int64;
 typedef unsigned long  long  uint64;
 ******************************/
 
-//using namespace std;   //”√≤ªµΩ
+//using namespace std;   //√≤
 
 //same as function rfc3686_inc
 void ctr_inc(unsigned char ctr_buf[16])
@@ -67,7 +67,7 @@ AES_RETURN aes_cfb_decrypt(const unsigned char *ibuf, unsigned char *obuf,
 
 #define DO 1
 
-//º”√‹
+//
 void MyAes_ctr_encrypt(uint8* msg, uint32 fsize,uint8 key[16])
 {
 #if DO
@@ -81,12 +81,12 @@ void MyAes_ctr_encrypt(uint8* msg, uint32 fsize,uint8 key[16])
 
 	int outlen = 0, tmplen;
 	EVP_EncryptUpdate(&ctx, msg+outlen, &outlen, msg, fsize);
-	EVP_EncryptFinal_ex(&ctx, msg+outlen, &tmplen);
+// 	EVP_EncryptFinal_ex(&ctx, msg+outlen, &tmplen);
 	EVP_CIPHER_CTX_cleanup(&ctx);
 #endif
 }
 
-//Ω‚√‹
+//
 void MyAes_ctr_decrypt(uint8* msg, uint32 fsize,uint8 key[16])
 {
 #if DO
@@ -100,7 +100,7 @@ void MyAes_ctr_decrypt(uint8* msg, uint32 fsize,uint8 key[16])
 
 	int outlen = 0, tmplen;
 	EVP_DecryptUpdate(&ctx, msg + outlen, &outlen, msg, fsize);
-	EVP_DecryptFinal_ex(&ctx, msg + outlen, &tmplen);
+// 	EVP_DecryptFinal_ex(&ctx, msg + outlen, &tmplen);
 	EVP_CIPHER_CTX_cleanup(&ctx);
 #endif
 }

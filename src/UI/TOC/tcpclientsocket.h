@@ -1,17 +1,17 @@
-#ifndef TCPCLIENTSOCKET_H
+ï»¿#ifndef TCPCLIENTSOCKET_H
 #define TCPCLIENTSOCKET_H
 
 #include <QtGui>
 #include <QtNetwork>
-#include "my_struct.h"        //×Ô¶¨ÒåÊı¾İÀàĞÍ 
-#include "baseoperation.h"    //×Ô¶¨Òå»ù±¾²Ù×÷
+#include "my_struct.h"        //Ô¶ 
+#include "baseoperation.h"    //Ô¶
 
 
 
 #include <QThread>
 
 
-//ÊÇ·ñ¿ÉÒÔ¸Ä³ÉÏß³ÌÀà
+//Ç·Ô¸Ä³ß³
 class TcpClientSocket : public QTcpSocket//,public QThread
 {
 	Q_OBJECT
@@ -23,19 +23,19 @@ public:
 public:
 	TcpClientSocket(int socketDescriptor,QObject *parent = 0);
 	~TcpClientSocket();
-	void crc_encry_send(char* buf,int size,int val);   //Ìî³äCRC×Ö¶Î,È»ºó¼ÓÃÜ·¢ËÍ pos±íÊ¾¼ÓÃÜÆ«ÒÆ
+	void crc_encry_send(char* buf,int size,int val);   //CRCÖ¶,È»Ü· posÊ¾Æ«
 
 public:
-	AuthenREQUEST AuthenRequest;     //±£´æµ±Ç°Á¬½ÓµÄÈÏÖ¤ÇëÇó±¨ÎÄ
-	UpdateFileBACK UpdateFileBack;   //±£´æµ±Ç°Á¬½ÓµÄÉı¼¶ÎÄ¼ş·´À¡
-	UpdateFileINFO  UpdateFileInfo;  //Ôİ´æÉı¼¶°üÎÄ¼şĞÅÏ¢,·¢ËÍÉı¼¶ÃüÁîÊ±ºòÓÃµ½ÀïÃæµÄĞòÁĞºÅ
+	AuthenREQUEST AuthenRequest;     //æµ±Ç°ÓµÖ¤
+	UpdateFileBACK UpdateFileBack;   //æµ±Ç°ÓµÄ¼
+	UpdateFileINFO  UpdateFileInfo;  //İ´Ä¼Ï¢,Ê±ÃµĞº
 
 
-	//¸÷ÖÖÇëÇó´¦Àí   
-	void login_request_process();         //µÇÂ¼ÇëÇó  ´¦Àí     
-	void authon_request_process();        //ÈÏÖ¤ÇëÇó     
-	void update_file_back_process();      //Éı¼¶ÎÄ¼ş°üÍÆËÍËÍ·´À¡ ´¦Àí               
-	void log_back_process();               //ÈÕÖ¾±¨ÎÄ»Ø´«,ÎÄ¼ş¿ÉÄÜ±È½Ï´ó,ÌØÊâ´¦Àí
+	//   
+	void login_request_process();         //Â¼       
+	void authon_request_process();        //Ö¤     
+	void update_file_back_process();      //Ä¼Í·                
+	void log_back_process();               //Ö¾Ä»Ø´,Ä¼Ü±È½Ï´,â´¦
 	void log_process();
 	void heart_breat_process();
 	void heart_breat_request();
@@ -44,33 +44,33 @@ public:
 	void md5_res_process();
 
 
-	void do_send_file();                   //Éı¼¶ÎÄ¼ş°üÍÆËÍ
-	void do_update_start();                //ÃüÁî½ÓÊÕ»ú,¿ÉÒÔÉı¼¶
-	void do_get_Log();                     //ÊÖ¶¯»ñÈ¡ÈÕÖ¾
+	void do_send_file();                   //Ä¼
+	void do_update_start();                //Õ»,
+	void do_get_Log();                     //Ö¶È¡Ö¾
 	void do_get_md5res();
 	void do_reboot();
 	void do_Log();
 	QHostAddress getRemote();
 
-	//±£´æÈÏÖ¤ĞÅÏ¢,¶Ï¿ªÁ¬½ÓÊ±ÒªÉ¾³ı
-	//    QList<AuthenREQUEST> QListAuthenRequest;    //·Åµ½TcpServer
+	//Ö¤Ï¢,Ï¿Ê±ÒªÉ¾
+	//    QList<AuthenREQUEST> QListAuthenRequest;    //ÅµTcpServer
 
-	//·şÎñÆ÷server¶Ë±£´æµÄÒÑ¾­×¢²áµÄ½ÓÊÕ»úID¼°ÆäÓ²¼şÖ¸ÎÆ
+	//serverË±Ñ¾×¢Ä½Õ»IDÓ²Ö¸
 	QList<RegisterIDHARDKEY> ListRegisterIDHardKey;
 
-	char buf[1500000];                 //È«¾ÖÊı¾İ»º´æ--·Åµ½Socket¶ÔÏóÀïÃæ,·ÀÖ¹¶àÏß³Ì·ÃÎÊ³åÍ»
-	bool isblocking;                   //ÕıÔÚ×èÈû½ÓÊÕ£¬´¥·¢datereceiveÁ¢¼´·µ»Ø£¬·ñÔòÂß¼­»ìÂÒ
+	char buf[1500000];                 //È«İ»--ÅµSocket,Ö¹ß³Ì·Ê³Í»
+	bool isblocking;                   //Õ£datereceiveØ£ß¼
 	char c_buf[500];
 	char *v_buf;
 	char* m_buf;
 
-	int  flag_update;   //±¾Ïß³ÌµÄÉı¼¶×´Ì¬,Î´¿ªÊ¼0,ÕıÔÚÖ´ĞĞÉı¼¶,1 Éı¼¶Íê³É2,
-	char MeetKey[16];   //Ôİ´æµ±Ç°Á´½ÓµÄ»áÎîÃÜÔ¿
-	char HardKey[16];   //Ôİ´æµ±Ç°Á´½Ó¶ÔÓ¦½ÓÊÕ»úµÄÓ²¼şÃÜÔ¿
-	char RandomCode_tmp[16];
+	int  flag_update;   //ß³Ìµ×´Ì¬,Î´Ê¼0,Ö´,1 2,
+	char MeetKey[20];   //İ´æµ±Ç°ÓµÄ»Ô¿
+	char HardKey[20];   //İ´æµ±Ç°Ó¶Ó¦Õ»Ó²Ô¿
+	char RandomCode_tmp[20];
 
-	//¼¸¸ö²»·½±ãĞÅºÅ´«²Î½á¹¹Ìå,ÔÙ¸Ä½ø,×¢²áĞÂÀàĞÍ»ò¸ÄÈ«¾ÖÊı×é¼ÓSL½á¹¹Ìå¡£
-	char pathname_updatefile[256];    //Éı¼¶°üÎÄ¼şÂ·¾¶
+	//ÅºÅ´Î½á¹¹,Ù¸Ä½,×¢Í»È«SLá¹¹å¡£
+	char pathname_updatefile[256];    //Ä¼Â·
 	LOGREQUEST LOGRequest;
 	
 	QString strLog;
@@ -78,21 +78,21 @@ public:
 
 signals:
 	void signal_socketDataReady(int socketID);
-	void signal_socketDisConnect(int socketID,TcpClientSocket *tcpClientSocket);  //Í¬Ê±´«µİµ±Ç°¶ÔÏóÖ¸Õë,
-	void signal_updateClients(QString,int);      //´¦ÀíµÇÂ½±ä»¯
-	void signal_CMD_SocketToUI(int SocketID,int cmdtype,int val);   //socketÏß³Ì·¢ËÍ¸øUIµÄÃüÁî
+	void signal_socketDisConnect(int socketID,TcpClientSocket *tcpClientSocket);  //Í¬Ê±İµÇ°Ö¸,
+	void signal_updateClients(QString,int);      //Â½ä»¯
+	void signal_CMD_SocketToUI(int SocketID,int cmdtype,int val);   //socketß³Ì·Í¸UI
 
 private slots:
 	void slot_dataReceived();      
 	void slot_Disconnected();
 
 public slots:
-	void UIcmd_process(int SocketID,int cmdtype,QByteArray ba);   //	´¦ÀíUI·¢¹ıÀ´µÄÃüÁî
+	void UIcmd_process(int SocketID,int cmdtype,QByteArray ba);   //	UI
 	void Error(QAbstractSocket::SocketError socketError);
 
 public:
-	int socketID;//±£´æid£¬== this->socketDescriptor()£»µ«ÊÇthis->socketDescriptor()¿Í»§¶Ë¶Ï¿ª»á±»ÊÍ·Å£¬
-	//¶Ï¿ªĞÅºÅÓÃthis->socketDescriptor()µÃ²»µ½ÕıÈ·Öµ
+	int socketID;//id== this->socketDescriptor()this->socketDescriptor()Í»Ë¶Ï¿á±»Í·Å£
+	//Ï¿Åºthis->socketDescriptor()Ã²È·Öµ
 	void SaveProto(char* buf);
 };
 

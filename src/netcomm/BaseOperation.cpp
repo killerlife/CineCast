@@ -1471,6 +1471,17 @@ void System::SetDateTime(char* stime)
 	system("/sbin/clock -w");
 }
 
+void System::ClearSystem()
+{
+	system("rm -rf /var/log/audit/audit.log.*");
+	system("rm -rf /var/log/cups/access_log-*");
+	system("rm -rf /var/log/cups/error_log-*");
+	system("rm -rf /var/log/*.gz");
+	system("rm -rf /var/log/CineCast/*");
+	system("rm -rf /tmp/*");
+	system("rm -rf /var/tmp/*");
+}
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -1576,7 +1587,9 @@ bool USB::ReadyUpdate()
 				DPRINTF("[USB] no src: %s\n", src.c_str());
 				return false;
 }
-			sprintf(cmd, "cp -f %s /home/leonis/update/leonisupdate.zt", src.c_str());
+			//20160612: Fix pathname with space
+			sprintf(cmd, "cp -f \"%s\" /home/leonis/update/leonisupdate.zt", src.c_str());
+			//---------------------------------
 			system(cmd);
 			std::string dest = "/home/leonis/update/leonisupdate.zt";
 			fs::path dest_path(dest);

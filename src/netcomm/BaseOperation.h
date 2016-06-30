@@ -114,6 +114,8 @@ public:
 	//DateTime format
 	//"YYYY-MM-DD hh:mm:ss"
 	void SetDateTime(char* stime);
+
+	void ClearSystem();
 };
 
 

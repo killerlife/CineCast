@@ -19,6 +19,9 @@ enum NET_RUN_STATUS
 
 class HeartThread;
 
+//////////////////////////////////////////////////////////////////////////
+//Network Communication class:
+//////////////////////////////////////////////////////////////////////////
 class NetCommThread: public brunt::CActiveThread
 {
 public:
@@ -28,17 +31,17 @@ public:
 	bool Start();
 	bool Stop();
 	int GetStatus() { return m_status; };
-	bool GetMD5File(uint32 filmId);
-	bool ReportLost(char* buf, int nSize, int nLeoSize);
-	bool HeartBreat();
-	void StartRecvTask();
-	void StartRoundRecv();
-	bool LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis = false);
-	bool PkgSendConfirm(uint32 filmId);
-	bool IsConnect(){ return bConnected;};
-	bool DecryptRep();
-	void CloseConnect();
-	void StartConnect();
+	bool GetMD5File(uint32 filmId); //向节目管理中心平台发送MD5请求
+	bool ReportLost(char* buf, int nSize, int nLeoSize); //向节目管理中心平台上报丢包信息
+	bool HeartBreat(); //发送心跳包
+	void StartRecvTask(); //初始化任务开始时间
+	void StartRoundRecv(); //初始化每轮开始时间
+	bool LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis = false); //日志上报
+	bool PkgSendConfirm(uint32 filmId); //LEONIS分布式补包丢包上报确认
+	bool IsConnect(){ return bConnected;}; //节目管理中心平台是否连接
+	bool DecryptRep(); //MD5校验结果上报
+	void CloseConnect(); //关闭节目管理中心连接
+	void StartConnect(); //连接节目管理中心
 
 private:
 	virtual void doit();
@@ -76,5 +79,6 @@ private:
 	HeartThread* pHeartThread;
 	bool bPause;
 };
+
 NetCommThread* CreateNetComm();
 void ReleaseNetComm(NetCommThread* pNet);

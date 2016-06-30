@@ -81,8 +81,8 @@ int socket_waitfd(p_socket ps, int sw, p_timeout tm) {
         }
 #else
 		if(!timeout_infinite(tm)) {
-			tv.tv_sec = 0;
-			tv.tv_usec = (*tm)*1000;
+			tv.tv_sec = (*tm)/1000;
+			tv.tv_usec = (*tm)%1000*1000;
 			tp = &tv;
 		}
 #endif
@@ -120,7 +120,6 @@ void socket_destroy(p_socket ps) {
         socket_setblocking(ps);
         close(*ps);
         *ps = SOCKET_INVALID;
-		printf("close \n");
     }
 }
 
