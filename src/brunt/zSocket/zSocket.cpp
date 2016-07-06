@@ -174,8 +174,13 @@ int CZSocket::ReceiveFrom(char* buff, int size, size_t& getsize, const sockaddr_
 
 void CZSocket::SetBlocking(bool bBlock)
 {
-    u_long argp = !bBlock;
-	ioctlsocket(m_socket, FIONBIO, &argp);
+	if (bBlock)
+		socket_setblocking(&m_socket);
+	else
+		socket_setnonblocking(&m_socket);
+//     u_long argp = !bBlock;
+// 	ioctlsocket(m_socket, FIONBIO, &argp);
+
 }
 
 int CZSocket::Wait(int type, t_timeout* tm)

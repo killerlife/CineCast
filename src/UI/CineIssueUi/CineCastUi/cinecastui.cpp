@@ -110,6 +110,8 @@ void CineCastUi::Init()
 	m_time_timer = startTimer(500);
 	ui.pushButton_Reboot->setToolTip(tr("Reboot Machine"));
 	ui.pushButton_Shutdown->setToolTip(tr("Shutdown Machine"));
+	ui.pushButton_Reboot->setVisible(false);
+	ui.pushButton_Reboot->setEnabled(false);
 }
 
 extern bool bFormat;

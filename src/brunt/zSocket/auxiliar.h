@@ -1,4 +1,4 @@
-#ifndef AUXILIAR_H
+﻿#ifndef AUXILIAR_H
 #define AUXILIAR_H
 /*=========================================================================*\
 * Auxiliar routines for class hierarchy manipulation
@@ -31,8 +31,8 @@
 * RCS ID: $Id: auxiliar.h,v 1.9 2005/10/07 04:40:59 diego Exp $
 \*=========================================================================*/
 
-#include "lua.h"
-#include "lauxlib.h"
+//#include "lua.h"
+//#include "lauxlib.h"
 
 int auxiliar_open(lua_State *L);
 void auxiliar_newclass(lua_State *L, const char *classname, luaL_reg *func);

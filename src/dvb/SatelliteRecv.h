@@ -189,6 +189,7 @@ private:
 	int fd;
 	uint16 nPid;
 	uint16 nTid;
+	bool bLogFd;
 
 #ifdef USE_POLL
 	struct pollfd m_poll;

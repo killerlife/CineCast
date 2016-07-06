@@ -124,6 +124,7 @@ int CZSocket::Receive(char* buff, int size, size_t& getsize, t_timeout* tm)
 	assert(size>=0);
 	size_t s = size;
 	size_t s_get = 0;
+	socket_setblocking(&m_socket);
 	while(s > 0)
 	{
 		m_error = socket_recv(&m_socket, buff + s_get, s, &getsize, tm);

@@ -330,7 +330,7 @@ TUNER_INFO Tuner::GetTunerInfo()
 	return mInfo;
 }
 
-Filter::Filter():fd(-1)
+Filter::Filter():fd(-1), bLogFd(false)
 {
 	//pLog = CreateLog();
 }
@@ -349,6 +349,8 @@ bool Filter::SetStrDevName(std::string strDevName)
 		close(fd);
 		fd = -1;
 	}
+
+	bLogFd = false;
 
 	int flags = O_RDWR;
 #ifdef NON_BLOCK
@@ -466,8 +468,9 @@ bool Filter::ReadFilter(uint8 *buf, uint16& count)
 	if(fd <= 0)
 	{
 		DPRINTF("[Filter] invaild fd\n");
-		if (gLog)
+		if (gLog && (bLogFd == false))
 		{
+			bLogFd = true;
 			gLog->Write(LOG_ERROR, "[Filter] ReadFilter: invaild fd");
 		}
 		return false;
