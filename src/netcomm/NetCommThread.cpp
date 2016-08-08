@@ -254,7 +254,7 @@ void ReleaseNetComm(NetCommThread* pNet)
 
 }
 
-NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false), pHeartThread(NULL), bPause(false)
+NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false), pHeartThread(NULL), bPause(false), nHeartCount(0), nDNSCount(0)
 {
 	string s = getDateTime();
 	memset(m_loginReq.startupTime, 0, 20);
@@ -441,45 +441,193 @@ bool NetCommThread::Login()
 
 	//Send login request to remote
 	size_t send_size = 0;
-	t_timeout tm = 10000;
+	t_timeout tm = 8000;
 
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)&req, sizeof(struct L_LOGIN_REQ));
 
-	if(m_loginSocket.Send((char*)&inet_descriptor,
+	char str[512];
+
+	int reTry = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Login send head\n");
+		int err = m_loginSocket.Send2((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
-		&tm) < 0)
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] Login WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 3)
+			{
+// 				bConnected = false;
+// 				m_loginSocket.Destroy();
+// 				if(m_status == NET_READ)
+// 					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] Login WriteError");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+// 			bConnected = false;
+// 			m_loginSocket.Destroy();
+// 			if(m_status == NET_READ)
+// 				m_status = NET_RUN;
 		return false;
+		}
+		else
+			break;
+	}
 
 	send_size = 0;
-	tm = 10000;
-	if(m_loginSocket.Send((char*)&req,
+	tm = 8000;
+	reTry = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Login send body\n");
+		int err = m_loginSocket.Send2((char*)&req,
 		sizeof(struct L_LOGIN_REQ),
 		send_size,
-		&tm) < 0)
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] Login WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 3)
+			{
+// 				bConnected = false;
+// 				m_loginSocket.Destroy();
+// 				if(m_status == NET_READ)
+// 					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] Login WriteError");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+// 			bConnected = false;
+// 			m_loginSocket.Destroy();
+// 			if(m_status == NET_READ)
+// 				m_status = NET_RUN;
 		return false;
+		}
+		else
+			break;
+	}
 
 	//Read login response
 	size_t get_size = 0;
 	tm = 10000;
-	if(m_loginSocket.Receive((char*)&inet_descriptor,
+	reTry = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Login read head\n");
+		int err = m_loginSocket.Receive2((char*)&inet_descriptor,
 		(int)sizeof(struct INET_DESCRIPTOR), 
 		get_size,
-		&tm) < 0)
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] Login WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 5)
+			{
+// 				bConnected = false;
+// 				m_loginSocket.Destroy();
+// 				if(m_status == NET_READ)
+// 					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] Login ReadError");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+// 			bConnected = false;
+// 			m_loginSocket.Destroy();
+// 			if(m_status == NET_READ)
+// 				m_status = NET_RUN;
 		return false;
+		}
+		else
+			break;
+	}
+
 	get_size = 0;
 	tm = 10000;
-	if(m_loginSocket.Receive((char*)&m_loginRep,
-		sizeof(struct R_LOGIN_REP),
+	reTry = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Login read Body\n");
+		int err = m_loginSocket.Receive2((char*)&m_loginRep,
+			(int)sizeof(struct R_LOGIN_REP),
 		get_size,
-		&tm) < 0)
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] Login WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 5)
+			{
+// 				bConnected = false;
+// 				m_loginSocket.Destroy();
+// 				if(m_status == NET_READ)
+// 					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] Login ReadError");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+// 			bConnected = false;
+// 			m_loginSocket.Destroy();
+// 			if(m_status == NET_READ)
+// 				m_status = NET_RUN;
 		return false;
+		}
+		else
+			break;
+	}
+
+//	m_loginSocket.SetBlocking(true);
 
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)&m_loginRep, sizeof(struct R_LOGIN_REP));
 
-	char str[512];
 	if(inet_descriptor.subCommand != 0)
 	{
 		sprintf(str, "[NetCommThread] Login receive %x from server", (uint16)inet_descriptor.subCommand);
@@ -612,50 +760,195 @@ bool NetCommThread::Auth()
 	//Send login request to remote
 	size_t send_size = 0;
 
-	t_timeout tm = 10000;
+	t_timeout tm = 8000;
 
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)buf, inet_descriptor.payloadLength);
 
-	if(m_authSocket.Send((char*)&inet_descriptor,
+	int reTry = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Auth send head\n");
+		int err = m_authSocket.Send2((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
-		&tm) < 0)
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] Auth WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 3)
+			{
+				delete[] buf;
+// 				bConnected = false;
+// 				m_authSocket.Destroy();
+// 				if(m_status == NET_READ)
+// 					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] Auth WriteError");
+			if (gLog)
 	{
+				gLog->Write(LOG_ERROR, str);
+			}
 		delete[] buf;
+// 			bConnected = false;
+// 			m_authSocket.Destroy();
+// 			if(m_status == NET_READ)
+// 				m_status = NET_RUN;
 		return false;
 	}
-	send_size = 0;
-	tm = 10000;
-	if(m_authSocket.Send((char*)buf,
-		inet_descriptor.payloadLength,
-		send_size, &tm) < 0)
-	{
-		delete[] buf;
-		return false;
-	}
-	//Read auth response
-	size_t get_size = 0;
-	tm = 1000;
-	if(m_authSocket.Receive((char*)&inet_descriptor,
-		sizeof(struct INET_DESCRIPTOR), 
-		get_size,
-		&tm) < 0)
-	{
-		delete[] buf;
-		return false;
-	}
-	get_size = 0;
-	tm = 1000;
-	if(m_authSocket.Receive((char*)buf,
-		inet_descriptor.payloadLength,
-		get_size,
-		&tm) < 0)
-	{
-		delete[] buf;
-		return false;
+		else
+			break;
 	}
 
+	send_size = 0;
+	tm = 8000;
+	reTry = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Auth send body\n");
+		int err = m_authSocket.Send2((char*)buf,
+		inet_descriptor.payloadLength,
+			send_size,
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] Auth WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 3)
+			{
+				delete[] buf;
+// 				bConnected = false;
+// 				m_authSocket.Destroy();
+// 				if(m_status == NET_READ)
+// 					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] Auth WriteError");
+			if (gLog)
+	{
+				gLog->Write(LOG_ERROR, str);
+			}
+		delete[] buf;
+// 			bConnected = false;
+// 			m_authSocket.Destroy();
+// 			if(m_status == NET_READ)
+// 				m_status = NET_RUN;
+		return false;
+	}
+		else
+			break;
+	}
+
+	//Read auth response
+	size_t get_size = 0;
+	tm = 10000;
+	reTry = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Auth Get head\n");
+		int err = m_authSocket.Receive2((char*)&inet_descriptor,
+		sizeof(struct INET_DESCRIPTOR), 
+		get_size,
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] Auth WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 5)
+			{
+				delete[] buf;
+// 				bConnected = false;
+// 				m_authSocket.Destroy();
+// 				if(m_status == NET_READ)
+// 					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] Auth WriteError");
+			if (gLog)
+	{
+				gLog->Write(LOG_ERROR, str);
+			}
+		delete[] buf;
+// 			bConnected = false;
+// 			m_authSocket.Destroy();
+// 			if(m_status == NET_READ)
+// 				m_status = NET_RUN;
+		return false;
+	}
+		else
+			break;
+	}
+
+	get_size = 0;
+	tm = 10000;
+	reTry = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Auth Get body\n");
+		int err = m_authSocket.Receive2((char*)buf,
+		inet_descriptor.payloadLength,
+		get_size,
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] Auth WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 5)
+			{
+				delete[] buf;
+// 				bConnected = false;
+// 				m_authSocket.Destroy();
+// 				if(m_status == NET_READ)
+// 					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] Auth WriteError");
+			if (gLog)
+	{
+				gLog->Write(LOG_ERROR, str);
+			}
+		delete[] buf;
+// 			bConnected = false;
+// 			m_authSocket.Destroy();
+// 			if(m_status == NET_READ)
+// 				m_status = NET_RUN;
+		return false;
+	}
+		else
+			break;
+	}
+
+//	m_authSocket.SetBlocking(true);
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)buf, inet_descriptor.payloadLength);
 
@@ -739,18 +1032,30 @@ bool NetCommThread::GetMD5File(uint32 filmId)
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)&m_md5Req, sizeof(struct L_MD5_KEY_REQ));
 
+	GetMutex();
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
 		&tm) < 0)
+	{
+		ReleaseMutex();
 		return false;
+	}
 	send_size = 0;
 	tm = 10000;
 	if(m_authSocket.Send((char*)&m_md5Req,
 		sizeof(struct L_MD5_KEY_REQ),
 		send_size,
 		&tm) < 0)
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
 		return false;
+	}
+	ReleaseMutex();
 
 	//Update state to md5 request
 	gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 0x07;
@@ -828,19 +1133,36 @@ bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 	save_proto((char*)&inet_descriptor, sizeof(INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)buf, inet_descriptor.payloadLength);
 
+	GetMutex();
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
 		&tm) < 0)
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
+
 		return false;
+	}
 	send_size = 0;
 	tm = 10000;
 	if(m_authSocket.Send((char*)buf,
 		inet_descriptor.payloadLength,
 		send_size,
 		&tm) < 0)
-		return false;
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
 
+		return false;
+	}
+	ReleaseMutex();
 	//Update state to upload lost info
 	gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) | 0x05;
 
@@ -850,7 +1172,7 @@ bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 bool NetCommThread::HeartBreat()
 {
 	static uint32 dataRate = 80;
-	
+	DPRINTF("Heartbreat\n");
 	if(!bConnected)
 	{
 		char str[512];
@@ -1029,26 +1351,158 @@ bool NetCommThread::HeartBreat()
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)buf, inet_descriptor.payloadLength);
 
-	if(m_authSocket.Send((char*)&inet_descriptor,
-		sizeof(struct INET_DESCRIPTOR),
-		send_size) < 0)
+	GetMutex();
+	t_timeout tm = 8000;
+	int reTry = 0;
+	for(;;)
 	{
+		reTry++;
+		DPRINTF("Heartbreat send head\n");
+		int err = m_authSocket.Send2((char*)&inet_descriptor,
+		sizeof(struct INET_DESCRIPTOR),
+			send_size,
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] HeartBreat WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 3)
+			{
+				ReleaseMutex();
+				delete[] buf;
+				bConnected = false;
+				m_authSocket.Destroy();
+				if(m_status == NET_READ)
+					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+	{
+			sprintf(str, "[NetCommThread] HeartBreat WriteError");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			ReleaseMutex();
 		delete[] buf;
+			bConnected = false;
+			m_authSocket.Destroy();
+			if(m_status == NET_READ)
+				m_status = NET_RUN;
 		return false;
+	}
+		else
+			break;
 	}
 
 // 	DPRINTF("Send data\n");
 	send_size = 0;
-	if(m_authSocket.Send((char*)buf,
-		inet_descriptor.payloadLength,
-		send_size) < 0)
+	tm = 8000;
+	reTry = 0;
+	for(;;)
 	{
+		reTry++;
+		DPRINTF("Heartbreat send body\n");
+		int err = m_authSocket.Send2((char*)buf,
+		inet_descriptor.payloadLength,
+			send_size,
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] HeartBreat WAIT_R_TIMEOUT");
+			if (gLog)
+	{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 3)
+			{
+				ReleaseMutex();
+				delete[] buf;
+				bConnected = false;
+				m_authSocket.Destroy();
+				if(m_status == NET_READ)
+					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] HeartBreat WriteError");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			ReleaseMutex();
 		delete[] buf;
+			bConnected = false;
+			m_authSocket.Destroy();
+			if(m_status == NET_READ)
+				m_status = NET_RUN;
 		return false;
 	}
-
+		else
+			break;
+	}
+	ReleaseMutex();
+	nHeartCount = 10;
+#if 0
 // 	DPRINTF("delete buf\n");
-
+	tm = 10000;
+	reTry = 0;
+	struct INET_DESCRIPTOR m_inetDesc;
+	size_t get_size = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Heartbreat Recv head\n");
+		int err = m_authSocket.Receive2((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), get_size, &tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] HeartBreat RECV WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 5)
+			{
+				delete[] buf;
+				bConnected = false;
+				m_authSocket.Destroy();
+				if(m_status == NET_READ)
+					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] HeartBreat ReadError");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			delete[] buf;
+			bConnected = false;
+			m_authSocket.Destroy();
+			if(m_status == NET_READ)
+				m_status = NET_RUN;
+			return false;
+		}
+		else
+			break;
+	}
+	if(m_inetDesc.command == NET_HEARTBEAT_CONFIRM)
+	{
+		DPRINTF("Receive heartbreat confirm\n");
+	}
+	else
+	{
+		DPRINTF("Receive unknow confirm %04x\n", m_inetDesc.command);		
+	}
+#endif
 	delete[] buf;
 	return true;
 }
@@ -1173,6 +1627,11 @@ void NetCommThread::doit()
 				{
 					if(m_loginSocket.Create(AF_INET, SOCK_STREAM, 0))
 					{
+							if(nDNSCount > 5)
+							{
+								url = "123.127.110.181";
+								nDNSCount = 0;
+							}
 						struct sockaddr_in addr_in;
 						memset(&addr_in, 0, sizeof(sockaddr_in));
 						addr_in.sin_family = AF_INET;
@@ -1182,7 +1641,7 @@ void NetCommThread::doit()
 							{
 							if(gLog)
 								gLog->Write(LOG_NETCOMMU, "[NetCommThread] gethostbyname error.");
-								throw -1;
+								throw -2;
 							}
 						struct in_addr **addr_list = (struct in_addr**)he->h_addr_list;
 						char ip[100];
@@ -1202,21 +1661,23 @@ void NetCommThread::doit()
 							error = m_loginSocket.Connect(&addr_in, &tm);
 							if (error && error != CZSocket::WAIT_R_TIMEOUT)
 							{
-								m_loginSocket.Destroy();
 								throw -1;
 							}
 						}while(error);
 						m_status = NET_LOGIN;
 					}
 				}
-				catch(int&)
+					catch(int& err)
 				{
+						m_loginSocket.Destroy();
 					sleep(5);
 						bConnected = false;
 					sprintf(str, "[NetCommThread] Connect to login server %s:%d error.", url.c_str(), (uint16)port);
 					if(gLog)
 						gLog->Write(LOG_ERROR, str);
 					DPRINTF("%s\n", str);
+						if(err == -2)
+							nDNSCount++;
 				}
 			}
 			break;
@@ -1321,6 +1782,7 @@ void NetCommThread::CloseConnect()
 void NetCommThread::StartConnect()
 {
 	bPause = false;
+	m_status = NET_RUN;
 }
 
 bool NetCommThread::RecvFilter()
@@ -1335,16 +1797,26 @@ bool NetCommThread::RecvFilter()
 	else
 		buf = b_buf;
 
-				t_timeout tm = 1000;
+	t_timeout tm = 3000;
 
+	if(nHeartCount >= 10)
+		nHeartCount++;
 	int err = m_authSocket.Receive2((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), get_size, &tm);
 	if( err == CZSocket::WAIT_R_TIMEOUT)
 				{
-		DPRINTF("Receive timeout\n");
+		if(nHeartCount > 15)
+		{
+			nHeartCount = 0;
+			throw -1;
+		}
+// 		DPRINTF("Receive timeout\n");
 		return false;
 				}
 	if( err  < 0)
+	{
+		nHeartCount = 0;
 		throw -1;
+	}
 
 				switch(m_inetDesc.command)
 				{
@@ -1360,7 +1832,7 @@ bool NetCommThread::RecvFilter()
 
 		save_proto((char*)&m_inetDesc, sizeof(struct INET_DESCRIPTOR), m_inetDesc.command,
 			NULL, 0);
-
+		nHeartCount = 0;
 		DPRINTF("Receive heartbreat confirm\n");
 		break;
 				case NET_MD5_REP:
@@ -1437,8 +1909,10 @@ bool NetCommThread::RecvFilter()
 					save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command, 
 						(char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM));
 
+					GetMutex();
 						m_authSocket.Send((const char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), send_size);
 						m_authSocket.Send((const char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM), send_size);
+					ReleaseMutex();
 
 					R_MD5_KEY_REP *pMd5 = (R_MD5_KEY_REP*)buf1;
 					if(gMd5 != NULL)
@@ -1491,8 +1965,10 @@ bool NetCommThread::RecvFilter()
 					save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command, 
 						(char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM));
 
+					GetMutex();
 					m_authSocket.Send((const char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), send_size);
 					m_authSocket.Send((const char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM), send_size);
+					ReleaseMutex();
 
 					R_MD5_KEY_REP *pMd5 = (R_MD5_KEY_REP*)buf1;
 					if(gMd5 != NULL)
@@ -2376,10 +2852,13 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 			save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command,
 				(char*)buf, inet_desc.payloadLength);
 
+			GetMutex();
+
 			if(m_authSocket.Send((char*)&inet_desc,
 				sizeof(struct INET_DESCRIPTOR),
 				send_size, &tm) < 0)
 			{
+				ReleaseMutex();
 				delete[] buf;
 				throw -2;
 			}
@@ -2390,10 +2869,12 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 				inet_desc.payloadLength,
 				send_size, &tm) < 0)
 			{
+				ReleaseMutex();
 				delete[] buf;
 				throw -3;
 			}
 			
+			ReleaseMutex();
 			delete[] buf;
 		}
 		ReleaseLog(pLog);
@@ -2425,10 +2906,12 @@ bool NetCommThread::PkgSendConfirm(uint32 filmId)
 		save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command,
 			(char*)buf, inet_desc.payloadLength);
 
+		GetMutex();
 		if(m_authSocket.Send((char*)&inet_desc,
 			sizeof(struct INET_DESCRIPTOR),
 			send_size, &tm) < 0)
 		{
+			ReleaseMutex();
 			throw -2;
 		}
 
@@ -2438,9 +2921,11 @@ bool NetCommThread::PkgSendConfirm(uint32 filmId)
 			inet_desc.payloadLength,
 			send_size, &tm) < 0)
 		{
+			ReleaseMutex();
 			throw -3;
 		}
 		bPkgSendStart = true;
+		ReleaseMutex();
 	}
 	return false;
 }
@@ -2531,19 +3016,36 @@ bool NetCommThread::DecryptRep(uint32 filmId)
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)&m_md5Report, sizeof(struct L_MD5_RESULT_REPORT));
 
+	GetMutex();
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
 		&tm) < 0)
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
+
 		return false;
+	}
 	send_size = 0;
 	tm = 10000;
 	if(m_authSocket.Send((char*)&m_md5Report,
 		sizeof(struct L_MD5_RESULT_REPORT),
 		send_size,
 		&tm) < 0)
-		return false;
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
 
+		return false;
+	}
+	ReleaseMutex();
 	return true;
 }
 
@@ -2602,19 +3104,36 @@ bool NetCommThread::DecryptRep()
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)&m_md5Report, sizeof(struct L_MD5_RESULT_REPORT));
 
+	GetMutex();
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
 		&tm) < 0)
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
+
 		return false;
+	}
 	send_size = 0;
 	tm = 10000;
 	if(m_authSocket.Send((char*)&m_md5Report,
 		sizeof(struct L_MD5_RESULT_REPORT),
 		send_size,
 		&tm) < 0)
-		return false;
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
 
+		return false;
+	}
+	ReleaseMutex();
 	return true;
 }
 
@@ -2706,18 +3225,35 @@ bool NetCommThread::UpdateRep(uint8* sn)
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)&m_upRep, sizeof(struct L_REMOTE_UPGRADE_PUSH_REP));
 
+	GetMutex();
 	if(m_authSocket.Send((char*)&inet_descriptor,
 		sizeof(struct INET_DESCRIPTOR),
 		send_size,
 		&tm) < 0)
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
+
 		return false;
+	}
 	send_size = 0;
 	tm = 10000;
 	if(m_authSocket.Send((char*)&m_upRep,
 		sizeof(struct L_REMOTE_UPGRADE_PUSH_REP),
 		send_size,
 		&tm) < 0)
-		return false;
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
 
+		return false;
+	}
+	ReleaseMutex();
 	return true;
 }

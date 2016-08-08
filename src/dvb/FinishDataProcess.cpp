@@ -10,6 +10,11 @@
 //#include <log/Log.h>
 
 FinishDataThread gFinish;
+#if 0
+extern char SimDataBuf[10][4096];
+extern int SimBufPos;
+#endif
+
 FinishDataThread* CreateFinish()
 {
 	return &gFinish;
@@ -68,13 +73,12 @@ bool FinishDataThread::Stop()
 	m_pFilter->Stop();
 	return true;
 }
+#if 0
+extern void print_hex(char* buf, int len);
+#endif
 
 void FinishDataThread::doit()
 {
-#ifdef USE_SIM
-	FILE *fp;
-#endif
-
 // 	pLog->Write(LOG_DVB, "[Finish Descriptor] Run");
 	//syslog(LOG_INFO|LOG_USER, "[Finish Descriptor] Run");
 
@@ -85,19 +89,39 @@ void FinishDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-#ifdef USE_SIM
-			fp = fopen("finish", "rb");
-			if(fp <= 0)
+#if 0
+			if((*pDebugCmd) == D_SIMULATOR)
 			{
-				printf("open file error\n");
-				m_status = STOP;
-				break;
+				char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+				if((*(uint16*)pos) == 0x3ff)
+				{
+					uint16 len = getBits((uint8*)pos+2, 12, 12);
+// 					print_hex(pos+2, len + 3);
+					memcpy(m_buffer, pos + 2, len + 10);
+					{
+						//do crc32 check
+// 						uint16 len = getBits(m_buffer, 12, 12);
+						uint32 crc = calc_crc32(m_buffer, len - 1) & 0xffffffff;
+						uint32 crc1 = ((*((m_buffer + len - 1)) << 24)|
+							(*((m_buffer + len)) << 16) |
+							(*((m_buffer + len + 1)) << 8) |
+							(*((m_buffer + len + 2)))) & 0xffffffff;
+						if (crc == crc1)
+			{
+							m_bFinish = true;
+						}
+						else
+						{
+							DPRINTF("finish crc error\n");
+						}
+					}
+				}
+				else
+					usleep(1000);
 			}
-			count = fread(m_buffer, 1, 4096, fp);
-			fclose(fp);
-#else
-			if (m_pFilter->ReadFilter(m_buffer, count))
+else
 #endif
+			if (m_pFilter->ReadFilter(m_buffer, count))
 			{
 				//do crc32 check
 				uint16 len = getBits(m_buffer, 12, 12);

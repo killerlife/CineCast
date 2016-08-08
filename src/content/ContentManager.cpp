@@ -305,8 +305,10 @@ void ContentManager::loadInfo(int nSrc)
 		root = "/storage";//getConfig().getProgramRootPath();
 	else if(nSrc == PST_USB)
 		root = "/media/usb";//getConfig().getUsbRootPath();
-	else
+	else if(nSrc == PST_RAID)
 		root = "/raid";
+	else
+		root = "/storage/ftp";
 
 	if(p->open(root, true)!=0)
 	{

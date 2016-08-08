@@ -28,6 +28,7 @@ private:
 	void Interface1Enable(bool bEnable = true);
 	void Interface2Enable(bool bEnable = true);
 	void GetRemoteConnectStatus(int i = 0);
+	void LoadRecvFinish();
 
 private:
 	Ui::SetupClass ui;
@@ -39,6 +40,7 @@ private:
 	bool firsttime;
 
 private slots:
+	void on_pushButtonApply2_3_clicked();
 	void on_lineEdit_Frequency_editingFinished();
 	void on_pushButton_13_clicked();
 	void on_pushButtonApply2_2_clicked();

@@ -9,6 +9,11 @@
 //#include <log/Log.h>
 #include <syslog.h>
 
+#if 0
+extern char SimDataBuf[10][4096];
+extern int SimBufPos;
+#endif
+
 NotifyDataThread gNotify;
 NotifyDataThread* CreateNotify()
 {
@@ -64,6 +69,9 @@ bool NotifyDataThread::Stop()
 	CActiveThread::stop();
 	return true;
 }
+#if 0
+extern void print_hex(char* buf, int len);
+#endif
 
 void NotifyDataThread::doit()
 {
@@ -76,7 +84,79 @@ void NotifyDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
+#if 0
+			if((*pDebugCmd) == D_SIMULATOR)
+			{
+// 					DPRINTF("NOTIFY\n");
+				char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+				if((*(uint16*)pos) == 0x1ff)
+				{
+// 					print_hex(pos+2, 25);
+					memcpy(m_buffer, pos + 2, getBits((uint8*)pos+2, 12, 12) + 10);
+					{
+						uint16 len = getBits(m_buffer, 12, 12);
+//  						DPRINTF("len %d\n", len);
+						uint32 crc = calc_crc32(m_buffer, len - 1) & 0xffffffff;
+						uint32 crc1 = ((*((m_buffer + len - 1)) << 24)|
+							(*((m_buffer + len)) << 16) |
+							(*((m_buffer + len + 1)) << 8) |
+							(*((m_buffer + len + 2)))) & 0xffffffff;
 
+// 						DPRINTF("CRC %08x %08x\n", crc, crc1);
+
+						if (crc == crc1)
+						{
+							uint8 *pdata = m_buffer+10;
+							uint8 type = *pdata++;
+							m_filmId = getBits(m_buffer + 5, 0, 32);
+							if(type < 2)
+							{
+								bMatch = true;
+								break;
+							}
+							bool bFind = false;
+							pdata++;
+							uint32 cnt = getBits(pdata, 0, 32);
+							pdata += 4;
+							if(m_machineId == 0)
+							{
+								bFind = true;
+								bMatch = true;
+// 								DPRINTF("[Notify Descriptor] Match\n");
+								break;
+							}
+							for (uint32 i = 0; i < cnt; i++)
+							{
+								uint32 id = getBits(pdata, 0, 32);
+
+								if (id == m_machineId)
+								{
+									bFind = true;
+									if(type < 4)
+									{
+										bMatch = true;
+// 										DPRINTF("[Notify Descriptor] TRUE\n");
+										break;
+									}
+								}
+								pdata += 5;
+							}
+							if (type >= 4 && bFind == false)
+							{
+								bMatch = true;
+// 								DPRINTF("[Notify Descriptor] TRUE\n");
+								break;
+							}
+						}
+						else
+							DPRINTF("Notify CRC error\n");
+					}
+				}
+				else
+					usleep(1000);
+			}
+			else
+#endif
 			if (m_pFilter->ReadFilter(m_buffer, count))
 			{
     				//DPRINTF("[Notify Descriptor] Get Data\n");

@@ -38,6 +38,7 @@ public:
 	int Accept(CZSocket& as, char* ip, int* port, t_timeout* tm = 0);
 	int Connect(const sockaddr_in *addr_in, t_timeout* tm = 0);
 	int Send(const char* buff, int size, size_t& sent, t_timeout* tm = 0);
+	int Send2(const char* buff, int size, size_t& sent, t_timeout* tm = 0);
 	int Receive(char* buff, int size, size_t& getsize, t_timeout* tm = 0);
 	int Receive2(char* buff, int size, size_t& getsize, t_timeout* tm = 0);
 	int SendTo(const char* buff, int size, size_t& sent, const sockaddr_in *addr_in, t_timeout* tm = 0);

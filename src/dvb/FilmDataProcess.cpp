@@ -20,6 +20,10 @@ extern ILog* gLog;
 extern NetCommThread *pNetComm;
 extern std::vector<std::string> gRunPathList;
 // extern bool bRecvData;
+#if 0
+extern char SimDataBuf[10][4096];
+extern int SimBufPos;
+#endif
 
 FilmDataThread::FilmDataThread(): m_ReciveLength(0), m_status(STOP),
 m_pZtBuf(0), m_pFilter(0), m_pFilmFile(NULL), m_nSegBasic(0), 
@@ -101,6 +105,18 @@ bool FilmDataThread::Init(void *param1, void *param2)
 	}
 
 	gRunPathList.push_back(m_strFileName);
+	std::string strFtpFileName = m_strFileName;
+
+	//To make sure the DCP of current Task don't delete from ftp directory
+	strFtpFileName.insert(9, "ftp/", 4);
+	gRunPathList.push_back(strFtpFileName);
+	if(gLog)
+	{
+		gLog->Write(LOG_DVB, m_strFileName.c_str());
+		gLog->Write(LOG_DVB, strFtpFileName.c_str());
+	}
+	//--------------------------------------------------------------------
+
 // 	m_pPmtDescriptor->fileDescriptor->FileName
 // 		[m_pPmtDescriptor->fileDescriptor->DescriptorLength - 10] = '\0';
 
@@ -234,6 +250,9 @@ bool FilmDataThread::Stop()
 }
 
 extern uint32 gDebugID;
+#if 0
+extern void print_hex(char* buf, int len);
+#endif
 
 void FilmDataThread::doit()
 {
@@ -292,6 +311,93 @@ void FilmDataThread::doit()
 #if 1
 				uint8 buff[4096];
 				uint16 count = 4096;
+#if 0
+				if((*pDebugCmd) == D_SIMULATOR)
+				{
+					char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+					if((*(uint16*)pos) == this->m_pPmtDescriptor->ElementaryPid)
+					{
+						uint16 len = getBits((uint8*)pos+2, 12, 12);
+// 						DPRINTF("id %04x len %d\n", (*(uint16*)pos), len);
+// 						print_hex(pos+2, len + 3);
+						memcpy(buff, pos + 2, len + 10);
+						{
+// 							uint16 len = getBits(buff, 12, 12);
+							uint32 crc = calc_crc32(buff, len - 1) & 0xffffffff;
+							uint32 crc1 = ((*((buff + len - 1)) << 24)|
+								(*((buff + len)) << 16) |
+								(*((buff + len + 1)) << 8) |
+								(*((buff + len + 2))))  & 0xffffffff;
+
+							//do crc32 check
+							if (crc == crc1)
+								//if(count != m_pPmtDescriptor->fileDescriptor->SegmentLength)
+							{
+								//Get segment number and construct file position
+								uint16 w_size;
+								uint32 seg_num = getBits(buff + 11, 0, 32);
+								uint16 pl  = getBits(buff + 1, 4, 12);
+								uint16 pll = *(buff + 4);
+								w_size = pl - pll - 6;
+								filmId = getBits(buff + 5, 0, 32);
+// 								DPRINTF("Seg %d %04x\n", seg_num, (*(uint16*)pos));
+								// 						bRecvData = true;
+
+								uint64 pos = (uint64) seg_num * m_pPmtDescriptor->fileDescriptor->SegmentLength;
+
+								//write data to file
+								if (m_pFilmFile > 0)
+								{	
+									if(!haveSegment(seg_num))
+									{
+										WriteFile(pos,
+											buff + 15,
+											w_size);
+										UpdateZtMem(seg_num);
+
+										//this only for test
+										//UpdateZtFile();
+										//
+										m_ReciveSegment++;//= w_size;
+										m_ReciveLength += w_size;
+#if 1
+										if(bSequence)
+										{
+											if(m_lastSegNum == seg_num)
+												;
+											else if(m_lastSegNum == (seg_num - 1))
+												m_lastSegNum = seg_num;
+											else
+											{
+												m_LostSegment += (seg_num - m_lastSegNum - 1);
+												m_lastSegNum = seg_num;
+											}
+										}
+										else
+#endif
+										{
+											if(m_LostSegment > 0)
+												m_LostSegment--;
+										}
+									}
+								}
+							}
+							else
+							{
+								m_CRCError++;
+								DPRINTF("Film Data CRC %08x %08x\n", crc, crc1);
+								//Doesn't need to update lost segment while CRC error.
+								//So disable it.
+								//m_LostSegment++;
+							}
+							*pBData = true;
+						}
+					}
+					else
+						usleep(1000);
+				}
+				else
+#endif
 				if (m_pFilter->ReadFilter(buff, count))
 				{
 					uint16 len = getBits(buff, 12, 12);
@@ -421,6 +527,8 @@ bool FilmDataThread::haveSegment(uint32 nSegNum)
 		if(m_pZtBuf[p1] & (1<<p2))
 			return true;
 	}
+	if(nSegNum >= m_TotalSegment)
+		return true;
 	return false;
 }
 

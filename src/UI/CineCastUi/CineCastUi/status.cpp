@@ -61,6 +61,13 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 {
 	ui.label_filmName->setText(tInfo->strFilmName.c_str());
 	QString s;
+	if(tInfo->nReceiveLength > tInfo->nFileLength)
+	{
+		if(tInfo->nReceiveSegment == tInfo->nTotalSegment)
+			tInfo->nReceiveLength = tInfo->nFileLength;
+		else
+			tInfo->nReceiveLength = tInfo->nFileLength - 100;
+	}
 	s.sprintf("%lld", tInfo->nReceiveLength);
 	int n = s.size();
 	for(int i = 1; i <= (n-1)/3; i++)
@@ -81,7 +88,9 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	ui.label_Receiver->setText(ss);
 	if(tInfo->nFileLength > 0)
 	{
-		ui.progressBar_Revceiver_length->setValue(tInfo->nReceiveLength*10000/tInfo->nFileLength);
+		float a = ((float)tInfo->nReceiveLength/(float)tInfo->nFileLength);
+		int i = a * 10000;
+		ui.progressBar_Revceiver_length->setValue(i);
 	}
 	else
 		ui.progressBar_Revceiver_length->setValue(0);

@@ -236,6 +236,18 @@ bool ContentParser::open(const std::string& path)
 	ini->read(" ", "TotalSegment", m_status.TotalSegment);
 	ini->read(" ", "ReceiveSegment", m_status.ReceiveSegment);
 	ini->read(" ", "DateTime", m_status.DateTime);
+	//Add for display 99% while one dcp not finish in task
+	if(m_status.ReceiveSegment == m_status.TotalSegment && strncmp("/storage/ftp", path.c_str(), 12) != 0)
+	{
+		uint64 seg;
+		sscanf(m_status.ReceiveSegment.c_str(), "%lld", &seg);
+		char str[50];
+		sprintf(str, "%lld", seg - 1);
+		m_status.ReceiveSegment = str;
+		sscanf(m_status.ReceiveLength.c_str(), "%lld", &seg);
+		sprintf(str, "%lld", seg - 1);
+		m_status.ReceiveLength = str;
+	}
 #if 0
 	printf("%s\n", m_status.FilmId.c_str());
 	printf("%s\n", m_status.FilmName.c_str());

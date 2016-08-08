@@ -2,6 +2,7 @@
 #include <thread/activeThread/activeThread.h>
 #include <string>
 #include <list>
+#include <vector>
 #include "demux.h"
 #include "SatelliteRecv.h"
 #include "FilmDataProcess.h"
@@ -17,6 +18,7 @@ public:
 	bool Init(void *param1, void *param2);
 	bool Start();
 	bool Stop();
+	bool FinishDCP();
 	uint64 ReciveLength();
 	uint64 FileLength();
 	int GetStatus() { return m_status; };
@@ -44,6 +46,7 @@ private:
 	int m_status;
 	std::list<struct PmtDescriptor*> m_pmtList;
 	std::list<FilmDataThread*> m_filmList;
+	std::vector<std::string> dcp;
 	uint16 m_PmtId;
 	Filter* m_pFilter;
 	uint8 m_buffer[4096];

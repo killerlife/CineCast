@@ -28,6 +28,9 @@ typedef enum
 	N_SET_REMOTE,
 	N_GET_STATUS,
 
+	S_GET_SHUTDOWN_FLAG,
+	S_SET_SHUTDOWN_FLAG,
+
 	//0x200 Manager function
 	M_GET_USB_MOUNT = 0x200,
 	M_SET_USB_MOUNT,

@@ -11,6 +11,10 @@
 #include <time.h>
 
 extern RECEIVE_INFO gRecv;
+#if 0
+extern char SimDataBuf[10][4096];
+extern int SimBufPos;
+#endif
 
 PMTDataThread::PMTDataThread():
 m_status(0), m_PmtId(0), 
@@ -82,6 +86,9 @@ bool PMTDataThread::Stop()
 #include <log/Log.h>
 #include <log/LogStruct.h>
 extern ILog* gLog;
+#if 0
+extern void print_hex(char* buf, int len);
+#endif
 
 void PMTDataThread::doit()
 {
@@ -101,7 +108,154 @@ void PMTDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
+#if 0
+			if((*pDebugCmd) == D_SIMULATOR)
+			{
+// 				DPRINTF("simulator\n");
+				char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+				if((*(uint16*)pos) == 0x20)
+				{
+					uint16 len = getBits((uint8*)pos+2, 12, 12);
+// 					DPRINTF("len %d\n", len);
+// 					print_hex(pos+2, len + 3);
+					memcpy(m_buffer, pos + 2, len + 10);
+					{
+						m_mutex = 1;
+						//DPRINTF("[PMT Descriptor] Get Data\n");
+						//do crc32 check
+// 						uint16 len = getBits(m_buffer, 12, 12);
+						uint32 crc = calc_crc32(m_buffer, len -1) & 0xffffffff;
+						uint32 crc1 = ((*((m_buffer + len - 1)) << 24)|
+							(*((m_buffer + len)) << 16) |
+							(*((m_buffer + len + 1)) << 8) |
+							(*((m_buffer + len + 2)))) & 0xffffffff;
+						if (crc == crc1)
+						{
+							uint8 *pbuf = m_buffer+12;
+							m_programDescriptor.DescriptorTag = *pbuf++;
+							m_programDescriptor.DescriptorLength = *pbuf++;
+							m_programDescriptor.FilmId = getBits(pbuf, 0, 32);
+// 							DPRINTF("Filmid %d\n", m_programDescriptor.FilmId);
+							pbuf += 4;
+							m_programDescriptor.Version = *pbuf++;
+							m_programDescriptor.Type = *pbuf++;
+							m_programDescriptor.FileNumber = *pbuf++;
 
+							for(int i = 0; i < m_programDescriptor.FileNumber; i++)
+							{
+								struct PmtDescriptor *pPmtDescriptor = 
+									new struct PmtDescriptor;
+								pPmtDescriptor->StreamType = *pbuf++;
+								pPmtDescriptor->ElementaryPid = ((pbuf[0] & 0x1f) << 8) | pbuf[1];
+//  								pPmtDescriptor->ElementaryPid = getBits(pbuf, 3, 13);
+// 								DPRINTF("PID %04x\n", pPmtDescriptor->ElementaryPid);
+								if (pPmtDescriptor->ElementaryPid > 0x26 || pPmtDescriptor->ElementaryPid < 0x21)
+								{
+									DPRINTF("failure\n");
+									break;
+								}
+								pbuf += 4;
+
+								//search pmt list for current pmt
+								std::list<struct PmtDescriptor*>::iterator itor;
+								bool bFind = false;
+								for (itor = m_pmtList.begin(); itor != m_pmtList.end(); ++itor)
+								{
+									struct PmtDescriptor* pPmt = *itor;
+									if (pPmt->ElementaryPid == pPmtDescriptor->ElementaryPid)
+									{
+										bFind = true;
+										break;
+									}
+								}
+								if(bFind)
+								{
+									len = getBits(pbuf - 2, 4, 12);
+									pbuf += len;
+									delete pPmtDescriptor;
+								}
+								else
+								{
+									pPmtDescriptor->subfolderCountDescriptor = 
+										new struct SubfolderCountDescriptor;
+									pPmtDescriptor->subfolderCountDescriptor->DescriptorTag = *pbuf++;
+									pPmtDescriptor->subfolderCountDescriptor->DescriptorLength = *pbuf++;
+									pPmtDescriptor->subfolderCountDescriptor->SubfolderCount = *pbuf++;
+
+									if (pPmtDescriptor->subfolderCountDescriptor->SubfolderCount > 0)
+									{
+										pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor = 
+											new struct SubfolderDescriptor[pPmtDescriptor->subfolderCountDescriptor->SubfolderCount];
+										for (int j = 0; j < pPmtDescriptor->subfolderCountDescriptor->SubfolderCount; j++)
+										{
+											pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].DescriptorTag = *pbuf++;
+											pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].DescriptorLength = *pbuf++;
+
+											pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].SubfolderName = 
+												new char[pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].DescriptorLength + 1];
+											memcpy(pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].SubfolderName,
+												pbuf,
+												pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].DescriptorLength);
+											pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].SubfolderName
+												[pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].DescriptorLength] = '\0';
+
+
+											pbuf += pPmtDescriptor->subfolderCountDescriptor->subfolderDescriptor[j].DescriptorLength;
+										}
+									}
+
+									pPmtDescriptor->fileDescriptor = new struct FileDescriptor;
+									pPmtDescriptor->fileDescriptor->DescriptorTag = *pbuf++;
+									pPmtDescriptor->fileDescriptor->DescriptorLength = *pbuf++;
+									pPmtDescriptor->fileDescriptor->FileLength = ((uint64)*pbuf << 32) |
+										((uint64)*(pbuf + 1) << 24) | ((uint64)*(pbuf + 2) << 16) |
+										((uint64)*(pbuf + 3) << 8) | (uint64)*(pbuf + 4);
+									pbuf +=5;
+									pPmtDescriptor->fileDescriptor->SegmentLength = getBits(pbuf, 0, 32);
+									DPRINTF("Segment len %08x\n", pPmtDescriptor->fileDescriptor->SegmentLength);
+									pbuf += 4;
+									pPmtDescriptor->fileDescriptor->Option = *pbuf++;
+
+									pPmtDescriptor->fileDescriptor->FileName = 
+										new char[pPmtDescriptor->fileDescriptor->DescriptorLength - 9];
+									memcpy(pPmtDescriptor->fileDescriptor->FileName,
+										pbuf,
+										pPmtDescriptor->fileDescriptor->DescriptorLength - 10);
+									pPmtDescriptor->fileDescriptor->FileName
+										[pPmtDescriptor->fileDescriptor->DescriptorLength - 10] = '\0';
+									pbuf += (pPmtDescriptor->fileDescriptor->DescriptorLength - 10);
+
+									m_pmtList.push_back(pPmtDescriptor);
+
+									sprintf(str, "[PMT Descriptor] Create FilmData 0x%x", pPmtDescriptor->ElementaryPid);
+									//pLog->Write(LOG_DVB, str);
+									//syslog(LOG_INFO|LOG_USER, str);
+									FilmDataThread *pFilmDataThread = new FilmDataThread;
+									pFilmDataThread->Init((void*) pPmtDescriptor, NULL);
+									//pFilmDataThread->Start();
+
+									if(pFilmDataThread->status() == brunt::thread_ready)
+									{
+										pFilmDataThread->start();
+										DPRINTF("%s\n", pPmtDescriptor->fileDescriptor->FileName);
+									}
+
+									m_filmList.push_back(pFilmDataThread);
+								}
+							}
+						}
+						else
+						{
+							DPRINTF("CRC  %08x %08x error\n", crc, crc1);
+						}
+						m_mutex = 0;
+					}
+				}
+				else
+					usleep(1000);
+			}
+			else
+#endif
 			if (m_pFilter->ReadFilter(m_buffer, count))
 			{
 				m_mutex = 1;
@@ -420,13 +574,14 @@ uint64 PMTDataThread::GetLostSegment()
 {
 	uint64 nLostCount = 0;
 	std::list<FilmDataThread*>::iterator itor;
-	std::vector<std::string> dcp;
+	//std::vector<std::string> dcp;
 
 	if(m_mutex == 1)
 		return nLostCount;
 	m_strReportFileList = ""; 
 	bool bFound = false;
 	uint32 id = 0;
+	dcp.clear();
 	for(itor = m_filmList.begin(); itor != m_filmList.end(); ++itor)
 	{
 		FilmDataThread* thread = *itor;
@@ -562,3 +717,85 @@ bool PMTDataThread::IsFilmDataReady()
 	}
 	return true;
 }
+
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/exception.hpp>
+namespace fs = boost::filesystem;
+
+bool PMTDataThread::FinishDCP()
+{
+	for(int i = 0; i < dcp.size(); i++)
+	{
+		std::string fn = dcp.at(i);
+		//std::string cmd = "mv ";
+		char cmd[2048];
+		sprintf(cmd, "mv %s /storage/ftp", fn.c_str());
+// 		cmd += fn;
+// 		cmd += " /storage/ftp";
+		//Create /storage/ftp first, it's vsftp root directory
+		system("mkdir /storage/ftp");
+		if (gLog)
+		{
+			gLog->Write(LOG_SYSTEM, cmd);
+		}
+		system(cmd);
+		size_t pos;
+		if((pos = fn.find("/storage/recv/")) != std::string::npos)
+		{
+			fn.erase(pos, 14);
+			fn.resize(fn.size() - 1);
+			std::string ss = "/storage/recv/" + fn;
+			if(!fs::is_symlink(ss))
+			{
+				std::string dest = fn;
+				size_t p;
+				while(1)
+				{
+					p = dest.find("/");
+					if(p != std::string::npos)
+					{
+						dest.erase(0, p+1);
+					}
+					else
+						break;
+				}
+				sprintf(cmd, "ln -s /storage/ftp/%s /storage/recv/%s", dest.c_str(), fn.c_str());
+				system(cmd);
+			}
+			if(gLog)
+				gLog->Write(LOG_SYSTEM, cmd);
+		}
+		if((pos = fn.find("/storage/")) != std::string::npos)
+		{
+			fn.erase(pos, 9);
+			fn.resize(fn.size() - 1);
+			std::string ss = "/storage/" + fn;
+			if(!fs::is_symlink(ss))
+			{
+				std::string dest = fn;
+				size_t p;
+				while(1)
+				{
+					p = dest.find("/");
+					if(p != std::string::npos)
+					{
+						dest.erase(0, p+1);
+					}
+					else
+						break;
+				}
+
+				sprintf(cmd, "ln -s /storage/ftp/%s /storage/%s", dest.c_str(), fn.c_str());
+				system(cmd);
+			}
+			if (gLog)
+			{
+				gLog->Write(LOG_SYSTEM, cmd);
+			}
+		}
+	}
+	return true;
+}
+

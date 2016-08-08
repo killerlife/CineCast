@@ -91,6 +91,9 @@ private:
 	bool N_SetRemote(char* buf);
 	bool N_GetStatus(char* buf);
 
+	bool S_GetShutdownFlag(char* buf);
+	bool S_SetShutdownFlag(char* buf);
+	
 	//bool M_GetContent(char* buf);
 	//bool M_GetDiskInfo(char* buf);
 

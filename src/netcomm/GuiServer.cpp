@@ -471,6 +471,10 @@ void GuiServer::doit()
 
 GuiThread::GuiThread():m_status(0), m_Content(NULL), m_mkfs(NULL)
 {
+	System sys;
+	DPRINTF("1Get flag\n");
+	sys.GetShutdownFlag();
+	DPRINTF("1Got flag\n");
  	pDebugCmd = GetDebugCommand();
 	m_Content = new ContentOperation;
 	m_mkfs = new mke2fs;
@@ -691,6 +695,10 @@ bool GuiThread::UiProcessFilter()
 				return N_SetRemote(buf);
 			case N_GET_STATUS:
 				return N_GetStatus(buf);
+			case S_GET_SHUTDOWN_FLAG:
+				return S_GetShutdownFlag(buf);
+			case S_SET_SHUTDOWN_FLAG:
+				return S_SetShutdownFlag(buf);
 
 			case M_UPDATE_PROGRAM_LIST_HDD:
                return M_UpdateProgramList_HDD(buf);          //UpdateProgramListË¢Ó²Ð±í£¬Ô±? 
@@ -2147,6 +2155,13 @@ bool GuiThread::M_DeleteDir(char* buf)
     system(str_cmd);                 //system("umount /media/usb"); 
 
     printf("delete path:=%s \n",path_del);   
+	std::string s = str_cmd;
+	size_t p;
+	if((p = s.find("ftp/")) != std::string::npos)
+	{
+		s.erase(p, 4);
+		system(s.c_str());
+	}
 
 	return Write(buf, sendsize, sendsize);
 }
@@ -2448,5 +2463,30 @@ bool GuiThread::S_GetVersion(char* buf)
 	pKL->m_length = 16;
 	memcpy(buf + sizeof(KL), gVersion, 16);
 	int sendsize = sizeof(KL) + 16;
+	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::S_GetShutdownFlag(char* buf)
+{
+	System sys;
+	KL *pKL = (KL*) buf;
+	pKL->m_length = 1;
+	char* pos=buf + sizeof(KL);
+	DPRINTF("Get flag\n");
+	bool bFlag = sys.GetShutdownFlag();
+	DPRINTF("Got flag\n");
+	pos[0] = bFlag;
+	int sendsize = sizeof(KL) + 1;
+	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::S_SetShutdownFlag(char* buf)
+{
+	System sys;
+	KL *pKL = (KL*) buf;
+	pKL->m_length = 1;
+	char* pos=buf + sizeof(KL);
+	sys.SetShutdownFlag(pos[0]);
+	int sendsize = sizeof(KL) + 1;
 	return Write(buf, sendsize, sendsize);
 }

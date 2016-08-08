@@ -6,7 +6,9 @@
 #include "PATDataProcess.h"
 #include "../netcomm/NetCommThread.h"
 #include "../netcomm/BaseOperation.h"
-
+#if 0
+#include "../netcomm/SimulatorServer.h"
+#endif
 #include "thread/activeThread/activeThreadManager_i.h"
 
 #include <stdlib.h>
@@ -32,6 +34,7 @@ RECEIVE_INFO gRecv;
 TUNER_CONF gTuner;
 char bTunerChange = 0;
 char *gMd5 = NULL;
+bool gShutdownAfterFinish = false;
 
 // bool bRecvData = false;
 
@@ -41,6 +44,10 @@ FinishDataThread *pFinish;
 CancelDataThread *pCancel;
 PATDataThread* pPat;
 GuiServer* guiServer;
+#if 0
+SimulatorServer* simServer;
+#endif
+
 ILog* gLog;
 NetCommThread *pNetComm;
 std::vector<std::string> gRunPathList;
@@ -54,6 +61,9 @@ static void handle_sigint(int sig)
 	pCancel->Stop();
 	//pPat->Stop(); //Don't call stop, because it'll automatic call while class destroy.
 	guiServer->Stop();
+#if 0
+	simServer->Stop();
+#endif
 	pNetComm->Stop();
 	sleep(1);
 
@@ -71,6 +81,9 @@ static void handle_sigint(int sig)
 	ReleaseCancel(pCancel);
 	printf("delete 6\n");
 	ReleaseGuiServer(guiServer);
+#if 0
+	ReleaseSimulatorServer(simServer);
+#endif
 	sleep(1);
 #endif
 	printf("release main\n");
@@ -147,6 +160,9 @@ int main(int argc, char **argv)
 	pCancel = CreateCancel();
 	pPat = new PATDataThread;
 	guiServer = CreateGuiServer();
+#if 0
+	simServer = CreateSimulatorServer();
+#endif
 	pNetComm = new NetCommThread;
 
 	uint16 pid = 0x1ff;
@@ -167,6 +183,9 @@ int main(int argc, char **argv)
 	pPat->Init(&pid, NULL);
 
 	guiServer->Init();
+#if 0
+	simServer->Init();
+#endif
 
 	pNetComm->Init();
 	pNetComm->Start();
@@ -181,14 +200,18 @@ int main(int argc, char **argv)
 	CThreadRunInfo threadInfo3(pCancel, policy);
 	CThreadRunInfo threadInfo4(pPat, policy);
 	CThreadRunInfo threadInfo5(guiServer, policy);
-
+#if 0
+	CThreadRunInfo threadInfo6(simServer, policy);
+#endif
 	m_pManager->addThread(threadInfo); 
 	m_pManager->addThread(threadInfo1);
  	m_pManager->addThread(threadInfo2);
 	m_pManager->addThread(threadInfo3);
 	m_pManager->addThread(threadInfo4);
 	m_pManager->addThread(threadInfo5);
-
+#if 0
+	m_pManager->addThread(threadInfo6);
+#endif
 	printf("match:%X\n", pNotify->IsNotify());
  	printf("Finish:%X\n", pFinish->IsFinish());
 
@@ -377,7 +400,7 @@ int main(int argc, char **argv)
 				sprintf(m_log, "[DataReceiving] Get difference FilmID %d %d, may be a new DCP.", prevFilmID, pNotify->GetFilmId());
 				gLog->Write(LOG_SYSTEM, m_log);
 				prevFilmID = pNotify->GetFilmId();
-				pPat->Reset();
+				pPat->Reset(false);
 				gRecv.nReceiveStatus = 0;
 				bRoundCount = false;
 
@@ -626,7 +649,7 @@ int main(int argc, char **argv)
 			bRoundCount = false;
 			
 			pCancel->ClearCancel();
-			pPat->Reset();
+			pPat->Reset(false);
 			pPat->Clear();
 
 			sprintf(m_log, "[CineCast] Received Cancel from satellite, restart PAT Thread.");
@@ -643,6 +666,16 @@ int main(int argc, char **argv)
 			pPat->Reset();
 			sprintf(m_log, "[CineCast] Task finished, restart PAT Thread.");
 			gLog->Write(LOG_SYSTEM, m_log);
+			if(gShutdownAfterFinish)
+			{
+				gLog->Write(LOG_SYSTEM, "[CineCast] Finish!!! Power-off...");
+				system("/bin/sync");
+				system("/sbin/init 0");
+			}
+			else
+			{
+				gLog->Write(LOG_SYSTEM, "[CineCast] Finish!!! Keep Power-on...");
+			}
 		}
 		//===================================================================================
 

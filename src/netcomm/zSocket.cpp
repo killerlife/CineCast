@@ -106,6 +106,26 @@ int CZSocket::Send(const char* buff, int size, size_t& sent, t_timeout* tm)
 	assert(size>=0);
 	size_t s = size;
 	size_t s_sent = 0;
+	socket_setblocking(&m_socket);
+	while(s > 0)
+	{
+		m_error = socket_send(&m_socket, buff + s_sent, s, &sent, tm);
+		s -= sent;
+		s_sent += sent;
+		sent = s_sent;
+		if(ZSOCKET_FAILED(m_error))
+			break;
+	}
+	return m_error;
+}
+
+int CZSocket::Send2(const char* buff, int size, size_t& sent, t_timeout* tm)
+{
+	assert(buff);
+	assert(size>=0);
+	size_t s = size;
+	size_t s_sent = 0;
+	socket_setnonblocking(&m_socket);
 	while(s > 0)
 	{
 		m_error = socket_send(&m_socket, buff + s_sent, s, &sent, tm);

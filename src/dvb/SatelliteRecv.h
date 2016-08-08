@@ -227,6 +227,7 @@ public:
 	virtual uint64 FileLength() = 0;
 };
 
+#define D_SIMULATOR (0x10000000)
 #define D_NOTIFY	(0x10000001)
 #define D_START		(0x10000002)
 #define D_PAT		(0x10000003)

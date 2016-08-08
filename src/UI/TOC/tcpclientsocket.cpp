@@ -301,6 +301,7 @@ void TcpClientSocket::slot_dataReceived()
 						MyAes_ctr_decrypt(pos,len,(uint8*)this->MeetKey);
 						break;
 					}
+					SaveLostReport(m_buf);
 					lost_report_process();
 				}
 				break;
@@ -1022,6 +1023,8 @@ void TcpClientSocket::UIcmd_process(int SocketID,int cmdtype,QByteArray ba)   //
 				do_reboot(); break;
 			case UI_LOG:
 				do_Log(); break;
+			case UI_CLOSE_SOCKET:
+				disconnectFromHost(); break;
 			default:	break;
 		}
 
@@ -1169,6 +1172,38 @@ void TcpClientSocket::SaveProto(char* buf)
 		fclose(fp);
 	}
 }
+
+void TcpClientSocket::SaveLostReport(char* buf)
+{
+	time_t t;
+	time(&t);
+	struct tm *pTm;
+	pTm = localtime(&t);
+	KH* pKh = (KH*)buf;
+	system("rd /s/q Lost");
+#ifdef WIN32
+	CreateDirectoryA("Lost", NULL);
+#else
+	mkdir("Lost");
+#endif
+	char tt[256];
+	sprintf(tt,
+		"Lost/lost.zip");
+	FILE* fp=fopen(tt, "wb");
+	if(fp)
+	{
+		int pos = sizeof(KH) + 4*5 + 8;
+		char *b = buf + sizeof(KH) + 4*4 + 8;
+		uint32 len = b[3] & 0xff;
+		len =(len << 8)|(b[2] & 0xff);
+		len = (len << 8)|(b[1] & 0xff);
+		len = (len << 8)|(b[0] & 0xff);
+		fwrite(buf + pos, 1, len, fp);
+		fclose(fp);
+		system("unzip Lost\\lost.zip -d Lost");
+	}
+}
+
 
 QHostAddress TcpClientSocket::getRemote()
 {

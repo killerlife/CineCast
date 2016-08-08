@@ -19,6 +19,10 @@ extern ILog* gLog;
 extern NetCommThread *pNetComm;
 extern RECEIVE_INFO gRecv;
 bool gFilmDataFlag = false;
+#if 0
+extern char SimDataBuf[10][4096];
+extern int SimBufPos;
+#endif
 
 bool *CreateFilmDataFlag()
 {
@@ -80,7 +84,7 @@ bool PATDataThread::Start()
 	return true;
 }
 
-bool PATDataThread::Reset()
+bool PATDataThread::Reset(bool bFinish)
 {
 	m_status = IDLE;
 	if(gLog)
@@ -98,6 +102,14 @@ bool PATDataThread::Reset()
 			sprintf(str, "[PATDataThread] Reset: %d:%d PMT stopped", i, m_pmtList.size());
 			gLog->Write(LOG_DVB, str);
 		}
+
+		pmtThread->FinishDCP();
+		if(gLog)
+		{
+			sprintf(str, "[PATDataThread] Reset: %d Finish DCP", i);
+			gLog->Write(LOG_DVB, str);
+		}
+
 		delete pmtThread;
 		if(gLog)
 		{
@@ -165,6 +177,9 @@ bool PATDataThread::Stop()
 
 	return true;
 }
+#if 0
+extern void print_hex(char* buf, int len);
+#endif
 
 void PATDataThread::doit()
 {
@@ -181,7 +196,97 @@ void PATDataThread::doit()
 			bIdle = false;
 			if(m_pManager == NULL)
 				m_pManager = brunt::createThreadManager();
+#if 0
+			if((*pDebugCmd) == D_SIMULATOR)
+			{
+// 				DPRINTF("PAT SIM\n");
+				char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+				if((*(uint16*)pos) == 0xfe)
+				{
+					uint16 len = getBits((uint8*)pos+2, 12, 12);
+// 					DPRINTF("len %d\n", len);
+// 					print_hex(pos+2, len + 3);
+					memcpy(m_buffer, pos + 2, len + 10);
+					{
+						//DPRINTF("[PAT Descriptor] Get Data\n");
+						//do crc32 check
+						uint16 len = getBits(m_buffer, 12, 12);
+						uint32 crc = calc_crc32(m_buffer, len -1) & 0xffffffff;
+						uint32 crc1 = ((*((m_buffer + len - 1)) << 24)|
+							(*((m_buffer + len)) << 16) |
+							(*((m_buffer + len + 1)) << 8) |
+							(*((m_buffer + len + 2))))  & 0xffffffff;
+						if (crc == crc1)
+						{
+							uint8 *pbuf = m_buffer + 8;
+							len -= 9;
+							uint16 program_number;
 
+							m_bPat = true;
+
+							while(len > 0)
+							{
+								program_number = (pbuf[0] << 8) |
+									pbuf[1];
+// 								DPRINTF("PN %d\n", program_number);
+								if (program_number != 0)
+								{
+									uint16 pmtId = ((pbuf[2] & 0x1f) << 8) |
+										pbuf[3];
+// 									DPRINTF("pmtID %04x\n", pmtId);
+									std::list<uint16>::iterator itor;
+									bool bFind = false;
+									for (itor = m_pmtIdList.begin(); itor != m_pmtIdList.end(); ++itor)
+									{
+										uint16 id = *itor;
+										if(id == pmtId)
+										{
+											bFind = true;
+											break;
+										}
+									}
+									if (!bFind)
+									{
+										m_pmtIdList.push_back(pmtId);
+
+										char str[200];
+										sprintf(str, "[PAT Descriptor] Create PMT Descriptor: %d", pmtId);
+										//pLog->Write(LOG_DVB, str);
+										//syslog(LOG_INFO|LOG_USER, "[PAT Descriptor] Create PMT Descriptor: %d", pmtId); 
+										if(pmtId != 0x20)
+										{
+											break;
+										}
+
+										PMTDataThread *thread = new PMTDataThread;
+										thread->Init(&pmtId, NULL);
+#if 1
+										brunt::ThreadRunPolicy policy;
+										policy.order = 0;
+										policy.policy = brunt::POLICY_ERROR_EXIT;
+
+										brunt::CThreadRunInfo threadInfo(thread, policy);
+										m_pManager->addThread(threadInfo); 
+										m_pManager->setParallelNum(0, m_pmtIdList.size());
+										m_pManager->run();
+#endif
+										m_pmtList.push_back(thread);
+									}
+								}
+								pbuf += 4;
+								len -= 4;
+							}
+						}
+						else
+						{
+							DPRINTF("CRC  %08x %08x error\n", crc, crc1);
+						}
+					}
+				}
+				usleep(1000);
+			}
+			else
+#endif
 			if (m_pFilter->ReadFilter(m_buffer, count))
 			{
 				//DPRINTF("[PAT Descriptor] Get Data\n");

@@ -1,4 +1,4 @@
-#ifndef TOC_H
+ï»¿#ifndef TOC_H
 #define TOC_H
 
 #include <QtGui/QWidget>
@@ -37,8 +37,8 @@ public:
 	void MakeItem(void);
 	void UpdateState();
 
-	AuthenREQUEST AuthenRequest;         //±£´æµ±Ç°Á¬½ÓµÄÈÏÖ¤ÇëÇó±¨ÎÄ
-	TcpClientSocket *tcpClientSocket;    //±£´æÒ»¸öÁ¬½ÓÖ¸Õë,Í¨¹ıËû»ñÈ¡¿Í»§¶ËIP ¶Ë¿Ú ÓÃ»§ÃûµÈ
+	AuthenREQUEST AuthenRequest;         //æµ±Ç°ÓµÖ¤
+	TcpClientSocket *tcpClientSocket;    //Ò»Ö¸,Í¨È¡Í»IP Ë¿ Ã»
 
 };
 
@@ -52,26 +52,46 @@ public:
 
 private:
 	Ui::TOCClass ui;
+	int timeid;
+	int sendcount;
+	int notifycount;
+	bool bstart;
+	bool bLost;
 
 public slots:
 // 	void slot_updateServerUI(QString,int);
-// 	void updateClientList();         //ÓĞĞÂµÄÁ¬½ÓÇëÇó»òÕß¶Ï¿ª,¸üĞÂ¿Í»§¶ËÁĞ±íĞÅÏ¢
-	void slot_CMD_SocketToUI_process(int SocketID,int cmdtype,int val);   //socket·¢¹ıÀ´µÄÃüÁî´¦Àí
-	void slot_CMD_TcpServertoUI_process(int SocketID,int cmdtype);        //·şÎñÆ÷·¢¸øUI
+// 	void updateClientList();         //Âµß¶Ï¿,Â¿Í»Ğ±Ï¢
+	void slot_CMD_SocketToUI_process(int SocketID,int cmdtype,int val);   //socketî´¦
+	void slot_CMD_TcpServertoUI_process(int SocketID,int cmdtype);        //UI
+	void timerEvent(QTimerEvent * te);
 
 signals:
-	void UIcmd_toSocket(int SocketID,int cmdtype,QByteArray ba);   //·¢ËÍÃüÁî¸øSocket ĞèÒªCTcpServerÖĞ×ª
+	void UIcmd_toSocket(int SocketID,int cmdtype,QByteArray ba);   //Socket ÒªCTcpServer×ª
 
 public:
 	void Init(void);
 	void StartServer(void);
 	void do_updateListOfClient();  
+	bool sendNotify();
+	bool sendStart();
+	bool sendPat();
+	bool sendPmt();
+	bool sendFinish();
+	bool sendCancel();
+	bool sendData();
 
 private:
-	CTcpServer *server_login;	    //Ö÷·şÎñ¶Ë¿Ú
-	CTcpServer *server_main;	    //µÇÂ½´¦Àí·şÎñ¶Ë¿Ú
+	CTcpServer *server_login;	    //Ë¿
+	CTcpServer *server_main;	    //Â½Ë¿
 
 private slots:
+	void on_pushButton_5_clicked();
+	void on_pushButton_clicked();
+	void on_pushButton_4_clicked();
+	void on_pushButtonFinish_2_clicked();
+	void on_pushButton_3_clicked();
+	void on_pushButton_2_clicked();
+	void on_pushButtonLoadDcp_clicked();
 	void on_pushButtonProtocol_clicked();
 	void on_pushButtonCancel_clicked();
 	void on_pushButtonFinish_clicked();
@@ -95,6 +115,7 @@ private:
 	void decrypt(char* buf, int len);
 	QString print_crc(char *buf, int len);
 	QString print_proto(char *buf, int len);
+	bool haveSegment(uint32 nSegNum);
 };
 
 #endif // TOC_H

@@ -139,7 +139,6 @@ std::list<NETWORK_CONF>& NetOperation::GetNetConfig()
 		nc2 = GetNetConfig(eth1);
 		if(nc2.strDevName != "")
 			m_list.push_back(nc2);
-
 		}
 	return m_list;
 }
@@ -594,7 +593,9 @@ extern NetCommThread *pNetComm;
 
 bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 {
+#if 0
 	ICMyini *ini = createMyini();
+#endif
 	char fn[1024];
 
 	//////////////////////////////////////////////////////////////////////////
@@ -607,8 +608,10 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 	{
 		NETWORK_CONF nc = *itor;
 		m_list.push_back(nc);
+#if 0
 		sprintf(fn, "%s%s", ETHA, nc.strDevName.c_str());
 		ini->load(fn);
+#endif
 		DPRINTF("%s %s %s %s\n",
 			nc.strIp.c_str(),
 			nc.strNetmask.c_str(),
@@ -660,10 +663,10 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 			system(fn);
 		}
 		sprintf(fn,
-			"nmcli con mod %s ipv4.dns \"%s %s\"",
+			"nmcli con mod %s ipv4.dns \"%s 8.8.8.8\"",
 			nc.strDevName.c_str(),
-			nc.strDns1.c_str(),
-			nc.strDns2.c_str());
+			nc.strDns1.c_str());//,
+//			nc.strDns2.c_str());
 		DPRINTF("%s\n", fn);
 		system(fn);
 
@@ -1182,6 +1185,9 @@ bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList)
 					}
 					if(!bFind)
 					{
+						//Don't delete /storage/ftp, it's vsftp root directory.
+						if(!(m_dir.at(i) == "/storage/ftp" || m_dir.at(i) == "storage/recv"))
+						{
 						char cmd[512];
 						sprintf(cmd, "rm -rf %s", m_dir.at(i).c_str());
 						if (gLog)
@@ -1191,6 +1197,7 @@ bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList)
 						system(cmd);
 					}
 				}
+			}
 			}
 			break;
 		case PST_USB:
@@ -1229,6 +1236,10 @@ bool mke2fs::FormatDisk(DISK_TYPE type)
 		DPRINTF("Start thread failed, status = %d.", status());
 		return false;
 	}
+
+	m_Status = 1;
+	sout.clear();
+	memset(out, 0, 1024);
 
 	return true; 
 }
@@ -1279,7 +1290,8 @@ void mke2fs::doit()
 	{
 	case DISK_REMOVEABLE:
 		chdir("/");
-
+		system("fuser -ck /storage");
+		sleep(2);
 		res = umount("/storage");
 		if(res != 0)
 		{
@@ -1313,11 +1325,14 @@ void mke2fs::doit()
 
 		MountDisk(DISK_REMOVEABLE);
 		chdir("/storage");
+		system("mkdir /storage/ftp");
+		system("mkdir /storage/recv");
 
 		break;
 	case DISK_RAID:
 		if(tmp != "")
 		{
+			system("fuser -ck /raid");
 			res = umount("/raid");
 			if(res != 0)
 			{
@@ -1502,11 +1517,11 @@ bool USB::find_dir(std::string dir)
 	fs::path p(dir);
 	try
 	{
-		sprintf(str, "[USB] find_dir: %s", dir.c_str());
-		if (gLog)
-		{
-			gLog->Write(LOG_NETCOMMU, str);
-		}
+// 		sprintf(str, "[USB] find_dir: %s", dir.c_str());
+// 		if (gLog)
+// 		{
+// 			gLog->Write(LOG_NETCOMMU, str);
+// 		}
 
 		if(!fs::exists(p))
 		{
@@ -2033,4 +2048,58 @@ void RaidDetailParser::RunRaidManager()
 			break;
 		}
 	}
+}
+
+extern bool gShutdownAfterFinish;
+void System::SetShutdownFlag(bool bFlag)
+{
+#if 0
+	ICMyini* ini = createMyini();
+	std::string tmp;
+	if(ini)
+	{
+		if(ini->load("/etc/CineCast/CineCast.cfg"))
+		{
+			if(bFlag)
+			{
+				ini->write(" ", "ShutdownFlag", "TRUE");
+			}
+			else
+			{
+				ini->write(" ", "ShutdownFlag", "FALSE");
+			}
+			ini->save("/etc/CineCast/CineCast.cfg");
+			releaseMyini(ini);
+			DPRINTF("Save cfg\n");
+			gShutdownAfterFinish = bFlag;
+		}
+	}
+#else
+	gShutdownAfterFinish = bFlag;
+#endif
+}
+
+bool System::GetShutdownFlag()
+{
+#if 0
+	ICMyini* ini = createMyini();
+	std::string tmp;
+	if(ini)
+	{
+		if(ini->load("/etc/CineCast/CineCast.cfg"))
+		{
+			if(ini->read(" ", "ShutdownFlag", tmp))
+			{
+				if (tmp == "TRUE")
+				{
+					gShutdownAfterFinish = true;
+				}
+			}
+			else
+				gShutdownAfterFinish = false;
+		}
+		releaseMyini(ini);
+	}
+#endif
+	return gShutdownAfterFinish;
 }

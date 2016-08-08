@@ -163,9 +163,17 @@ int TmsServer::Start(int port)
 	return 0;
 }
 
+#include "../dvb/demux.h"
+#include "../content/IContent.h"
+vector<InfoData> gCList;
+static int gMutex = 0;
+
 void TmsServer::doit()
 {
 	char str[512];
+	bool bSuccess = false;
+	while(!bSuccess)
+	{
 	try
 	{
 		if (m_SrvSocket.Create(AF_INET, SOCK_STREAM, 0))
@@ -183,6 +191,7 @@ void TmsServer::doit()
 				{
 					if (!m_SrvSocket.Listen(10))
 						throw -1;
+						bSuccess = true;
 				}
 				else
 					throw -2;
@@ -192,6 +201,7 @@ void TmsServer::doit()
 	}
 	catch (int& a)
 	{
+			m_SrvSocket.Destroy();
 		switch(a)
 		{
 		case -1:
@@ -208,25 +218,49 @@ void TmsServer::doit()
 	{
 			gLog->Write(LOG_ERROR, str);
 		}
-		return;
+			sleep(5);
+// 			return;
+		}
 	}
+	int err = -1;
+	IContentManager* pCm = getIContentManager();
+	vector<int> srcList;
+	srcList.push_back(PST_FTP);
 	while(1)
 	{
+		vector<InfoData> m_cList;
+
 		switch(m_status)
 		{
 		case RUN:
 			{
+				if(err != 0)
+					err = pCm->update(srcList);
 				if (m_pThread == NULL)
 				{
 					m_pThread = new TmsThread;
 				}
-				t_timeout tm = 100;
+				t_timeout tm = 2000;
 				if(m_SrvSocket.Accept(m_pThread->m_socket, NULL, NULL, &tm) == 0)
 				{
 					m_listClient.push_back(m_pThread);
 					m_pThread->Start();
 					m_pThread = NULL;
 				}
+				if(err == 0)
+				{
+					if(pCm->isReady(PST_FTP))
+					{
+						pCm->getProgramFileList(PST_FTP, 0, m_cList);
+						while(gMutex);
+						gMutex = 1;
+						gCList.clear();
+						gCList = m_cList;
+						gMutex = 0;
+						err = -1;
+					}
+				}
+				DPRINTF("Accept timeout\n");
 			}
 			break;
 		case STOP:
@@ -523,10 +557,12 @@ bool TmsThread::connect_req(char* buf)
 
 bool TmsThread::content_req(char* buf)
 {
+#if 0
 	IContentManager* pCm = getIContentManager();
 	vector<int> srcList;
 	vector<InfoData> m_cList;
-	srcList.push_back(0);
+	srcList.push_back(PST_FTP);
+#endif
 
 	TMSCMD *pKL = (TMSCMD*)buf;
 	uint32 crc;
@@ -537,16 +573,24 @@ bool TmsThread::content_req(char* buf)
 
 	try 
 	{
+#if 0
 		if(pCm->update(srcList) == 0)
 		{
 			while(1)
 			{
-				if(pCm->isReady(0) == true)
+				if(pCm->isReady(PST_FTP) == true)
 				{
-					pCm->getProgramFileList(0, 0, m_cList);
+					pCm->getProgramFileList(PST_FTP, 0, m_cList);
 					InfoData info;
 					std::vector<InfoData>::iterator itor;
 					if(m_cList.size() > 0)
+#else
+		InfoData info;
+		vector<InfoData>::iterator itor;
+		while(gMutex);
+		gMutex = 1;
+		if(gCList.size() > 0)
+#endif
 					{
 						QDomDocument doc;
 						QDomProcessingInstruction instruction;  
@@ -564,7 +608,11 @@ bool TmsThread::content_req(char* buf)
 						resp.appendChild(list);
 
 						int dcp_cnt = 0;
+#if 0
 						for (itor = m_cList.begin(); itor != m_cList.end(); ++itor)
+#else
+						for (itor = gCList.begin(); itor != gCList.end(); ++itor)
+#endif
 						{
 							InfoData info = *itor;
 							if (info.pData[2] == "100")
@@ -605,6 +653,7 @@ bool TmsThread::content_req(char* buf)
 								dcp_cnt++;
 							}
 						}
+						gMutex = 0;
 						if (dcp_cnt == 0)
 						{
 							if (pLog)
@@ -631,6 +680,7 @@ bool TmsThread::content_req(char* buf)
 							pLog->Write(LOG_TMS, "Device Response No DCP.");
 						throw -1;
 					}
+#if 0
 				}
 			}
 		}
@@ -640,9 +690,11 @@ bool TmsThread::content_req(char* buf)
 				pLog->Write(LOG_TMS, "Device Response DCP Not Ready.");
 			throw -1;
 		}
+#endif
 	}
 	catch(int&)
 	{
+		gMutex = 0;
 		pKL->cmd = CONTENT_FAIL;
 		pKL->length = 0;
 		void *pos = buf + sizeof(TMSCMD);
@@ -675,32 +727,48 @@ bool TmsThread::ftp_req(char* buf)
 			QDomElement uuid = response.firstChildElement("uuid");
 			if(!uuid.isNull())
 				uuidText = uuid.text();
-
+#if 0
 			IContentManager* pCm = getIContentManager();
 			vector<int> srcList;
 			vector<InfoData> m_cList;
-			srcList.push_back(0);
-
+			srcList.push_back(PST_FTP);
+#endif
 			std::string path;
-
+#if 0
 			if(pCm->update(srcList) == 0)
 			{
 				while(1)
 				{
-					if(pCm->isReady(0) == true)
+					if(pCm->isReady(PST_FTP) == true)
 					{
-						pCm->getProgramFileList(0, 0, m_cList);
+						pCm->getProgramFileList(PST_FTP, 0, m_cList);
+#endif
 						InfoData info;
 						bool bFind = false;
+#if 0
 						for(int i = 0; i < m_cList.size(); i++)
+#else
+						while(gMutex);
+						gMutex = 1;
+						for(int i = 0; i < gCList.size(); i++)
+#endif
 						{
+#if 0
 							if (m_cList[i].pData[0] == uuidText.toStdString())
+#else
+							if (gCList[i].pData[0] == uuidText.toStdString())
+#endif
 							{
+#if 0
 								path = m_cList[i].pData[10];
+#else
+								path = gCList[i].pData[10];
+#endif
 								bFind = true;
 								break;
 							}
 						}
+						gMutex = 0;
 						if (!bFind)
 						{
 							QString s;
@@ -749,7 +817,7 @@ bool TmsThread::ftp_req(char* buf)
 
 						item = doc.createElement("path");
 						resp.appendChild(item);
-						txt = doc.createTextNode(path.c_str() + strlen("/storage/"));
+						txt = doc.createTextNode(path.c_str() + strlen("/storage/ftp/"));
 						item.appendChild(txt);
 
 						QString s = doc.toString();
@@ -767,14 +835,16 @@ bool TmsThread::ftp_req(char* buf)
 							pLog->Write(LOG_TMS, s.toStdString().c_str());
 							s.sprintf("FTP Source: %s", source.toStdString().c_str());
 							pLog->Write(LOG_TMS, s.toStdString().c_str());
-							s.sprintf("FTP Path: %s", path.c_str() + strlen("/storage/"));
+							s.sprintf("FTP Path: %s", path.c_str() + strlen("/storage/ftp/"));
 							pLog->Write(LOG_TMS, s.toStdString().c_str());
 						}
 
 						return Write(buf, setsize, setsize);
+#if 0
 					}
 				}
 			}
+#endif
 		}
 		else
 		{

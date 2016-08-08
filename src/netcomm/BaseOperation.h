@@ -116,6 +116,8 @@ public:
 	void SetDateTime(char* stime);
 
 	void ClearSystem();
+	void SetShutdownFlag(bool bFlag);
+	bool GetShutdownFlag();
 };
 
 

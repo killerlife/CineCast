@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1290</width>
-    <height>796</height>
+    <width>1287</width>
+    <height>835</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -14,6 +14,8 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_17" >
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" >
+     <item>
     <widget class="QGroupBox" name="groupBox_staeliite" >
      <property name="font" >
       <font>
@@ -96,7 +98,7 @@
            <widget class="QLineEdit" name="lineEdit_Frequency" >
             <property name="minimumSize" >
              <size>
-              <width>180</width>
+                <width>150</width>
               <height>0</height>
              </size>
             </property>
@@ -118,7 +120,7 @@
            <widget class="QLineEdit" name="lineEdit_symbol_rate" >
             <property name="minimumSize" >
              <size>
-              <width>200</width>
+                <width>150</width>
               <height>0</height>
              </size>
             </property>
@@ -137,7 +139,7 @@
            <widget class="QComboBox" name="comboBox_DVB" >
             <property name="minimumSize" >
              <size>
-              <width>180</width>
+                <width>150</width>
               <height>0</height>
              </size>
             </property>
@@ -232,10 +234,16 @@
            <widget class="QComboBox" name="comboBox_xy" >
             <property name="minimumSize" >
              <size>
-              <width>180</width>
+                <width>150</width>
               <height>0</height>
              </size>
             </property>
+              <property name="maximumSize" >
+               <size>
+                <width>200</width>
+                <height>16777215</height>
+               </size>
+              </property>
             <item>
              <property name="text" >
               <string>1/2</string>
@@ -297,13 +305,13 @@
            <widget class="QComboBox" name="comboBox_V" >
             <property name="minimumSize" >
              <size>
-              <width>180</width>
+                <width>150</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize" >
              <size>
-              <width>180</width>
+                <width>200</width>
               <height>16777215</height>
              </size>
             </property>
@@ -323,10 +331,16 @@
            <widget class="QComboBox" name="comboBox_SPK" >
             <property name="minimumSize" >
              <size>
-              <width>180</width>
+                <width>150</width>
               <height>0</height>
              </size>
             </property>
+              <property name="maximumSize" >
+               <size>
+                <width>200</width>
+                <height>16777215</height>
+               </size>
+              </property>
             <item>
              <property name="text" >
               <string>QPSK</string>
@@ -458,10 +472,16 @@
            <widget class="QComboBox" name="comboBox_decimals" >
             <property name="minimumSize" >
              <size>
-              <width>180</width>
+                <width>150</width>
               <height>0</height>
              </size>
             </property>
+              <property name="maximumSize" >
+               <size>
+                <width>200</width>
+                <height>16777215</height>
+               </size>
+              </property>
             <item>
              <property name="text" >
               <string>0.20</string>
@@ -481,6 +501,18 @@
           </item>
             <item>
            <widget class="QLabel" name="labe_symbl_rate_12" >
+              <property name="minimumSize" >
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize" >
+               <size>
+                <width>200</width>
+                <height>16777215</height>
+               </size>
+              </property>
             <property name="font" >
              <font>
               <family>Book Antiqua</family>
@@ -499,6 +531,18 @@
             </item>
           <item>
            <widget class="QLabel" name="labe_symbl_rate_11" >
+              <property name="minimumSize" >
+               <size>
+                <width>150</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize" >
+               <size>
+                <width>200</width>
+                <height>16777215</height>
+               </size>
+              </property>
             <property name="font" >
              <font>
               <family>Book Antiqua</family>
@@ -580,6 +624,87 @@
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+      <widget class="QGroupBox" name="groupBox_8" >
+       <property name="font" >
+        <font>
+         <family>Book Antiqua</family>
+         <pointsize>18</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+       <property name="title" >
+        <string>Task Finish</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_14" >
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_23" >
+          <item>
+           <widget class="QLabel" name="label" >
+            <property name="text" >
+             <string>Current Task Only</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButton" >
+          <property name="text" >
+           <string>Keep Power-on</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButton_2" >
+          <property name="text" >
+           <string>Power-off</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_12" >
+          <item>
+           <widget class="QPushButton" name="pushButtonApply2_3" >
+            <property name="minimumSize" >
+             <size>
+              <width>120</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize" >
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font" >
+             <font>
+              <family>Book Antiqua</family>
+              <pointsize>18</pointsize>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text" >
+             <string>Apply</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QLabel" name="labe_symbl_rate_15" >

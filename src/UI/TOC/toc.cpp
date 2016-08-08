@@ -1,6 +1,11 @@
 ﻿#include "toc.h"
 #include "CTcpServer.h"
 #include <QtXml/QDomDocument>
+#include <QFileDialog>
+#include <QDir>
+#include <QFileInfoList>
+#include <QList>
+#include <Windows.h>
 
 #define  R_SET_DEBUG_CMD 0x500
 #pragma pack(1)
@@ -16,9 +21,1231 @@ public:
 	}
 } KKL;
 
+ContentItem* gItem = NULL;
+QTcpSocket gDev;
+
+uint32 calc_crc32(uint8 *pData,
+				  int32 nLength);
+
+typedef struct _PD_
+{
+	uint8 tag;
+	uint8 len;
+	uint32 filmid;
+	uint8 ver;
+	uint8 type;
+	uint8 count;
+} PD;
+
+typedef struct _SFD_
+{
+	uint8 tag;
+	uint8 len;
+	uint8 Name[9];
+} SFD;
+
+typedef struct _FD_
+{
+	uint8 tag;
+	uint8 len;
+	uint8 filelen[5];
+	uint8 seglen[4];
+	uint8 flag:8;
+	uint8* pfname;
+}FLD;
+
+typedef struct _PID_
+{
+	uint8 type;
+	uint16 res:3;
+	uint16 pid:13;
+	uint16 res1:4;
+	uint16 eil:12;
+	struct subcountdesc
+	{
+		uint8 tag;
+		uint8 len;
+		uint8 count;
+	}scd;
+	SFD sfd;
+	FLD fd;
+	uint8 crc[4];
+}PID;
+
+class MyfileInfo: public QFileInfo
+{
+public:
+	int segments;
+	int id;
+	PID pid;
+};
+
+QList<MyfileInfo> myFileInfoList;
+#define SEG_SIZE 2000
+QFileInfoList myLostInfoList;
+
+struct NotifyTab
+{
+	unsigned char id;
+	unsigned short ssi:1;
+	unsigned short pi:1;
+	unsigned short res:2;
+	unsigned short psl:12;
+	struct NotifyDesc
+	{
+		unsigned char tag;
+		unsigned char len;
+		uint32 filmid;
+		unsigned char ver;
+		unsigned char type;
+		unsigned char res;
+		uint32 count;
+	}ND;
+	uint32 mid;
+	unsigned char res1;
+	unsigned char crc[4];
+}NT;
+
+struct StartTab
+{
+	uint8 id;
+	uint16 ssi:1;
+	uint16 pi:1;
+	uint16 res:2;
+	uint16 psl:12;
+	struct StartDesc
+	{
+		uint8 tag;
+		uint8 len;
+		uint32 filmid;
+		uint8 ver;
+		uint8 type;
+		uint64 DCPlen;
+		uint64 res;
+		uint8 fnlen;
+		uint8 fn[13];
+		uint8 uuidlen;
+		uint8 uuid[36];
+		uint8 idlen;
+		uint8 idate[10];
+		uint8 ilen;
+		uint8 issuer[6];
+		uint8 clen;
+		uint8 create[6];
+	}SD;
+	struct FileDesc
+	{
+		uint8 tag;
+		uint8 len;
+		uint8 filelen[5];
+		uint32 seglen:32;
+		uint8 flag:8;
+		uint8 fname[13];
+	}FD;
+	uint8 crc[4];
+}ST;
+
+struct FinishTab
+{
+	uint8 id;
+	uint16 ssi:1;
+	uint16 pi:1;
+	uint16 res:2;
+	uint16 psl:12;
+	struct FinishDesc
+	{
+		uint8 tag;
+		uint8 len;
+		uint32 filmid;
+		uint8 ver;
+		uint8 type;
+	}FD;
+	uint8 crc[4];
+}FT;
+
+struct CancelTab
+{
+	uint8 id;
+	uint16 ssi:1;
+	uint16 pi:1;
+	uint16 res:2;
+	uint16 psl:12;
+	struct CancelDesc
+	{
+		uint8 tag;
+		uint8 len;
+		uint32 filmid;
+		uint8 ver;
+		uint8 type;
+	}CD;
+	uint8 crc[4];
+}CT;
+
+struct PATTab
+{
+	uint8 id;
+	uint16 ssi:1;
+	uint16 pi:1;
+	uint16 res:2;
+	uint16 psl:12;
+	uint16 tsid;
+	uint8 res1:2;
+	uint8 ver:5;
+	uint8 cni:1;
+	uint8 secnum;
+	uint8 lsecnum;
+	uint16 pn;
+	uint16 res2:3;
+	uint16 pmtid:13;
+	uint8 crc[4];
+}PATT;
+
+typedef struct _PMT_
+{
+	uint8 id;
+	uint16 ssi:1;
+	uint16 pi:1;
+	uint16 res:2;
+	uint16 psl:12;
+} PMTHead;
+
+uint8 PMTT[4096];
+
+struct FilmTab
+{
+	uint8 id;
+	uint16 ssi:1;
+	uint16 pi:1;
+	uint16 res:2;
+	uint16 psl:12;
+	struct FDD
+	{
+		uint8 tag;
+		uint8 len;
+		uint32 filmid;
+		uint8 ver;
+		uint8 type;
+		uint8 segnum[4];
+	}fdd;
+	uint8 buf[4010];
+}FilmT;
+
+int cur = -1;
+static MyfileInfo fI;
+static int segpos = 0;
+static FILE *fp = NULL;
+uint32 send_count= 0;
+
+unsigned int getBits (const unsigned char *buf,
+					  int startbit,
+					  int bitlen)
+{
+	const unsigned char *b;
+	unsigned int mask,tmp_long;
+	int bitHigh,i;
+
+	b = &buf[startbit / 8];
+	startbit %= 8;
+
+	bitHigh = 8;
+	tmp_long = b[0];
+	for (i = 0; i < ((bitlen-1) >> 3); i++) {
+		tmp_long <<= 8;
+		tmp_long  |= b[i+1];
+		bitHigh   += 8;
+	}
+
+	startbit = bitHigh - startbit - bitlen;
+	tmp_long = tmp_long >> startbit;
+	mask     = (1ULL << bitlen) - 1;
+	return tmp_long & mask;
+}
+
+void setBits16(uint8 *buf, int startbit, int bitlen, uint16 value)
+{
+	uint32 tmp, mask;
+	mask = (1UL << bitlen) - 1;
+	tmp = (value&mask) << ((startbit + bitlen)%8);
+	mask = ~((mask) << ((startbit + bitlen)%8));
+
+	uint8 *b, *v, *m;
+	b = &buf[startbit / 8];
+	v = (uint8 *)&tmp;
+	m = (uint8 *)&mask;
+	int pos = (bitlen + 7)/8;
+	for(int i = 0; i < pos; i++)
+	{
+		b[i] = (b[i] & m[pos - i - 1]) | v[pos - i - 1];
+	}
+}
+
+void TOC::on_pushButton_3_clicked()
+{
+	killTimer(timeid);
+	timeid = 0;
+	sendCancel();
+	bLost = false;
+	ui.label_5->setText("NO LOST");
+}
+
+void TOC::on_pushButtonFinish_2_clicked()
+{
+	killTimer(timeid);
+	timeid = 0;
+	sendFinish();
+	bLost = false;
+	ui.label_5->setText("NO LOST");
+}
+
+void TOC::on_pushButton_5_clicked()
+{
+	QString path = QFileDialog::getExistingDirectory(this, tr("Select LOST"));
+	ui.label_5->setText(path);
+	myLostInfoList.clear();
+	if(!ui.label_5->text().isEmpty())
+	{
+		path = ui.label_5->text();
+		QDir dir = QDir(path);
+		myLostInfoList = dir.entryInfoList();
+		QList<QFileInfo>::iterator itr;
+		for(itr = myLostInfoList.begin(); itr != myLostInfoList.end(); ++itr)
+		{
+			QFileInfo fi = *itr;
+			if(fi.isDir())
+				myLostInfoList.erase(itr);
+		}
+		bLost = true;
+	}
+}
+
+void TOC::on_pushButton_4_clicked()
+{
+	ContentItem *Item = (ContentItem*)ui.treeWidget->currentItem();
+
+	if(Item)
+	{
+		QByteArray ba;
+		emit UIcmd_toSocket(Item->tcpClientSocket->socketID, UI_CLOSE_SOCKET, ba);
+	}
+}
+
+void TOC::on_pushButton_2_clicked()
+{
+	bstart = true;
+	sendcount = 0;
+	notifycount = 0;
+	segpos = 0;
+	cur = -1;
+	int total = 0;
+	for(int i = 0; i < myFileInfoList.size(); i++)
+		total += myFileInfoList.at(i).segments;
+	ui.progressBar->setMaximum(total);
+	ui.label_total->setText(QString::number(total));
+	ui.progressBar->setValue(0);
+	if(timeid <= 0)
+	timeid = startTimer(1);
+}
+
+void TOC::on_pushButtonLoadDcp_clicked()
+{
+	QString path = QFileDialog::getExistingDirectory(this, tr("Select DCP"));
+	ui.label_DCP->setText(path);
+}	
+
+uint32 filmid;
+
+uint32 incid = 0x6d47040c;
+
+void TOC::on_pushButton_clicked()
+{
+	bool bDcp = ui.radioButton->isChecked();
+	if(bDcp)
+	{
+		incid = ui.lineEdit->text().toInt();
+		filmid = ((incid >> 24) & 0xff);
+		filmid |= ((incid >> 8) & 0xff00);
+		filmid |= ((incid << 8) & 0xff0000);
+		filmid |= ((incid << 24) & 0xff000000);
+		//filmid = incid;
+	}
+	else
+		filmid = 0xf14a040c;
+	if(!ui.label_DCP->text().isEmpty())
+	{
+		QString path = ui.label_DCP->text();
+		QStringList sl = path.split("/");
+		QDir dir = QDir(ui.label_DCP->text());
+		QFileInfoList list = dir.entryInfoList();
+		myFileInfoList.clear();
+		uint64 dcplen = 0;
+		int id = 0x21;
+		for(int i = 0; i < list.size(); i++)
+		{
+			QFileInfo f = list.at(i);
+			if(f.isFile())
+			{
+				MyfileInfo inf = *((MyfileInfo*)(&f));
+				uint64 ss = inf.size();
+				int seg = ss/SEG_SIZE;
+				seg += ((ss%SEG_SIZE)?1:0);
+				inf.segments = seg;
+				dcplen += inf.size();
+				inf.id = id;
+				setBits16((uint8 *)&inf.pid, 11, 13, id++);
+//				inf.pid.pid = id++;
+				inf.pid.type = 0x5;
+				inf.pid.scd.len = 1;
+				inf.pid.scd.count = 1;
+				inf.pid.sfd.len = 9;
+#if 0
+				if(bDcp)
+				memcpy(inf.pid.sfd.Name, "20160721/", 9);
+				else
+					memcpy(inf.pid.sfd.Name, "lcupdate/", 9);
+#endif
+				QString p = sl.at(sl.size() - 1) + "/";
+				memcpy(inf.pid.sfd.Name, p.toStdString().c_str(), 9);
+
+				inf.pid.fd.filelen[0] = (inf.size() >> 32) & 0xff;
+				inf.pid.fd.filelen[1] = (inf.size() >> 24) & 0xff;
+				inf.pid.fd.filelen[2] = (inf.size() >> 16) & 0xff;
+				inf.pid.fd.filelen[3] = (inf.size() >> 8) & 0xff;
+				inf.pid.fd.filelen[4] = inf.size() & 0xff;
+				inf.pid.fd.seglen[0] = (SEG_SIZE >> 24) & 0xff;
+				inf.pid.fd.seglen[1] = (SEG_SIZE >> 16) & 0xff;
+				inf.pid.fd.seglen[2] = (SEG_SIZE >> 8) & 0xff;
+				inf.pid.fd.seglen[3] = (SEG_SIZE) & 0xff;
+				inf.pid.fd.pfname = new uint8[inf.fileName().toStdString().size()];
+				memcpy(inf.pid.fd.pfname, inf.fileName().toStdString().c_str(), inf.fileName().toStdString().size());
+				inf.pid.fd.len = 10 + inf.fileName().toStdString().size();
+				int len = inf.pid.fd.len + 2 + inf.pid.sfd.len + 2 + inf.pid.scd.len + 2;
+				uint8 *pos = (uint8*)&inf.pid + 3;
+				setBits16(pos, 4, 12, len);
+//				inf.pid.eil = 0; //real len
+				myFileInfoList.push_back(inf);
+			}
+		}
+
+		//Construct Notify tab
+		NT.id = 0x91;
+		setBits16((uint8*)&NT, 12, 12, sizeof(NotifyTab) - 3);
+// 		NT.psl = sizeof(NotifyTab) - 3;
+		NT.ND.filmid = filmid;
+		NT.ND.len = sizeof(NotifyTab::NotifyDesc) - 2;
+		NT.ND.type = 4;
+		NT.ND.count = 1;
+		NT.mid = 1;
+		uint32 crc = calc_crc32((uint8*)&NT, getBits((uint8*)&NT, 12, 12) - 1) & 0xffffffff;
+		NT.crc[0] = crc >> 24;
+		NT.crc[1] = (crc >> 16) & 0xff;
+		NT.crc[2] = (crc >> 8) & 0xff;
+		NT.crc[3] = crc & 0xff;
+
+		//Construct Start tab
+		ST.id = 0x92;
+		setBits16((uint8*)&ST, 12, 12, sizeof(StartTab) - 3);
+// 		ST.psl = sizeof(StartTab) - 3;
+		ST.SD.filmid = filmid;
+		ST.SD.len = sizeof(StartTab::StartDesc) - 2;
+		ST.SD.type = 4;
+		ST.SD.DCPlen = dcplen;
+		if(bDcp)
+		{
+			ST.SD.fnlen = 13;
+			memcpy(ST.SD.fn, "XuanChuanPian", 13);
+		}
+		else
+		{
+			ST.SD.fnlen = 13;
+			memcpy(ST.SD.fn, "-Update File-", 13);
+		}
+		ST.SD.uuidlen = 36;
+		memcpy(ST.SD.uuid, "00000000-0000-0000-0000-000000000000", 36);
+		ST.SD.idlen = 10;
+		memcpy(ST.SD.idate, "2016/07/21", 10);
+		ST.SD.ilen = 6;
+		memcpy(ST.SD.issuer, "leonis", 6);
+		ST.SD.clen = 6;
+		memcpy(ST.SD.create, "leonis", 6);
+		ST.FD.len = sizeof(StartTab::FileDesc) - 2;
+		ST.FD.filelen[0] = (dcplen >> 32) & 0xff;
+		ST.FD.filelen[1] = (dcplen >> 24) & 0xff;
+		ST.FD.filelen[2] = (dcplen >> 16) & 0xff;
+		ST.FD.filelen[3] = (dcplen >> 8) & 0xff;
+		ST.FD.filelen[4] = dcplen & 0xff;
+		ST.FD.seglen = SEG_SIZE;
+		if(bDcp)
+			memcpy(ST.FD.fname, "XuanChuanPian", 13);
+		else
+			memcpy(ST.FD.fname, "-Update File-", 13);
+		crc = calc_crc32((uint8*)&ST, getBits((uint8*)&ST, 12, 12) - 1) & 0xffffffff;
+		ST.crc[0] = crc >> 24;
+		ST.crc[1] = (crc >> 16) & 0xff;
+		ST.crc[2] = (crc >> 8) & 0xff;
+		ST.crc[3] = crc & 0xff;
+
+		//Construct Finish tab
+		FT.id = 0x93;
+		setBits16((uint8*)&FT, 12, 12, sizeof(FinishTab) - 3);
+// 		FT.psl = sizeof(FinishTab) - 3;
+		FT.FD.filmid = filmid;
+		FT.FD.len = sizeof(FinishTab::FinishDesc) - 2;
+		FT.FD.type = 4;
+		crc = calc_crc32((uint8*)&FT, getBits((uint8*)&FT, 12, 12) - 1) & 0xffffffff;
+		FT.crc[0] = crc >> 24;
+		FT.crc[1] = (crc >> 16) & 0xff;
+		FT.crc[2] = (crc >> 8) & 0xff;
+		FT.crc[3] = crc & 0xff;
+
+		//Construct Cancel tab
+		CT.id = 0x94;
+		setBits16((uint8*)&CT, 12, 12, sizeof(CancelTab) - 3);
+// 		CT.psl = sizeof(CancelTab) - 3;
+		CT.CD.filmid = filmid;
+		CT.CD.len = sizeof(CancelTab::CancelDesc) - 2;
+		CT.CD.type = 4;
+		crc = calc_crc32((uint8*)&CT, getBits((uint8*)&CT, 12, 12) - 1) & 0xffffffff;
+		CT.crc[0] = crc >> 24;
+		CT.crc[1] = (crc >> 16) & 0xff;
+		CT.crc[2] = (crc >> 8) & 0xff;
+		CT.crc[3] = crc & 0xff;
+
+		//Construct PAT tab
+		PATT.id = 0x00;
+		setBits16((uint8*)&PATT, 12, 12, sizeof(PATTab) - 3);
+// 		PATT.psl = sizeof(PATTab) - 3;
+		PATT.pn = 256;
+		uint8 *pbuf = (uint8*)&PATT + 10;
+		setBits16((uint8*)pbuf, 3, 13, 0x20);
+//		PATT.pmtid = 0x20;
+		crc = calc_crc32((uint8*)&PATT, getBits((uint8*)&PATT, 12, 12) - 1) & 0xffffffff;
+		PATT.crc[0] = crc >> 24;
+		PATT.crc[1] = (crc >> 16) & 0xff;
+		PATT.crc[2] = (crc >> 8) & 0xff;
+		PATT.crc[3] = crc & 0xff;
+
+		//Construct PMT tab
+		//Program descriptor
+		uint8 *pos = PMTT + 12;
+		PD *pPd = (PD*)pos;
+		pPd->filmid = filmid;
+		pPd->count = myFileInfoList.size();
+		pPd->len = sizeof(PD) - 2;
+		pos += sizeof(PD);
+		for(int i = 0 ; i < pPd->count; i++)
+		{
+			PID p = myFileInfoList.at(i).pid;
+			memcpy(pos, &p, 8);
+			pos += 8;
+			memcpy(pos, &p.sfd, 11);
+			pos += 11;
+			memcpy(pos, &p.fd, 12);
+			pos += 12;
+			memcpy(pos, p.fd.pfname, p.fd.len - 10);
+			pos += p.fd.len - 10;
+		}
+		PMTHead* pH = (PMTHead*)PMTT;
+		pH->id = 0x02;
+		setBits16((uint8*)&PMTT, 12, 12, pos - PMTT - 3 + 4);
+// 		pH->psl = pos - PMTT - 3 + 4;
+		crc = calc_crc32((uint8*)PMTT, getBits((uint8*)&PMTT, 12, 12) - 1) & 0xffffffff;
+		pos[0] = crc >> 24;
+		pos[1] = (crc >> 16) & 0xff;
+		pos[2] = (crc >> 8) & 0xff;
+		pos[3] = crc & 0xff;
+	}		
+
+	ContentItem* item = (ContentItem*)ui.treeWidget->currentItem();
+	if(item == NULL)
+		return;
+	QHostAddress addr = item->tcpClientSocket->getRemote();
+	QTcpSocket dev;
+	dev.connectToHost(addr, 10003);
+	if(!dev.waitForConnected(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Can not connect to host!"));
+		killTimer(timeid);
+		timeid = 0;
+		return;
+	}
+
+	char buf[1024];
+	KKL *pKL = (KKL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KKL);
+	*((uint32*)pos) = 0x10000000;
+
+	pKL->m_length = sizeof(uint32);
+
+	int sendsize=sizeof(KKL)+sizeof(uint32);
+	dev.write(buf, sendsize);
+	if(!dev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	if(!dev.waitForReadyRead(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	int i= dev.read(buf, 1024);
+	dev.close();
+}				 
+		
+void TOC::timerEvent(QTimerEvent * te)
+{
+	if(te->timerId() == timeid)
+	{
+		if (bstart)
+		{
+			gItem = (ContentItem*)ui.treeWidget->currentItem();
+			if( gItem != NULL)
+			{
+				gDev.close();
+				QHostAddress addr = gItem->tcpClientSocket->getRemote();
+				gDev.connectToHost(addr, 10009);
+				if(!gDev.waitForConnected(3000))
+				{
+					QMessageBox::critical(this, tr("ERROR"), tr("Can not connect to host!"));
+					killTimer(timeid);
+					timeid = 0;
+					return;
+				}
+				bstart = false;
+			}
+		}
+		else
+		{
+			notifycount++;
+			if(notifycount < 50)
+			{
+				sendNotify();
+			}
+			else if(notifycount >= 50 && notifycount < 100)
+			{
+				sendStart();
+			}
+			else if(notifycount >= 100 && notifycount < 150)
+			{
+				sendPat();
+			}
+			else if(notifycount >= 150 && notifycount < 200)
+			{
+				sendPmt();
+			}
+			else if(notifycount >=200 && notifycount < 250)
+			{
+				;
+			}
+#if 1
+			else
+			{
+				bool bRet;
+				switch(sendcount%1000)
+				{
+				case 0:
+					bRet = sendNotify();
+					break;
+				case 1:
+					bRet = sendStart();
+					break;
+				case 2:
+					bRet = sendPat();
+					break;
+				case 3:
+					bRet = sendPmt();
+					break;
+				default:
+					bRet = sendData();
+				}
+				if(bRet)
+				sendcount++;
+			}
+#endif
+		}
+	}
+}
+
+bool TOC::sendNotify()
+{
+	char buf[1024];
+	KKL *pKL = (KKL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = 0x1ff;
+	pKL->m_length = getBits((uint8*)&NT, 12, 12) + 3;
+
+	int sendsize=sizeof(KKL);
+	gDev.write(buf, sendsize);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	gDev.write((char*)&NT, pKL->m_length);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	if(!gDev.waitForReadyRead(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	int i= gDev.read(buf, 1024);
+	return true;
+}
+
+bool TOC::sendStart()
+{
+	char buf[1024];
+	KKL *pKL = (KKL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = 0x2ff;
+	pKL->m_length = getBits((uint8*)&ST, 12, 12) + 3;
+
+	int sendsize=sizeof(KKL);
+	gDev.write(buf, sendsize);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	gDev.write((char*)&ST, pKL->m_length);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	if(!gDev.waitForReadyRead(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	int i= gDev.read(buf, 1024);
+	return true;
+}
+
+bool TOC::sendCancel()
+{
+	char buf[1024];
+	KKL *pKL = (KKL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = 0x4ff;
+	pKL->m_length = getBits((uint8*)&CT, 12, 12) + 3;
+
+	int sendsize=sizeof(KKL);
+	gDev.write(buf, sendsize);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	gDev.write((char*)&CT, pKL->m_length);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	if(!gDev.waitForReadyRead(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	int i= gDev.read(buf, 1024);
+
+	ContentItem* item = (ContentItem*)ui.treeWidget->currentItem();
+	if(item == NULL)
+		return false;
+	QHostAddress addr = item->tcpClientSocket->getRemote();
+	QTcpSocket dev;
+	dev.connectToHost(addr, 10003);
+	if(!dev.waitForConnected(3000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Can't connect to host!"));
+		killTimer(timeid);
+		timeid = 0;
+		return false;
+	}
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = R_SET_DEBUG_CMD;
+	void* pos = buf + sizeof(KKL);
+	*((uint32*)pos) = 0x10000007;
+
+	pKL->m_length = sizeof(uint32);
+
+	sendsize=sizeof(KKL)+sizeof(uint32);
+	dev.write(buf, sendsize);
+	if(!dev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	if(!dev.waitForReadyRead(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	i= dev.read(buf, 1024);
+	dev.close();
+	return true;
+}
+
+bool TOC::sendFinish()
+{
+	char buf[1024];
+	KKL *pKL = (KKL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = 0x3ff;
+	pKL->m_length = getBits((uint8*)&FT, 12, 12) + 3;
+
+	int sendsize=sizeof(KKL);
+	gDev.write(buf, sendsize);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	gDev.write((char*)&FT, pKL->m_length);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	if(!gDev.waitForReadyRead(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	int i= gDev.read(buf, 1024);
+	return true;
+}
+
+bool TOC::sendPat()
+{
+	char buf[1024];
+	KKL *pKL = (KKL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = 0xfe;
+	pKL->m_length = getBits((uint8*)&PATT, 12, 12) + 3;
+
+	int sendsize=sizeof(KKL);
+	gDev.write(buf, sendsize);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	gDev.write((char*)&PATT, pKL->m_length);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	if(!gDev.waitForReadyRead(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	int i= gDev.read(buf, 1024);
+	return true;
+}
+
+bool TOC::sendPmt()
+{
+	char buf[1024];
+	KKL *pKL = (KKL*)buf;
+
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = 0x20;
+	PMTHead*pH = (PMTHead*)PMTT;
+	pKL->m_length = getBits((uint8*)pH, 12, 12) + 3;
+
+	int sendsize=sizeof(KKL);
+	gDev.write(buf, sendsize);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	gDev.write((char*)&PMTT, pKL->m_length);
+	if(!gDev.waitForBytesWritten(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	if(!gDev.waitForReadyRead(2000))
+	{
+		QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+		killTimer(timeid);
+		timeid = 0;
+	}
+	int i= gDev.read(buf, 1024);
+	return true;
+}
+
+char *lost_buf = NULL;
+uint32 lost_size;
+
+bool TOC::sendData()
+{
+	if(cur <= 0)
+	{
+		if(cur < myFileInfoList.size())
+			fI = myFileInfoList.at(0);
+		segpos = 0;
+		fp = fopen(fI.filePath().toStdString().c_str(), "rb");
+#if 1
+		if(lost_buf != NULL)
+		{
+			delete[] lost_buf;
+			lost_buf = NULL;
+		}
+		if(bLost)
+		{
+			for(int i = 0; i < myLostInfoList.size(); i++)
+			{
+				QFileInfo lI = myLostInfoList.at(i);
+				if(lI.fileName().contains(fI.fileName()))
+				{
+					lost_size = lI.size();
+					lost_buf = new char[lost_size];
+					FILE *fp = fopen(lI.filePath().toStdString().c_str(), "rb");
+					fread(lost_buf, 1, lost_size, fp);
+					fclose(fp);
+					break;
+				}
+			}
+		}
+#endif
+		cur = 1;
+		send_count = 0;
+	}
+	if(fp != NULL)
+	{
+		if(bLost)
+		{
+			bool bRet = false;
+			FilmT.id = 0x80;
+			FilmT.fdd.filmid = filmid;
+			FilmT.fdd.len = 10;
+			while (1)
+			{
+				if(lost_buf != NULL && !haveSegment(segpos))
+				{
+					uint64 pos = (uint64) segpos * SEG_SIZE;
+					fseek(fp, pos, SEEK_SET);
+					int size = fread(FilmT.buf, 1, SEG_SIZE, fp);
+					if (size > 0)
+					{
+						FilmT.fdd.segnum[0] = (segpos >> 24) & 0xff;
+						FilmT.fdd.segnum[1] = (segpos >> 16) & 0xff;
+						FilmT.fdd.segnum[2] = (segpos >> 8) & 0xff;
+						FilmT.fdd.segnum[3] = (segpos) & 0xff;
+						setBits16((uint8*)&FilmT, 12, 12, sizeof(FilmTab::FDD) + size + 4);
+						//			FilmT.psl = sizeof(FilmTab::FDD) + size + 4;
+						uint32 crc = calc_crc32((uint8*)&FilmT, getBits((uint8*)&FilmT, 12, 12) - 1) & 0xffffffff;
+						char* pos = (char*)&FilmT + getBits((uint8*)&FilmT, 12, 12) - 1;
+						pos[0] = (crc >> 24) & 0xff;
+						pos[1] = (crc >> 16) & 0xff;
+						pos[2] = (crc >> 8) & 0xff;
+						pos[3] = crc & 0xff;
+
+						char buf[1024];
+						KKL *pKL = (KKL*)buf;
+
+						pKL->m_pkgHead = 0x7585;
+						pKL->m_keyID = fI.id;
+						pKL->m_length = getBits((uint8*)&FilmT, 12, 12) + 3;
+#if 1
+						int sendsize=sizeof(KKL);
+						gDev.write(buf, sendsize);
+						if(!gDev.waitForBytesWritten(2000))
+						{
+							QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+							killTimer(timeid);
+							timeid = 0;
+						}
+						gDev.write((char*)&FilmT, pKL->m_length);
+// 						while(!gDev.flush());
+						if(!gDev.waitForBytesWritten(4000))
+						{
+							QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+							killTimer(timeid);
+							timeid = 0;
+						}
+						// 			Sleep(40);
+						if(!gDev.waitForReadyRead(2000))
+						{
+							QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+							killTimer(timeid);
+							timeid = 0;
+						}
+						int i= gDev.read(buf, 6);
+						send_count++;
+						ui.progressBar->setValue(send_count);
+						ui.label_count->setText(QString::number(send_count));
+#endif
+						segpos++;
+						bRet = true;
+						return bRet;
+					}
+					else
+					{
+						fclose(fp);
+						if(cur < myFileInfoList.size())
+							fI = myFileInfoList.at(cur);
+						else
+						{
+							FilmT.fdd.segnum[0] = (segpos >> 24) & 0xff;
+							FilmT.fdd.segnum[1] = (segpos >> 16) & 0xff;
+							FilmT.fdd.segnum[2] = (segpos >> 8) & 0xff;
+							FilmT.fdd.segnum[3] = (segpos) & 0xff;
+							segpos++;
+							setBits16((uint8*)&FilmT, 12, 12, sizeof(FilmTab::FDD) + size + 4);
+							//			FilmT.psl = sizeof(FilmTab::FDD) + size + 4;
+							uint32 crc = calc_crc32((uint8*)&FilmT, getBits((uint8*)&FilmT, 12, 12) - 1) & 0xffffffff;
+							char* pos = (char*)&FilmT + getBits((uint8*)&FilmT, 12, 12) - 1;
+							pos[0] = (crc >> 24) & 0xff;
+							pos[1] = (crc >> 16) & 0xff;
+							pos[2] = (crc >> 8) & 0xff;
+							pos[3] = crc & 0xff;
+
+							char buf[1024];
+							KKL *pKL = (KKL*)buf;
+
+							pKL->m_pkgHead = 0x7585;
+							pKL->m_keyID = fI.id;
+							pKL->m_length = getBits((uint8*)&FilmT, 12, 12) + 3;
+							int sendsize=sizeof(KKL);
+							gDev.write(buf, sendsize);
+							if(!gDev.waitForBytesWritten(2000))
+							{
+								QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+								killTimer(timeid);
+								timeid = 0;
+							}
+							gDev.write((char*)&FilmT, pKL->m_length);
+// 							while(!gDev.flush());
+							if(!gDev.waitForBytesWritten(2000))
+							{
+								QMessageBox::critical(this, tr("ERROR"), tr("Write to host error!"));
+								killTimer(timeid);
+								timeid = 0;
+							}
+							// 			Sleep(40);
+							if(!gDev.waitForReadyRead(2000))
+							{
+								QMessageBox::critical(this, tr("ERROR"), tr("Read from host error!"));
+								killTimer(timeid);
+								timeid = 0;
+							}
+
+							int i= gDev.read(buf, 6);
+							killTimer(timeid);
+							timeid = 0;
+							cur = -6;
+							send_count = 0;
+							return true;
+						}
+						segpos = 0;
+						fp = fopen(fI.filePath().toStdString().c_str(), "rb");
+						if(lost_buf != NULL)
+						{
+							delete[] lost_buf;
+							lost_buf = NULL;
+						}
+						for(int i = 0; i < myLostInfoList.size(); i++)
+						{
+							QFileInfo lI = myLostInfoList.at(i);
+							if(lI.fileName().contains(fI.fileName()))
+							{
+								lost_size = lI.size();
+								lost_buf = new char[lost_size];
+								FILE *fp = fopen(lI.filePath().toStdString().c_str(), "rb");
+								fread(lost_buf, 1, lost_size, fp);
+								fclose(fp);
+								break;
+							}
+						}
+						cur++;
+					}
+					continue;
+				}
+				segpos++;
+			}
+		}
+		else
+		{
+		FilmT.id = 0x80;
+			FilmT.fdd.filmid = filmid;
+		FilmT.fdd.len = 10;
+		int size = fread(FilmT.buf, 1, SEG_SIZE, fp);
+		if(size > 0)
+		{
+			FilmT.fdd.segnum[0] = (segpos >> 24) & 0xff;
+			FilmT.fdd.segnum[1] = (segpos >> 16) & 0xff;
+			FilmT.fdd.segnum[2] = (segpos >> 8) & 0xff;
+			FilmT.fdd.segnum[3] = (segpos) & 0xff;
+			segpos++;
+			setBits16((uint8*)&FilmT, 12, 12, sizeof(FilmTab::FDD) + size + 4);
+//			FilmT.psl = sizeof(FilmTab::FDD) + size + 4;
+			uint32 crc = calc_crc32((uint8*)&FilmT, getBits((uint8*)&FilmT, 12, 12) - 1) & 0xffffffff;
+			char* pos = (char*)&FilmT + getBits((uint8*)&FilmT, 12, 12) - 1;
+			pos[0] = (crc >> 24) & 0xff;
+			pos[1] = (crc >> 16) & 0xff;
+			pos[2] = (crc >> 8) & 0xff;
+			pos[3] = crc & 0xff;
+
+			char buf[1024];
+			KKL *pKL = (KKL*)buf;
+
+			pKL->m_pkgHead = 0x7585;
+			pKL->m_keyID = fI.id;
+			pKL->m_length = getBits((uint8*)&FilmT, 12, 12) + 3;
+#if 1
+			int sendsize=sizeof(KKL);
+			gDev.write(buf, sendsize);
+				if(!gDev.waitForBytesWritten(2000))
+				{
+					QMessageBox::critical(this, tr("ERROR"), tr("DATA: Write to host error!"));
+					killTimer(timeid);
+					timeid = 0;
+				}
+			gDev.write((char*)&FilmT, pKL->m_length);
+// 				while(!gDev.flush());
+				if(!gDev.waitForBytesWritten(4000))
+				{
+					QMessageBox::critical(this, tr("ERROR"), tr("DATA: Write2 to host error!"));
+					killTimer(timeid);
+					timeid = 0;
+				}
+// 			Sleep(40);
+				if(!gDev.waitForReadyRead(2000))
+				{
+					QMessageBox::critical(this, tr("ERROR"), tr("DATA: Read from host error!"));
+					killTimer(timeid);
+					timeid = 0;
+				}
+			int i= gDev.read(buf, 6);
+				send_count++;
+				ui.progressBar->setValue(send_count);
+				ui.label_count->setText(QString::number(send_count));
+#endif
+		}
+		else
+		{
+			fclose(fp);
+			if(cur < myFileInfoList.size())
+				fI = myFileInfoList.at(cur);
+			else
+			{
+					FilmT.fdd.segnum[0] = (segpos >> 24) & 0xff;
+					FilmT.fdd.segnum[1] = (segpos >> 16) & 0xff;
+					FilmT.fdd.segnum[2] = (segpos >> 8) & 0xff;
+					FilmT.fdd.segnum[3] = (segpos) & 0xff;
+					segpos++;
+					setBits16((uint8*)&FilmT, 12, 12, sizeof(FilmTab::FDD) + size + 4);
+					//			FilmT.psl = sizeof(FilmTab::FDD) + size + 4;
+					uint32 crc = calc_crc32((uint8*)&FilmT, getBits((uint8*)&FilmT, 12, 12) - 1) & 0xffffffff;
+					char* pos = (char*)&FilmT + getBits((uint8*)&FilmT, 12, 12) - 1;
+					pos[0] = (crc >> 24) & 0xff;
+					pos[1] = (crc >> 16) & 0xff;
+					pos[2] = (crc >> 8) & 0xff;
+					pos[3] = crc & 0xff;
+
+					char buf[1024];
+					KKL *pKL = (KKL*)buf;
+
+					pKL->m_pkgHead = 0x7585;
+					pKL->m_keyID = fI.id;
+					pKL->m_length = getBits((uint8*)&FilmT, 12, 12) + 3;
+					int sendsize=sizeof(KKL);
+					gDev.write(buf, sendsize);
+					if(!gDev.waitForBytesWritten(2000))
+					{
+						QMessageBox::critical(this, tr("ERROR"), tr("DATA: Write to host error!"));
+						killTimer(timeid);
+						timeid = 0;
+					}
+					gDev.write((char*)&FilmT, pKL->m_length);
+// 					while(!gDev.flush());
+					if(!gDev.waitForBytesWritten(4000))
+					{
+						QMessageBox::critical(this, tr("ERROR"), tr("DATA: Write2 to host error!"));
+				killTimer(timeid);
+				timeid = 0;
+					}
+					// 			Sleep(40);
+					if(!gDev.waitForReadyRead(2000))
+					{
+						QMessageBox::critical(this, tr("ERROR"), tr("DATA: Read from host error!"));
+						killTimer(timeid);
+						timeid = 0;
+					}
+
+					int i= gDev.read(buf, 6);
+					killTimer(timeid);
+					timeid = 0;
+					cur = -6;
+					send_count = 0;
+			}
+			segpos = 0;
+			fp = fopen(fI.filePath().toStdString().c_str(), "rb");
+			cur++;
+		}
+			return true;
+		}
+	}
+}
+
+bool TOC::haveSegment(uint32 nSegNum)
+{
+	int p1 = nSegNum/8;
+	int p2 = nSegNum%8;
+	if(p1 < lost_size)
+	{
+		if(lost_buf[p1] & (1<<p2))
+			return true;
+	}
+	return false;
+}
+
 TOC::TOC(QWidget *parent, Qt::WFlags flags)
 	: QWidget(parent, flags)
 {
+	bLost = false;
+	timeid = 0;
 	ui.setupUi(this);
 	Init();
 }
@@ -32,6 +1259,7 @@ void TOC::Init(void)
 {
 // 	this->setWindowState(Qt::WindowFullScreen);
 	this->showMaximized();
+	ui.radioButton->setChecked(true);
 	StartServer();
 }
 
@@ -324,7 +1552,7 @@ void TOC::on_pushButtonNext_clicked()
 	pKL->m_pkgHead = 0x7585;
 	pKL->m_keyID = R_SET_DEBUG_CMD;
 	void* pos = buf + sizeof(KKL);
-	*((uint32*)pos) = 0;
+	*((uint32*)pos) = 0x10000000;
 
 	pKL->m_length = sizeof(uint32);
 
@@ -938,3 +2166,10 @@ QString TOC::print_crc(char *buf, int len)
 			.arg(QString::number(*(uint32*)crc2, 16))
 			.arg(tr("Error"));
 	}	return s;}QString TOC::print_proto(char *buf, int len){	QString s;	return s;}
+
+
+
+
+
+
+

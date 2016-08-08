@@ -78,6 +78,8 @@ private:
 	uint64 nRecvLength;
 	HeartThread* pHeartThread;
 	bool bPause;
+	int nHeartCount;
+	int nDNSCount;
 };
 
 NetCommThread* CreateNetComm();

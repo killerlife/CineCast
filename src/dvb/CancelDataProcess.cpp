@@ -10,7 +10,10 @@
 #include <syslog.h>
 
 CancelDataThread gCancel;
-
+#if 0
+extern char SimDataBuf[10][4096];
+extern int SimBufPos;
+#endif
 CancelDataThread* CreateCancel()
 {
 	return &gCancel;
@@ -78,7 +81,37 @@ void CancelDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-
+#if 0
+			if((*pDebugCmd) == D_SIMULATOR)
+			{
+				char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+				uint16 len = getBits(m_buffer, 12, 12);
+				if((*(uint16*)pos) == 0x4ff)
+				{
+					memcpy(m_buffer, pos + 2, len + 10);
+					{
+						//do crc32 check
+						uint32 crc = calc_crc32(m_buffer, len - 1) & 0xffffffff;
+						uint32 crc1 = ((*((m_buffer + len - 1)) << 24)|
+							(*((m_buffer + len)) << 16) |
+							(*((m_buffer + len + 1)) << 8) |
+							(*((m_buffer + len + 2)))) & 0xffffffff;
+						DPRINTF("Cancel\n");
+						if (crc == crc1)
+						{
+							m_bCancel = true;
+						}
+						else
+						{
+							DPRINTF("Cancel CRC error\n");
+						}
+					}
+				}
+				else
+					usleep(1000);
+			}
+else
+#endif
 			if (m_pFilter->ReadFilter(m_buffer, count))
 			{
 				//do crc32 check
@@ -88,7 +121,6 @@ void CancelDataThread::doit()
 					(*((m_buffer + len)) << 16) |
 					(*((m_buffer + len + 1)) << 8) |
 					(*((m_buffer + len + 2)))) & 0xffffffff;
-				printf("Cancel\n");
 				if (crc == crc1)
 				{
 					m_bCancel = true;

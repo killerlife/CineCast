@@ -16,7 +16,7 @@ public:
 	virtual ~PATDataThread();
 	bool Init(void *param1, void *param2);
 	bool Start();
-	bool Reset();
+	bool Reset(bool bFinish = true);
 	bool Stop();
 	void Clear();
 	uint64 ReciveLength();

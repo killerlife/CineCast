@@ -4,7 +4,17 @@
 <context>
     <name>TOC</name>
     <message>
-        <location filename="toc.cpp" line="556"/>
+        <location filename="toc.cpp" line="302"/>
+        <source>Select LOST</source>
+        <translation>选择丢包文件</translation>
+    </message>
+    <message>
+        <location filename="toc.cpp" line="362"/>
+        <source>Select DCP</source>
+        <translation>选择DCP</translation>
+    </message>
+    <message>
+        <location filename="toc.cpp" line="1570"/>
         <source>
 Protocol File: %1
 [ %2 ]---------------------------------------------------------------
@@ -15,29 +25,29 @@ Protocol File: %1
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="558"/>
+        <location filename="toc.cpp" line="1572"/>
         <source>Analysis Start</source>
         <translation>开始分析</translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="565"/>
+        <location filename="toc.cpp" line="1579"/>
         <source>Choose protocol files</source>
         <translation>选择协议文件</translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="567"/>
+        <location filename="toc.cpp" line="1581"/>
         <source>Protocols (*.pro)</source>
         <translation>协议文件 (*.pro)</translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="601"/>
+        <location filename="toc.cpp" line="1615"/>
         <source>Hexadecimal Dump: 
 &lt;ADDR&gt;      &lt;     HEX    &gt;                                   &lt;ASCII&gt;</source>
         <translation>十六进行输出: 
 &lt;ADDR&gt;      &lt;     HEX    &gt;                                   &lt;ASCII&gt;</translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="629"/>
+        <location filename="toc.cpp" line="1643"/>
         <source>
 Parse Message:
 </source>
@@ -46,7 +56,7 @@ Parse Message:
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="629"/>
+        <location filename="toc.cpp" line="1643"/>
         <source>
 [  HEAD  ]--------------------------------------------------------------------- 
 </source>
@@ -55,331 +65,331 @@ Parse Message:
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="630"/>
+        <location filename="toc.cpp" line="1644"/>
         <source>%1          PREAMBLE        0x%2
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="631"/>
+        <location filename="toc.cpp" line="1645"/>
         <source>%1          FLAG            0x%2 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="637"/>
+        <location filename="toc.cpp" line="1651"/>
         <source>		- NOT ENCRYPT 
 </source>
         <translation>		- 无加密      
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="640"/>
+        <location filename="toc.cpp" line="1654"/>
         <source>		- ENCRYPTED BY HARD KEY
 </source>
         <translation>		- 使用硬件指纹加密
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="643"/>
+        <location filename="toc.cpp" line="1657"/>
         <source>		- ENCRYPTED BY SESSION KEY
 </source>
         <translation>		- 使用会唔密钥加密
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="648"/>
+        <location filename="toc.cpp" line="1662"/>
         <source>%1          RESERVED        0x%2 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="651"/>
+        <location filename="toc.cpp" line="1665"/>
         <source>%1          COMMAND         0x%2 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="658"/>
+        <location filename="toc.cpp" line="1672"/>
         <source>		- Login Request 
 </source>
         <translation>		- 登录请求报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="661"/>
+        <location filename="toc.cpp" line="1675"/>
         <source>		- Login Response 
 </source>
         <translation>		- 登录反馈报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="664"/>
+        <location filename="toc.cpp" line="1678"/>
         <source>		- Auth Request 
 </source>
         <translation>		- 认证请求报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="667"/>
+        <location filename="toc.cpp" line="1681"/>
         <source>		- Auth Response 
 </source>
         <translation>		- 认证反馈报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="670"/>
+        <location filename="toc.cpp" line="1684"/>
         <source>		- Lost Report Request 
 </source>
         <translation>		- 丢包信息请求报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="673"/>
+        <location filename="toc.cpp" line="1687"/>
         <source>		- Lost Report Upload 
 </source>
         <translation>		- 丢包信息上报报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="676"/>
+        <location filename="toc.cpp" line="1690"/>
         <source>		- Lost Report Confirm 
 </source>
         <translation>		- 丢包信息确认报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="679"/>
+        <location filename="toc.cpp" line="1693"/>
         <source>		- MD5 File Request 
 </source>
         <translation>		- MD5与密钥请求报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="682"/>
+        <location filename="toc.cpp" line="1696"/>
         <source>		- MD5 File Response 
 </source>
         <translation>		- MD5与密钥反馈报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="685"/>
+        <location filename="toc.cpp" line="1699"/>
         <source>		- MD5 File Confirm 
 </source>
         <translation>		- MD5与密钥确认报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="688"/>
+        <location filename="toc.cpp" line="1702"/>
         <source>		- MD5 Result Request 
 </source>
         <translation>		- 解密与校验结果请求报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="691"/>
+        <location filename="toc.cpp" line="1705"/>
         <source>		- MD5 Result Upload 
 </source>
         <translation>		- 解密与校验结果上报报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="694"/>
+        <location filename="toc.cpp" line="1708"/>
         <source>		- MD5 Result Confirm 
 </source>
         <translation>		- 解密与检验结果确认报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="697"/>
+        <location filename="toc.cpp" line="1711"/>
         <source>		- Heart Beat Request 
 </source>
         <translation>		- 心跳信息请求报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="700"/>
+        <location filename="toc.cpp" line="1714"/>
         <source>		- Heart Beat Upload 
 </source>
         <translation>		- 心跳信息上报报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="703"/>
+        <location filename="toc.cpp" line="1717"/>
         <source>		- Heart Beat Confirm 
 </source>
         <translation>		- 心跳信息确认报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="706"/>
+        <location filename="toc.cpp" line="1720"/>
         <source>		- Log File Request 
 </source>
         <translation>		- 日志文件请求报文 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="710"/>
-        <location filename="toc.cpp" line="784"/>
+        <location filename="toc.cpp" line="1724"/>
+        <location filename="toc.cpp" line="1798"/>
         <source>
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="713"/>
+        <location filename="toc.cpp" line="1727"/>
         <source>%1          SUB COMMAND     0x%2 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="719"/>
+        <location filename="toc.cpp" line="1733"/>
         <source>		- Success 
 </source>
         <translation>		- 成功 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="722"/>
+        <location filename="toc.cpp" line="1736"/>
         <source>		- System exception 
 </source>
         <translation>		- 系统异常 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="725"/>
+        <location filename="toc.cpp" line="1739"/>
         <source>		- Information not exist 
 </source>
         <translation>		- 相关信息不存在 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="728"/>
+        <location filename="toc.cpp" line="1742"/>
         <source>		- Wrong default value 
 </source>
         <translation>		- 默认值错误 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="731"/>
-        <location filename="toc.cpp" line="743"/>
+        <location filename="toc.cpp" line="1745"/>
+        <location filename="toc.cpp" line="1757"/>
         <source>		- Reserved 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="734"/>
+        <location filename="toc.cpp" line="1748"/>
         <source>		- Wrong status 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="737"/>
+        <location filename="toc.cpp" line="1751"/>
         <source>		- Wrong param 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="740"/>
+        <location filename="toc.cpp" line="1754"/>
         <source>		- Process failure 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="746"/>
+        <location filename="toc.cpp" line="1760"/>
         <source>		- Data damage 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="749"/>
+        <location filename="toc.cpp" line="1763"/>
         <source>		- Operation cancel 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="752"/>
+        <location filename="toc.cpp" line="1766"/>
         <source>		- Data already exist 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="754"/>
+        <location filename="toc.cpp" line="1768"/>
         <source>		- Data not exist 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="757"/>
+        <location filename="toc.cpp" line="1771"/>
         <source>		- Newest data
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="760"/>
+        <location filename="toc.cpp" line="1774"/>
         <source>		- Error command 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="763"/>
+        <location filename="toc.cpp" line="1777"/>
         <source>		- Unregister hard key 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="766"/>
+        <location filename="toc.cpp" line="1780"/>
         <source>		- Hard key error 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="769"/>
+        <location filename="toc.cpp" line="1783"/>
         <source>		- Invalid ID
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="772"/>
+        <location filename="toc.cpp" line="1786"/>
         <source>		- System error 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="775"/>
+        <location filename="toc.cpp" line="1789"/>
         <source>		- Unknow device 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="778"/>
+        <location filename="toc.cpp" line="1792"/>
         <source>		- Memory error 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="781"/>
+        <location filename="toc.cpp" line="1795"/>
         <source>		- System param error 
 </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="786"/>
+        <location filename="toc.cpp" line="1800"/>
         <source>%1          PROTOCOL LENGTH %2 </source>
         <translation>%1          协议长度        %2 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="790"/>
+        <location filename="toc.cpp" line="1804"/>
         <source>Length correct 
 </source>
         <translation>长度正确 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="792"/>
+        <location filename="toc.cpp" line="1806"/>
         <source>Length error 
 </source>
         <translation>长度错误 
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="906"/>
+        <location filename="toc.cpp" line="1934"/>
         <source>
 [ Verify ]-----------------------------------------------------------------------
 </source>
@@ -388,22 +398,28 @@ Parse Message:
 </translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="911"/>
+        <location filename="toc.cpp" line="1939"/>
+        <source>	 NO DATA 
+</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="toc.cpp" line="1945"/>
         <source>4          CRC32           0x%1 - CRC32 %2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="913"/>
+        <location filename="toc.cpp" line="1947"/>
         <source>Correct</source>
         <translation>正确</translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="915"/>
+        <location filename="toc.cpp" line="1949"/>
         <source>4          CRC32           0x%1 0x%2- CRC32 %3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.cpp" line="918"/>
+        <location filename="toc.cpp" line="1952"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
@@ -466,95 +482,179 @@ Parse Message:
         <translation>升级状态</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="113"/>
+        <location filename="toc.ui" line="117"/>
+        <source>General Test</source>
+        <translation>一般测试</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="123"/>
         <source>SatelliteOperation</source>
         <translation>卫星仿真操作</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="119"/>
+        <location filename="toc.ui" line="129"/>
         <source>Next</source>
         <translation>发下一部片</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="133"/>
+        <location filename="toc.ui" line="143"/>
         <source>Notify</source>
         <translation>通知发片</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="140"/>
+        <location filename="toc.ui" line="150"/>
         <source>Start</source>
         <translation>开始一轮发片</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="147"/>
+        <location filename="toc.ui" line="157"/>
         <source>PAT</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.ui" line="154"/>
+        <location filename="toc.ui" line="164"/>
         <source>PMT</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="toc.ui" line="161"/>
+        <location filename="toc.ui" line="171"/>
         <source>Data</source>
         <translation>发数据</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="168"/>
+        <location filename="toc.ui" line="178"/>
+        <location filename="toc.ui" line="499"/>
         <source>Finish</source>
         <translation>本轮结束</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="182"/>
+        <location filename="toc.ui" line="192"/>
+        <location filename="toc.ui" line="519"/>
         <source>Cancel</source>
         <translation>取消发片</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="196"/>
+        <location filename="toc.ui" line="206"/>
         <source>DelFilm</source>
         <translation>删除已发影片</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="208"/>
+        <location filename="toc.ui" line="218"/>
         <source>NetworkOperation</source>
         <translation>网络通讯</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="214"/>
+        <location filename="toc.ui" line="224"/>
         <source>MD5</source>
         <translation>请求上传MD5结果</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="221"/>
+        <location filename="toc.ui" line="231"/>
         <source>Log</source>
         <translation>请求上传日志</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="228"/>
+        <location filename="toc.ui" line="238"/>
         <source>Reboot</source>
         <translation>远程重启CineCast</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="238"/>
-        <location filename="toc.ui" line="244"/>
+        <location filename="toc.ui" line="248"/>
+        <location filename="toc.ui" line="254"/>
         <source>Protocol</source>
         <translation>协议分析</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="254"/>
+        <location filename="toc.ui" line="264"/>
         <source>TMSOperation</source>
         <translation>TMS操作</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="260"/>
+        <location filename="toc.ui" line="270"/>
         <source>GetFilmList</source>
         <translation>取影片列表</translation>
     </message>
     <message>
-        <location filename="toc.ui" line="277"/>
+        <location filename="toc.ui" line="287"/>
         <source>GetFilmInfo</source>
         <translation>取影片信息</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="303"/>
+        <source>Simulator</source>
+        <translation>数据仿真</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="309"/>
+        <location filename="toc.ui" line="446"/>
+        <source>Prepare</source>
+        <translation>准备</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="315"/>
+        <source>LoadDcp</source>
+        <translation>载入DCP</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="358"/>
+        <source>DCP</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="371"/>
+        <location filename="toc.ui" line="413"/>
+        <source>999999999; </source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="374"/>
+        <source>201607021</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="400"/>
+        <source>Update</source>
+        <translation>升级包</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="416"/>
+        <source>201607921</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="458"/>
+        <source>LoadLost</source>
+        <translation>载入丢包文件</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="465"/>
+        <source>NO LOST</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="479"/>
+        <source>StartTran</source>
+        <translation>传片</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="539"/>
+        <source>Kick out</source>
+        <translation>踢掉接收机</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="322"/>
+        <source>NO DCP</source>
+        <translation>没有DCP</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="557"/>
+        <source>Total Segment:</source>
+        <translation>分片总数:</translation>
+    </message>
+    <message>
+        <location filename="toc.ui" line="567"/>
+        <source>Sent Segment:</source>
+        <translation>已发送分片数:</translation>
     </message>
 </context>
 </TS>

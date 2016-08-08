@@ -74,6 +74,7 @@ int ContentQuery::open(const std::string& root, bool usePath )
 	std::string diskRoot = "/storage";
 	std::string usbRoot = "/media/usb";
 	std::string raidRoot = "/raid";
+	std::string ftpRoot = "/storage/ftp";
 
 	m_root = root;
 
@@ -86,6 +87,8 @@ int ContentQuery::open(const std::string& root, bool usePath )
 			m_root = usbRoot;
 		else if(root == "raid")
 			m_root = raidRoot;
+		else if(root == "ftp")
+			m_root = ftpRoot;
 		else
 		{
 			sprintf(str, "[ContentQuery] Unknow root: %s", root.c_str());
@@ -147,6 +150,7 @@ void ContentQuery::findPath(const fs::path& root , std::vector<std::string>& pro
 	try
 	{
 		// find the ASSETMAP file whether is exist in root path
+		//DPRINTF("%s \n", root.native().c_str());
 		if(is_dcp_directory(root))
 			programList.push_back(root.native());
 
@@ -156,7 +160,13 @@ void ContentQuery::findPath(const fs::path& root , std::vector<std::string>& pro
 			try
 			{
 				boost::filesystem::path* dir_name = NULL;
-				if(fs::is_directory(*itr))// && is_dcp_directory(*itr))
+				if(fs::is_symlink(*itr))
+				{
+					sprintf(str, "[ContentQuery] findPath: dir is symlink %s.", ((fs::path)*itr).native().c_str());
+					if(pLog)
+						pLog->Write(LOG_ERROR, str);
+				}
+				else if(fs::is_directory(*itr))// && is_dcp_directory(*itr))
 				{
 					findPath(*itr, programList);
 					//programList.push_back(itr->native_file_string());
@@ -233,6 +243,7 @@ int ContentQuery::init(const string& root)
 				{
 					TContentInfo ci;
 					DcpInfo di;
+					DPRINTF("[ContentQuery] init: parse %d\n", j);
 					pParser->parseProgramInfo(di, j);
 					ci.id = di.id;
 					ci.rootpath = pathlist[i];

@@ -1,7 +1,7 @@
-#ifndef _MY_STRUCT_H_
+ï»¿#ifndef _MY_STRUCT_H_
 #define _MY_STRUCT_H_
 
-//ÔİÊ±°Ñ¼¸ÖÖËã·¨Í·°üº¬ÔÚ´Ë´¦
+//Ê±Ñ¼ã·¨Í·Ú´Ë´
 
 #include <string>
 
@@ -19,9 +19,9 @@ typedef unsigned long long uint64;
 #endif
 
 //#pragma pack(2)   //old #pragma pack(1)
-//#pragma pack(push,1)  //±£´æ¶ÔÆë×´Ì¬
-//#pragma pack(pop)     //»Ö¸´¶ÔÆë×´Ì¬
-//#pragma pack(4)       //Éè¶¨Îª4×Ö½Ú¶ÔÆë
+//#pragma pack(push,1)  //×´Ì¬
+//#pragma pack(pop)     //Ö¸×´Ì¬
+//#pragma pack(4)       //è¶¨Îª4Ö½Ú¶
 #pragma pack(1)
 
 enum FILTER_RUN_STATUS
@@ -33,74 +33,75 @@ enum FILTER_RUN_STATUS
 
 typedef enum
 {
-	KEY_NO=0,     //²»¼ÓÃÜ
-	KEY_HARD=1,   //Ó²¼ş¼ÓÃÜ
-	KEY_MEET=2,   //»áÎîÃÜÔ¿¼ÓÃÜ
-} KEY_TYPE;       //±¨ÎÄ¼ÓÃÜÀàĞÍ
+	KEY_NO=0,     //
+	KEY_HARD=1,   //Ó²
+	KEY_MEET=2,   //Ô¿
+} KEY_TYPE;       //Ä¼
 
 
 
 typedef enum
 {
-	UI_SEND_UPDATE_FILE=0X1000,        //·¢ËÍÉı¼¶ÎÄ¼ş°ü
-	UI_GET_LOG,                          //ÇëÇóÈÕÖ¾±¨ÎÄ²Ù×÷ 
+	UI_SEND_UPDATE_FILE=0X1000,        //Ä¼
+	UI_GET_LOG,                          //Ö¾Ä² 
 	UI_GET_MD5RES,
 	UI_REBOOT,
 	UI_LOG,
 	UI_TMS_LIST,
 	UI_TMS_INFO,
-} CMD_UItoSocket;    //UIÓësocketÏß³ÌµÄÍ¨ĞÅÃüÁî£¬UI·¢ÃüÁîsocket
+	UI_CLOSE_SOCKET,
+} CMD_UItoSocket;    //UIsocketß³ÌµÍ¨î£¬UIsocket
 
 
 
 typedef enum
 {
-	SK_UPDATE_TREEWIDGET_LIST=0X2000,      //Éı¼¶²Ù×÷µÄUIÄÚÈİÁĞ±í
-	SK_UPDATE_PROGRESSBAR,             //¸üĞÂ½ø¶ÈÌõ
+	SK_UPDATE_TREEWIDGET_LIST=0X2000,      //UIĞ±
+	SK_UPDATE_PROGRESSBAR,             //Â½
 
 	SK_UPDATE_TEXTBROWSER,
 
-} CMD_SockettoUI;    //UIÓësocketÏß³ÌµÄÍ¨ĞÅÃüÁî
+} CMD_SockettoUI;    //UIsocketß³ÌµÍ¨
 
 typedef enum
 {
-	SV_SOCKET_DISCONNECT=0X3000,    //ÓĞsocket¶Ï¿ª
+	SV_SOCKET_DISCONNECT=0X3000,    //socketÏ¿
 
 } CMD_TcpServertoUI;    //TcpServertoUI
 
 
 typedef enum
 {
-	//Sever¶ËĞèÒª´¦ÀíµÄÃüÁî¼ÓÇ°×ºS   Client¶Ë¼ÓC Ì«ÂÒ
+	//SeverÒªÇ°×ºS   ClientË¼C Ì«
 	M_SEND_TEST,
-	PKG_HEAD=0x55,           //Êı¾İ°üÍ·
-	CMD_ZERO=0x0000,        //Ìî³äcmd_Sub 
-    CMD_REV=0x78563412,      //×Ô¶¨Òå±£Áô×Ö
+	PKG_HEAD=0x55,           //İ°Í·
+	CMD_ZERO=0x0000,        //cmd_Sub 
+    CMD_REV=0x78563412,      //Ô¶å±£
 
 
-	CMD_LOGIN_REQUEST= 0x0011,      //µÇÂ¼ÇëÇó±¨ÎÄ
-	CMD_LOGIN_BACK,                  //µÇÂ¼·´À¡±¨ÎÄ  
-	CMD_AUTHEN_REQUEST,              //ÈÏÖ¤ÇëÇó±¨ÎÄ 
-	CMD_AUTHEN_BACK,                 //ÈÏÖ¤·´À¡±¨ÎÄ
+	CMD_LOGIN_REQUEST= 0x0011,      //Â¼
+	CMD_LOGIN_BACK,                  //Â¼  
+	CMD_AUTHEN_REQUEST,              //Ö¤ 
+	CMD_AUTHEN_BACK,                 //Ö¤
 	CMD_LOST_REPORT = 0x22,
 	CMD_MD5_REQUEST = 0x24,
 	CMD_MD5_RES_UP_REQUEST=0x28,
-    CMD_UPDATE_FILE_RECEV=0x0071,   //½ÓÊÕ»úÔ¶³ÌÉı¼¶°üÍÆËÍ±¨ÎÄ
-    CMD_UPDATE_BACK,                 //½ÓÊÕ»úÔ¶³ÌÉı¼¶°üÍÆËÍ·´À¡±¨ÎÄ
-    CMD_UPDATE_START,                //½ÓÊÕ»úÔ¶³ÌÉı¼¶ÇëÇó±¨ÎÄ,ÆäÊµ¾ÍÊÇÃüÁî½ÓÊÕ»ú¿ªÊ¼Éı¼¶
+    CMD_UPDATE_FILE_RECEV=0x0071,   //Õ»Ô¶Í±
+    CMD_UPDATE_BACK,                 //Õ»Ô¶Í·
+    CMD_UPDATE_START,                //Õ»Ô¶,ÊµÕ»Ê¼
 
-    CMD_LOG_REQUEST=0x0100,           //ÈÕÖ¾ÇëÇó±¨ÎÄ
-    CMD_LOG_BACK,                      //ÈÕÖ¾»Ø´«±¨ÎÄ
+    CMD_LOG_REQUEST=0x0100,           //Ö¾
+    CMD_LOG_BACK,                      //Ö¾Ø´
 
 	CMD_HEARTBREAT=0x0032,
-    CMD_LOGFILE_REQUEST=0x0034,       //ÈÕÖ¾ÎÄ¼şÇëÇó±¨ÎÄ
-    CMD_LOGFILE_BACK=0x0035,          //ÈÕÖ¾ÎÄ¼ş·´À¡±¨ÎÄ
+    CMD_LOGFILE_REQUEST=0x0034,       //Ö¾Ä¼
+    CMD_LOGFILE_BACK=0x0035,          //Ö¾Ä¼
 
 } COMMOND_TYPE;
 
 
 
-//·şÎñÆ÷server¶Ë±£´æµÄÒÑ¾­×¢²áµÄ½ÓÊÕ»úID¼°ÆäÓ²¼şÖ¸ÎÆ
+//serverË±Ñ¾×¢Ä½Õ»IDÓ²Ö¸
 typedef struct _RegisterIDHARDKEY_
 {
     uint32  ID;
@@ -109,31 +110,31 @@ typedef struct _RegisterIDHARDKEY_
 
 
 
-//ÍøÂçÍ¨Ñ¶Ğ­Òé±¨ÎÄ»ù±¾½á¹¹
-//Ç¶ÈëÒÔÏÂËùÓĞ±¨ÎÄÇ°Ãæ,×÷Îª±¨ÎÄÍ· BASEprotocol
-typedef struct _KH_           // HEADER ¼òĞ´HD  Package Header ¼òĞ´KH  pKH±ÈpPHºÃ¿´
+//Í¨Ñ¶Ğ­é±¨Ä»á¹¹
+//Ç¶Ğ±Ç°,ÎªÍ· BASEprotocol
+typedef struct _KH_           // HEADER Ğ´HD  Package Header Ğ´KH  pKHpPHÃ¿
 {
-	uint8   pkgHead;            //preamble;//8Î»ÎŞ·ûºÅÕûĞÍ£¬ÆğÊ¼Í¬²½×Ö¶Î£¬ºãÎª(0x55)
-	uint8   flag_pwd;           //¼ÓÃÜ±ê¼Ç 0	±¨ÎÄÎ´¼ÓÃÜ 1±¨ÎÄ²ÉÓÃÓ²¼şÖ¸ÎÆ¼ÓÃÜ 2	±¨ÎÄ²ÉÓÃ»áßíÃÜÔ¿¼ÓÃÜ
-	uint32  rev;                //reserved±£Áô×Ö 
-	uint16  cmd;                //¸Ã±¨ÎÄµÄÖ÷ÃüÁî×Ö
-	uint16  cmd_Sub;            //¸Ã±¨ÎÄµÄ¸¨ÖúÃüÁî×Ö Sub_cmd
-    uint32  cmd_length;         //Payload_length;//±¨ÎÄÔØºÉÄÚÈİ³¤¶È£¬(°üº¬ÆäÄÚÈİ±¾Éí+ÆäCRC32Ğ£ÑéÖµ)
+	uint8   pkgHead;            //preamble;//8Î»Ş·Í£Ê¼Í¬Ö¶Î£Îª(0x55)
+	uint8   flag_pwd;           //Ü± 0	Î´ 1Ä²Ó²Ö¸Æ¼ 2	Ä²Ã»Ô¿
+	uint32  rev;                //reserved 
+	uint16  cmd;                //Ã±Äµ
+	uint16  cmd_Sub;            //Ã±ÄµÄ¸ Sub_cmd
+    uint32  cmd_length;         //Payload_length;//Øºİ³È£(İ±+CRC32Ğ£Öµ)
     //uint8  Payload_data_byte;  
 }KH;
 
 
 
-//µÇÂ½ÇëÇó±¨ÎÄ  128Î»×Ö¶Î 16×Ö½Ú
+//Â½  128Î»Ö¶ 16Ö½
 typedef struct _LOGINREQUEST_
 {
 	KH kh;
-	uint32 Machine_ID;          //±íÊ¾½ÓÊÕ»úµÄIDºÅ£¬±¾×Ö¶Î²»¼ÓÃÜ
-	uint32 LoginCounter;        //½ÓÊÕ»ú±¾´ÎÆô¶¯ºóµÄµÇÂ¼´ÎÊı
-	char   SoftVersion[16];     //bslbf 128Î»×Ö¶Î ±íÊ¾½ÓÊÕ»úµ±Ç°½ÓÊÕÈí¼şµÄ°æ±¾ºÅ£¬ÓÉ³§¼Ò×ÔĞĞ¶¨Òå
-	char   Time_Startup[20];    //bslbf 160Î»×Ö¶Î ±íÊ¾½ÓÊÕ»úÆô¶¯Ê±¼ä ¸ñÊ½ÎªYYYY-MM-DD HH:MM:SS
-	char   Time_Login[20];      //bslbf 160Î»×Ö¶Î ±íÊ¾½ÓÊÕ»úµÇÂ½Ê±¼ä ¸ñÊ½ÎªYYYY-MM-DD HH:MM:SS
-    uint32 CRC32;                //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+	uint32 Machine_ID;          //Ê¾Õ»IDÅ£Ö¶Î²
+	uint32 LoginCounter;        //Õ»ÄµÂ¼
+	char   SoftVersion[16];     //bslbf 128Î»Ö¶ Ê¾Õ»Ç°Ä°æ±¾Å£É³Ğ¶
+	char   Time_Startup[20];    //bslbf 160Î»Ö¶ Ê¾Õ»Ê± Ê½ÎªYYYY-MM-DD HH:MM:SS
+	char   Time_Login[20];      //bslbf 160Î»Ö¶ Ê¾Õ»Â½Ê± Ê½ÎªYYYY-MM-DD HH:MM:SS
+    uint32 CRC32;                //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }LOGINREQUEST;
 
 
@@ -161,153 +162,153 @@ typedef struct _HEARTBREAT_2_ {
 	uint32 recvRound;//  æ¥æ”¶è½®æ¬¡
 	uint8 taskStartTime[20];
 	uint8 recvStartTime[20];
-	uint32 filmRecvState;//  å½±ç‰‡æ¥æ”¶çŠ?
+	uint32 filmRecvState;//  å½±ç‰‡æ¥æ”¶?
 	uint64 reserved2;//æœ¬ç»“æ„ä½“å®šä¹‰ä¸­æœ‰ä¸¤å¤„å…³äºreserved
 	uint64 recvLength;//  å½±ç‰‡å·²æ¥æ”¶å¤§?
 	uint64 lostSegment;//  å½±ç‰‡å·²ä¸¢å¤±segmentåŒ…æ•°?
 	uint32 crc32;
 }HEARTBREAT_2;
 
-//µÇÂ½·´À¡±¨ÎÄ
+//Â½
 typedef struct _LOGINBACK_
 {
 	KH kh;
-	char    ReSeverIP[16];        //ÖØ¶¨ÏòÒµÎñ·şÎñÆ÷IP 128Î»×Ö¶Î£¬±íÊ¾ÖØ¶¨ÏòÒµÎñ·şÎñÆ÷µÄIPµØÖ·£¬¸ñÊ½Îª¡±xxx.xxx.xxx.xxx¡±¡£
-	uint32  ReSeverPort;          //ÖØ¶¨ÏòÒµÎñ·şÎñÆ÷IP ¶Ë¿ÚºÅ
-    uint32  Year;                  //ÏµÍ³µ±Ç°Äê·İ,ÔÂ,ÈÕ£¬Ê±·ÖÃë
-    uint32  Month;                 //32Î»ÎŞ·ûºÅÕûĞÍ£¬±íÊ¾ÏµÍ³µ±Ç°ÔÂ·İ£¬È¡Öµ·¶Î§1¡«12¡£  
-    uint32  Day;                   //32Î»ÎŞ·ûºÅÕûĞÍ£¬±íÊ¾ÏµÍ³µ±Ç°ÈÕÆÚ£¬È¡Öµ·¶Î§1¡«31¡£
-    uint32  Hour;                  //32Î»ÎŞ·ûºÅÕûĞÍ£¬±íÊ¾ÏµÍ³µ±Ç°Ğ¡Ê±£¬È¡Öµ·¶Î§0¡«24¡£
-    uint32  Minute;                //32Î»ÎŞ·ûºÅÕûĞÍ£¬±íÊ¾ÏµÍ³µ±Ç°·ÖÖÓ£¬È¡Öµ·¶Î§0¡«59¡£
-    uint32  Seconds;               //32Î»ÎŞ·ûºÅÕûĞÍ£¬±íÊ¾ÏµÍ³µ±Ç°ÃëÖÓ£¬È¡Öµ·¶Î§0¡«59¡£
-    uint32 CRC32;                  //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+	char    ReSeverIP[16];        //Ø¶ÒµIP 128Î»Ö¶Î£Ê¾Ø¶ÒµIPÖ·Ê½Îªxxx.xxx.xxx.xxx
+	uint32  ReSeverPort;          //Ø¶ÒµIP Ë¿Úº
+    uint32  Year;                  //ÏµÍ³Ç°,,Õ£Ê±
+    uint32  Month;                 //32Î»Ş·Í£Ê¾ÏµÍ³Ç°Â·İ£È¡ÖµÎ§112  
+    uint32  Day;                   //32Î»Ş·Í£Ê¾ÏµÍ³Ç°Ú£È¡ÖµÎ§131
+    uint32  Hour;                  //32Î»Ş·Í£Ê¾ÏµÍ³Ç°Ğ¡Ê±È¡ÖµÎ§024
+    uint32  Minute;                //32Î»Ş·Í£Ê¾ÏµÍ³Ç°Ó£È¡ÖµÎ§059
+    uint32  Seconds;               //32Î»Ş·Í£Ê¾ÏµÍ³Ç°Ó£È¡ÖµÎ§059
+    uint32 CRC32;                  //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }LOGINBACK;
 
 
 
-//ÈÏÖ¤ÇëÇó authentication request
+//Ö¤ authentication request
 typedef struct _AuthenREQUEST_
 {
 	KH kh;
-	uint32  Machine_ID;           //±íÊ¾½ÓÊÕ»úµÄIDºÅ¡£±¾×Ö¶Î²»¼ÓÃÜ¡£
-    char    SoftVersion[16];      //bslbf  128Î»×Ö¶Î ±íÊ¾½ÓÊÕ»úµ±Ç°½ÓÊÕÈí¼şµÄ°æ±¾ºÅ£¬ÓÉ³§¼Ò×ÔĞĞ¶¨Òå
-    char    Time_Login[20];       //bslbf  160Î»×Ö¶Î ±íÊ¾½ÓÊÕ»úµÇÂ½Ê±¼ä ¸ñÊ½ÎªYYYY-MM-DD HH:MM:SS
-    uint32  Model_Log;            //ÈÕÖ¾Ä£Ê½ ±íÊ¾½ÓÊÕ»úÊÇ·ñÉÏ±¨ÈÕÖ¾¡£´Ë×Ö¶ÎÖµÎª1£¬±íÊ¾½ÓÊÕ»úÉÏ±¨ÈÕÖ¾£»ÖµÎª2£¬±íÊ¾²»ÉÏ±¨ÈÕÖ¾¡£
+	uint32  Machine_ID;           //Ê¾Õ»IDÅ¡Ö¶Î²Ü¡
+    char    SoftVersion[16];      //bslbf  128Î»Ö¶ Ê¾Õ»Ç°Ä°æ±¾Å£É³Ğ¶
+    char    Time_Login[20];       //bslbf  160Î»Ö¶ Ê¾Õ»Â½Ê± Ê½ÎªYYYY-MM-DD HH:MM:SS
+    uint32  Model_Log;            //Ö¾Ä£Ê½ Ê¾Õ»Ç·Ï±Ö¾Ö¶ÖµÎª1Ê¾Õ»Ï±Ö¾ÖµÎª2Ê¾Ï±Ö¾
 	uint32	Reserved1;			  //Reserved
-    uint32  BeatCycle;            //ĞÄÌøÖÜÆÚheartbeat cycle ±íÊ¾½ÓÊÕ»úÉÏ±¨ĞÄÌøÊı¾İ±¨ÎÄµÄÖÜÆÚ£¬µ¥Î»ÎªÃë¡£Èç¹ûÈ·ÈÏµÄĞÄÌøÖÜÆÚÓë½ÓÊÕ»úÉÏ±¨µÄÖÜÆÚ²»Í¬£¬½ÓÊÕ»úÉÏ±¨ÖÜÆÚÒÔ´ËÎª×¼¡£
-    uint32  Model_Connect;        //Á¬½Ó·½Ê½ ±íÊ¾½ÓÊÕ»úÓëÕĞÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³±£³ÖÁ¬½ÓµÄ·½Ê½¡£´Ë×Ö¶ÎÖµÎª1£¬±íÊ¾Óë·¢ËÍÏµÍ³Æ½Ì¨±£³Ö²»¼ä¶ÏµÄ³¤ÆÚÁ¬½Ó£»ÖµÎª0£¬±íÊ¾Óë·¢ËÍÏµÍ³Æ½Ì¨½¨Á¢¶ÌÁ¬½Ó£¬¼´½ÓÊÕ»úÖ»µ±ÓĞÊı¾İ´«ÊäĞèÒªÊ±²ÅÓë½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³½¨Á¢Á¬½Ó¡£
-    uint32  HardDiskNum;          //32Î»ÎŞ·ûºÅÕûĞÍ£¬±íÊ¾½ÓÊÕ»úµ±Ç°¹ÒÔØµÄÓÃÓÚ½ÓÊÕµçÓ°Êı×Ö¿½±´µÄÓ²ÅÌÊıÁ¿¡£
-    uint64  AllDiskCapacity;      //64Î»ÎŞ·ûºÅÕûĞÍ£¬±íÊ¾½ÓÊÕ»úÊı¾İÓ²ÅÌµÄÈİÁ¿£¬µ¥Î»Îª×Ö½Ú¡£
+    uint32  BeatCycle;            //heartbeat cycle Ê¾Õ»Ï±İ±ÄµÚ£Î»Îªë¡£È·ÏµÕ»Ï±Ú²Í¬Õ»Ï±Ô´Îª×¼
+    uint32  Model_Connect;        //Ó·Ê½ Ê¾Õ»Õ»Ô¶Î¬ÏµÍ³ÓµÄ·Ê½Ö¶ÖµÎª1Ê¾ë·¢ÏµÍ³Æ½Ì¨Ö²ÏµÄ³Ó£ÖµÎª0Ê¾ë·¢ÏµÍ³Æ½Ì¨Ó£Õ»Ö»İ´ÒªÊ±Õ»Ô¶Î¬ÏµÍ³Ó¡
+    uint32  HardDiskNum;          //32Î»Ş·Í£Ê¾Õ»Ç°ØµÚ½ÕµÓ°Ö¿Ó²
+    uint64  AllDiskCapacity;      //64Î»Ş·Í£Ê¾Õ»Ó²ÌµÎ»ÎªÖ½Ú¡
 	uint32	Reserved2;			  //Reserved
-	uint32  CRC32;                 //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+	uint32  CRC32;                 //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }AuthenREQUEST;
 
 
-//ÈÏÖ¤·´À¡ authentication feedback
+//Ö¤ authentication feedback
 typedef struct _AuthenBACK_
 {
 	KH kh;
-	char    MeetKey[16];          //»áßíÃÜÔ¿128Î»×Ö¶Î£¬½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³£¬Êı¾İ²¹°ü×ÓÏµÍ³Óë½ÓÊÕ»úºóĞø±¨ÎÄµÄ¼ÓÃÜÃÜÔ¿¡£
-    char    RandomCode[16];       //Ëæ»úÂë128Î»×Ö¶Î£¬ÔÚÖØÒª±¨ÎÄÖĞĞ¯´ø£¬ÒÔ¹©½ÓÊÕ»úÑéÖ¤¡£
-    uint32  Model_Log;            //ÈÕÖ¾Ä£Ê½32Î»ÎŞ·ûºÅÕûĞÍ£¬½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³Ïò½ÓÊÕ»úÈ·ÈÏÆäÉÏ±¨µÄÈÕÖ¾Ä£Ê½¡£
-    uint32  reserved;             //±£Áô×Ö  
-    uint32  BeatCycle;            //ĞÄÌøÖÜÆÚ 32Î»ÎŞ·ûºÅÕûĞÍ£¬½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³Ïò½ÓÊÕ»úÈ·ÈÏÆäÉÏ±¨µÄĞÄÌøÖÜÆÚ¡£
-    uint32  Model_Connect;        //Á¬½Ó·½Ê½ 32Î»ÎŞ·ûºÅÕûĞÍ£¬½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³Ïò½ÓÊÕ»úÈ·ÈÏÆäÉÏ±¨µÄÁ¬½Ó·½Ê½¡£
-	uint32  CRC32;                //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+	char    MeetKey[16];          //Ô¿128Î»Ö¶Î£Õ»Ô¶Î¬ÏµÍ³İ²ÏµÍ³Õ»ÄµÄ¼Ô¿
+    char    RandomCode[16];       //128Î»Ö¶Î£ÒªĞ¯Ô¹Õ»Ö¤
+    uint32  Model_Log;            //Ö¾Ä£Ê½32Î»Ş·Í£Õ»Ô¶Î¬ÏµÍ³Õ»È·Ï±Ö¾Ä£Ê½
+    uint32  reserved;             //  
+    uint32  BeatCycle;            // 32Î»Ş·Í£Õ»Ô¶Î¬ÏµÍ³Õ»È·Ï±Ú¡
+    uint32  Model_Connect;        //Ó·Ê½ 32Î»Ş·Í£Õ»Ô¶Î¬ÏµÍ³Õ»È·Ï±Ó·Ê½
+	uint32  CRC32;                //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }AuthenBACK;
 
 
 
-//Éı¼¶°üÍÆËÍ±¨ÎÄ (½ö°üº¬ÎÄ¼şĞÅÏ¢,ÎÄ¼şÄÚÈİºóĞø´«Êä)  Éı¼¶°üUpgradepackage
+//Í± (Ä¼Ï¢,Ä¼İº)  Upgradepackage
 typedef struct _UpdateFileINFO_
 {
 	KH kh;
-    uint64  reserved;               //±£Áô×Ö  
-	char    UpdateSerialNo[16];    //128Î»×Ö¶Î£¬Èí¼şÉı¼¶°üµÄĞòÁĞºÅ¡£
-    char    reserved2[16];          //±£Áô×Ö¶Î2 
-    uint32  DescriptionLength;     //32Î»ÎŞ·ûºÅÕûĞÍ£¬Éı¼¶Èí¼şÃèÊöĞÅÏ¢³¤¶È¡£
-    char    Description[256];      //¿É±ä³¤×Ö¶Î£¬Éı¼¶Èí¼şÃèÊöĞÅÏ¢¡£(Ôİ¶¨256Î»×Ö·û´®)
-    uint32  FID;                    //32Î»ÎŞ·ûºÅÕûĞÍ£¬´«ËÍÉı¼¶Èí¼şÓëÅäÖÃÎÄ¼şµÄIDºÅ¡£
-    uint32  UpdateFileNameLength;  //32Î»ÎŞ·ûºÅÕûĞÍ£¬Éı¼¶Èí¼şÎÄ¼şÃû³¤¶È¡£
-    char    UpdateFileName[256];   //¿É±ä³¤×Ö¶Î£¬Éı¼¶Èí¼şÎÄ¼şÃû¡£   (Ôİ¶¨256Î»×Ö·û´®)
-    uint32  UpdateFileLength;      //32Î»ÎŞ·ûºÅÕûĞÍ£¬×î´ó¿ÉÒÔ±íÊ¾4GB,Éı¼¶Èí¼şÎÄ¼ş³¤¶È¡£ÈçÉı¼¶Èí¼şÍ¨¹ı»¥ÁªÍø´«ËÍ£¬ĞèÖ¸Ã÷Éı¼¶Èí¼şÎÄ¼ş³¤¶È£»ÈçÉı¼¶Èí¼şÍ¨¹ıÎÀĞÇĞÅµÀ´«ËÍ£¬¸ÃÏîÈ¡ÖµÎª0¡£
-    //char UpdateFile[1024];       //¿É±ä³¤×Ö¶Î£¬Éı¼¶Èí¼şÎÄ¼ş¡£ÈçÉı¼¶Èí¼şÍ¨¹ı»¥ÁªÍø´«ËÍ£¬´ËÏîÎª´«ËÍµÄÉı¼¶Èí¼şÎÄ¼şµÄ£»ÈçÉı¼¶Èí¼şÍ¨¹ıÎÀĞÇĞÅµÀ´«ËÍ£¬´ËÏî²»´æÔÚ¡£
-	//uint32  CRC32;               //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+    uint64  reserved;               //  
+	char    UpdateSerialNo[16];    //128Î»Ö¶Î£ĞºÅ¡
+    char    reserved2[16];          //Ö¶2 
+    uint32  DescriptionLength;     //32Î»Ş·Í£Ï¢È¡
+    char    Description[256];      //É±ä³¤Ö¶Î£Ï¢(İ¶256Î»Ö·)
+    uint32  FID;                    //32Î»Ş·Í£Ä¼IDÅ¡
+    uint32  UpdateFileNameLength;  //32Î»Ş·Í£Ä¼È¡
+    char    UpdateFileName[256];   //É±ä³¤Ö¶Î£Ä¼   (İ¶256Î»Ö·)
+    uint32  UpdateFileLength;      //32Î»Ş·Í£Ô±Ê¾4GB,Ä¼È¡Í¨Í£Ö¸Ä¼È£Í¨ÅµÍ£È¡ÖµÎª0
+    //char UpdateFile[1024];       //É±ä³¤Ö¶Î£Ä¼Í¨Í£ÎªÍµÄ¼Ä£Í¨ÅµÍ£î²»Ú¡
+	//uint32  CRC32;               //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }UpdateFileINFO;
-//´«ËÍÍê³É½á¹¹ÌåÒÔÉÏºó,ÔÚ´«ËÍÎÄ¼ş±¾Éí,È»ºó´«ËÍÎÄ¼şCRCĞ£ÑéÂë
+//É½á¹¹Ïº,Ú´Ä¼,È»Ä¼CRCĞ£
 
 
 
 /*
-//×Ô¶¨ÒåÎÄ¼ş·Ö¶Î·¢ËÍµÄ½á¹¹Ìå
+//Ô¶Ä¼Ö¶Î·ÍµÄ½á¹¹
 typedef struct _SendFileInfo_
 {
-    char    FileName[256];          //Òª´«ËÍµÄÎÄ¼şÃû
-    char    FilePath_dst[256];      //ÎÄ¼şÄ¿µÄÂ·¾¶
-    char    FilePath_rsc[256];      //ÎÄ¼şÄ¿µÄÂ·¾¶
-    uint64  FileSize;               //ÎÄ¼ş×Ü´óĞ¡,µ¥Î»×Ö½ÚByte
-    uint32  FileCRC32;              //ÎÄ¼şÄÚÈİ±¾ÉíCRC32Ğ£Ñé
-    char    FileMD5[32];            //ÎÄ¼şÄÚÈİ±¾ÉíMD5
-    uint32  FilePkgAll;             //×ÜÎÄ¼ş°üÊı    Ò»¸ö´óÎÄ¼ş·Ö°ü´«ËÍ,64KÃ¿¸ö°ü
-    uint32  FilePkgCurrent;         //µ±Ç°ÊÇµÚ¼¸¸ö°ü
-    uint32  FileEndFlag;            //µ±Ç°°üÊÇ·ñÊÇ×îºóÒ»¸ö°ü,ÊÇÎª1,·ñÎª0,
-    uint32  FileEndPos;             //Èç¹ûµ±Ç°°ü×îºóÒ»¸ö°ü,¼ÇÂ¼½áÊøÎ»ÖÃ,µ¥Î»×Ö½Ú,·ñÔòºöÂÔ
-    char    FileBuf[64*1024];       //ÎÄ¼ş°ü»º´æ.
+    char    FileName[256];          //ÒªÍµÄ¼
+    char    FilePath_dst[256];      //Ä¼Ä¿Â·
+    char    FilePath_rsc[256];      //Ä¼Ä¿Â·
+    uint64  FileSize;               //Ä¼Ü´Ğ¡,Î»Ö½Byte
+    uint32  FileCRC32;              //Ä¼İ±CRC32Ğ£
+    char    FileMD5[32];            //Ä¼İ±MD5
+    uint32  FilePkgAll;             //Ä¼    Ò»Ä¼Ö°,64KÃ¿
+    uint32  FilePkgCurrent;         //Ç°ÇµÚ¼
+    uint32  FileEndFlag;            //Ç°Ç·Ò»,Îª1,Îª0,
+    uint32  FileEndPos;             //Ç°Ò»,Â¼Î»,Î»Ö½,
+    char    FileBuf[64*1024];       //Ä¼.
 }SendFileInfo;
 */
 
 
 
-//½ÓÊÕ»úÔ¶³ÌÉı¼¶°üÍÆËÍ·´À¡±¨ÎÄ  ½ÓÊÕ»úÔÚÊÕµ½Éı¼¶°üºóµÄ·´À¡¡£
+//Õ»Ô¶Í·  Õ»ÕµÄ·
 typedef struct _UpdateFileBACK_
 {
 	KH kh;
-    uint32  UpdateCheckResult;     //32Î»ÎŞ·ûºÅÕûĞÍ£¬Éı¼¶È·ÈÏ¡£ÖµÎª0±íÊ¾Éı¼¶°üÓĞĞ§£¬1±íÊ¾Éı¼¶°üÎŞĞ§¡£
-    uint32  reserved;               //±£Áô×Ö¶Î
-    char  OldVersion[16];          //128Î»×Ö¶Î£¬½ÓÊÕÈí¼şÉı¼¶Ç°µÄ°æ±¾ĞÅÏ¢¡£
-    char  UpdateSerialNo[16];      //128Î»×Ö¶Î£¬½ÓÊÕµÄÈí¼şÉı¼¶°üĞòÁĞºÅ¡£
-    char  reserved2[16];           //±£Áô×Ö¶Î
-	uint32  CRC32;                  //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+    uint32  UpdateCheckResult;     //32Î»Ş·Í£È·Ï¡ÖµÎª0Ê¾Ğ§1Ê¾Ğ§
+    uint32  reserved;               //Ö¶
+    char  OldVersion[16];          //128Î»Ö¶Î£Ç°Ä°æ±¾Ï¢
+    char  UpdateSerialNo[16];      //128Î»Ö¶Î£ÕµĞºÅ¡
+    char  reserved2[16];           //Ö¶
+	uint32  CRC32;                  //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }UpdateFileBACK;
 
 
-//½ÓÊÕ»úÔ¶³ÌÎ¬»¤¿ØÖÆ×ÓÏµÍ³ÔÚ½ÓÊÕµ½Ô¶³ÌÉı¼¶°üĞ¯¾ì·´À¡±¨ÎÄºóÏò½ÓÊÕ»ú·¢³öµÄÉı¼¶ÇëÇó¡£
-//ÃüÁî½ÓÊÕ»ú¿ªÊ¼Éı¼¶
+//Õ»Ô¶Î¬ÏµÍ³Ú½ÕµÔ¶Ğ¯ì·´ÄºÕ»
+//Õ»Ê¼
 typedef struct _UpdateSTART_
 {
 	KH kh;
-    char  UpdateSerialNo[16];          //128Î»×Ö¶Î£¬½ÓÊÕÈí¼şÉı¼¶ºóµÄ°æ±¾ĞÅÏ¢¡£
+    char  UpdateSerialNo[16];          //128Î»Ö¶Î£Ä°æ±¾Ï¢
     uint32  reserved;
-	uint32  CRC32;                   //rpchof ±¾½á¹¹ÌåÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ
+	uint32  CRC32;                   //rpchof á¹¹Ö¶Î¼Ç°CRCĞ£Öµ
 }UpdateSTART;
 
 
 
 
 
-//ÈÕÖ¾ÇëÇó±¨ÎÄ,Ïò½ÓÊÕ»úÇëÇóÆäÈÕÖ¾
+//Ö¾,Õ»Ö¾
 typedef struct _LOGREQUEST_
 {
 	KH kh;
-    uint32  DateStart;   //ÈÕÖ¾ÎÄ¼şÆğÊ¼ÈÕÆÚ 32Î»ÎŞ·ûºÅÕûĞÍ£¬ÎªYYYYMMDDÊ®½øÖÆ±íÊ¾¡£
-    uint32  DateEnd;    //ÈÕÖ¾ÎÄ¼ş½áÊøÈÕÆÚ 32Î»ÎŞ·ûºÅÕûĞÍ£¬ÎªYYYYMMDDÊ®½øÖÆ±íÊ¾¡£
-	uint32  LogType;    //ÈÕÖ¾ÀàĞÍ 32Î»ÎŞ·ûºÅÕûĞÍ£¬Îª0x74752485£¬±íÊ¾ÈÕÖ¾ÎªLEONIS×¨ÓĞ¸ñÊ½£»ÆäËüÖµÎª¿ÆÑĞËù¸ñÊ½£¨Ä¿Ç°¿ÆÑĞËùÃ»¶¨Òå¾ßÌå¸ñÊ½£©¡£
-	uint32  CRC32;   //CRC32 32Î»×Ö¶Î£¬ÒÔÉÏ×Ö¶Î¼ÓÃÜÇ°µÄCRCĞ£ÑéÖµ¡£  
+    uint32  DateStart;   //Ö¾Ä¼Ê¼ 32Î»Ş·Í£ÎªYYYYMMDDÊ®Æ±Ê¾
+    uint32  DateEnd;    //Ö¾Ä¼ 32Î»Ş·Í£ÎªYYYYMMDDÊ®Æ±Ê¾
+	uint32  LogType;    //Ö¾ 32Î»Ş·Í£Îª0x74752485Ê¾Ö¾ÎªLEONIS×¨Ğ¸Ê½ÖµÎªÊ½Ä¿Ç°Ã»Ê½
+	uint32  CRC32;   //CRC32 32Î»Ö¶Î£Ö¶Î¼Ç°CRCĞ£Öµ  
 }LOGREQUEST;
 
 
-//ÈÕÖ¾·´À¡±¨ÎÄ,½ö½ö±¨ÎÄÍ·²»°üº¬ÄÚÈİ±¾Éí,½ÓÊÕ»ú·´À¡¸ø½ÚÄ¿¹ÜÀíÖĞĞÄ
+//Ö¾,Í·İ±,Õ»Ä¿
 typedef struct _LOGBACKINFO_
 {
 	KH kh;  
-    uint32  LogLengthALL;   //ÈÕÖ¾ÎÄ¼ş×Ü³¤¶È   uint32£¬½ÓÊÕ»úÈÕÖ¾ÎÄ¼şµÄ×Ü³¤¶È¡£
-    uint32  DateStart;      //ÈÕÖ¾ÎÄ¼şÆğÊ¼ÈÕÆÚ  uint32£¬ÎªYYYYMMDDÊ®½øÖÆ±íÊ¾¡£
-    uint32  DateEnd;        //ÈÕÖ¾ÎÄ¼ş½áÊøÈÕÆÚ  uint32£¬ÎªYYYYMMDDÊ®½øÖÆ±íÊ¾
-	uint32  LogLengthCurr; //±¾´ÎÉÏ´«ÄÚÈİ³¤¶È uint32 ±¾´ÎÉÏ´«µÄÈÕÖ¾ÄÚÈİ³¤¶È¡£
-//	char    log[1024*10]; 	 //ÈÕÖ¾ÄÚÈİ±¾Éí¿É±ä×Ö¶Î, variable	  bslbf
+    uint32  LogLengthALL;   //Ö¾Ä¼Ü³   uint32Õ»Ö¾Ä¼Ü³È¡
+    uint32  DateStart;      //Ö¾Ä¼Ê¼  uint32ÎªYYYYMMDDÊ®Æ±Ê¾
+    uint32  DateEnd;        //Ö¾Ä¼  uint32ÎªYYYYMMDDÊ®Æ±Ê¾
+	uint32  LogLengthCurr; //Ï´İ³ uint32 Ï´Ö¾İ³È¡
+//	char    log[1024*10]; 	 //Ö¾İ±É±Ö¶, variable	  bslbf
 //	uint32  CRC32;          //          
 }LOGBACKINFO;
-//Ò»°ãÈÕÖ¾ÎÄ¼ş±È½ÏĞ¡,ÔİÊ±¶¨³¤10K,»òÕß¸ü¶à,Ã»ÓĞÓÃ0Ìî³ä ·½±ã´¦Àí
+//Ò»Ö¾Ä¼È½Ğ¡,Ê±10K,ß¸,Ã»0 ã´¦
 
 
 
@@ -319,7 +320,7 @@ typedef struct _KL_
 	int m_pkgHead;
 	int m_keyID;
 	int m_length;
-	int m_flag;               //ÓÃ-1Ìî³ä,·µ»Ø0£¬±íÃ÷Êı¾İ°ü·¢ËÍ³É¹¦¡£
+	int m_flag;               //-1,0İ°Í³É¹
 }KL;
 
 /*
@@ -328,11 +329,11 @@ typedef struct _KL_
 	uint16 m_pkgHead;
 	uint16 m_keyID;
 	uint16 m_length;
-	int    m_flag;           //ÓÃ-1Ìî³ä,·µ»Ø0£¬±íÃ÷Êı¾İ°ü·¢ËÍ³É¹¦¡£
+	int    m_flag;           //-1,0İ°Í³É¹
 public:
 	_KL_()
 	{
-		m_pkgHead = 0x7585;   //×Ô¶¯µ÷ÓÃ¹¹Ôìº¯Êı
+		m_pkgHead = 0x7585;   //Ô¶Ã¹ìº¯
 	}
 } KL;
 */

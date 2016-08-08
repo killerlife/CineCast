@@ -94,6 +94,7 @@ public:
 	int socketID;//id== this->socketDescriptor()this->socketDescriptor()ͻ˶Ͽᱻͷţ
 	//Ͽźthis->socketDescriptor()òȷֵ
 	void SaveProto(char* buf);
+	void SaveLostReport(char *buf);
 };
 
 #endif 

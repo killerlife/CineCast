@@ -79,6 +79,9 @@ void Setup::Init()
 	ui.lineEdit_DNS_2->setVisible(false);
 	ui.lineEdit_DNS_4->setVisible(false);
 #endif
+	ui.radioButton->setStyleSheet("QRadioButton{font-size:18px;font-family:'Book Antiqua';}");
+	ui.radioButton_2->setStyleSheet("QRadioButton{font-size:18px;font-family:'Book Antiqua';}");
+	ui.label->setStyleSheet("QLabel{font-size:18px;font-family:'Book Antiqua';color:#FF0000;}");
 }
 
 
@@ -286,6 +289,35 @@ void Setup::LoadConfig()
 	LoadNetConfig(true);
 	remIndex = 10;	
 	LoadRemoteConfig();
+ 	LoadRecvFinish();
+}
+
+void Setup::LoadRecvFinish()
+{
+	char buf[2048];
+	KL* pKL = (KL*)buf;
+	int i;
+	pKL->m_pkgHead = 0x7585;
+
+	pKL->m_keyID = S_GET_SHUTDOWN_FLAG;
+	pKL->m_length = 1;
+
+	pSocket->write(buf, sizeof(KL) + 1);
+	pSocket->waitForBytesWritten(-1);
+	pSocket->waitForReadyRead(-1);
+	i = pSocket->read(buf, 2048);
+
+	if (pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_GET_SHUTDOWN_FLAG)
+	{
+		if(buf[sizeof(KL)] == 1)
+		{
+			ui.radioButton_2->setChecked(true);
+		}
+		else
+		{
+			ui.radioButton->setChecked(true);
+		}
+	}
 }
 
 void Setup::LoadNetConfig(bool bUpdate /* = false */)
@@ -1245,9 +1277,9 @@ void Setup::getTMS()      //ȡ־
 	    
 		ui.textBrowser->setText(txt_Log);    
 		delete[] cstr_log;
+	}
 		delete[] buf;
 	   }
-}
 
 void Setup::TMS_start()   //ȡ־ʱ
 {
@@ -1269,7 +1301,7 @@ void Setup::TMS_stop()    //رջȡ־ʱ
 
 void Setup::on_pushButton_5_clicked()
 {
-	char *buf = new char[1024];
+	char buf[1024];
 	KL *pKL = (KL*)buf;
 
 	pKL->m_pkgHead = 0x7585;
@@ -1288,7 +1320,7 @@ void Setup::on_pushButton_5_clicked()
 
 void Setup::on_pushButton_6_clicked()
 {
-	char *buf = new char[1024];
+	char buf[1024];
 	KL *pKL = (KL*)buf;
 
 	pKL->m_pkgHead = 0x7585;
@@ -1307,7 +1339,7 @@ void Setup::on_pushButton_6_clicked()
 
 void Setup::on_pushButton_7_clicked()
 {
-	char *buf = new char[1024];
+	char buf[1024];
 	KL *pKL = (KL*)buf;
 
 	pKL->m_pkgHead = 0x7585;
@@ -1326,7 +1358,7 @@ void Setup::on_pushButton_7_clicked()
 
 void Setup::on_pushButton_8_clicked()
 {
-	char *buf = new char[1024];
+	char buf[1024];
 	KL *pKL = (KL*)buf;
 
 	pKL->m_pkgHead = 0x7585;
@@ -1345,7 +1377,7 @@ void Setup::on_pushButton_8_clicked()
 
 void Setup::on_pushButton_9_clicked()
 {
-	char *buf = new char[1024];
+	char buf[1024];
 	KL *pKL = (KL*)buf;
 
 	pKL->m_pkgHead = 0x7585;
@@ -1364,7 +1396,7 @@ void Setup::on_pushButton_9_clicked()
 
 void Setup::on_pushButton_10_clicked()
 {
-	char *buf = new char[1024];
+	char buf[1024];
 	KL *pKL = (KL*)buf;
 
 	pKL->m_pkgHead = 0x7585;
@@ -1383,7 +1415,7 @@ void Setup::on_pushButton_10_clicked()
 
 void Setup::on_pushButton_11_clicked()
 {
-	char *buf = new char[1024];
+	char buf[1024];
 	KL *pKL = (KL*)buf;
 
 	pKL->m_pkgHead = 0x7585;
@@ -1402,7 +1434,7 @@ void Setup::on_pushButton_11_clicked()
 
 void Setup::on_pushButton_12_clicked()
 {
-	char *buf = new char[1024];
+	char buf[1024];
 	KL *pKL = (KL*)buf;
 
 	pKL->m_pkgHead = 0x7585;
@@ -2582,4 +2614,33 @@ void Setup::on_lineEdit_Frequency_editingFinished()
 		ui.lineEdit_Frequency->setText("13450000");
 	}
 #endif
+}
+
+void Setup::on_pushButtonApply2_3_clicked()
+{
+	char buf[2048];
+	KL* pKL = (KL*)buf;
+	int i;
+	pKL->m_pkgHead = 0x7585;
+
+	pKL->m_keyID = S_SET_SHUTDOWN_FLAG;
+	pKL->m_length = 1;
+	buf[sizeof(KL)] = ui.radioButton->isChecked()?0:1;
+
+	pSocket->write(buf, sizeof(KL) + 1);
+	pSocket->waitForBytesWritten(-1);
+	pSocket->waitForReadyRead(-1);
+	i = pSocket->read(buf, 2048);
+
+	if (pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_GET_SHUTDOWN_FLAG)
+	{
+		if(buf[sizeof(KL)] == 1)
+		{
+			ui.radioButton_2->setChecked(true);
+		}
+		else
+		{
+			ui.radioButton->setChecked(true);
+		}
+	}
 }
