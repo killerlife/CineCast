@@ -9,7 +9,7 @@
 //#include <log/Log.h>
 #include <syslog.h>
 
-#if 0
+#if SIMULATOR
 extern char SimDataBuf[10][4096];
 extern int SimBufPos;
 #endif
@@ -69,7 +69,7 @@ bool NotifyDataThread::Stop()
 	CActiveThread::stop();
 	return true;
 }
-#if 0
+#if SIMULATOR
 extern void print_hex(char* buf, int len);
 #endif
 
@@ -84,15 +84,17 @@ void NotifyDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-#if 0
+#if SIMULATOR
 			if((*pDebugCmd) == D_SIMULATOR)
 			{
 // 					DPRINTF("NOTIFY\n");
-				char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+				char *pos = &SimDataBuf[SimBufPos?(SimBufPos-1)%10:9][0];
 				if((*(uint16*)pos) == 0x1ff)
 				{
+// 					DPRINTF("NOTIFY\n");
 // 					print_hex(pos+2, 25);
 					memcpy(m_buffer, pos + 2, getBits((uint8*)pos+2, 12, 12) + 10);
+					*(uint16*)pos = 0x00;
 					{
 						uint16 len = getBits(m_buffer, 12, 12);
 //  						DPRINTF("len %d\n", len);

@@ -10,7 +10,7 @@
 //#include <log/Log.h>
 
 FinishDataThread gFinish;
-#if 0
+#if SIMULATOR
 extern char SimDataBuf[10][4096];
 extern int SimBufPos;
 #endif
@@ -73,7 +73,7 @@ bool FinishDataThread::Stop()
 	m_pFilter->Stop();
 	return true;
 }
-#if 0
+#if SIMULATOR
 extern void print_hex(char* buf, int len);
 #endif
 
@@ -89,15 +89,16 @@ void FinishDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-#if 0
+#if SIMULATOR
 			if((*pDebugCmd) == D_SIMULATOR)
 			{
-				char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+				char *pos = &SimDataBuf[SimBufPos?(SimBufPos-1)%10:9][0];
 				if((*(uint16*)pos) == 0x3ff)
 				{
 					uint16 len = getBits((uint8*)pos+2, 12, 12);
 // 					print_hex(pos+2, len + 3);
 					memcpy(m_buffer, pos + 2, len + 10);
+					*(uint16*)pos = 0x00;
 					{
 						//do crc32 check
 // 						uint16 len = getBits(m_buffer, 12, 12);

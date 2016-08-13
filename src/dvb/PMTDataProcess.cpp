@@ -11,7 +11,7 @@
 #include <time.h>
 
 extern RECEIVE_INFO gRecv;
-#if 0
+#if SIMULATOR
 extern char SimDataBuf[10][4096];
 extern int SimBufPos;
 #endif
@@ -86,7 +86,7 @@ bool PMTDataThread::Stop()
 #include <log/Log.h>
 #include <log/LogStruct.h>
 extern ILog* gLog;
-#if 0
+#if SIMULATOR
 extern void print_hex(char* buf, int len);
 #endif
 
@@ -108,17 +108,18 @@ void PMTDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-#if 0
+#if SIMULATOR
 			if((*pDebugCmd) == D_SIMULATOR)
 			{
 // 				DPRINTF("simulator\n");
-				char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+				char *pos = &SimDataBuf[SimBufPos?(SimBufPos-1)%10:9][0];
 				if((*(uint16*)pos) == 0x20)
 				{
 					uint16 len = getBits((uint8*)pos+2, 12, 12);
 // 					DPRINTF("len %d\n", len);
 // 					print_hex(pos+2, len + 3);
 					memcpy(m_buffer, pos + 2, len + 10);
+					*(uint16*)pos = 0x00;
 					{
 						m_mutex = 1;
 						//DPRINTF("[PMT Descriptor] Get Data\n");

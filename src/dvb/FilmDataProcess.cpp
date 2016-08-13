@@ -20,7 +20,7 @@ extern ILog* gLog;
 extern NetCommThread *pNetComm;
 extern std::vector<std::string> gRunPathList;
 // extern bool bRecvData;
-#if 0
+#if SIMULATOR
 extern char SimDataBuf[10][4096];
 extern int SimBufPos;
 #endif
@@ -250,7 +250,7 @@ bool FilmDataThread::Stop()
 }
 
 extern uint32 gDebugID;
-#if 0
+#if SIMULATOR
 extern void print_hex(char* buf, int len);
 #endif
 
@@ -311,16 +311,17 @@ void FilmDataThread::doit()
 #if 1
 				uint8 buff[4096];
 				uint16 count = 4096;
-#if 0
+#if SIMULATOR
 				if((*pDebugCmd) == D_SIMULATOR)
 				{
-					char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+					char *pos = &SimDataBuf[SimBufPos?(SimBufPos-1)%10:9][0];
 					if((*(uint16*)pos) == this->m_pPmtDescriptor->ElementaryPid)
 					{
 						uint16 len = getBits((uint8*)pos+2, 12, 12);
 // 						DPRINTF("id %04x len %d\n", (*(uint16*)pos), len);
 // 						print_hex(pos+2, len + 3);
 						memcpy(buff, pos + 2, len + 10);
+						*(uint16*)pos = 0x00;
 						{
 // 							uint16 len = getBits(buff, 12, 12);
 							uint32 crc = calc_crc32(buff, len - 1) & 0xffffffff;

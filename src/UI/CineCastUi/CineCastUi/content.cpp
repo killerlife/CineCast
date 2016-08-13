@@ -639,9 +639,32 @@ void ContentItem::MakeItem_HDD()
 #else
 	uint64 len = atoll(pData[C_FILM_LENGTH].c_str());
 #endif
-	len = len/1024/1024/1024;
+	uint64 lentb = len/1024/1024/1024/1024;
+	uint64 lengb = len/1024/1024/1024;
+	uint64 lenmb = len/1024/1024;
+	uint64 lenkb = len/1024;
+	uint64 lenb = len;
 	char buf[30];
-	sprintf(buf, "%ld GB", len);
+	if(lentb > 0)
+	{
+		sprintf(buf, "%ld TB", lentb);
+	}
+	else if(lengb > 0)
+	{
+		sprintf(buf, "%ld GB", lengb);
+	}
+	else if(lenmb > 0)
+	{
+		sprintf(buf, "%ld MB", lenmb);
+	}
+	else if(lenkb > 0)
+	{
+		sprintf(buf, "%ld KB", lenkb);
+	}
+	else
+	{
+		sprintf(buf, "%ld B", lenb);
+	}
 	setTextAlignment(3, Qt::AlignRight);
 	setText(3, buf);
 	setTextAlignment(4, Qt::AlignRight);

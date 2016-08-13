@@ -418,7 +418,8 @@ bool SimulatorThread::NotifyProc(char* buf)
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
 // 	print_hex(buf + sizeof(KL), pKL->m_length);
 // 	print_hex(pos, pKL->m_length);
-	SimBufPos++;
+	SimBufPos = (SimBufPos+1)%10;
+	DPRINTF("SimPos=%d\n", SimBufPos);
 // 	if (gLog)
 // 	{
 // 		char str[512];
@@ -438,7 +439,8 @@ bool SimulatorThread::StartProc(char* buf)
 	*((uint16*)pos) = 0x2ff;
 	pos += sizeof(uint16);
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
-	SimBufPos++;
+	SimBufPos = (SimBufPos+1)%10;
+	DPRINTF("SimPos=%d\n", SimBufPos);
 // 	if (gLog)
 // 	{
 // 		char str[512];
@@ -458,7 +460,8 @@ bool SimulatorThread::FinishProc(char* buf)
 	*((uint16*)pos) = 0x3ff;
 	pos += sizeof(uint16);
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
-	SimBufPos++;
+	SimBufPos = (SimBufPos+1)%10;
+	DPRINTF("SimPos=%d\n", SimBufPos);
 // 	if (gLog)
 // 	{
 // 		char str[512];
@@ -478,7 +481,8 @@ bool SimulatorThread::CancelProc(char* buf)
 	*((uint16*)pos) = 0x4ff;
 	pos += sizeof(uint16);
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
-	SimBufPos++;
+	SimBufPos = (SimBufPos+1)%10;
+	DPRINTF("SimPos=%d\n", SimBufPos);
 	if (gLog)
 // 	{
 // 		char str[512];
@@ -498,7 +502,8 @@ bool SimulatorThread::PatProc(char* buf)
 	*((uint16*)pos) = 0xfe;
 	pos += sizeof(uint16);
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
-	SimBufPos++;
+	SimBufPos = (SimBufPos+1)%10;
+	DPRINTF("SimPos=%d\n", SimBufPos);
 	if (gLog)
 // 	{
 // 		char str[512];
@@ -518,7 +523,8 @@ bool SimulatorThread::PmtProc(char* buf)
 	*((uint16*)pos) = 0x20;
 	pos += sizeof(uint16);
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
-	SimBufPos++;
+	SimBufPos = (SimBufPos+1)%10;
+	DPRINTF("SimPos=%d\n", SimBufPos);
 // 	print_hex(pos, pKL->m_length);
 // 	if (gLog)
 // 	{
@@ -541,7 +547,8 @@ bool SimulatorThread::DataProc(char* buf)
 		*((uint16*)pos) = pKL->m_keyID;
 		pos += sizeof(uint16);
 		memcpy(pos, buf + sizeof(KL), pKL->m_length);
-		SimBufPos++;
+		SimBufPos = (SimBufPos+1)%10;
+		DPRINTF("SimPos=%d\n", SimBufPos);
 	}
 // 	if (gLog)
 // 	{

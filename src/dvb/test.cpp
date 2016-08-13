@@ -6,7 +6,7 @@
 #include "PATDataProcess.h"
 #include "../netcomm/NetCommThread.h"
 #include "../netcomm/BaseOperation.h"
-#if 0
+#if SIMULATOR
 #include "../netcomm/SimulatorServer.h"
 #endif
 #include "thread/activeThread/activeThreadManager_i.h"
@@ -44,7 +44,7 @@ FinishDataThread *pFinish;
 CancelDataThread *pCancel;
 PATDataThread* pPat;
 GuiServer* guiServer;
-#if 0
+#if SIMULATOR
 SimulatorServer* simServer;
 #endif
 
@@ -61,7 +61,7 @@ static void handle_sigint(int sig)
 	pCancel->Stop();
 	//pPat->Stop(); //Don't call stop, because it'll automatic call while class destroy.
 	guiServer->Stop();
-#if 0
+#if SIMULATOR
 	simServer->Stop();
 #endif
 	pNetComm->Stop();
@@ -81,7 +81,7 @@ static void handle_sigint(int sig)
 	ReleaseCancel(pCancel);
 	printf("delete 6\n");
 	ReleaseGuiServer(guiServer);
-#if 0
+#if SIMULATOR
 	ReleaseSimulatorServer(simServer);
 #endif
 	sleep(1);
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
 	pCancel = CreateCancel();
 	pPat = new PATDataThread;
 	guiServer = CreateGuiServer();
-#if 0
+#if SIMULATOR
 	simServer = CreateSimulatorServer();
 #endif
 	pNetComm = new NetCommThread;
@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 	pPat->Init(&pid, NULL);
 
 	guiServer->Init();
-#if 0
+#if SIMULATOR
 	simServer->Init();
 #endif
 
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
 	CThreadRunInfo threadInfo3(pCancel, policy);
 	CThreadRunInfo threadInfo4(pPat, policy);
 	CThreadRunInfo threadInfo5(guiServer, policy);
-#if 0
+#if SIMULATOR
 	CThreadRunInfo threadInfo6(simServer, policy);
 #endif
 	m_pManager->addThread(threadInfo); 
@@ -209,7 +209,7 @@ int main(int argc, char **argv)
 	m_pManager->addThread(threadInfo3);
 	m_pManager->addThread(threadInfo4);
 	m_pManager->addThread(threadInfo5);
-#if 0
+#if SIMULATOR
 	m_pManager->addThread(threadInfo6);
 #endif
 	printf("match:%X\n", pNotify->IsNotify());
@@ -360,6 +360,10 @@ int main(int argc, char **argv)
 		gRecv.strUuid = pStart->GetUUID();
 		gRecv.strFilmName = pStart->GetFilmName();
 		gRecv.strIssueDate = pStart->GetIssueDate();
+		if(gRecv.nLostSegment == 0 && gRecv.nReceiveSegment > gRecv.nTotalSegment)
+		{
+			gRecv.nReceiveSegment = gRecv.nTotalSegment;
+		}
 		//------------------------------------------
 	
 

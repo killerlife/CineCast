@@ -16,7 +16,7 @@ StartDataThread* CreateStart()
 }
 
 extern uint32 gDebugID;
-#if 0
+#if SIMULATOR
 extern char SimDataBuf[10][4096];
 extern int SimBufPos;
 #endif
@@ -88,7 +88,7 @@ bool StartDataThread::Stop()
 	m_pFilter->Stop();
 	return true;
 }
-#if 0
+#if SIMULATOR
 extern void print_hex(char* buf, int len);
 #endif
 
@@ -104,16 +104,18 @@ void StartDataThread::doit()
 		case RUN:
 			uint16 count;
 			count = 4096;
-#if 0
+#if SIMULATOR
 			if((*pDebugCmd) == D_SIMULATOR)
 			{
 // 				DPRINTF("[Start Descriptor] Get Data\n");
-				char *pos = &SimDataBuf[(SimBufPos-1)%10][0];
+				char *pos = &SimDataBuf[SimBufPos?(SimBufPos-1)%10:9][0];
 				if((*(uint16*)pos) == 0x2ff)
 				{
+// 				DPRINTF("[Start Descriptor] Get Data\n");
 					uint16 len = getBits((uint8*)pos+2, 12, 12);
 // 					print_hex(pos+2, len + 3);
 					memcpy(m_buffer, pos + 2, len + 10);
+					*(uint16*)pos = 0x00;
 					{
 						//do crc32 check
 						uint32 crc = calc_crc32(m_buffer, len -1) & 0xffffffff;
