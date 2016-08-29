@@ -434,7 +434,7 @@ void GuiServer::doit()
 			//		return;
 		}
 	}
-	DPRINTF("Run\n");
+// 	DPRINTF("Run\n");
 	while(1)
 	{
 		switch(m_status)
@@ -445,7 +445,7 @@ void GuiServer::doit()
 				{
 					m_pThread = new GuiThread;
 				}
-				t_timeout tm = 100;
+				t_timeout tm = 1000;
 				if(m_SrvSocket.Accept(m_pThread->m_socket, NULL, NULL, &tm) == 0)
 				{
 					m_listClient.push_back(m_pThread);
@@ -463,7 +463,7 @@ void GuiServer::doit()
 			DPRINTF("[GuiServer] Stop in loop\n");
 			return;
 		case IDLE:
-			usleep(1000);
+			usleep(1000*100);
 			break;
 		}
 	}
@@ -572,7 +572,7 @@ bool GuiThread::Read(char* buf, int rSize, int& nRead)
 		size_t getsize;
 		int error = 1;
 		KL * pKL;
-		t_timeout tm = 1;
+		t_timeout tm = 200;
 
 		do 
 		{
@@ -635,7 +635,7 @@ bool GuiThread::Write(char* buf, int wSize, int& nWrite)
 		int i = 0;
 		int n = wSize;
 		size_t writesize;
-		t_timeout tm = 1;
+		t_timeout tm = 200;
 		do 
 		{
 			if(m_socket.Send(buf + i, n, writesize, &tm) != 0)

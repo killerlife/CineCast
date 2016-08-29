@@ -232,13 +232,13 @@ void HeartThread::doit()
 	{
 		i++;
 		if(i > 120*1000)
-	{
-	    if(pNetCom)
-	    {
-		pNetCom->HeartBreat();
-	    }
+		{
+			if(pNetCom)
+			{
+				pNetCom->HeartBreat();
+			}
 			i = 0;
-	}
+		}
 		else
 			usleep(1000);
 	}
@@ -433,7 +433,7 @@ bool NetCommThread::Login()
 	memcpy(&req, &m_loginReq, sizeof(L_LOGIN_REQ));
 	if(inet_descriptor.flag == ENC_HARDKEY)
 	{
-	aes_encrypt((uint8*)m_hardKey, 
+		aes_encrypt((uint8*)m_hardKey, 
 			(uint8*)&req+sizeof(uint32), 
 			(uint8*)&req+sizeof(uint32),
 			(uint32)sizeof(struct L_LOGIN_REQ)-sizeof(uint32));
@@ -454,8 +454,8 @@ bool NetCommThread::Login()
 		reTry++;
 		DPRINTF("Login send head\n");
 		int err = m_loginSocket.Send2((char*)&inet_descriptor,
-		sizeof(struct INET_DESCRIPTOR),
-		send_size,
+			sizeof(struct INET_DESCRIPTOR),
+			send_size,
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
@@ -484,7 +484,7 @@ bool NetCommThread::Login()
 // 			m_loginSocket.Destroy();
 // 			if(m_status == NET_READ)
 // 				m_status = NET_RUN;
-		return false;
+			return false;
 		}
 		else
 			break;
@@ -498,8 +498,8 @@ bool NetCommThread::Login()
 		reTry++;
 		DPRINTF("Login send body\n");
 		int err = m_loginSocket.Send2((char*)&req,
-		sizeof(struct L_LOGIN_REQ),
-		send_size,
+			sizeof(struct L_LOGIN_REQ),
+			send_size,
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
@@ -528,7 +528,7 @@ bool NetCommThread::Login()
 // 			m_loginSocket.Destroy();
 // 			if(m_status == NET_READ)
 // 				m_status = NET_RUN;
-		return false;
+			return false;
 		}
 		else
 			break;
@@ -543,8 +543,8 @@ bool NetCommThread::Login()
 		reTry++;
 		DPRINTF("Login read head\n");
 		int err = m_loginSocket.Receive2((char*)&inet_descriptor,
-		(int)sizeof(struct INET_DESCRIPTOR), 
-		get_size,
+			(int)sizeof(struct INET_DESCRIPTOR),
+			get_size,
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
@@ -573,7 +573,7 @@ bool NetCommThread::Login()
 // 			m_loginSocket.Destroy();
 // 			if(m_status == NET_READ)
 // 				m_status = NET_RUN;
-		return false;
+			return false;
 		}
 		else
 			break;
@@ -588,7 +588,7 @@ bool NetCommThread::Login()
 		DPRINTF("Login read Body\n");
 		int err = m_loginSocket.Receive2((char*)&m_loginRep,
 			(int)sizeof(struct R_LOGIN_REP),
-		get_size,
+			get_size,
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
@@ -617,7 +617,7 @@ bool NetCommThread::Login()
 // 			m_loginSocket.Destroy();
 // 			if(m_status == NET_READ)
 // 				m_status = NET_RUN;
-		return false;
+			return false;
 		}
 		else
 			break;
@@ -751,7 +751,7 @@ bool NetCommThread::Auth()
 		inet_descriptor.payloadLength = ((sizeof(struct L_AUTH_REQ)-sizeof(uint32)+15)/16)*16 + sizeof(uint32);
 	#endif
 		inet_descriptor.payloadLength = leng;
-	aes_encrypt((uint8*)m_hardKey, 
+		aes_encrypt((uint8*)m_hardKey, 
 			(uint8*)buf+sizeof(uint32), 
 			(uint8*)buf+sizeof(uint32),
 			inet_descriptor.payloadLength);
@@ -771,53 +771,7 @@ bool NetCommThread::Auth()
 		reTry++;
 		DPRINTF("Auth send head\n");
 		int err = m_authSocket.Send2((char*)&inet_descriptor,
-		sizeof(struct INET_DESCRIPTOR),
-		send_size,
-			&tm);
-		if (err == CZSocket::WAIT_R_TIMEOUT)
-		{
-			sprintf(str, "[NetCommThread] Auth WAIT_R_TIMEOUT");
-			if (gLog)
-			{
-				gLog->Write(LOG_ERROR, str);
-			}
-			if(reTry > 3)
-			{
-				delete[] buf;
-// 				bConnected = false;
-// 				m_authSocket.Destroy();
-// 				if(m_status == NET_READ)
-// 					m_status = NET_RUN;
-				return false;
-			}
-		}
-		else if(err < 0)
-		{
-			sprintf(str, "[NetCommThread] Auth WriteError");
-			if (gLog)
-	{
-				gLog->Write(LOG_ERROR, str);
-			}
-		delete[] buf;
-// 			bConnected = false;
-// 			m_authSocket.Destroy();
-// 			if(m_status == NET_READ)
-// 				m_status = NET_RUN;
-		return false;
-	}
-		else
-			break;
-	}
-
-	send_size = 0;
-	tm = 8000;
-	reTry = 0;
-	for(;;)
-	{
-		reTry++;
-		DPRINTF("Auth send body\n");
-		int err = m_authSocket.Send2((char*)buf,
-		inet_descriptor.payloadLength,
+			sizeof(struct INET_DESCRIPTOR),
 			send_size,
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
@@ -841,16 +795,62 @@ bool NetCommThread::Auth()
 		{
 			sprintf(str, "[NetCommThread] Auth WriteError");
 			if (gLog)
-	{
+			{
 				gLog->Write(LOG_ERROR, str);
 			}
-		delete[] buf;
+			delete[] buf;
 // 			bConnected = false;
 // 			m_authSocket.Destroy();
 // 			if(m_status == NET_READ)
 // 				m_status = NET_RUN;
-		return false;
+			return false;
+		}
+		else
+			break;
 	}
+
+	send_size = 0;
+	tm = 8000;
+	reTry = 0;
+	for(;;)
+	{
+		reTry++;
+		DPRINTF("Auth send body\n");
+		int err = m_authSocket.Send2((char*)buf,
+			inet_descriptor.payloadLength,
+			send_size,
+			&tm);
+		if (err == CZSocket::WAIT_R_TIMEOUT)
+		{
+			sprintf(str, "[NetCommThread] Auth WAIT_R_TIMEOUT");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			if(reTry > 3)
+			{
+				delete[] buf;
+// 				bConnected = false;
+// 				m_authSocket.Destroy();
+// 				if(m_status == NET_READ)
+// 					m_status = NET_RUN;
+				return false;
+			}
+		}
+		else if(err < 0)
+		{
+			sprintf(str, "[NetCommThread] Auth WriteError");
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+			delete[] buf;
+// 			bConnected = false;
+// 			m_authSocket.Destroy();
+// 			if(m_status == NET_READ)
+// 				m_status = NET_RUN;
+			return false;
+		}
 		else
 			break;
 	}
@@ -864,8 +864,8 @@ bool NetCommThread::Auth()
 		reTry++;
 		DPRINTF("Auth Get head\n");
 		int err = m_authSocket.Receive2((char*)&inet_descriptor,
-		sizeof(struct INET_DESCRIPTOR), 
-		get_size,
+			sizeof(struct INET_DESCRIPTOR),
+			get_size,
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
@@ -888,16 +888,16 @@ bool NetCommThread::Auth()
 		{
 			sprintf(str, "[NetCommThread] Auth WriteError");
 			if (gLog)
-	{
+			{
 				gLog->Write(LOG_ERROR, str);
 			}
-		delete[] buf;
+			delete[] buf;
 // 			bConnected = false;
 // 			m_authSocket.Destroy();
 // 			if(m_status == NET_READ)
 // 				m_status = NET_RUN;
-		return false;
-	}
+			return false;
+		}
 		else
 			break;
 	}
@@ -910,8 +910,8 @@ bool NetCommThread::Auth()
 		reTry++;
 		DPRINTF("Auth Get body\n");
 		int err = m_authSocket.Receive2((char*)buf,
-		inet_descriptor.payloadLength,
-		get_size,
+			inet_descriptor.payloadLength,
+			get_size,
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
@@ -934,16 +934,16 @@ bool NetCommThread::Auth()
 		{
 			sprintf(str, "[NetCommThread] Auth WriteError");
 			if (gLog)
-	{
+			{
 				gLog->Write(LOG_ERROR, str);
 			}
-		delete[] buf;
+			delete[] buf;
 // 			bConnected = false;
 // 			m_authSocket.Destroy();
 // 			if(m_status == NET_READ)
 // 				m_status = NET_RUN;
-		return false;
-	}
+			return false;
+		}
 		else
 			break;
 	}
@@ -1017,7 +1017,7 @@ bool NetCommThread::GetMD5File(uint32 filmId)
 	m_md5Req.filmID = filmId;
 	m_md5Req.crc32 = calc_crc32((uint8*)&m_md5Req,
 		sizeof(L_MD5_KEY_REQ) - 4);
-
+	
 	//Encrypt md5 request with AES128 ECB
 	aes_encrypt((uint8*)m_authRep.sessionKey, 
 		(uint8*)&m_md5Req, 
@@ -1106,8 +1106,8 @@ bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 	else
 	{
 	#if 0
-	uint32 crc32 = calc_crc32((uint8*)buf, nSize - sizeof(uint32));
-	memcpy(buf + nSize - sizeof(uint32), &crc32, sizeof(uint32));
+		uint32 crc32 = calc_crc32((uint8*)buf, nSize - sizeof(uint32));
+		memcpy(buf + nSize - sizeof(uint32), &crc32, sizeof(uint32));
 		inet_descriptor.payloadLength = nSize;
 	#endif
 		*(uint32*)(buf + nSize - sizeof(uint32)) = calc_crc32((uint8*) buf, nSize - sizeof(uint32));
@@ -1115,10 +1115,10 @@ bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 		inet_descriptor.payloadLength = nSize;
 	}
 //	print_hex((char*)buf, 0x40);
-
+	
 	if (inet_descriptor.flag != ENC_NONE)
 	{
-	aes_encrypt((uint8*)m_authRep.sessionKey, 
+		aes_encrypt((uint8*)m_authRep.sessionKey, 
 			(uint8*)buf, 
 			(uint8*)buf,
 			inet_descriptor.payloadLength);
@@ -1166,7 +1166,7 @@ bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 	//Update state to upload lost info
 	gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) | 0x05;
 
-		return true;
+	return true;
 }
 
 bool NetCommThread::HeartBreat()
@@ -1350,7 +1350,7 @@ bool NetCommThread::HeartBreat()
 
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)buf, inet_descriptor.payloadLength);
-
+	
 	GetMutex();
 	t_timeout tm = 8000;
 	int reTry = 0;
@@ -1359,7 +1359,7 @@ bool NetCommThread::HeartBreat()
 		reTry++;
 		DPRINTF("Heartbreat send head\n");
 		int err = m_authSocket.Send2((char*)&inet_descriptor,
-		sizeof(struct INET_DESCRIPTOR),
+			sizeof(struct INET_DESCRIPTOR),
 			send_size,
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
@@ -1381,20 +1381,20 @@ bool NetCommThread::HeartBreat()
 			}
 		}
 		else if(err < 0)
-	{
+		{
 			sprintf(str, "[NetCommThread] HeartBreat WriteError");
 			if (gLog)
 			{
 				gLog->Write(LOG_ERROR, str);
 			}
 			ReleaseMutex();
-		delete[] buf;
+			delete[] buf;
 			bConnected = false;
 			m_authSocket.Destroy();
 			if(m_status == NET_READ)
 				m_status = NET_RUN;
-		return false;
-	}
+			return false;
+		}
 		else
 			break;
 	}
@@ -1408,14 +1408,14 @@ bool NetCommThread::HeartBreat()
 		reTry++;
 		DPRINTF("Heartbreat send body\n");
 		int err = m_authSocket.Send2((char*)buf,
-		inet_descriptor.payloadLength,
+			inet_descriptor.payloadLength,
 			send_size,
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
 			sprintf(str, "[NetCommThread] HeartBreat WAIT_R_TIMEOUT");
 			if (gLog)
-	{
+			{
 				gLog->Write(LOG_ERROR, str);
 			}
 			if(reTry > 3)
@@ -1437,13 +1437,13 @@ bool NetCommThread::HeartBreat()
 				gLog->Write(LOG_ERROR, str);
 			}
 			ReleaseMutex();
-		delete[] buf;
+			delete[] buf;
 			bConnected = false;
 			m_authSocket.Destroy();
 			if(m_status == NET_READ)
 				m_status = NET_RUN;
-		return false;
-	}
+			return false;
+		}
 		else
 			break;
 	}
@@ -1538,238 +1538,238 @@ void NetCommThread::doit()
 		}
 		else
 		{
-		switch(m_status)
-		{
-		case NET_RUN:
+			switch(m_status)
 			{
-				bConnected = false;
-				ICMyini* ini = createMyini();
-				std::string tmp;
+			case NET_RUN:
+				{
+					bConnected = false;
+					ICMyini* ini = createMyini();
+					std::string tmp;
 
-				std::string url;
-				int port;
-				if(ini)
-				{
-					if (ini->load("/etc/CineCast/CineCast.cfg"))
+					std::string url;
+					int port;
+					if(ini)
 					{
-						if(bLeonisCfg)
+						if (ini->load("/etc/CineCast/CineCast.cfg"))
 						{
-							if(ini->read(" ", "LEONIS-SERVER", tmp))
+							if(bLeonisCfg)
 							{
-								url = tmp;
+								if(ini->read(" ", "LEONIS-SERVER", tmp))
+								{
+									url = tmp;
+								}
+								else
+								{
+									url = "";
+									if(gLog)
+										gLog->Write(LOG_NETCOMMU, "[NetCommThread] read leonis server failed");
+								}
+								if (ini->read(" ", "LEONIS-PORT", tmp))
+								{
+									port = atoi(tmp.c_str());
+								}
+								else
+								{
+									if(gLog)
+										gLog->Write(LOG_NETCOMMU, "[NetCommThread] read leonis port failed");
+									port = 0;
+								}
 							}
 							else
 							{
-								url = "";
-								if(gLog)
-									gLog->Write(LOG_NETCOMMU, "[NetCommThread] read leonis server failed");
+								if(ini->read(" ", "SERVER", tmp))
+								{
+									url = tmp;
+								}
+								else
+								{
+									url = "";
+									if(gLog)
+										gLog->Write(LOG_NETCOMMU, "[NetCommThread] read server failed");
+								}
+								if (ini->read(" ", "PORT", tmp))
+								{
+									port = atoi(tmp.c_str());
+								}
+								else
+								{
+									if(gLog)
+										gLog->Write(LOG_NETCOMMU, "[NetCommThread] read port failed");
+									port = 0;
+								}
 							}
-							if (ini->read(" ", "LEONIS-PORT", tmp))
+						}
+						if (ini->load("/etc/CineCast/ID"))
+						{
+							if (ini->read("ID_HardKey", "ID", tmp))
 							{
-								port = atoi(tmp.c_str());
+								m_nMachineId = atoi(tmp.c_str());
 							}
 							else
 							{
 								if(gLog)
-									gLog->Write(LOG_NETCOMMU, "[NetCommThread] read leonis port failed");
-								port = 0;
+									gLog->Write(LOG_NETCOMMU, "[NetCommThread] read MachineId failed");
+								m_nMachineId = 0;
+							}
+							if(ini->read("ID_HardKey", "HardKey", tmp))
+							{
+								GetHardKey(tmp);
+							}
+							else
+							{
+								if(gLog)
+									gLog->Write(LOG_NETCOMMU, "[NetCommThread] read HardKey failed");
 							}
 						}
-						else
-						{
-						if(ini->read(" ", "SERVER", tmp))
-						{
-							url = tmp;
-						}
-						else
-						{
-							url = "";
-							if(gLog)
-								gLog->Write(LOG_NETCOMMU, "[NetCommThread] read server failed");
-						}
-						if (ini->read(" ", "PORT", tmp))
-						{
-							port = atoi(tmp.c_str());
-						}
-						else
-						{
-							if(gLog)
-								gLog->Write(LOG_NETCOMMU, "[NetCommThread] read port failed");
-							port = 0;
-						}
+						releaseMyini(ini);
 					}
-					}
-					if (ini->load("/etc/CineCast/ID"))
+					try
 					{
-						if (ini->read("ID_HardKey", "ID", tmp))
+						if(m_loginSocket.Create(AF_INET, SOCK_STREAM, 0))
 						{
-							m_nMachineId = atoi(tmp.c_str());
-						}
-						else
-						{
-							if(gLog)
-								gLog->Write(LOG_NETCOMMU, "[NetCommThread] read MachineId failed");
-							m_nMachineId = 0;
-						}
-						if(ini->read("ID_HardKey", "HardKey", tmp))
-						{
-							GetHardKey(tmp);
-						}
-						else
-						{
-							if(gLog)
-								gLog->Write(LOG_NETCOMMU, "[NetCommThread] read HardKey failed");
-						}
-					}
-					releaseMyini(ini);
-				}
-				try
-				{
-					if(m_loginSocket.Create(AF_INET, SOCK_STREAM, 0))
-					{
 							if(nDNSCount > 5)
 							{
 								url = "123.127.110.181";
 								nDNSCount = 0;
 							}
+							struct sockaddr_in addr_in;
+							memset(&addr_in, 0, sizeof(sockaddr_in));
+							addr_in.sin_family = AF_INET;
+							addr_in.sin_port = htons(port);
+							struct hostent *he;
+							if((he = gethostbyname(url.c_str())) == NULL)
+							{
+								if(gLog)
+									gLog->Write(LOG_NETCOMMU, "[NetCommThread] gethostbyname error.");
+								throw -2;
+							}
+							struct in_addr **addr_list = (struct in_addr**)he->h_addr_list;
+							char ip[100];
+							for(int i = 0; addr_list[i] != NULL; i++)
+							{
+								strcpy(ip, inet_ntoa(*addr_list[i]));
+								break;
+							}
+							sprintf(str, "[NetCommThread] %s resolved to %s.", url.c_str(), ip);
+							if(gLog)
+								gLog->Write(LOG_ERROR, str);
+							addr_in.sin_addr.s_addr = inet_addr(ip);
+							int error = 0;
+							do
+							{
+								t_timeout tm = 3000;
+								error = m_loginSocket.Connect(&addr_in, &tm);
+								if (error && error != CZSocket::WAIT_R_TIMEOUT)
+								{
+									throw -1;
+								}
+							}while(error);
+							m_status = NET_LOGIN;
+						}
+					}
+					catch(int& err)
+					{
+						m_loginSocket.Destroy();
+						sleep(5);
+						bConnected = false;
+						sprintf(str, "[NetCommThread] Connect to login server %s:%d error.", url.c_str(), (uint16)port);
+						if(gLog)
+							gLog->Write(LOG_ERROR, str);
+						DPRINTF("%s\n", str);
+						if(err == -2)
+							nDNSCount++;
+					}
+				}
+				break;
+			case NET_LOGIN:
+				if(Login() == false)
+				{
+					bConnected = false;
+					m_loginSocket.Destroy();
+					m_status = NET_RUN;
+					sleep(5);
+				}
+				else
+				{
+					m_loginSocket.Destroy();
+					m_status = NET_AUTH;
+				}
+				break;
+			case NET_AUTH:
+				try
+				{
+					if(m_authSocket.Create(AF_INET, SOCK_STREAM, 0))
+					{
+						DPRINTF("server ip: %s:%d\n", m_loginRep.serverIP, m_loginRep.port);
 						struct sockaddr_in addr_in;
 						memset(&addr_in, 0, sizeof(sockaddr_in));
 						addr_in.sin_family = AF_INET;
-						addr_in.sin_port = htons(port);
-						struct hostent *he;
-						if((he = gethostbyname(url.c_str())) == NULL)
-							{
-							if(gLog)
-								gLog->Write(LOG_NETCOMMU, "[NetCommThread] gethostbyname error.");
-								throw -2;
-							}
-						struct in_addr **addr_list = (struct in_addr**)he->h_addr_list;
-						char ip[100];
-						for(int i = 0; addr_list[i] != NULL; i++)
-						{
-							strcpy(ip, inet_ntoa(*addr_list[i]));
-							break;
-						}
-						sprintf(str, "[NetCommThread] %s resolved to %s.", url.c_str(), ip);
-						if(gLog)
-							gLog->Write(LOG_ERROR, str);
-						addr_in.sin_addr.s_addr = inet_addr(ip);
+						addr_in.sin_port = htons(m_loginRep.port);
+						addr_in.sin_addr.s_addr = inet_addr((char*)m_loginRep.serverIP);
 						int error = 0;
 						do
 						{
 							t_timeout tm = 3000;
-							error = m_loginSocket.Connect(&addr_in, &tm);
+							error = m_authSocket.Connect(&addr_in, &tm);
 							if (error && error != CZSocket::WAIT_R_TIMEOUT)
 							{
+								m_authSocket.Destroy();
 								throw -1;
 							}
 						}while(error);
-						m_status = NET_LOGIN;
+						if(Auth() == false)
+						{
+							bConnected = false;
+							m_authSocket.Destroy();
+							m_status = NET_RUN;
+						}
+						else
+						{
+							DPRINTF("auth success\n");
+							bConnected = true;
+							m_status = NET_READ;
+							if(gLog)
+								gLog->Write(LOG_NETCOMMU, "[NetCommThread] Auth success.");
+						}
 					}
 				}
-					catch(int& err)
+				catch(int&)
 				{
-						m_loginSocket.Destroy();
-					sleep(5);
-						bConnected = false;
-					sprintf(str, "[NetCommThread] Connect to login server %s:%d error.", url.c_str(), (uint16)port);
+					m_status = NET_RUN;
+					sleep(10);
+					sprintf(str, "[NetCommThread] Connect to login server %s:%d error.", m_loginRep.serverIP, m_loginRep.port);
 					if(gLog)
 						gLog->Write(LOG_ERROR, str);
-					DPRINTF("%s\n", str);
-						if(err == -2)
-							nDNSCount++;
 				}
-			}
-			break;
-		case NET_LOGIN:
-			if(Login() == false)
-			{
-					bConnected = false;
-				m_loginSocket.Destroy();
-				m_status = NET_RUN;
-				sleep(5);
-			}
-			else
-			{
-				m_loginSocket.Destroy();
-				m_status = NET_AUTH;
-			}
-			break;
-		case NET_AUTH:
-			try
-			{
-				if(m_authSocket.Create(AF_INET, SOCK_STREAM, 0))
+				break;
+			case NET_READ:
 				{
-					DPRINTF("server ip: %s:%d\n", m_loginRep.serverIP, m_loginRep.port);
-					struct sockaddr_in addr_in;
-					memset(&addr_in, 0, sizeof(sockaddr_in));
-					addr_in.sin_family = AF_INET;
-					addr_in.sin_port = htons(m_loginRep.port);
-					addr_in.sin_addr.s_addr = inet_addr((char*)m_loginRep.serverIP);
-					int error = 0;
-					do
+					try
 					{
-						t_timeout tm = 3000;
-						error = m_authSocket.Connect(&addr_in, &tm);
-						if (error && error != CZSocket::WAIT_R_TIMEOUT)
-						{
-							m_authSocket.Destroy();
-							throw -1;
-						}
-					}while(error);
-					if(Auth() == false)
+						RecvFilter();
+					}
+					catch (int&)
 					{
+						DPRINTF("throw\n");
 						bConnected = false;
 						m_authSocket.Destroy();
-						m_status = NET_RUN;
-					}
-					else
-					{
-						DPRINTF("auth success\n");
-						bConnected = true;
-						m_status = NET_READ;
-						if(gLog)
-						    gLog->Write(LOG_NETCOMMU, "[NetCommThread] Auth success.");
-					}
-				}
-			}
-			catch(int&)
-			{
-				m_status = NET_RUN;
-					sleep(10);
-				sprintf(str, "[NetCommThread] Connect to login server %s:%d error.", m_loginRep.serverIP, m_loginRep.port);
-				if(gLog)
-					gLog->Write(LOG_ERROR, str);
-			}
-			break;
-		case NET_READ:
-			{
-				try
-				{
-					RecvFilter();
-				}
-				catch (int&)
-				{
-						DPRINTF("throw\n");
-					bConnected = false;
-					m_authSocket.Destroy();
 						if(m_status == NET_READ)
-					m_status = NET_RUN;
+							m_status = NET_RUN;
+					}
 				}
-			}
-			break;
-		case NET_REBOOT_REQ:
+				break;
+			case NET_REBOOT_REQ:
 				//Don't need, we already process the reboot command in recvfilter
-			break;
-		case NET_STOP:
+				break;
+			case NET_STOP:
 				DPRINTF("STOP\n");
-			return;
-		default:
+				return;
+			default:
 				usleep(100*1000);
-			break;
+				break;
+			}
 		}
 	}
-}
 }
 
 void NetCommThread::CloseConnect()
@@ -1788,8 +1788,8 @@ void NetCommThread::StartConnect()
 
 bool NetCommThread::RecvFilter()
 {
-				struct INET_DESCRIPTOR m_inetDesc;
-				size_t get_size = 0;
+	struct INET_DESCRIPTOR m_inetDesc;
+	size_t get_size = 0;
 	static char a_buf[2048];
 	static char b_buf[2048];
 	char *buf = NULL;
@@ -1804,7 +1804,7 @@ bool NetCommThread::RecvFilter()
 		nHeartCount++;
 	int err = m_authSocket.Receive2((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), get_size, &tm);
 	if( err == CZSocket::WAIT_R_TIMEOUT)
-				{
+	{
 		if(nHeartCount > 15)
 		{
 			nHeartCount = 0;
@@ -1812,15 +1812,15 @@ bool NetCommThread::RecvFilter()
 		}
 // 		DPRINTF("Receive timeout\n");
 		return false;
-				}
-	if( err  < 0)
+	}
+	if( err < 0)
 	{
 		nHeartCount = 0;
 		throw -1;
 	}
 
-				switch(m_inetDesc.command)
-				{
+	switch(m_inetDesc.command)
+	{
 	case NET_HEARTBEAT_REQ:
 
 		save_proto((char*)&m_inetDesc, sizeof(struct INET_DESCRIPTOR), m_inetDesc.command,
@@ -1836,8 +1836,8 @@ bool NetCommThread::RecvFilter()
 		nHeartCount = 0;
 		DPRINTF("Receive heartbreat confirm\n");
 		break;
-				case NET_MD5_REP:
-					{
+	case NET_MD5_REP:
+		{
 			DPRINTF("Receive Md5 responsed\n");
 			
 			char *buf1 = NULL;
@@ -1846,9 +1846,9 @@ bool NetCommThread::RecvFilter()
 			{
 				buf1 = buf;
 				memset(buf1, 0, 2048);
-					}
-					else
-					{
+			}
+			else
+			{
 				buf1 = new char[m_inetDesc.payloadLength + 100];
 				DPRINTF("New MD5 length:%d\n", m_inetDesc.payloadLength);
 				memset(buf1, 0, m_inetDesc.payloadLength + 100);
@@ -1885,22 +1885,22 @@ bool NetCommThread::RecvFilter()
 
 				uint32 crc32 = calc_crc32((uint8*)buf1, m_inetDesc.payloadLength - sizeof(uint32));
 				char* pCrc32 = buf1 + m_inetDesc.payloadLength - sizeof(uint32);
-				
+
 				if(crc32 == *(uint32*)pCrc32)
 				{
 					DPRINTF("Send Md5 receive confirm\n");
-						struct L_MD5_KEY_CONFIRM confirm;
-						struct INET_DESCRIPTOR inet_desc;
-						inet_desc.command = NET_MD5_CONFIRM;
-			inet_desc.subCommand = 0;
-						inet_desc.payloadLength = sizeof(L_MD5_KEY_CONFIRM);
+					struct L_MD5_KEY_CONFIRM confirm;
+					struct INET_DESCRIPTOR inet_desc;
+					inet_desc.command = NET_MD5_CONFIRM;
+					inet_desc.subCommand = 0;
+					inet_desc.payloadLength = sizeof(L_MD5_KEY_CONFIRM);
 					inet_desc.flag = ENC_SESSIONKEY;
 					confirm.filmID = gRecv.nFileID;
 					DPRINTF("MD5 confirm %u\n", confirm.filmID);
-						confirm.crc32 = calc_crc32((uint8 *)&confirm,
-							sizeof(L_MD5_KEY_CONFIRM) - 4);
-						size_t send_size = 0;
-					
+					confirm.crc32 = calc_crc32((uint8 *)&confirm,
+						sizeof(L_MD5_KEY_CONFIRM) - 4);
+					size_t send_size = 0;
+
 					//Encrypt md5 request with AES128 ECB
 					aes_encrypt((uint8*)m_authRep.sessionKey, 
 						(uint8*)&confirm, 
@@ -1911,8 +1911,8 @@ bool NetCommThread::RecvFilter()
 						(char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM));
 
 					GetMutex();
-						m_authSocket.Send((const char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), send_size);
-						m_authSocket.Send((const char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM), send_size);
+					m_authSocket.Send((const char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), send_size);
+					m_authSocket.Send((const char*)&confirm, sizeof(struct L_MD5_KEY_CONFIRM), send_size);
 					ReleaseMutex();
 
 					R_MD5_KEY_REP *pMd5 = (R_MD5_KEY_REP*)buf1;
@@ -1998,7 +1998,7 @@ bool NetCommThread::RecvFilter()
 				{
 					DPRINTF("free buf\n");
 					delete[] buf1;
-			}
+				}
 			}
 			else
 			{
@@ -2112,8 +2112,8 @@ bool NetCommThread::RecvFilter()
 			{
 				DPRINTF("new buf error\n");
 			}
-					}
-					break;
+		}
+		break;
 	case NET_LOG_REQ:
 		{
 			DPRINTF("Receive log request\n");
@@ -2231,9 +2231,9 @@ bool NetCommThread::RecvFilter()
 			{
 				DPRINTF("new buf error\n");
 			}
-			}
-			break;
-		case NET_REBOOT_REQ:
+		}
+		break;
+	case NET_REBOOT_REQ:
 		{
 			DPRINTF("Receive leonis log request\n");
 			char *buf1 = NULL;
@@ -2299,7 +2299,7 @@ bool NetCommThread::RecvFilter()
 			}
 
 		}
-			break;
+		break;
 	case NET_REMOTE_UPDATE_PUSH:
 		{
 			DPRINTF("Receive RemoteUpdate push\n");
@@ -2499,7 +2499,7 @@ bool NetCommThread::RecvFilter()
 					if(bNew)
 						delete[] buf1;
 					throw -1;
-		}
+				}
 
 				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
 					(char*)buf1, m_inetDesc.payloadLength);
@@ -2510,7 +2510,7 @@ bool NetCommThread::RecvFilter()
 					(uint8*)buf1,
 					(uint8*)buf1,
 					m_inetDesc.payloadLength);
-	}
+				}
 #if 0
 				uint32 crc32 = calc_crc32((uint8*)buf1, sizeof(struct R_LOST_INFO_CONFIRM) - 4);
 				R_LOST_INFO_CONFIRM* pLostInfo = (R_LOST_INFO_CONFIRM*)buf1;
@@ -2565,13 +2565,13 @@ bool NetCommThread::RecvFilter()
 					if(bNew)
 						delete[] buf1;
 					throw -1;
-}
+				}
 
 				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
 					(char*)buf1, m_inetDesc.payloadLength);
 
 				if(m_inetDesc.flag != ENC_NONE)
-{
+				{
 					aes_decrypt((uint8*)m_authRep.sessionKey,
 						(uint8*)buf1,
 						(uint8*)buf1,
@@ -2652,12 +2652,12 @@ bool NetCommThread::RecvFilter()
 					sprintf(str, "[NetCommThread] PKG Data CRC ERROR.");
 					DPRINTF("%s\n", str);
 					if (gLog)
-	{
+					{
 						gLog->Write(LOG_SYSTEM, str);
 					}
-	}
+				}
 				else
-	{
+				{
 					char *pData = (char*)(buf1 + sizeof(struct R_PKG_SEND_DATA));
 					DPRINTF("segNum %d dataLen %d\n", pSend_data->segNum, pSend_data->dataLen);
 
@@ -2763,7 +2763,7 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 		timeBefore.day = nEnd%100;
 	}
 	else
-		{
+	{
 		time_t t;
 #if 0
 		t = nBegin;
@@ -2789,7 +2789,7 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 		timeBefore.month = pTm->tm_mon + 1;
 		timeBefore.day = pTm->tm_mday;
 #endif
-		}
+	}
 
 	extern std::string g_LogAll;
 	ILog* pLog = CreateLog();
@@ -2806,7 +2806,7 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 			INET_DESCRIPTOR inet_desc;
 			if (bLeonis)
 				inet_desc.command = NET_LOG_REP_LEONIS;
-		else
+			else
 				inet_desc.command = NET_LOG_REP;
 			inet_desc.subCommand = 0;
 			inet_desc.flag = ENC_SESSIONKEY;
@@ -2840,7 +2840,7 @@ bool NetCommThread::LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis)
 
 			inet_desc.payloadLength = pos;
 			if (inet_desc.flag != ENC_NONE)
-		{
+			{
 				aes_encrypt(m_authRep.sessionKey, (uint8*)buf, (uint8*)buf, pos);
 				#if 0
 				inet_desc.payloadLength = ((inet_desc.payloadLength + 15)/16)*16;
@@ -2901,7 +2901,7 @@ bool NetCommThread::PkgSendConfirm(uint32 filmId)
 			aes_encrypt(m_authRep.sessionKey, (uint8*)buf, (uint8*)buf, inet_desc.payloadLength);
 		}
 
-			size_t send_size = 0;
+		size_t send_size = 0;
 		t_timeout tm = 1000;
 		
 		save_proto((char*)&inet_desc, sizeof(struct INET_DESCRIPTOR), inet_desc.command,

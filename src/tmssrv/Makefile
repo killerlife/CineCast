@@ -26,6 +26,7 @@ CLIB = \
 -lxerces-c \
 -lx86-dcpXmlCore \
 -lx86-GeneralXMLLib \
+-lx86-externCall \
 -lx86-activeThreadManager
 
 BIND=/usr/local/bin/

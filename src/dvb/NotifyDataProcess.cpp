@@ -215,15 +215,14 @@ void NotifyDataThread::doit()
 			}
 			else
 			{
-				//--------------------------------------------------------
-				//                Network Simulator
+#if SIMULATOR
 				if((*pDebugCmd) == D_NOTIFY)
 				{
 					m_filmId = gDebugID;
 					bMatch = true;
 					*pDebugCmd = 0;
 				}
-				//--------------------------------------------------------
+#endif // 0
 			}
 			break;
 		case STOP:

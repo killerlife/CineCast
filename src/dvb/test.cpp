@@ -49,7 +49,7 @@ SimulatorServer* simServer;
 #endif
 
 ILog* gLog;
-NetCommThread *pNetComm;
+NetCommThread *pNetComm = NULL;
 std::vector<std::string> gRunPathList;
 
 static void handle_sigint(int sig)
@@ -336,6 +336,7 @@ int main(int argc, char **argv)
 		//---------------------------------
 		//Get satellite status and log it.
 		gInfo = pTuner->GetTunerInfo();
+#if 0
 		sprintf(m_log, "[Satellite] status=%02X, agc=%3u%%, snr=%3u%%, ber=%d, unc=%d, lock=%02X",
 			gInfo.nStatus,
 			gInfo.nAGC,
@@ -344,6 +345,7 @@ int main(int argc, char **argv)
 			gInfo.nUNC,
 			gInfo.nLock);
 		gLog->Write(LOG_SYSTEM, m_log);
+#endif
 		//--------------------------------
 
 		//-----------------------------------------
@@ -446,9 +448,11 @@ int main(int argc, char **argv)
 					//Get task start time for heart beat
 					if((gRecv.nReceiveStatus & 0xffff0000) == 0x010000)
 		{
+						if(pNetComm)
 					pNetComm->StartRecvTask();
 		}
 					//Get Round start time for heart beat
+					if(pNetComm)
 				pNetComm->StartRoundRecv();
 				    }
 				
@@ -478,7 +482,6 @@ int main(int argc, char **argv)
 		//Process FINISH from DVB
 		if(pFinish->IsFinish() && ((gRecv.nReceiveStatus & 0xffff) != 11))
 		{
-//			prevFilmID = gRecv.nFileID;
 			//-----------------------------------------------------------
 			//Set status to data received and lost analysis
 			if (!(gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0))

@@ -144,7 +144,7 @@ else
 			}
 			else
 			{
-#if 1
+#if SIMULATOR
 				if ((*pDebugCmd) == D_FINISH)
 				{
 					m_bFinish = true;

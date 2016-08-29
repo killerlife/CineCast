@@ -8,6 +8,7 @@ OBJ=test.o
 CFLG = -L../../lib -L/usr/lib64
 
 CFLAGS += \
+-DSIMULATOR
 
 CLIB = \
 -lQtCore \

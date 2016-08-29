@@ -92,10 +92,6 @@ extern void print_hex(char* buf, int len);
 
 void PMTDataThread::doit()
 {
-#if 0
-	m_pManager = brunt::createThreadManager();
-#endif // 0
-
 	char str[200];
 	sprintf(str, "[PMT Descriptor] Run 0x%x", this);
 	if(gLog)
@@ -378,8 +374,7 @@ void PMTDataThread::doit()
 			}
 			else
 			{
-				//--------------------------------------------------------
-				//                Network Simulator
+#if SIMULATOR
 				if((*pDebugCmd) == D_PMT)
 				{
 					{
@@ -465,7 +460,7 @@ void PMTDataThread::doit()
 					}
 					*pDebugCmd = 0;
 				}
-				//--------------------------------------------------------
+#endif
 			}
 			break;
 		case STOP:

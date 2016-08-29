@@ -225,6 +225,8 @@ NETWORK_CONF NetOperation::GetNetConfig(std::string dev)
 			DPRINTF("%s\n", nc.strConnected.c_str());
 			break;
 		}
+		else
+			usleep(200000);
 	}
 	if (nc.strConnected == "" || nc.strConnected.empty())
 	{
@@ -439,6 +441,8 @@ NETWORK_CONF NetOperation::GetNetConfig(std::string dev)
 			usleep(100*1000);
 			return nc;
 		}
+		else
+			usleep(100*1000);
 	}
 	usleep(100*1000);
 	return nc;
@@ -493,6 +497,8 @@ NETWORK_STATUS NetOperation::GetNetStatus(std::string dev)
 			}
 			break;
 		}
+		else
+			usleep(200000);
 	}
 	usleep(100*1000);
 	if (nc.strConnected == "" || nc.strConnected.empty())
@@ -542,6 +548,8 @@ REMOTE_CONF NetOperation::GetDns(std::string dev)
 			usleep(100*1000);
 			return nc;
 		}
+		else
+			usleep(200000);
 	}
 }
 
@@ -599,6 +607,7 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 	char fn[1024];
 
 	//////////////////////////////////////////////////////////////////////////
+	if(pNetComm)
 	pNetComm->CloseConnect();
 	//////////////////////////////////////////////////////////////////////////
 
@@ -679,6 +688,7 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 
 	//////////////////////////////////////////////////////////////////////////
 	//
+	if(pNetComm)
 	pNetComm->StartConnect();
 	//////////////////////////////////////////////////////////////////////////
 }
@@ -874,9 +884,11 @@ bool NetOperation::SetRemoteConfig(REMOTE_CONF &m_remoteConf)
 	}
 #endif
 	//////////////////////////////////////////////////////////////////////////
+	if(pNetComm)
 	pNetComm->CloseConnect();
 	//////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////
+	if(pNetComm)
 	pNetComm->StartConnect();
 	//////////////////////////////////////////////////////////////////////////
 	return true;
@@ -1313,7 +1325,7 @@ void mke2fs::doit()
 			m_Status = 1;
 			out[0] = 1;
 			sout += (out+1);
-			printf("%s", out+1);
+// 			printf("%s", out+1);
 		}
 		out[0] = -1;
 		pclose(fp);
@@ -1535,11 +1547,13 @@ bool USB::find_dir(std::string dir)
 			{
 				if(fs::is_directory(*itr))
 				{
+#if 0
 					sprintf(str, "[USB] MountDir: %s", (*itr).path().native().c_str());
 					if (gLog)
 		{
 						gLog->Write(LOG_NETCOMMU, str);
 					}
+#endif
 					m_dir.push_back((*itr).path().native().c_str());
 					return true;
 				}
@@ -1594,11 +1608,13 @@ bool USB::ReadyUpdate()
 			fs::path src_path(src);
 			if(!fs::exists(src_path))
 			{
+#if 0
 				sprintf(cmd, "[USB] no src: %s", src.c_str());
 				if (gLog)
 {
 					gLog->Write(LOG_ERROR, cmd);
 				}
+#endif
 				DPRINTF("[USB] no src: %s\n", src.c_str());
 				return false;
 }
@@ -2047,6 +2063,8 @@ void RaidDetailParser::RunRaidManager()
 			DetailParser(pEc->GetOutput());
 			break;
 		}
+		else
+			usleep(200000);
 	}
 }
 

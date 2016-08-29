@@ -102,12 +102,14 @@ bool PATDataThread::Reset(bool bFinish)
 			sprintf(str, "[PATDataThread] Reset: %d:%d PMT stopped", i, m_pmtList.size());
 			gLog->Write(LOG_DVB, str);
 		}
-
+		if(bFinish)
+		{
 		pmtThread->FinishDCP();
 		if(gLog)
 		{
 			sprintf(str, "[PATDataThread] Reset: %d Finish DCP", i);
 			gLog->Write(LOG_DVB, str);
+		}
 		}
 
 		delete pmtThread;
@@ -356,6 +358,7 @@ void PATDataThread::doit()
 			}
 			else
 			{
+#if SIMULATOR
 				//--------------------------------------------------------
 				//                Network Simulator
 				if(*(pDebugCmd) == D_PAT)
@@ -397,6 +400,7 @@ void PATDataThread::doit()
 					*pDebugCmd = 0;
 				}
 				//--------------------------------------------------------
+#endif
 			}
 			break;
 		case STOP:
@@ -588,9 +592,13 @@ bool PATDataThread::SendLostReport()
 #if 1
 	IExternCall *pEc = CreateExternCall();
 	pEc->RunCommand(cmd.c_str());
+	int count = 0;
 	while(!pEc->IsFinish())
 	{
+		count++;
 		usleep(200000);
+		if(count > 25)
+			break;
 	}
 	if(gLog)
 		gLog->Write(LOG_SYSTEM, pEc->GetOutput().c_str());

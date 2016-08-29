@@ -199,10 +199,10 @@ void CineCastUi::Connected()
 // 	m_network_timer = -1;
 
 
-// 	if (m_UpdateSatellite_timer < 0)
-// 	{
-// 		m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
-// 	}
+	if (m_UpdateSatellite_timer < 0 && ui.tabWidget->currentIndex() == 0)
+	{
+		m_UpdateSatellite_timer = startTimer(1000);   //ӳɹԲ״̬
+	}
 }
 
 #include "../../../netcomm/UiProtocal.h"

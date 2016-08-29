@@ -413,8 +413,7 @@ void StartDataThread::doit()
 			}
 			else
 			{
-				//--------------------------------------------------------
-				//                Network Simulator
+#if SIMULATOR
 				if((*pDebugCmd) == D_START)
 				{
 					m_filmName = "LEONIS Test";
@@ -425,7 +424,7 @@ void StartDataThread::doit()
 					bStart = true;
 					*pDebugCmd = 0;
 				}
-				//--------------------------------------------------------
+#endif // 0
 			}
 			break;
 		case STOP:

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <iostream>
 #include <dvb/mytype.h>
 
@@ -66,6 +67,8 @@ bool ExternCall::RunCommand(std::string strCmdLine)
 bool ExternCall::RunCommand()
 {
 	char str[256];
+	m_bFinish = true;
+	usleep(100000);
 	m_strOut.clear();
 
 	if (!(status() == thread_stopped || status() == thread_ready))
@@ -101,7 +104,7 @@ void ExternCall::doit()
 	m_strOut.clear();
 	memset(buf, 0, 1024);
 	char* pOut = NULL;
-	while((pOut = fgets(buf, 1024, fp)) != NULL)
+	while((pOut = fgets(buf, 1024, fp)) != NULL && m_bFinish == false)
 	{
 		std::string s(pOut);
 		m_strOut += s;

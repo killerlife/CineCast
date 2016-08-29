@@ -15,6 +15,7 @@ char *gMd5 = NULL;
 NetCommThread *pNetComm;
 std::vector<std::string> gRunPathList;
 PATDataThread* pPat;
+bool gShutdownAfterFinish;
 
 ITmsServer *tms = 0;
 

@@ -430,7 +430,7 @@ bool Filter::SetFilterID(uint16 pid, uint16 tid)
 	df.timeout = 0;
 	df.flags = DMX_IMMEDIATE_START;//|DMX_CHECK_CRC;
 
-	if(ioctl(fd, DMX_SET_BUFFER_SIZE, 1024*4096) == -1)
+	if(ioctl(fd, DMX_SET_BUFFER_SIZE, 2000*4096) == -1)
 	{
 		sprintf(str, "[Filter] DMX_SET_BUFFER_SIZE failed, pid = 0x%x tid = 0x%x fd = 0x%d", nPid, nTid, fd);
 		if (gLog)
@@ -482,7 +482,7 @@ bool Filter::ReadFilter(uint8 *buf, uint16& count)
 	//m_poll.revents = 0; 
 
 	//for poll function, poll for 1 second timeout
-	int n = poll(&m_poll, 1, 100);
+	int n = poll(&m_poll, 1, 300);
 	if(n == -1)
 		return false;
 	if(!(m_poll.revents & (POLLIN|POLLPRI)))

@@ -110,11 +110,11 @@ bool FilmDataThread::Init(void *param1, void *param2)
 	//To make sure the DCP of current Task don't delete from ftp directory
 	strFtpFileName.insert(9, "ftp/", 4);
 	gRunPathList.push_back(strFtpFileName);
-	if(gLog)
-	{
-		gLog->Write(LOG_DVB, m_strFileName.c_str());
-		gLog->Write(LOG_DVB, strFtpFileName.c_str());
-	}
+//	if(gLog)
+//	{
+//		gLog->Write(LOG_DVB, m_strFileName.c_str());
+//		gLog->Write(LOG_DVB, strFtpFileName.c_str());
+//	}
 	//--------------------------------------------------------------------
 
 // 	m_pPmtDescriptor->fileDescriptor->FileName
@@ -275,7 +275,6 @@ void FilmDataThread::doit()
 	{
 		if(bFinish)
 		{
-			printf("m_status :STOP\n");
 			m_status = STOP;
 		}
 		switch (m_status)
@@ -361,7 +360,6 @@ void FilmDataThread::doit()
 										//
 										m_ReciveSegment++;//= w_size;
 										m_ReciveLength += w_size;
-#if 1
 										if(bSequence)
 										{
 											if(m_lastSegNum == seg_num)
@@ -375,7 +373,6 @@ void FilmDataThread::doit()
 											}
 										}
 										else
-#endif
 										{
 											if(m_LostSegment > 0)
 												m_LostSegment--;
@@ -386,7 +383,7 @@ void FilmDataThread::doit()
 							else
 							{
 								m_CRCError++;
-								DPRINTF("Film Data CRC %08x %08x\n", crc, crc1);
+// 								DPRINTF("Film Data CRC %08x %08x\n", crc, crc1);
 								//Doesn't need to update lost segment while CRC error.
 								//So disable it.
 								//m_LostSegment++;
@@ -471,6 +468,7 @@ void FilmDataThread::doit()
 				}
 				else
 				{
+#if SIMULATOR
 					//--------------------------------------------------------
 					//                Network Simulator
 					if ((*pDebugCmd) == D_DAT)
@@ -487,6 +485,7 @@ void FilmDataThread::doit()
 						}
 					}
 					//--------------------------------------------------------
+#endif
 				}
 #else
 				pBuf->count = 4096;
@@ -559,6 +558,7 @@ void FilmDataThread::UpdateZtMem(uint32 nSegNum)
 					1024,
 					1,
 					m_pZtFilmFile);
+				fflush(m_pZtFilmFile);
 			}
 			m_ztPos += 1024;
 		}
@@ -639,14 +639,14 @@ void FilmDataThread::WriteFile(uint64 pos, uint8 *pbuf, uint16 size)
 {
 	if (m_pFilmFile > 0)
 	{
-		while(m_writeMutex);
-		m_writeMutex = 1;
+// 		while(m_writeMutex);
+// 		m_writeMutex = 1;
 		fseek(m_pFilmFile, pos, SEEK_SET);
 		fwrite(pbuf,
 			size,
 			1,
 			m_pFilmFile);
-		m_writeMutex = 0;
+// 		m_writeMutex = 0;
 	}
 }
 
@@ -741,10 +741,6 @@ std::string FilmDataThread::GetLostSegment()
 	uint64 ReceiveBytes = 0;
 	uint32 LostSegments = 0;
 	uint32 ReceiveSegments = 0;
-#if 0
-	L_LOST_INFO* pLost = (L_LOST_INFO*)m_sLostBuf.m_buf;
-	uint32 nPos = (uint32)((uint8*)&(pLost->pLost) - (m_sLostBuf.m_buf));
-#endif
 
 	int i;
 	for (i = 0; i < m_nZtBufSize - 1; i++)

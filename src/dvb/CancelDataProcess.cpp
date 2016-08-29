@@ -98,6 +98,8 @@ void CancelDataThread::doit()
 							(*((m_buffer + len + 1)) << 8) |
 							(*((m_buffer + len + 2)))) & 0xffffffff;
 // 						DPRINTF("Cancel\n");
+						*pDebugCmd = 0;
+						m_bCancel = true;
 						if (crc == crc1)
 						{
 							m_bCancel = true;
@@ -129,6 +131,7 @@ else
 			}
 			else
 			{
+#if SIMULATOR
 				//--------------------------------------------------------
 				//                Network Simulator
 				if ((*pDebugCmd) == D_CANCEL)
@@ -137,6 +140,7 @@ else
 					*pDebugCmd = 0;
 				}
 				//--------------------------------------------------------
+#endif
 			}
 			break;
 		case STOP:
