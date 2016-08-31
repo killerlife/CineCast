@@ -427,6 +427,7 @@ std::string ContentParser::getRecvRatio()
 	j = atoll(m_status.ReceiveSegment.c_str());
 // 	printf("T %s %d\n", m_status.TotalSegment.c_str(), i);
 // 	printf("R %s %d\n", m_status.ReceiveSegment.c_str(), j);
+	if(i != 0)
 	i = j*100/i;
 	char buf[10];
 	sprintf(buf, "%d", i);

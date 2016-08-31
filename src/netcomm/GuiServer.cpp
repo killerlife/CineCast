@@ -2137,7 +2137,59 @@ bool GuiThread::S_USB_UnMount(char* buf)
 	return Write(buf, sendsize, sendsize);
 }
 
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/exception.hpp>
+namespace fs = boost::filesystem;
 
+bool DeleteSymlink( const fs::path & dir_path, std::string symLink) 
+{
+	char str[512];
+	if ( !fs::exists( dir_path ) )
+	{
+		//		cout << "my_find_file error." << endl;
+		sprintf(str, "[GuiThread] DeleteSymlink error: %s not exists.", dir_path.native().c_str());
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
+		return false;
+	}
+	try
+	{
+		fs::directory_iterator end_itr; // default construction yields past-the-end
+		for ( fs::directory_iterator itr( dir_path ); itr != end_itr; ++itr )
+		{
+			//			cout << itr->native_file_string() << " dir:" << fs::is_directory( *itr ) << endl;    // liang test
+			DPRINTF("[DeleteSymlink]:%s\n", itr->path().native().c_str());
+			if ((itr->path().native().find(symLink.c_str()) != std::string::npos) && fs::is_symlink( *itr ) )
+			{
+				DPRINTF("rm symlink\n");
+				std::string s = "rm -rf " + itr->path().native();
+				if (gLog)
+				{
+					gLog->Write(LOG_ERROR, s.c_str());
+				}
+				system(s.c_str());
+			}
+			else if (fs::is_directory( *itr )) 
+			{
+				DeleteSymlink(itr->path().native(), symLink);
+			}
+		}
+	}
+	catch(const fs::filesystem_error& e)
+	{
+		sprintf(str, "[GuiServer] my_find_file: except %s.", e.what());
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
+		//cout <<"catch exception:" << e.what() << "," << childs.size() << endl;
+	}
+	return true;
+}
 
 bool GuiThread::M_DeleteDir(char* buf)
 {
@@ -2154,14 +2206,26 @@ bool GuiThread::M_DeleteDir(char* buf)
     strcat(str_cmd,path_del);       //ƴӳϵͳ
     system(str_cmd);                 //system("umount /media/usb"); 
 
-    printf("delete path:=%s \n",path_del);   
 	std::string s = str_cmd;
+    if(gLog)
+	{
+		gLog->Write(LOG_SYSTEM, str_cmd);
+	}
+
 	size_t p;
+
+	while((p = s.find("/")) != std::string::npos)
+	{
+		s.erase(0, p + 1);
+	}
+	DPRINTF("SYMLINK %s\n", s.c_str());
+	DeleteSymlink("/storage", s);
+#if 0
 	if((p = s.find("ftp/")) != std::string::npos)
 	{
-		s.erase(p, 4);
 		system(s.c_str());
 	}
+#endif
 
 	return Write(buf, sendsize, sendsize);
 }
