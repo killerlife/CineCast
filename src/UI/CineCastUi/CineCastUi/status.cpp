@@ -59,7 +59,10 @@ void Status::UpdateSatellite(TUNER_INFO* tInfo)
 
 void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 {
-	ui.label_filmName->setText(tInfo->strFilmName.c_str());
+	QString txt;
+	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
+	QString filmName = gbk->toUnicode(tInfo->strFilmName.c_str());
+	ui.label_filmName->setText(filmName);
 	QString s;
 	if(tInfo->nReceiveLength > tInfo->nFileLength)
 	{
@@ -94,8 +97,6 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	}
 	else
 		ui.progressBar_Revceiver_length->setValue(0);
-	QString txt;
-	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
 	QString creator = gbk->toUnicode(tInfo->strCreator.c_str());
 	QString issuer = gbk->toUnicode(tInfo->strIssuer.c_str());
 	QString sRate;
@@ -110,7 +111,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		sRate = "0";
 #if 0
 	txt = QString(tr("Film Name: %1<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<br>RecvRate: %2 MB/S<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
-		.arg(tInfo->strFilmName.c_str())
+		.arg(filmName)
 		.arg(sRate)
 		.arg(creator)
 		.arg(issuer)
@@ -122,7 +123,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		.arg(QString::number(tInfo->nReceiveStatus>>16));
 #else
 	txt = QString(tr("Film Name: %1<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<br>UUID: %2<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
-		.arg(tInfo->strFilmName.c_str())
+		.arg(filmName)
 		.arg(tInfo->strUuid.c_str())
 		.arg(creator)
 		.arg(issuer)
@@ -418,7 +419,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.label_38->setText(tr("Please power-off and take out the removeable disk."));
 #if 0
 			txt = QString(tr("Film Name: %1<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<br>RecvRate: %2 MB/S<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
-				.arg(tInfo->strFilmName.c_str())
+				.arg(filmName)
 				.arg(sRate)
 				.arg(creator)
 				.arg(issuer)
@@ -430,7 +431,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 				.arg(QString::number(tInfo->nReceiveStatus>>16));
 #else
 			txt = QString(tr("Film Name: %1<br>Creator: %3<br>Issuer: %4<br>IssueDate: %5<br>UUID: %2<pre style=\"font-size: 18px; font-family:Book Antiqua\">Round: %10\tTotal Segment: %6\tReceived Segment: %7\tCRC Error: %8\tLost Segment:%9</pre><br>"))
-				.arg(tInfo->strFilmName.c_str())
+				.arg(filmName)
 				.arg(tInfo->strUuid.c_str())
 				.arg(creator)
 				.arg(issuer)

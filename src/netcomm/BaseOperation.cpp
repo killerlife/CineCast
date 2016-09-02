@@ -1331,10 +1331,10 @@ void mke2fs::doit()
 		pclose(fp);
 		m_Status = 0;
 		fp = NULL;
-
+#if 0
 		cmd = "/sbin/tune2fs -O ^has_journal " + tmp;
 		system(cmd.c_str());
-
+#endif
 		MountDisk(DISK_REMOVEABLE);
 		chdir("/storage");
 		system("mkdir /storage/ftp");
@@ -1372,10 +1372,10 @@ void mke2fs::doit()
 	pclose(fp);
 	m_Status = 0;
 	fp = NULL;
-
+#if 0
 			cmd = "/sbin/tune2fs -O ^has_journal " + tmp;
 			system(cmd.c_str());
-
+#endif
 			MountDisk(DISK_RAID);
 		}
 		else
@@ -1451,6 +1451,54 @@ bool mke2fs::MountDisk(DISK_TYPE type)
 	}
 	releaseMyini(ini);
 	int res;
+	
+	//try ext4 filesystem first
+	switch(m_type)
+	{
+	case DISK_REMOVEABLE:
+		res = mount(tmp.c_str(), "/storage", "ext4", MS_NOATIME|MS_NODIRATIME, NULL);
+		break;
+	case DISK_RAID:
+		if(tmp != "")
+			res = mount(tmp.c_str(), "/raid", "ext4", MS_NOATIME|MS_NODIRATIME, NULL);
+		else
+		{
+			sprintf(str, "[mke2fs] MountDisk: no raid array.");
+			if(gLog)
+				gLog->Write(LOG_ERROR, str);
+			res = 0;
+		}
+		break;
+	}
+	if(res == 0)
+		return true;
+	if(errno == EBUSY)
+		return true;
+
+	//try ext3 filesystem
+	switch(m_type)
+	{
+	case DISK_REMOVEABLE:
+		res = mount(tmp.c_str(), "/storage", "ext3", MS_NOATIME|MS_NODIRATIME, NULL);
+		break;
+	case DISK_RAID:
+		if(tmp != "")
+			res = mount(tmp.c_str(), "/raid", "ext3", MS_NOATIME|MS_NODIRATIME, NULL);
+		else
+		{
+			sprintf(str, "[mke2fs] MountDisk: no raid array.");
+			if(gLog)
+				gLog->Write(LOG_ERROR, str);
+			res = 0;
+		}
+		break;
+	}
+	if(res == 0)
+		return true;
+	if(errno == EBUSY)
+		return true;
+
+	//try ext2 filesystem
 	switch(m_type)
 	{
 	case DISK_REMOVEABLE:
@@ -1472,6 +1520,7 @@ bool mke2fs::MountDisk(DISK_TYPE type)
 		return true;
 	if(errno == EBUSY)
 		return true;
+
 	sprintf(str, "[mke2fs] MountDisk: mount disk error - %d.", m_type);
 	if(gLog)
 		gLog->Write(LOG_ERROR, str);

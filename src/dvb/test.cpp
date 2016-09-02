@@ -130,6 +130,7 @@ int main(int argc, char **argv)
 	int64 sRecv = 0;
 	int64 nRate = 0;
 	int md5count = 0;
+	int md5verifyCount = 0;
 	//====================================================================
 	//Change work directory to "/storage"
 	chdir("/storage");
@@ -415,6 +416,7 @@ int main(int argc, char **argv)
 
 				//Reset MD5 Counter
 				md5count = 0;
+				md5verifyCount = 0;
 
 				//--------------------------------------------
 				//Clear Run Path List
@@ -597,6 +599,7 @@ int main(int argc, char **argv)
 			//Do md5 parser and decrypt
 			Md5Class* pMd5 = CreateMd5Class();
 			if(gMd5)
+// 			if(0)	//用于测试取不到MD5文件重试3次逻辑
 			{
 				sprintf(m_log, "[DataReceived] MD5 Parser outside finish.");
 				gLog->Write(LOG_SYSTEM, m_log);
@@ -627,6 +630,17 @@ int main(int argc, char **argv)
 				}
 				if(pNetComm)
 					pNetComm->DecryptRep();
+			}
+			else if(md5verifyCount < 3)
+			{
+				md5count = 0;
+				md5verifyCount++;
+				gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 7;
+			}
+			else
+			{
+				md5count = md5verifyCount = 0;
+				gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 11;
 			}
 		}
 		//===================================================================================

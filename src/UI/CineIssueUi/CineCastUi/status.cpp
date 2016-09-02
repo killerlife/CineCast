@@ -61,7 +61,10 @@ void Status::UpdateSatellite(TUNER_INFO* tInfo)
 
 void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 {
-	ui.label_filmName->setText(tInfo->strFilmName.c_str());
+	QString txt;
+	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
+	QString filmname = gbk->toUnicode(tInfo->strFilmName.c_str());
+	ui.label_filmName->setText(filmname);
 	QString s;
 	s.sprintf("%lld", tInfo->nReceiveLength);
 	int n = s.size();
@@ -87,8 +90,8 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	}
 	else
 		ui.progressBar_Revceiver_length->setValue(0);
-	QString txt;
-	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
+// 	QString txt;
+// 	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
 	QString creator = gbk->toUnicode(tInfo->strCreator.c_str());
 	QString issuer = gbk->toUnicode(tInfo->strIssuer.c_str());
 	QString sRate;
