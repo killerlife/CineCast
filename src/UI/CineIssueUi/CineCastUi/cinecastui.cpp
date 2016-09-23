@@ -51,28 +51,28 @@ void CineCastUi::Init()
 	statusWid =  ui.mdiArea_statue->addSubWindow(statusForm);
 	statusWid->setWindowFlags(Qt::FramelessWindowHint);
 	statusWid->showMaximized();
-// // 	statusWid->setStyleSheet("background-color:#cccccc");
+	statusWid->setStyleSheet("background-color:#d4d0c8");
 	statusWid->show();
 
 	setupForm = new Setup(&socket);
 	setupWid = ui.mdiArea_Setup->addSubWindow(setupForm);
 	setupWid->setWindowFlags(Qt::FramelessWindowHint);
 	setupWid->showMaximized();
-// 	setupWid->setStyleSheet("background-color:#cccccc");
+ 	setupWid->setStyleSheet("background-color:#d4d0c8");
 	setupWid->show();
 
 	diskForm = new Disk(&socket, ui.tabWidget);
 	diskWid = ui.mdiArea_Maintain->addSubWindow(diskForm);
 	diskWid->setWindowFlags(Qt::FramelessWindowHint);
 	diskWid->showMaximized();
-// 	diskWid->setStyleSheet("background-color:#cccccc");
+	diskWid->setStyleSheet("background-color:#d4d0c8");
 	diskWid->show();
 
 	contentForm = new Content(&socket, ui.tabWidget);
 	contentWid = ui.mdiArea_ContentManagement->addSubWindow(contentForm);
 	contentWid->setWindowFlags(Qt::FramelessWindowHint);
 	contentWid->showMaximized();
-// 	contentWid->setStyleSheet("background-color:#cccccc");
+ 	contentWid->setStyleSheet("background-color:#d4d0c8");
 	contentWid->show();
 
 	raidForm = new Raid(&socket);
@@ -83,19 +83,19 @@ void CineCastUi::Init()
 	raidWid = ui.mdiArea_RAID->addSubWindow(raidForm);
 	raidWid->setWindowFlags(Qt::FramelessWindowHint);
 	raidWid->showMaximized();
-	raidWid->setStyleSheet("background-color:#cccccc");
+	raidWid->setStyleSheet("background-color:#d4d0c8");
  	raidWid->show();
 
 	liveWid = ui.mdiArea_Live->addSubWindow(liveForm);
 	liveWid->setWindowFlags(Qt::FramelessWindowHint);
 	liveWid->showMaximized();
-	liveWid->setStyleSheet("background-color:#cccccc");
+	liveWid->setStyleSheet("background-color:#d4d0c8");
  	liveWid->show();
 
 	tkrWid = ui.mdiArea_TKR->addSubWindow(tkrForm);
 	tkrWid->setWindowFlags(Qt::FramelessWindowHint);
 	tkrWid->showMaximized();
-	tkrWid->setStyleSheet("background-color:#cccccc");
+	tkrWid->setStyleSheet("background-color:#d4d0c8");
  	tkrWid->show();
 #else
 	ui.label->setVisible(false);

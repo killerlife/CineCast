@@ -83,13 +83,13 @@ bool ExternCall::RunCommand()
 		CActiveThread::stop();
 	}
 
+	m_bFinish = false;
 	if (!start())
 	{
 		sprintf(str, "[ExternCall] RunCommand: Start thread failed, status = %d.", status());
 		DPRINTF("%s\n", str);
 		return false;
 	}
-	m_bFinish = false;
 	return true;
 }
 
