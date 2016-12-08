@@ -722,11 +722,30 @@ namespace fs = boost::filesystem;
 
 bool PMTDataThread::FinishDCP()
 {
+	char cmd[2048];
+
+	//Create AutoUpload DCP Shell script
+	FILE *fp = fopen("/usr/bin/auto_upload.sh", "wb");
+	if(fp)
+	{
+		sprintf(cmd, "#!/bin/bash\n\n. /etc/CineCast/RemoteFTP.sh\n\n");
+		fwrite(cmd, strlen(cmd), 1, fp);
+	}
+	//----------------------------------
+
 	for(int i = 0; i < dcp.size(); i++)
 	{
 		std::string fn = dcp.at(i);
 		//std::string cmd = "mv ";
-		char cmd[2048];
+#ifdef ENABLE_RAID
+		sprintf(cmd, "mv %s /raid", fn.c_str());
+
+		if (gLog)
+		{
+			gLog->Write(LOG_SYSTEM, cmd);
+		}
+		system(cmd);
+#else
 		sprintf(cmd, "mv %s /storage/ftp", fn.c_str());
 // 		cmd += fn;
 // 		cmd += " /storage/ftp";
@@ -759,6 +778,14 @@ bool PMTDataThread::FinishDCP()
 				}
 				sprintf(cmd, "ln -s /storage/ftp/%s /storage/recv/%s", dest.c_str(), fn.c_str());
 				system(cmd);
+
+				//Add command to AutoUpload shell script
+				if(fp)
+				{
+					sprintf(cmd, "scp -r /storage/ftp/%s root@$FTP_IP:$FTP_ROOT\n", dest.c_str());
+					fwrite(cmd, strlen(cmd), 1, fp);
+				}
+				//--------------------------------------
 			}
 			if(gLog)
 				gLog->Write(LOG_SYSTEM, cmd);
@@ -785,13 +812,33 @@ bool PMTDataThread::FinishDCP()
 
 				sprintf(cmd, "ln -s /storage/ftp/%s /storage/%s", dest.c_str(), fn.c_str());
 				system(cmd);
+
+				//Add command to AutoUpload shell script
+				if(fp)
+				{
+					sprintf(cmd, "scp -r /storage/ftp/%s root@$FTP_IP:$FTP_ROOT\n", dest.c_str());
+					fwrite(cmd, strlen(cmd), 1, fp);
+				}
+				//--------------------------------------
+
 			}
 			if (gLog)
 			{
 				gLog->Write(LOG_SYSTEM, cmd);
 			}
 		}
+#endif
 	}
+	
+	//Close AutoUpload shell script
+	if(fp)
+	{
+		fclose(fp);
+		system("chmod +x /usr/bin/auto_upload.sh");
+		system("systemctl start autoupload.service");
+	}
+	//-----------------------------
+
 	return true;
 }
 

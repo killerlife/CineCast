@@ -376,37 +376,27 @@ debug/cinecastui.o: cinecastui.cpp status.h \
 debug/content.o: content.cpp ../../../netcomm/UiProtocal.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/content.o content.cpp
 
-debug/copyfilm.o: copyfilm.cpp copyfilm.h \
-		../../../dvb/mytype.h \
-		GeneratedFiles/ui_copyfilm.h \
-		content.h \
+debug/copyfilm.o: copyfilm.cpp content.h \
 		GeneratedFiles/ui_content.h \
 		../../../netcomm/UiProtocal.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/copyfilm.o copyfilm.cpp
 
-debug/delconfirm.o: delconfirm.cpp delconfirm.h \
-		GeneratedFiles/ui_delconfirm.h \
-		content.h \
+debug/delconfirm.o: delconfirm.cpp content.h \
 		GeneratedFiles/ui_content.h \
 		../../../netcomm/UiProtocal.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/delconfirm.o delconfirm.cpp
 
-debug/disk.o: disk.cpp disk.h \
-		GeneratedFiles/ui_disk.h \
-		../../../netcomm/UiProtocal.h
+debug/disk.o: disk.cpp ../../../netcomm/UiProtocal.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/disk.o disk.cpp
 
-debug/live.o: live.cpp live.h \
-		GeneratedFiles/ui_live.h
+debug/live.o: live.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/live.o live.cpp
 
 debug/main.o: main.cpp cinecastui.h \
 		GeneratedFiles/ui_cinecastui.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/main.o main.cpp
 
-debug/raid.o: raid.cpp raid.h \
-		GeneratedFiles/ui_raid.h \
-		content.h \
+debug/raid.o: raid.cpp content.h \
 		GeneratedFiles/ui_content.h \
 		delconfirm.h \
 		GeneratedFiles/ui_delconfirm.h \
@@ -416,16 +406,13 @@ debug/raid.o: raid.cpp raid.h \
 		../../../netcomm/UiProtocal.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/raid.o raid.cpp
 
-debug/setup.o: setup.cpp setup.h \
-		GeneratedFiles/ui_setup.h \
-		../../../netcomm/UiProtocal.h
+debug/setup.o: setup.cpp ../../../netcomm/UiProtocal.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/setup.o setup.cpp
 
 debug/status.o: status.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/status.o status.cpp
 
-debug/tkr.o: tkr.cpp tkr.h \
-		GeneratedFiles/ui_tkr.h
+debug/tkr.o: tkr.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug/tkr.o tkr.cpp
 
 debug/moc_cinecastui.o: GeneratedFiles/debug/moc_cinecastui.cpp 

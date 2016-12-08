@@ -308,7 +308,11 @@ void ContentManager::loadInfo(int nSrc)
 	else if(nSrc == PST_RAID)
 		root = "/raid";
 	else
+#ifdef ENABLE_RAID
+		root = "/raid";
+#else
 		root = "/storage/ftp";
+#endif
 
 	if(p->open(root, true)!=0)
 	{

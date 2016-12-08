@@ -125,7 +125,7 @@ bool PATDataThread::Reset(bool bFinish)
 		gLog->Write(LOG_DVB, "[PATDataThread] Reset: All Clear.");
 	while(bIdle == false)
 	{
-		usleep(200);
+		usleep(2000);
 	}
 	//Disable for change function to reset
 	//m_status = RUN;

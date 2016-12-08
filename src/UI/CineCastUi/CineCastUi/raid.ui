@@ -1,4 +1,4 @@
-<ui version="4.0" >
+﻿<ui version="4.0" >
  <class>RaidClass</class>
  <widget class="QWidget" name="RaidClass" >
   <property name="geometry" >
@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>625</width>
-    <height>646</height>
+    <height>652</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -19,7 +19,7 @@
       <widget class="QGroupBox" name="groupBox" >
        <property name="maximumSize" >
         <size>
-         <width>230</width>
+         <width>420</width>
          <height>16777215</height>
         </size>
        </property>
@@ -303,6 +303,7 @@
          </layout>
         </item>
        </layout>
+       <zorder>groupBox_2</zorder>
       </widget>
      </item>
      <item>
@@ -384,6 +385,19 @@
        </layout>
       </widget>
      </item>
+     <item>
+      <spacer name="verticalSpacer" >
+       <property name="orientation" >
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
     </layout>
    </item>
    <item>
@@ -453,22 +467,12 @@
            </column>
            <column>
             <property name="text" >
-             <string>Progress</string>
-            </property>
-           </column>
-           <column>
-            <property name="text" >
              <string>FilmName</string>
             </property>
            </column>
            <column>
             <property name="text" >
              <string>RecvTime</string>
-            </property>
-           </column>
-           <column>
-            <property name="text" >
-             <string>2D/3D</string>
             </property>
            </column>
            <column>
@@ -645,22 +649,12 @@
            </column>
            <column>
             <property name="text" >
-             <string>Progress</string>
-            </property>
-           </column>
-           <column>
-            <property name="text" >
              <string>FilmName</string>
             </property>
            </column>
            <column>
             <property name="text" >
              <string>RecvTime</string>
-            </property>
-           </column>
-           <column>
-            <property name="text" >
-             <string>2D/3D</string>
             </property>
            </column>
            <column>
@@ -681,6 +675,8 @@
           </widget>
          </item>
         </layout>
+        <zorder>treeWidget_HDD_info_2</zorder>
+        <zorder></zorder>
        </widget>
       </item>
      </layout>

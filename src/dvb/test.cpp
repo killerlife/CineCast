@@ -236,6 +236,7 @@ int main(int argc, char **argv)
 	bool bMountRD = fs.MountDisk(DISK_REMOVEABLE);
 	bool bMountRaid = fs.MountDisk(DISK_RAID);
 
+		gRecv.strExtend = "";
 		if(bMountRD == false)
 		{
 			gRecv.strExtend += "REMOVEABLEDISK:0|";

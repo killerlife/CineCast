@@ -55,9 +55,12 @@ INC += \
 -I../../../../public/boost_1_33_1
 
 CFLAGS += \
--DUSE_POLL \
 -fPIC \
--g
+-DUSE_POLL \
+-O3 
+
+#-g
+#-DSIMULATOR \
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ../%.cpp

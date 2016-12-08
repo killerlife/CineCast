@@ -75,15 +75,15 @@ void Raid::Init()
 	ui.treeWidget_HDD_info->headerItem()->setFont(3, font);
 	ui.treeWidget_HDD_info->headerItem()->setFont(4, font);
 	ui.treeWidget_HDD_info->headerItem()->setFont(5, font);
-	ui.treeWidget_HDD_info->headerItem()->setFont(6, font);
-	ui.treeWidget_HDD_info->headerItem()->setFont(7, font);
+// 	ui.treeWidget_HDD_info->headerItem()->setFont(6, font);
+// 	ui.treeWidget_HDD_info->headerItem()->setFont(7, font);
 	ui.treeWidget_HDD_info->setColumnWidth(0, 45);
-	ui.treeWidget_HDD_info->setColumnWidth(1, 50);
-	ui.treeWidget_HDD_info->setColumnWidth(2, 450);
-	ui.treeWidget_HDD_info->setColumnWidth(4, 40);
-	ui.treeWidget_HDD_info->setColumnWidth(5, 80);
-	ui.treeWidget_HDD_info->setColumnWidth(6, 98);
-	ui.treeWidget_HDD_info->setColumnWidth(7, 98);
+// 	ui.treeWidget_HDD_info->setColumnWidth(1, 50);
+	ui.treeWidget_HDD_info->setColumnWidth(1, 500);
+// 	ui.treeWidget_HDD_info->setColumnWidth(3, 40);
+	ui.treeWidget_HDD_info->setColumnWidth(3, 80);
+	ui.treeWidget_HDD_info->setColumnWidth(4, 98);
+	ui.treeWidget_HDD_info->setColumnWidth(5, 98);
 
 	ui.treeWidget_HDD_info_2->headerItem()->setFont(0, font);
 	ui.treeWidget_HDD_info_2->headerItem()->setFont(1, font);
@@ -91,15 +91,17 @@ void Raid::Init()
 	ui.treeWidget_HDD_info_2->headerItem()->setFont(3, font);
 	ui.treeWidget_HDD_info_2->headerItem()->setFont(4, font);
 	ui.treeWidget_HDD_info_2->headerItem()->setFont(5, font);
-	ui.treeWidget_HDD_info_2->headerItem()->setFont(6, font);
-	ui.treeWidget_HDD_info_2->headerItem()->setFont(7, font);
+// 	ui.treeWidget_HDD_info_2->headerItem()->setFont(6, font);
+// 	ui.treeWidget_HDD_info_2->headerItem()->setFont(7, font);
 	ui.treeWidget_HDD_info_2->setColumnWidth(0, 45);
-	ui.treeWidget_HDD_info_2->setColumnWidth(1, 50);
-	ui.treeWidget_HDD_info_2->setColumnWidth(2, 450);
-	ui.treeWidget_HDD_info_2->setColumnWidth(4, 40);
-	ui.treeWidget_HDD_info_2->setColumnWidth(5, 80);
-	ui.treeWidget_HDD_info_2->setColumnWidth(6, 98);
-	ui.treeWidget_HDD_info_2->setColumnWidth(7, 98);
+// 	ui.treeWidget_HDD_info_2->setColumnWidth(1, 50);
+	ui.treeWidget_HDD_info_2->setColumnWidth(1, 500);
+// 	ui.treeWidget_HDD_info_2->setColumnWidth(3, 40);
+	ui.treeWidget_HDD_info_2->setColumnWidth(3, 80);
+	ui.treeWidget_HDD_info_2->setColumnWidth(4, 98);
+	ui.treeWidget_HDD_info_2->setColumnWidth(5, 98);
+
+	ui.groupBox_2->setVisible(false);
 #if 0
 	ui.groupBox->setEnabled(false);
 	ui.groupBox_2->setEnabled(false);
@@ -115,7 +117,7 @@ void Raid::Start()
 {
 	loadState();
 	if(m_timer == -1)
-		m_timer = startTimer(1000);
+		m_timer = startTimer(5000);
 
 	UpdateContent_HDD();
 	if(m_content == -1)
@@ -123,7 +125,6 @@ void Raid::Start()
 	UpdateContent_RAID();
 	if(m_raid == -1)
 		m_raid = startTimer(1000);
-
 }
 
 void Raid::timerEvent(QTimerEvent *te)
@@ -221,11 +222,11 @@ void Raid::loadState()
 		s = s.toUpper();
 		ui.label_6->setText(s);
 		ui.label_2->setText(QString::number(ri.nRaidDevices));
-		s.sprintf("%.2fTB", (float)ri.nArraySize/1000000000);
+		s.sprintf("%.2fTB", (float)ri.nArraySize/1000000000000);
 		ui.label_20->setText(s);
-		s.sprintf("%.2fTB", (float)(ri.nArraySize - ri.nUsedSize)/1000000000);
+		s.sprintf("%.2fTB", (float)(ri.nArraySize - ri.nUsedSize)/1000000000000);
 		ui.label_22->setText(s);
-		s.sprintf("%.2fTB", (float)ri.nUsedSize/1000000000);
+		s.sprintf("%.2fTB", (float)ri.nUsedSize/1000000000000);
 		ui.label_24->setText(s);
 		ui.label_8->setText(ri.strState.c_str());
 		if (ri.strState.compare("clean") == 0)
@@ -263,7 +264,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_10->setText(lst.at(0));
+			ui.label_10->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_10->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -285,7 +286,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_10->setText(lst.at(0));
+			ui.label_10->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_10->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -295,7 +296,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_12->setText(lst.at(0));
+			ui.label_12->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_12->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -316,7 +317,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_10->setText(lst.at(0));
+			ui.label_10->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_10->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -326,7 +327,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_12->setText(lst.at(0));
+			ui.label_12->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_12->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -336,7 +337,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_15->setText(lst.at(0));
+			ui.label_15->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_15->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -357,7 +358,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_10->setText(lst.at(0));
+			ui.label_10->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_10->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -367,7 +368,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_12->setText(lst.at(0));
+			ui.label_12->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_12->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -377,7 +378,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_15->setText(lst.at(0));
+			ui.label_15->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_15->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -387,7 +388,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_16->setText(lst.at(0));
+			ui.label_16->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_16->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -410,7 +411,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_10->setText(lst.at(0));
+			ui.label_10->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_10->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -420,7 +421,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_12->setText(lst.at(0));
+			ui.label_12->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_12->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -430,7 +431,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_15->setText(lst.at(0));
+			ui.label_15->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_15->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -440,7 +441,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_16->setText(lst.at(0));
+			ui.label_16->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_16->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -450,7 +451,7 @@ void Raid::loadState()
 			lst = s.split("|");
 			s = lst.at(1);
 			lst = s.split(" ");
-			ui.label_18->setText(lst.at(0));
+			ui.label_18->setText(s);
 			if (lst.at(0) == "active")
 				ui.label_18->setStyleSheet("QLabel{font-size: 20px; font-family:'Book Antiqua'; color:#0000FF;}");
 			else
@@ -499,6 +500,7 @@ void Raid::LoadContent_HDD()
 
 	int r = total - i;
 	char* aaa = (char*)buf + i;
+	ui.treeWidget_HDD_info_2->clear();
 	while(r)
 	{
 		pSocket->waitForReadyRead(-1);
@@ -635,6 +637,8 @@ void Raid::LoadContent_RAID()
 
 	int r = total - i;
 	char* aaa = (char*)buf + i;
+
+	ui.treeWidget_HDD_info->clear();
 	while(r)
 	{
 		pSocket->waitForReadyRead(-1);
@@ -856,12 +860,12 @@ void Raid::on_pushButton_4_clicked()
 	UpdateContent_HDD();
 	if(m_content == -1)
 		m_content = startTimer(1000);
-
 	UpdateContent_RAID();
 	if(m_raid == -1)
 		m_raid = startTimer(1000);
 }
 
+//Delete
 void Raid::on_pushButton_5_clicked()
 {
 	QList<ContentItem*> raidList;
@@ -883,16 +887,16 @@ void Raid::on_pushButton_5_clicked()
 
 	if((raidList.size() + rdList.size()) > 0)
 	{
-		DelConfirm dc(pSocket);
+		DelConfirm dc(pSocket, this);
 		dc.SetDeleteList(raidList, rdList);
 		if(m_timer > 0)
 		{
 			killTimer(m_timer);
-			m_raid = 0;
+			m_timer = -1;
 		}
 		if(dc.exec() == QDialog::Accepted)
 			on_pushButton_4_clicked();
-		m_timer = startTimer(1000);
+		m_timer = startTimer(5000);
 	}
 }
 
@@ -909,7 +913,9 @@ void Raid::on_pushButton_2_clicked()
 	}
 	if(raidList.size() > 0)
 	{
-		CopyFilm cf(pSocket);
+		CopyFilm cf(pSocket, this);
+// 		cf.setParent(this);
+// 		cf.setModal(true);
 		std::string dest = "/storage";
 		cf.SetCopyList(raidList, dest);
 		if(m_timer > 0)
@@ -919,7 +925,14 @@ void Raid::on_pushButton_2_clicked()
 		}
 		if(cf.exec() == QDialog::Accepted)
 			on_pushButton_4_clicked();
-		m_timer = startTimer(1000);
+		m_timer = startTimer(5000);
+
+		UpdateContent_HDD();
+		if(m_content == -1)
+			m_content = startTimer(1000);
+		UpdateContent_RAID();
+		if(m_raid == -1)
+			m_raid = startTimer(1000);
 	}
 }
 
@@ -936,9 +949,11 @@ void Raid::on_pushButton_3_clicked()
 	}
 	if(rdList.size() > 0)
 	{
-		CopyFilm cf(pSocket);
+		CopyFilm cf(pSocket, this);
 		std::string dest = "/raid";
 		cf.SetCopyList(rdList, dest);
+// 		cf.setParent(this);
+// 		cf.setModal(true);
 		if(m_timer > 0)
 		{
 			killTimer(m_timer);
@@ -946,6 +961,13 @@ void Raid::on_pushButton_3_clicked()
 		}
 		if(cf.exec() == QDialog::Accepted)
 			on_pushButton_4_clicked();
-		m_timer = startTimer(1000);
+		m_timer = startTimer(5000);
+
+		UpdateContent_HDD();
+		if(m_content == -1)
+			m_content = startTimer(1000);
+		UpdateContent_RAID();
+		if(m_raid == -1)
+			m_raid = startTimer(1000);
 	}
 }

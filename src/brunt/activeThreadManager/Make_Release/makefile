@@ -1,4 +1,4 @@
-################################################################################
+﻿################################################################################
 # Automatically-generated file. Do not edit!
 ################################################################################
 
@@ -55,6 +55,7 @@ clean:
 
 post-build:
 	-cp libx86-activeThreadManager.so ../../../../lib & cp ../*.h ../../../../include/activeThread 
+	-cp libx86-activeThreadManager.so /usr/CineCast/lib
 	-@echo ' '
 
 .PHONY: all clean dependents

@@ -63,8 +63,8 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 {
 	QString txt;
 	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
-	QString filmname = gbk->toUnicode(tInfo->strFilmName.c_str());
-	ui.label_filmName->setText(filmname);
+	QString filmName = gbk->toUnicode(tInfo->strFilmName.c_str());
+	ui.label_filmName->setText(filmName);
 	QString s;
 	s.sprintf("%lld", tInfo->nReceiveLength);
 	int n = s.size();
@@ -90,8 +90,6 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	}
 	else
 		ui.progressBar_Revceiver_length->setValue(0);
-// 	QString txt;
-// 	QTextCodec *gbk = QTextCodec::codecForName("gb18030");
 	QString creator = gbk->toUnicode(tInfo->strCreator.c_str());
 	QString issuer = gbk->toUnicode(tInfo->strIssuer.c_str());
 	QString sRate;

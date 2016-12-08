@@ -1074,11 +1074,15 @@ uint64 ContentOperation::GetAvalibleSpace(int src)
 	{
 	case PST_HDD:
 		statfs("/storage", &s);
-		freeSpace = s.f_bsize * ((unsigned long long)s.f_bavail);
+		freeSpace = s.f_bsize * ((unsigned long long)s.f_bfree);
 		return freeSpace;
 	case PST_USB:
 		statfs("/media/usb", &s);
-		freeSpace = s.f_bsize * ((unsigned long long)s.f_bavail);
+		freeSpace = s.f_bsize * ((unsigned long long)s.f_bfree);
+		return freeSpace;
+	case PST_RAID:
+		statfs("/raid", &s);
+		freeSpace = s.f_bsize * ((unsigned long long)s.f_bfree);
 		return freeSpace;
 	}
 	return 0;
@@ -1096,6 +1100,10 @@ uint64 ContentOperation::GetTotalSpace(int src)
 		return freeSpace;
 	case PST_USB:
 		statfs("/media/usb", &s);
+		freeSpace = s.f_bsize * ((unsigned long long)s.f_blocks);
+		return freeSpace;
+	case PST_RAID:
+		statfs("/raid", &s);
 		freeSpace = s.f_bsize * ((unsigned long long)s.f_blocks);
 		return freeSpace;
 	}
@@ -1944,12 +1952,14 @@ void ReleaseMd5Class(Md5Class* pMd5)
 
 void RaidDetailParser::DetailParser(std::string strDetail)
 {
+	DPRINTF("%s\n", strDetail.c_str());
 	strRaidLevel = "";
 	strState = "";
 	nRaidDevices = nActiveDevices = nWorkingDevices = nFailedDevice = 0;
 	nArraySize = nUsedSize = 0;
 	strDevState.clear();
 	size_t pos;
+	ContentOperation co;
 	if ((pos = strDetail.find("Raid Level")) != std::string::npos)
 	{
 		char buf[50];
@@ -1957,16 +1967,27 @@ void RaidDetailParser::DetailParser(std::string strDetail)
 		strRaidLevel = buf;
 		if((pos = strDetail.find("State : ")) != std::string::npos)
 		{
-			sscanf(strDetail.c_str() + pos + 8, "%s", buf);
+			for(int i = 0; i < 50; i++)
+			{
+			    if(strDetail[pos + 8 + i] == '\n' || strDetail[pos + 8 + i] == '\r')
+				{
+					buf[i] = '\0';
+					break;
+				}
+			    buf[i] = strDetail[pos + 8 + i];
+			}
+// 			sscanf(strDetail.c_str() + pos + 8, "%s", buf);
 			strState = buf;
 		}
 		if((pos = strDetail.find("Array Size")) != std::string::npos)
 		{
-			sscanf(strDetail.c_str() + pos + 13, "%lld", &nArraySize);
+			nArraySize = co.GetTotalSpace(PST_RAID);
+			//sscanf(strDetail.c_str() + pos + 13, "%lld", &nArraySize);
 		}
 		if((pos = strDetail.find("Used Dev Size")) != std::string::npos)
 		{
-			sscanf(strDetail.c_str() + pos + 16, "%lld", &nUsedSize);
+			nUsedSize = co.GetTotalSpace(PST_RAID) - co.GetAvalibleSpace(PST_RAID);
+// 			sscanf(strDetail.c_str() + pos + 16, "%lld", &nUsedSize);
 		}
 		if((pos = strDetail.find("Raid Devices")) != std::string::npos)
 		{
@@ -2103,8 +2124,28 @@ void RaidDetailParser::DetailParser(std::string strDetail)
 
 void RaidDetailParser::RunRaidManager()
 {
+	ICMyini* ini = createMyini();
+	bool bRead = false;
+	std::string tmp;
+	char str[512];
+	if(ini)
+	{
+		if (ini->load("/etc/CineCast/config.cfg"))
+			if(ini->read(" ", "raiddisk", tmp))
+				bRead = true;
+			}
+	if (!bRead)
+	{
+		sprintf(str, "[RaidDetailParser] RunRaidManager: Read config.cfg error.");
+		if (gLog)
+			gLog->Write(LOG_ERROR, str);
+		tmp = "";
+	}
+	releaseMyini(ini);
+
 	IExternCall* pEc = CreateExternCall();
-	pEc->RunCommand("mdadm -D /dev/md0");
+	sprintf(str, "mdadm -D %s", tmp.c_str());
+	pEc->RunCommand(str);
 	while(1)
 	{
 		if (pEc->IsFinish())

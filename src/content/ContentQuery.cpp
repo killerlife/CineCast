@@ -74,8 +74,11 @@ int ContentQuery::open(const std::string& root, bool usePath )
 	std::string diskRoot = "/storage";
 	std::string usbRoot = "/media/usb";
 	std::string raidRoot = "/raid";
+#ifdef ENABLE_RAID
+	std::string ftpRoot = "/raid";
+#else
 	std::string ftpRoot = "/storage/ftp";
-
+#endif
 	m_root = root;
 
 	char str[512];

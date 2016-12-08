@@ -79,13 +79,13 @@ void CineCastUi::Init()
 	liveForm = new Live(&socket);
 	tkrForm = new Tkr(&socket);
 	
-#ifdef FULL_VERSION
 	raidWid = ui.mdiArea_RAID->addSubWindow(raidForm);
 	raidWid->setWindowFlags(Qt::FramelessWindowHint);
 	raidWid->showMaximized();
 	raidWid->setStyleSheet("background-color:#d4d0c8");
 	raidWid->show();
 
+#ifdef FULL_VERSION
 	liveWid = ui.mdiArea_Live->addSubWindow(liveForm);
 	liveWid->setWindowFlags(Qt::FramelessWindowHint);
 	liveWid->showMaximized();
@@ -101,7 +101,7 @@ void CineCastUi::Init()
 	ui.label->setVisible(false);
 	ui.tabWidget->removeTab(6);
 	ui.tabWidget->removeTab(5);
-	ui.tabWidget->removeTab(4);
+//	ui.tabWidget->removeTab(4);
 #endif
 	ui.tabWidget->setCurrentIndex(0);
 
@@ -360,6 +360,7 @@ void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 			killTimer(m_UpdateSatellite_timer);
 			m_UpdateSatellite_timer = -1;
 		}
+		setupForm->TMS_stop();    //????? 
 		if (m_ConnectStatus == 2)
 		{
 			raidForm->Start();
@@ -372,6 +373,7 @@ void CineCastUi::on_tabWidget_currentChanged(int nIndex)
 			m_UpdateSatellite_timer = -1;
 		}
 		raidForm->Stop();
+		setupForm->TMS_stop();    //????? 
 	}
 }
 

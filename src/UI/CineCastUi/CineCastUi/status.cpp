@@ -460,6 +460,18 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		((QTabWidget*)p)->setTabEnabled(1, false);
 		((QTabWidget*)p)->setTabEnabled(2, false);
 		((QTabWidget*)p)->setTabEnabled(3, false);
+		((QTabWidget*)p)->setTabEnabled(4, false);
+		ui.groupBox_satellite->setEnabled(false);
+		ui.groupBox_Filme->setEnabled(false);
+	}
+	if(tInfo->strExtend.find("RAIDDISK:0") != std::string::npos)
+	{
+		ui.label_38->setStyleSheet("QLabel{font-size: 40px; font-family:'Book Antiqua'; color:#FF2222;}");
+		ui.label_38->setText(tr("Mount RAID array error, please check array."));
+		((QTabWidget*)p)->setTabEnabled(1, false);
+		((QTabWidget*)p)->setTabEnabled(2, false);
+		((QTabWidget*)p)->setTabEnabled(3, false);
+		((QTabWidget*)p)->setTabEnabled(4, false);
 		ui.groupBox_satellite->setEnabled(false);
 		ui.groupBox_Filme->setEnabled(false);
 	}

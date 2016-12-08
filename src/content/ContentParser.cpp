@@ -237,7 +237,11 @@ bool ContentParser::open(const std::string& path)
 	ini->read(" ", "ReceiveSegment", m_status.ReceiveSegment);
 	ini->read(" ", "DateTime", m_status.DateTime);
 	//Add for display 99% while one dcp not finish in task
+#ifdef ENABLE_RAID
+	if(m_status.ReceiveSegment == m_status.TotalSegment && strncmp("/raid", path.c_str(), 12) != 0)
+#else
 	if(m_status.ReceiveSegment == m_status.TotalSegment && strncmp("/storage/ftp", path.c_str(), 12) != 0)
+#endif
 	{
 		uint64 seg;
 		sscanf(m_status.ReceiveSegment.c_str(), "%lld", &seg);

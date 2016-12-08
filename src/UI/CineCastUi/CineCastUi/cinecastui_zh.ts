@@ -14,36 +14,36 @@
         <translation>关闭接收机</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="381"/>
+        <location filename="cinecastui.cpp" line="383"/>
         <source>Do you want to Reboot</source>
         <translation>请确认重启系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="405"/>
-        <location filename="cinecastui.cpp" line="439"/>
+        <location filename="cinecastui.cpp" line="407"/>
+        <location filename="cinecastui.cpp" line="441"/>
         <source>Reboot successful</source>
         <translation>重启成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="413"/>
-        <location filename="cinecastui.cpp" line="447"/>
+        <location filename="cinecastui.cpp" line="415"/>
+        <location filename="cinecastui.cpp" line="449"/>
         <source>Reboot failed,network errors, operation failed</source>
         <translation>网络错误导致重启失败</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="464"/>
+        <location filename="cinecastui.cpp" line="466"/>
         <source>Do you want to Shutdown</source>
         <translation>请确认关闭系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="488"/>
-        <location filename="cinecastui.cpp" line="520"/>
+        <location filename="cinecastui.cpp" line="490"/>
+        <location filename="cinecastui.cpp" line="522"/>
         <source>Shutdown successful</source>
         <translation>关机成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="494"/>
-        <location filename="cinecastui.cpp" line="526"/>
+        <location filename="cinecastui.cpp" line="496"/>
+        <location filename="cinecastui.cpp" line="528"/>
         <source>Shutdown failed,network errors, operation failed</source>
         <translation>网络错误导致关机失败</translation>
     </message>
@@ -111,32 +111,32 @@
     <message>
         <location filename="content.cpp" line="179"/>
         <location filename="content.cpp" line="208"/>
-        <location filename="content.cpp" line="757"/>
-        <location filename="content.cpp" line="847"/>
-        <location filename="content.cpp" line="989"/>
-        <location filename="content.cpp" line="1038"/>
+        <location filename="content.cpp" line="780"/>
+        <location filename="content.cpp" line="870"/>
+        <location filename="content.cpp" line="1012"/>
+        <location filename="content.cpp" line="1061"/>
         <source>network error, operation failed</source>
         <translation>网络错误</translation>
     </message>
     <message>
         <location filename="content.cpp" line="464"/>
-        <location filename="content.cpp" line="750"/>
-        <location filename="content.cpp" line="1029"/>
+        <location filename="content.cpp" line="773"/>
+        <location filename="content.cpp" line="1052"/>
         <source>operation successful</source>
         <translation>操作成功</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="835"/>
+        <location filename="content.cpp" line="858"/>
         <source>operation start</source>
         <translation>操作开始</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="944"/>
+        <location filename="content.cpp" line="967"/>
         <source>Delete confirm</source>
         <translation>确认删除</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="944"/>
+        <location filename="content.cpp" line="967"/>
         <source>Please make sure to delete content.</source>
         <translation>电影文件删除后将不可恢复，请确认是否删除？</translation>
     </message>
@@ -608,12 +608,12 @@
         <translation>硬盘5:</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="328"/>
+        <location filename="raid.ui" line="329"/>
         <source>RAID Tools</source>
         <translation>RAID工具</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="355"/>
+        <location filename="raid.ui" line="356"/>
         <source>Rebuild RAID5</source>
         <translation>重建RAID5</translation>
     </message>
@@ -630,65 +630,57 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="raid.ui" line="424"/>
+        <location filename="raid.ui" line="438"/>
         <source>Content Travel</source>
         <translation>内容漫游</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="430"/>
+        <location filename="raid.ui" line="444"/>
         <source>RAID Array</source>
         <translation>RAID阵列</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="451"/>
-        <location filename="raid.ui" line="643"/>
+        <location filename="raid.ui" line="465"/>
+        <location filename="raid.ui" line="647"/>
         <source>Status</source>
         <translation>状态</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="456"/>
-        <location filename="raid.ui" line="648"/>
         <source>Progress</source>
-        <translation>进度</translation>
+        <translation type="obsolete">进度</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="461"/>
-        <location filename="raid.ui" line="653"/>
+        <location filename="raid.ui" line="470"/>
+        <location filename="raid.ui" line="652"/>
         <source>FilmName</source>
         <translation>电影名</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="466"/>
-        <location filename="raid.ui" line="658"/>
+        <location filename="raid.ui" line="475"/>
+        <location filename="raid.ui" line="657"/>
         <source>RecvTime</source>
         <translation>接收时间</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="471"/>
-        <location filename="raid.ui" line="663"/>
-        <source>2D/3D</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="raid.ui" line="476"/>
-        <location filename="raid.ui" line="668"/>
+        <location filename="raid.ui" line="480"/>
+        <location filename="raid.ui" line="662"/>
         <source>FilmLength</source>
         <translation>电影长度</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="481"/>
-        <location filename="raid.ui" line="673"/>
+        <location filename="raid.ui" line="485"/>
+        <location filename="raid.ui" line="667"/>
         <source>RecvSegment</source>
         <translation>已接收分片</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="486"/>
-        <location filename="raid.ui" line="678"/>
+        <location filename="raid.ui" line="490"/>
+        <location filename="raid.ui" line="672"/>
         <source>TotalSegment</source>
         <translation>分片总数</translation>
     </message>
     <message>
-        <location filename="raid.ui" line="622"/>
+        <location filename="raid.ui" line="626"/>
         <source>Removeable HDD</source>
         <translation>可抽取式硬盘</translation>
     </message>
@@ -1336,36 +1328,41 @@
         <translation type="obsolete">电影名: %1&lt;br&gt;UUID: %2&lt;br&gt;创建: %3&lt;br&gt;发行: %4&lt;br&gt;发行时间: %5&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;轮数: %10	分片总数: %6	已接收分片: %7	CRC错误: %8	已丢失分片:%9&lt;/pre&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="70"/>
+        <location filename="status.cpp" line="80"/>
         <source> Bytes</source>
         <translation> 字节</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="103"/>
-        <location filename="status.cpp" line="411"/>
+        <location filename="status.cpp" line="113"/>
+        <location filename="status.cpp" line="421"/>
         <source>Film Name: %1&lt;br&gt;Creator: %3&lt;br&gt;Issuer: %4&lt;br&gt;IssueDate: %5&lt;br&gt;RecvRate: %2 MB/S&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;Round: %10	Total Segment: %6	Received Segment: %7	CRC Error: %8	Lost Segment:%9&lt;/pre&gt;&lt;br&gt;</source>
         <translation>电影名: %1&lt;br&gt;创建: %3&lt;br&gt;发行: %4&lt;br&gt;发行时间: %5&lt;br&gt;接收速度: %2 MB/S&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;轮数: %10	分片总数: %6	已接收分片: %7	CRC错误: %8	已丢失分片:%9&lt;/pre&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="115"/>
-        <location filename="status.cpp" line="423"/>
+        <location filename="status.cpp" line="125"/>
+        <location filename="status.cpp" line="433"/>
         <source>Film Name: %1&lt;br&gt;Creator: %3&lt;br&gt;Issuer: %4&lt;br&gt;IssueDate: %5&lt;br&gt;UUID: %2&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;Round: %10	Total Segment: %6	Received Segment: %7	CRC Error: %8	Lost Segment:%9&lt;/pre&gt;&lt;br&gt;</source>
         <translation>电影名: %1&lt;br&gt;UUID: %2&lt;br&gt;创建: %3&lt;br&gt;发行: %4&lt;br&gt;发行时间: %5&lt;pre style=&quot;font-size: 18px; font-family:Book Antiqua&quot;&gt;轮数: %10	分片总数: %6	已接收分片: %7	CRC错误: %8	已丢失分片:%9&lt;/pre&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="406"/>
+        <location filename="status.cpp" line="416"/>
         <source>Get update file. To update system, please reboot system.</source>
         <translation>升级文件接收成功，请重启设备以便完成升级。</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="409"/>
+        <location filename="status.cpp" line="419"/>
         <source>Please power-off and take out the removeable disk.</source>
         <translation>接收完成，请关机并取出可抽取硬盘。</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="449"/>
+        <location filename="status.cpp" line="459"/>
         <source>Mount removeable disk error, please check disk.</source>
         <translation>严重错误：挂载可抽取硬盘失败，请关机后重新插好硬盘。</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="470"/>
+        <source>Mount RAID array error, please check array.</source>
+        <translation>严重错误：挂载RAID5磁盘阵列失败，请关机后重新插好硬盘。</translation>
     </message>
 </context>
 <context>

@@ -110,7 +110,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="D:\work\CineCast\include;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtNetwork&quot;;.\"
+				AdditionalIncludeDirectories="../../../../include;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtNetwork&quot;;.\"
 				PreprocessorDefinitions="UNICODE,WIN32,QT_THREAD_SUPPORT,QT_CORE_LIB,QT_GUI_LIB,QT_NETWORK_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
@@ -238,7 +238,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing cinecastui.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\cinecastui.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_cinecastui.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\cinecastui.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_cinecastui.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\cinecastui.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_cinecastui.cpp&quot;"
 					/>
@@ -264,7 +264,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing content.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\content.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_content.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\content.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_content.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\content.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_content.cpp&quot;"
 					/>
@@ -290,7 +290,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing copyfilm.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\copyfilm.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_copyfilm.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\copyfilm.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_copyfilm.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\copyfilm.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_copyfilm.cpp&quot;"
 					/>
@@ -316,7 +316,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing delconfirm.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\delconfirm.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_delconfirm.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\delconfirm.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_delconfirm.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\delconfirm.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_delconfirm.cpp&quot;"
 					/>
@@ -342,7 +342,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing disk.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\disk.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_disk.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\disk.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_disk.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\disk.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_disk.cpp&quot;"
 					/>
@@ -368,7 +368,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing live.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\live.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_live.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\live.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_live.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\live.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_live.cpp&quot;"
 					/>
@@ -394,7 +394,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing raid.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\raid.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_raid.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\raid.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_raid.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\raid.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_raid.cpp&quot;"
 					/>
@@ -420,7 +420,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing setup.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\setup.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_setup.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\setup.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_setup.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\setup.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_setup.cpp&quot;"
 					/>
@@ -446,7 +446,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing status.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\status.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_status.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\status.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_status.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\status.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_status.cpp&quot;"
 					/>
@@ -472,7 +472,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing tkr.h..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -I&quot;D:\work\CineCast\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\tkr.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_tkr.cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DUNICODE -DWIN32 -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB  -I&quot;.\..\..\..\..\include\.&quot; -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtNetwork\.&quot; -I&quot;.\.&quot; &quot;.\tkr.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_tkr.cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;.\tkr.h"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_tkr.cpp&quot;"
 					/>
@@ -781,7 +781,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing cinecastui.qrc..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;cinecastui&quot; -no-compress &quot;.\cinecastui.qrc&quot; -o .\GeneratedFiles\qrc_cinecastui.cpp&#x0D;&#x0A;"
-						AdditionalDependencies=".\cinecastui.qrc;.\Resources\HDD2.png;.\Resources\Reflash.png;.\Resources\Remote.png;.\Resources\analysis.png;.\Resources\content.png;.\Resources\delete.png;.\Resources\disktool.png;.\Resources\down.png;.\Resources\finish.png;.\Resources\idle.png;.\Resources\left.png;.\Resources\live.png;.\Resources\logobig.png;.\Resources\monitor.png;.\Resources\play.png;.\Resources\power.png;.\Resources\raid5.png;.\Resources\recv.png;.\Resources\report.png;.\Resources\restart.png;.\Resources\right.png;.\Resources\satellite.png;.\Resources\stop.png;.\Resources\systempreferences.png;.\Resources\tkr.png;.\Resources\up.png;.\Resources\usbdisk.png"
+						AdditionalDependencies=".\cinecastui.qrc;.\Resources\HDD2.png;.\Resources\Reflash.png;.\Resources\Remote.png;.\Resources\analysis.png;.\Resources\content.png;.\Resources\delete.png;.\Resources\disktool.png;.\Resources\down.png;.\Resources\finish.png;.\Resources\idle.png;.\Resources\left.png;.\Resources\live.png;.\Resources\logobig.png;.\Resources\monitor.png;.\Resources\netconnect.png;.\Resources\play.png;.\Resources\power.png;.\Resources\raid5.png;.\Resources\recv.png;.\Resources\report.png;.\Resources\restart.png;.\Resources\right.png;.\Resources\satellite.png;.\Resources\stop.png;.\Resources\systempreferences.png;.\Resources\tkr.png;.\Resources\up.png;.\Resources\usbdisk.png"
 						Outputs=".\GeneratedFiles\qrc_cinecastui.cpp"
 					/>
 				</FileConfiguration>
@@ -792,7 +792,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing cinecastui.qrc..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;cinecastui&quot; -no-compress &quot;.\cinecastui.qrc&quot; -o .\GeneratedFiles\qrc_cinecastui.cpp&#x0D;&#x0A;"
-						AdditionalDependencies=".\cinecastui.qrc;.\Resources\HDD2.png;.\Resources\Reflash.png;.\Resources\Remote.png;.\Resources\analysis.png;.\Resources\content.png;.\Resources\delete.png;.\Resources\disktool.png;.\Resources\down.png;.\Resources\finish.png;.\Resources\idle.png;.\Resources\left.png;.\Resources\live.png;.\Resources\logobig.png;.\Resources\monitor.png;.\Resources\play.png;.\Resources\power.png;.\Resources\raid5.png;.\Resources\recv.png;.\Resources\report.png;.\Resources\restart.png;.\Resources\right.png;.\Resources\satellite.png;.\Resources\stop.png;.\Resources\systempreferences.png;.\Resources\tkr.png;.\Resources\up.png;.\Resources\usbdisk.png"
+						AdditionalDependencies=".\cinecastui.qrc;.\Resources\HDD2.png;.\Resources\Reflash.png;.\Resources\Remote.png;.\Resources\analysis.png;.\Resources\content.png;.\Resources\delete.png;.\Resources\disktool.png;.\Resources\down.png;.\Resources\finish.png;.\Resources\idle.png;.\Resources\left.png;.\Resources\live.png;.\Resources\logobig.png;.\Resources\monitor.png;.\Resources\netconnect.png;.\Resources\play.png;.\Resources\power.png;.\Resources\raid5.png;.\Resources\recv.png;.\Resources\report.png;.\Resources\restart.png;.\Resources\right.png;.\Resources\satellite.png;.\Resources\stop.png;.\Resources\systempreferences.png;.\Resources\tkr.png;.\Resources\up.png;.\Resources\usbdisk.png"
 						Outputs=".\GeneratedFiles\qrc_cinecastui.cpp"
 					/>
 				</FileConfiguration>
@@ -1019,6 +1019,26 @@
 			</File>
 			<File
 				RelativePath=".\Resources\Movie.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Resources\netconnect.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
