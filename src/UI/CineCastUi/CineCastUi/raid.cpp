@@ -586,9 +586,12 @@ void Raid::LoadContent_HDD()
 				item->pData[C_LOCATE] = tmp;
 				item->MakeItem_HDD();
 
+				if(item->pData[C_PROGRESS] == "100%")
+				{
 				ui.treeWidget_HDD_info_2->addTopLevelItem((QTreeWidgetItem*)(item));
 				QCheckBox *ckBox = new QCheckBox;
 				ui.treeWidget_HDD_info_2->setItemWidget((QTreeWidgetItem*)(item), 0, ckBox);
+				}
 				break;
 			}
 		}
@@ -724,9 +727,12 @@ void Raid::LoadContent_RAID()
 				item->pData[C_LOCATE] = tmp;
 				item->MakeItem_HDD();
 
+				if (item->pData[C_PROGRESS] == "100%")
+				{
 				ui.treeWidget_HDD_info->addTopLevelItem((QTreeWidgetItem*)(item));
 				QCheckBox *ckBox = new QCheckBox;
 				ui.treeWidget_HDD_info->setItemWidget((QTreeWidgetItem*)(item), 0, ckBox);
+				}
 				break;
 			}
 		}
@@ -916,7 +922,7 @@ void Raid::on_pushButton_2_clicked()
 		CopyFilm cf(pSocket, this);
 // 		cf.setParent(this);
 // 		cf.setModal(true);
-		std::string dest = "/storage";
+		std::string dest = "/storage/ftp";
 		cf.SetCopyList(raidList, dest);
 		if(m_timer > 0)
 		{

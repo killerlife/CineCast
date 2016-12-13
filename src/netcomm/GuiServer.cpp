@@ -124,7 +124,7 @@ long long scan_dir(char *dir, int depth)   // Ŀ¼ɨ?
             if (strcmp(".", entry->d_name) == 0 || strcmp("..", entry->d_name) == 0)  
               continue;  
           //  printf("%*s%s/\n", depth, "", entry->d_name);  // Ŀ¼  
-            scan_dir(entry->d_name, depth+4);              // ݹ���ɨһĿ? 
+            scan_dir(entry->d_name, depth+4);              // ݹ��ɨһĿ? 
           //  totalsize+=statbuf.st_size;   //ͳļС
         }  
         else  
@@ -192,7 +192,7 @@ int cpfile(char *path_dst,char *path_src,long long totalsize,long long* complete
 */     
    close(source);
 
-   //fflush(FILE* srteam)(stdio.h) : дѻݼʱд,������ļܸоܿ.ǲһʵд?
+   //fflush(FILE* srteam)(stdio.h) : дѻݼʱд,����ļܸоܿ.ǲһʵд?
    //linuxint fsync(int fd);#include <unistd.h>
 
    fsync(target); //ͬڴ޸ĵļݵ?
@@ -306,6 +306,24 @@ int CopyThread::copy_dir(char *dir_dst,char *dir_src,int* complete_percent,int* 
 	  cpdir(dir_dst,dir_src,totalsize,complete_size,complete_percent,copy_flag);
 	  printf("Dir:Copy end !\n");
 
+	  if(strstr(dir_dst, "/storage") != NULL)
+	  {
+		  std::string dest = dir_dst;
+		  size_t p;
+		  while(1)
+		  {
+			  p = dest.find("/");
+			  if(p != std::string::npos)
+			  {
+				  dest.erase(0, p+1);
+			  }
+			  else
+				  break;
+		  }
+		  char cmd[2048];
+		  sprintf(cmd, "ln -s %s /storage/recv/%s", dir_dst, dest.c_str());
+		  system(cmd);
+	  }
 	  *copy_flag=0;          //=0 , һɹ
 	  return 0;
 }
@@ -701,9 +719,9 @@ bool GuiThread::UiProcessFilter()
 				return S_SetShutdownFlag(buf);
 
 			case M_UPDATE_PROGRAM_LIST_HDD:
-               return M_UpdateProgramList_HDD(buf);          //UpdateProgramListˢӲб���Ա? 
+               return M_UpdateProgramList_HDD(buf);          //UpdateProgramListˢӲб��Ա? 
 			case M_UPDATE_PROGRAM_LIST_USB:
-               return M_UpdateProgramList_USB(buf);         //UpdateProgramListˢӲб���Ա?
+               return M_UpdateProgramList_USB(buf);         //UpdateProgramListˢӲб��Ա?
 			
 			case M_IS_PROGRAM_LIST_READY_HDD:                //IsProgramListReadyѯǷ׼
 			   return M_IsProgramListReady_HDD(buf); 
@@ -754,7 +772,7 @@ bool GuiThread::UiProcessFilter()
 				return R_GetRaidInfo(buf);
 
 			case M_UPDATE_PROGRAM_LIST_RAID:
-				return M_UpdateProgramList_RAID(buf);          //UpdateProgramListˢӲб���Ա? 
+				return M_UpdateProgramList_RAID(buf);          //UpdateProgramListˢӲб��Ա? 
 			case M_IS_PROGRAM_LIST_READY_RAID:                //IsProgramListReadyѯǷ׼
 				return M_IsProgramListReady_RAID(buf); 
 			case M_GET_RAID_CONTENT_LIST:
@@ -1353,7 +1371,7 @@ bool GuiThread::N_SetRemote(char* buf)
 	return res;
 }
 
-bool GuiThread::M_UpdateProgramList_HDD(char* buf)          //UpdateProgramListˢӲб���Ա? 
+bool GuiThread::M_UpdateProgramList_HDD(char* buf)          //UpdateProgramListˢӲб��Ա? 
 {
 	KL* pKL = (KL*)buf;
 	int sendsize = sizeof(KL) + 1;
@@ -1365,7 +1383,7 @@ bool GuiThread::M_UpdateProgramList_HDD(char* buf)          //UpdateProgramList�
 	return Write(buf, sendsize, sendsize);
 }
 
-bool GuiThread::M_UpdateProgramList_RAID(char* buf)          //UpdateProgramListˢӲб���Ա? 
+bool GuiThread::M_UpdateProgramList_RAID(char* buf)          //UpdateProgramListˢӲб��Ա? 
 {
 	KL* pKL = (KL*)buf;
 	int sendsize = sizeof(KL) + 1;
@@ -1378,7 +1396,7 @@ bool GuiThread::M_UpdateProgramList_RAID(char* buf)          //UpdateProgramList
 }
 
 
-bool GuiThread::M_UpdateProgramList_USB(char* buf)          //UpdateProgramListˢӲб���Ա? 
+bool GuiThread::M_UpdateProgramList_USB(char* buf)          //UpdateProgramListˢӲб��Ա? 
 {
     KL* pKL = (KL*)buf;
 	int sendsize = sizeof(KL) + 1;
@@ -2212,6 +2230,8 @@ bool GuiThread::M_DeleteDir(char* buf)
 		gLog->Write(LOG_SYSTEM, str_cmd);
 	}
 
+	if(strstr(path_del, "/raid") != NULL)
+		return Write(buf, sendsize, sendsize);
 	size_t p;
 
 	while((p = s.find("/")) != std::string::npos)

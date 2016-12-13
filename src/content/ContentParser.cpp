@@ -238,10 +238,7 @@ bool ContentParser::open(const std::string& path)
 	ini->read(" ", "DateTime", m_status.DateTime);
 	//Add for display 99% while one dcp not finish in task
 #ifdef ENABLE_RAID
-	if(m_status.ReceiveSegment == m_status.TotalSegment && strncmp("/raid", path.c_str(), 12) != 0)
-#else
-	if(m_status.ReceiveSegment == m_status.TotalSegment && strncmp("/storage/ftp", path.c_str(), 12) != 0)
-#endif
+	if(m_status.ReceiveSegment == m_status.TotalSegment && !(strncmp("/raid", path.c_str(), 5) == 0 || strncmp("/storage/ftp", path.c_str(), 12) == 0))
 	{
 		uint64 seg;
 		sscanf(m_status.ReceiveSegment.c_str(), "%lld", &seg);
@@ -251,7 +248,30 @@ bool ContentParser::open(const std::string& path)
 		sscanf(m_status.ReceiveLength.c_str(), "%lld", &seg);
 		sprintf(str, "%lld", seg - 1);
 		m_status.ReceiveLength = str;
+		sprintf(str, "[ContentParser] open raid 99 error: %s.", path.c_str());
+		if (pLog)
+		{
+			pLog->Write(LOG_ERROR, str);
+		}
 	}
+#else
+	if(m_status.ReceiveSegment == m_status.TotalSegment && strncmp("/storage/ftp", path.c_str(), 12) != 0)
+	{
+		uint64 seg;
+		sscanf(m_status.ReceiveSegment.c_str(), "%lld", &seg);
+		char str[50];
+		sprintf(str, "%lld", seg - 1);
+		m_status.ReceiveSegment = str;
+		sscanf(m_status.ReceiveLength.c_str(), "%lld", &seg);
+		sprintf(str, "%lld", seg - 1);
+		m_status.ReceiveLength = str;
+		sprintf(str, "[ContentParser] open ftp 99 error: %s.", path.c_str());
+		if (pLog)
+		{
+			pLog->Write(LOG_ERROR, str);
+	}
+	}
+#endif
 #if 0
 	printf("%s\n", m_status.FilmId.c_str());
 	printf("%s\n", m_status.FilmName.c_str());

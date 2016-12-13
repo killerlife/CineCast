@@ -738,14 +738,14 @@ bool PMTDataThread::FinishDCP()
 		std::string fn = dcp.at(i);
 		//std::string cmd = "mv ";
 #ifdef ENABLE_RAID
-		sprintf(cmd, "mv %s /raid", fn.c_str());
+		sprintf(cmd, "cp -Rf %s /raid", fn.c_str());
 
 		if (gLog)
 		{
 			gLog->Write(LOG_SYSTEM, cmd);
 		}
 		system(cmd);
-#else
+#endif
 		sprintf(cmd, "mv %s /storage/ftp", fn.c_str());
 // 		cmd += fn;
 // 		cmd += " /storage/ftp";
@@ -827,7 +827,6 @@ bool PMTDataThread::FinishDCP()
 				gLog->Write(LOG_SYSTEM, cmd);
 			}
 		}
-#endif
 	}
 	
 	//Close AutoUpload shell script

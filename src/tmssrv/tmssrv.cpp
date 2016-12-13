@@ -232,7 +232,11 @@ void TmsServer::doit()
 	int err = -1;
 	IContentManager* pCm = getIContentManager();
 	vector<int> srcList;
+#ifdef ENABLE_RAID
+	srcList.push_back(PST_RAID);
+#else
 	srcList.push_back(PST_FTP);
+#endif
 #endif
 	while(1)
 	{
@@ -261,9 +265,15 @@ void TmsServer::doit()
 #ifdef THREAD
 				if(err == 0)
 				{
+#ifdef ENABLE_RAID
+					if(pCm->isReady(PST_RAID))
+					{
+						pCm->getProgramFileList(PST_RAID, 0, m_cList);
+#else
 					if(pCm->isReady(PST_FTP))
 					{
 						pCm->getProgramFileList(PST_FTP, 0, m_cList);
+#endif
 						while(gMutex);
 						gMutex = 1;
 						gCList.clear();
@@ -574,7 +584,11 @@ bool TmsThread::content_req(char* buf)
 	IContentManager* pCm = getIContentManager();
 	vector<int> srcList;
 	vector<InfoData> m_cList;
+#ifdef ENABLE_RAID
+	srcList.push_back(PST_RAID);
+#else
 	srcList.push_back(PST_FTP);
+#endif
 #endif
 
 	TMSCMD *pKL = (TMSCMD*)buf;
@@ -591,9 +605,15 @@ bool TmsThread::content_req(char* buf)
 		{
 			while(1)
 			{
+#ifdef ENABLE_RAID
+				if(pCm->isReady(PST_RAID) == true)
+				{
+					pCm->getProgramFileList(PST_RAID, 0, m_cList);
+#else
 				if(pCm->isReady(PST_FTP) == true)
 				{
 					pCm->getProgramFileList(PST_FTP, 0, m_cList);
+#endif
 					InfoData info;
 					std::vector<InfoData>::iterator itor;
 					if(m_cList.size() > 0)
@@ -748,7 +768,11 @@ bool TmsThread::ftp_req(char* buf)
 			IContentManager* pCm = getIContentManager();
 			vector<int> srcList;
 			vector<InfoData> m_cList;
+#ifdef ENABLE_RAID
+			srcList.push_back(PST_RAID);
+#else
 			srcList.push_back(PST_FTP);
+#endif
 #endif
 			std::string path;
 #ifndef THREAD
@@ -756,9 +780,15 @@ bool TmsThread::ftp_req(char* buf)
 			{
 				while(1)
 				{
+#ifdef ENABLE_RAID
+					if(pCm->isReady(PST_RAID) == true)
+					{
+						pCm->getProgramFileList(PST_RAID, 0, m_cList);
+#else
 					if(pCm->isReady(PST_FTP) == true)
 					{
 						pCm->getProgramFileList(PST_FTP, 0, m_cList);
+#endif
 #endif
 						InfoData info;
 						bool bFind = false;
@@ -836,7 +866,11 @@ bool TmsThread::ftp_req(char* buf)
 
 						item = doc.createElement("path");
 						resp.appendChild(item);
+#ifdef ENABLE_RAID
+						txt = doc.createTextNode(path.c_str() + strlen("/raid/"));
+#else
 						txt = doc.createTextNode(path.c_str() + strlen("/storage/ftp/"));
+#endif
 						item.appendChild(txt);
 
 						QString s = doc.toString();
@@ -854,7 +888,11 @@ bool TmsThread::ftp_req(char* buf)
 							pLog->Write(LOG_TMS, s.toStdString().c_str());
 							s.sprintf("FTP Source: %s", source.toStdString().c_str());
 							pLog->Write(LOG_TMS, s.toStdString().c_str());
+#ifdef ENABLE_RAID
+							s.sprintf("FTP Path: %s", path.c_str() + strlen("/raid"));
+#else
 							s.sprintf("FTP Path: %s", path.c_str() + strlen("/storage/ftp/"));
+#endif
 							pLog->Write(LOG_TMS, s.toStdString().c_str());
 						}
 
