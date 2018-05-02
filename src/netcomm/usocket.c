@@ -412,3 +412,11 @@ const char* socket_name(p_socket ps)
 	inet_ntop(AF_INET, &addr.sin_addr, server_ip, sizeof(server_ip));
  	return server_ip;
 }
+
+int socket_setopt(p_socket ps, int level, int optname, const void *optval, socklen_t optlen)
+{
+	if(setsockopt(*ps, level, optname, optval, optlen) == 0)
+		return IO_DONE;
+	else
+		return errno;
+}

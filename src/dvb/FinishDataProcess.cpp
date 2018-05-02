@@ -49,10 +49,13 @@ bool FinishDataThread::Init(void *param1, void *param2)
 	return Start();
 }
 
+extern char strDemux[1024];
+
 bool FinishDataThread::Start()
 {
 	Stop();
-	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+// 	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+	m_pFilter->SetStrDevName(strDemux);
 	m_pFilter->SetFilterID(m_pid, 0x93);
 	m_status = RUN;
 	return true;
@@ -135,12 +138,6 @@ else
 				{
 					m_bFinish = true;
 				}
-#ifdef DEBUG
-				else
-				{
-					printf("finish crc error\n");
-				}
-#endif
 			}
 			else
 			{

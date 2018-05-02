@@ -29,7 +29,7 @@ FilmDataThread::FilmDataThread(): m_ReciveLength(0), m_status(STOP),
 m_pZtBuf(0), m_pFilter(0), m_pFilmFile(NULL), m_nSegBasic(0), 
 m_ReciveSegment(0), m_LostSegment(0), m_CRCError(0), m_TotalSegment(0), 
 m_freeMutex(0), m_dataMutex(0), m_ztPos(-1),m_writeMutex(0), m_Ready(false),
-bFinish(false)
+bFinish(false), bNewSession(false)
 {
 	m_pDataThread = NULL;
 	m_pPmtDescriptor = NULL;
@@ -110,11 +110,6 @@ bool FilmDataThread::Init(void *param1, void *param2)
 	//To make sure the DCP of current Task don't delete from ftp directory
 	strFtpFileName.insert(9, "ftp/", 4);
 	gRunPathList.push_back(strFtpFileName);
-//	if(gLog)
-//	{
-//		gLog->Write(LOG_DVB, m_strFileName.c_str());
-//		gLog->Write(LOG_DVB, strFtpFileName.c_str());
-//	}
 	//--------------------------------------------------------------------
 
 // 	m_pPmtDescriptor->fileDescriptor->FileName
@@ -164,11 +159,14 @@ bool FilmDataThread::Init(void *param1, void *param2)
 		m_pZtFilmFile = fopen(m_strZtFileName.c_str(), "rb+");
 		UpdateInfo();
 		bSequence = false;
+		bNewSession = false;
 	}
 	else
 	{
+		//New session or no dcp on disk
 		m_pZtFilmFile = fopen(m_strZtFileName.c_str(), "wb+");
 		bSequence = true;
+		bNewSession = true;
 	}
 
 	//Check the Film file exist, if not existed, create a new one
@@ -202,6 +200,8 @@ bool FilmDataThread::Init(void *param1, void *param2)
 	return Start();
 }
 
+extern char strDemux[1024];
+
 bool FilmDataThread::Start()
 {
 	Stop();
@@ -215,7 +215,8 @@ bool FilmDataThread::Start()
 // 	m_pManager->setParallelNum(0, 1);
 // 	m_pManager->run();
 
-	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+// 	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+	m_pFilter->SetStrDevName(strDemux);
 	m_pFilter->SetFilterID(m_pPmtDescriptor->ElementaryPid, 0x80);
 	m_status = RUN;
 	bStop = false;
@@ -316,6 +317,11 @@ void FilmDataThread::doit()
 					char *pos = &SimDataBuf[SimBufPos?(SimBufPos-1)%10:9][0];
 					if((*(uint16*)pos) == this->m_pPmtDescriptor->ElementaryPid)
 					{
+//						struct timespec time1 = { 0, 0 };  
+//						struct timespec time2 = { 0, 0 };  
+
+//						clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);  
+
 						uint16 len = getBits((uint8*)pos+2, 12, 12);
 // 						DPRINTF("id %04x len %d\n", (*(uint16*)pos), len);
 // 						print_hex(pos+2, len + 3);
@@ -330,7 +336,9 @@ void FilmDataThread::doit()
 								(*((buff + len + 2))))  & 0xffffffff;
 
 							//do crc32 check
+#if 1
 							if (crc == crc1)
+#endif
 								//if(count != m_pPmtDescriptor->fileDescriptor->SegmentLength)
 							{
 								//Get segment number and construct file position
@@ -350,11 +358,16 @@ void FilmDataThread::doit()
 								{	
 									if(!haveSegment(seg_num))
 									{
+#if 1
 										WriteFile(pos,
 											buff + 15,
 											w_size);
+#endif
 										UpdateZtMem(seg_num);
-
+#if 0
+										if(seg_num > 0 && (seg_num % 1023) == 0)
+											fflush(m_pFilmFile);
+#endif
 										//this only for test
 										//UpdateZtFile();
 										//
@@ -380,6 +393,7 @@ void FilmDataThread::doit()
 									}
 								}
 							}
+#if 1
 							else
 							{
 								m_CRCError++;
@@ -388,8 +402,12 @@ void FilmDataThread::doit()
 								//So disable it.
 								//m_LostSegment++;
 							}
+#endif
 							*pBData = true;
 						}
+//						clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time2);  
+//						DPRINTF("CLOCK_PROCESS_CPUTIME_ID 1-2: %d, %d, %d, %d\n", time1.tv_sec,  
+//							time1.tv_nsec, time2.tv_sec, time2.tv_nsec);  
 					}
 					else
 						usleep(1000);
@@ -399,14 +417,18 @@ void FilmDataThread::doit()
 				if (m_pFilter->ReadFilter(buff, count))
 				{
 					uint16 len = getBits(buff, 12, 12);
+#if 1
 					uint32 crc = calc_crc32(buff, len - 1) & 0xffffffff;
 					uint32 crc1 = ((*((buff + len - 1)) << 24)|
 					(*((buff + len)) << 16) |
 					(*((buff + len + 1)) << 8) |
 					(*((buff + len + 2))))  & 0xffffffff;
+#endif
 
 					//do crc32 check
+#if 1
 					if (crc == crc1)
+#endif
 					//if(count != m_pPmtDescriptor->fileDescriptor->SegmentLength)
 					{
 						//Get segment number and construct file position
@@ -457,6 +479,7 @@ void FilmDataThread::doit()
 						}
 					}
 					}
+#if 1
 					else
 					{
 						m_CRCError++;
@@ -465,6 +488,7 @@ void FilmDataThread::doit()
 						//m_LostSegment++;
 					}
 					*pBData = true;
+#endif
 				}
 				else
 				{
@@ -731,6 +755,8 @@ void FilmDataThread::pushIntoDataBuf(struct FilmDataBuf* pBuf)
 	m_dataMutex = 0;
 }
 
+#include "../externcall/ExternCall.h"
+
 std::string FilmDataThread::GetLostSegment()
 {
 	int64 sec_nums = (m_pPmtDescriptor->fileDescriptor->FileLength + 
@@ -817,9 +843,27 @@ std::string FilmDataThread::GetLostSegment()
 		if((filmId %1000) >= 900 && 
 			m_strFileName.find("leonisupdate.zt") != std::string::npos)
 		{
+#if 0
+			//////////////////////////////////////////////////////////////////////////
+			// If use SuperDog, it BLOCK system call !!!! [10/10/2017 killerlife]
+			// So we use ExternCall class to instead it.
 			system("mkdir /home/leonis/update");
 			std::string cmd = "install " + m_strFileName + "/home/leonis/update";
 			system(cmd.c_str());
+#else
+			IExternCall *pEc = CreateExternCall();
+			pEc->RunCommand("mkdir /home/leonis/update");
+			while(!pEc->IsFinish())
+			{
+				usleep(200000);
+			}
+			std::string cmd = "install " + m_strFileName + " /home/leonis/update";
+			pEc->RunCommand(cmd.c_str());
+			while(!pEc->IsFinish())
+			{
+				usleep(200000);
+			}
+#endif
 		}
 	}
 
@@ -949,7 +993,19 @@ bool FilmDataThread::UnzipSubtitle()
 	path.resize(found);
 	char fn[1024];
 	sprintf(fn, "unzip %s -d %s", m_strFileName.c_str(), path.c_str());
+#if 0
+	//////////////////////////////////////////////////////////////////////////
+	// If use SuperDog, it BLOCK system call !!!! [10/10/2017 killerlife]
+	// So we use ExternCall class to instead it.
 	system(fn);
+#else
+	IExternCall *pEc = CreateExternCall();
+	pEc->RunCommand(fn);
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+#endif
 	if (gLog)
 	{
 		gLog->Write(LOG_SYSTEM, fn);
@@ -1002,4 +1058,9 @@ bool FilmDataThread::IsSameDCP(std::string path)
 bool FilmDataThread::IsReady()
 {
 	return m_Ready;
+}
+
+bool FilmDataThread::IsNewSession()
+{
+	return bNewSession;
 }

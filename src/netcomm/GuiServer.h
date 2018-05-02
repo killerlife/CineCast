@@ -6,7 +6,7 @@
 #include "zSocket.h"
 #include "../dvb/mytype.h"
 
-//һ߳,ļר
+//一叱,募专
 class CopyThread: public brunt::CActiveThread
 {
 public:
@@ -24,10 +24,10 @@ private:
 	int m_status;
 	bool bStop;
 public:
-	char path_src[512];        //浽棬ָ·ѾʧЧ
+	char path_src[512];        //娴芥，指路丫失效
 	char path_dst[512];
-	int* complete_percent;     //ɰٷֱ
-    int* copy_flag;            //״̬
+	int* complete_percent;     //砂俜直
+    int* copy_flag;            //状态
 };
 
 class GuiThread;
@@ -81,6 +81,7 @@ private:
 	bool S_GetReceive(char* buf);
 	
 	bool S_GetVersion(char* buf);
+	bool S_GetSerialNumber(char* buf);
 
 	bool C_GetTuner(char* buf);
 	bool C_SetTuner(char* buf);
@@ -98,8 +99,8 @@ private:
 	//bool M_GetDiskInfo(char* buf);
 
 
-    bool M_UpdateProgramList_HDD(char* buf);          //UpdateProgramListˢӲб���Ա? 
-    bool M_IsProgramListReady_HDD(char* buf);         //IsProgramListReadyѯǷ׼
+    bool M_UpdateProgramList_HDD(char* buf);          //UpdateProgramList刷硬斜恚毖? 
+    bool M_IsProgramListReady_HDD(char* buf);         //IsProgramListReady询欠准
 
     bool M_UpdateProgramList_USB(char* buf);         
     bool M_IsProgramListReady_USB(char* buf); 
@@ -123,18 +124,18 @@ private:
 	bool S_USB_Mount(char* buf);
 	bool S_USB_UnMount(char* buf);
 
-	bool M_DeleteDir(char* buf);  //ɾӰƬĿ¼
+	bool M_DeleteDir(char* buf);  //删影片目录
 
 	bool M_CopyDir_HDD_TO_USB(char* buf);
-	bool setCopyProgress(char* buf);    //ؿ
+	bool setCopyProgress(char* buf);    //乜
 
 	bool S_Get_TMS(char* buf);
 
 	bool UnknowFunction(char* buf);
 
 	bool R_GetRaidInfo(char* buf);
-	bool M_UpdateProgramList_RAID(char* buf);          //UpdateProgramListˢӲб���Ա? 
-	bool M_IsProgramListReady_RAID(char* buf);         //IsProgramListReadyѯǷ׼
+	bool M_UpdateProgramList_RAID(char* buf);          //UpdateProgramList刷硬斜恚毖? 
+	bool M_IsProgramListReady_RAID(char* buf);         //IsProgramListReady询欠准
 	bool M_GetContent_RAID(char* buf);     //rename
 	bool M_GetDiskInfo_RAID(char* buf);    //rename
 
@@ -147,7 +148,7 @@ private:
 	ContentOperation* m_Content;
 	mke2fs *m_mkfs;
 	std::string m_sFormatRes;
-    CopyThread*  copyThread;    //ļָ߳
+    CopyThread*  copyThread;    //募叱指
 };
 
 GuiServer* CreateGuiServer();

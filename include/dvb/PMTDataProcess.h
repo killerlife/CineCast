@@ -24,7 +24,8 @@ public:
 	uint64 CRCError();
 	uint64 TotalSegment();
 
-	void GetLostSegment();
+	uint64 GetLostSegment();
+	bool UnzipSubtitle();
 
 private:
 	virtual void doit();
@@ -39,4 +40,6 @@ private:
 	brunt::IThreadManager* m_pManager;
 	struct ProgramDescriptor m_programDescriptor;
 	bool bThreadStart;
+	volatile uint8 m_mutex;
+// 	ILog *pLog;
 };

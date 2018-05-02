@@ -9,6 +9,7 @@
 #include <dvb/mytype.h>
 
 #pragma pack(1)
+
 typedef enum Recv_State_e
 {
     RECV_STATE_IDLE = 0,
@@ -49,6 +50,15 @@ typedef enum Net_Command
 	NET_REMOTE_UPDATE_PUSH = 0X71,
 	NET_REMOTE_UPDATA_PUSH_REP,
 	NET_REMOTE_UPDATE_REQ,
+	NET_PKG_SEND_START = 0x90,
+	NET_PKG_SEND_CONFIRM,
+	NET_PKG_DATA,
+	NET_PKG_SEND_END,
+	NET_PKG_COLLECT_REQ,
+	NET_PKG_COLLECT_CONFIRM,
+	NET_PKG_COLLECT_START,
+	NET_LOG_REQ_LEONIS = 0x100,
+	NET_LOG_REP_LEONIS,
 }Net_Command_t;
 
 struct L_LOGIN_REQ
@@ -190,7 +200,7 @@ struct L_HEART_INFO_REPORT//心跳信息上报报文
     uint32 recvRound;//  接收轮次
     uint8 taskStartTime[20];
     uint8 recvStartTime[20];
-    uint32 filmRecvState;//  影片接收?
+    uint32 filmRecvState;//  影片接收状?
     uint64 reserved2;//本结构体定义中有两处关于reserved
     uint64 recvLength;//  影片已接收大?
     uint64 lostSegment;//  影片已丢失segment包数?
@@ -258,7 +268,7 @@ struct L_LOST_INFO
     uint32 filmID;//  影片ID ,if no film,the value is 0
     uint32 lostNum;
     uint64 receivedByteCount;
-    uint32 recvState;//  影片接收?
+    uint32 recvState;//  影片接收状?
     uint32 reserved;
     uint32 lostLength;
     uint8* pLost;
@@ -277,6 +287,20 @@ struct Lose_Info_Req_Msg
     uint32 filmID;//  影片ID ,if no film,the value is 0
     uint64 reserved;
     uint32 crc32;
+};
+
+struct R_PKG_SEND_START
+{
+	uint32 filmID;
+	uint32 segLen;
+	uint32 filmNameLen;
+};
+
+struct R_PKG_SEND_DATA
+{
+	uint32 filmID;
+	uint32 segNum;
+	uint32 dataLen;
 };
 
 std::string getDateTime();

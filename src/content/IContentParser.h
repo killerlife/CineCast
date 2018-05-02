@@ -44,6 +44,12 @@ class IContentParser
 public:
 	//for get packinglistFile and composition's absolute file name,path must be absolute path!
 	virtual bool open(const std::string& path)=0;
+
+	//////////////////////////////////////////////////////////////////////////
+	// Just for CFCTMS [6/22/2017 killerlife]
+	virtual bool openCPL(const std::string& path)=0;
+	//////////////////////////////////////////////////////////////////////////
+
 	virtual void close()=0;
 
 	virtual int getProgramNum()=0;
@@ -53,6 +59,10 @@ public:
 
 	virtual int getLastError()=0;
 
+	//////////////////////////////////////////////////////////////////////////
+	// Just for CFCTMS [6/22/2017 killerlife]
+	virtual int getCPLInfo(std::string &uuid, int index = 0) = 0;
+	//////////////////////////////////////////////////////////////////////////
 };
 IContentParser* CreateContentParser();
 void ReleaseContentParser(IContentParser** ppParser);

@@ -57,10 +57,10 @@ INC += \
 CFLAGS += \
 -fPIC \
 -DUSE_POLL \
+-DSIMULATOR \
 -O3 
 
 #-g
-#-DSIMULATOR \
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ../%.cpp

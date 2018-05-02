@@ -4,46 +4,46 @@
 <context>
     <name>CineCastUi</name>
     <message>
-        <location filename="cinecastui.cpp" line="111"/>
+        <location filename="cinecastui.cpp" line="118"/>
         <source>Reboot Machine</source>
         <translation>重启接收机</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="112"/>
+        <location filename="cinecastui.cpp" line="119"/>
         <source>Shutdown Machine</source>
         <translation>关闭接收机</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="383"/>
+        <location filename="cinecastui.cpp" line="417"/>
         <source>Do you want to Reboot</source>
         <translation>请确认重启系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="407"/>
         <location filename="cinecastui.cpp" line="441"/>
+        <location filename="cinecastui.cpp" line="494"/>
         <source>Reboot successful</source>
         <translation>重启成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="415"/>
         <location filename="cinecastui.cpp" line="449"/>
+        <location filename="cinecastui.cpp" line="502"/>
         <source>Reboot failed,network errors, operation failed</source>
         <translation>网络错误导致重启失败</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="466"/>
+        <location filename="cinecastui.cpp" line="519"/>
         <source>Do you want to Shutdown</source>
         <translation>请确认关闭系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="490"/>
-        <location filename="cinecastui.cpp" line="522"/>
+        <location filename="cinecastui.cpp" line="543"/>
+        <location filename="cinecastui.cpp" line="594"/>
         <source>Shutdown successful</source>
         <translation>关机成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="496"/>
-        <location filename="cinecastui.cpp" line="528"/>
+        <location filename="cinecastui.cpp" line="549"/>
+        <location filename="cinecastui.cpp" line="600"/>
         <source>Shutdown failed,network errors, operation failed</source>
         <translation>网络错误导致关机失败</translation>
     </message>
@@ -66,37 +66,37 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="229"/>
+        <location filename="cinecastui.ui" line="257"/>
         <source>Status</source>
         <translation>状态</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="243"/>
+        <location filename="cinecastui.ui" line="271"/>
         <source>Content</source>
         <translation>内容</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="257"/>
+        <location filename="cinecastui.ui" line="285"/>
         <source>Disk Manager</source>
         <translation>可抽取硬盘管理</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="271"/>
+        <location filename="cinecastui.ui" line="299"/>
         <source>Setup</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="291"/>
+        <location filename="cinecastui.ui" line="319"/>
         <source>RAID5 Array</source>
         <translation>RAID5阵列</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="311"/>
+        <location filename="cinecastui.ui" line="339"/>
         <source>Live Event</source>
         <translation>直播</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="331"/>
+        <location filename="cinecastui.ui" line="359"/>
         <source>TKR</source>
         <translation>TKR</translation>
     </message>
@@ -1355,14 +1355,24 @@
         <translation>接收完成，请关机并取出可抽取硬盘。</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="459"/>
+        <location filename="status.cpp" line="451"/>
+        <source>Uploading DCP to RAID Array... DO NOT TURN OFF POWER.</source>
+        <translation>正在向磁盘阵列上传影片... ***请不要断电***</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="461"/>
         <source>Mount removeable disk error, please check disk.</source>
         <translation>严重错误：挂载可抽取硬盘失败，请关机后重新插好硬盘。</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="470"/>
+        <location filename="status.cpp" line="472"/>
         <source>Mount RAID array error, please check array.</source>
         <translation>严重错误：挂载RAID5磁盘阵列失败，请关机后重新插好硬盘。</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="482"/>
+        <source>Ingest update file from USB disk, please reboot to update system.</source>
+        <translation>升级文件接收成功，请重启设备以便完成升级。</translation>
     </message>
 </context>
 <context>

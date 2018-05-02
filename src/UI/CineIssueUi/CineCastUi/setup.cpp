@@ -1667,6 +1667,7 @@ void Setup::on_lineEdit_GateWay_editingFinished()
 	else
 	{
 		bool bWarn = false;
+#if 0
 		if(l.at(0).toUInt() == 0)
 		{
 			bWarn = true;
@@ -1681,6 +1682,17 @@ void Setup::on_lineEdit_GateWay_editingFinished()
 			s = l.at(0);
 		if(bWarn)
 			QMessageBox::warning(this, tr("Warning"), tr("The AAA range of Gateway \"AAA.BBB.CCC.CCC\" is \"1-223\""));
+#else
+		if (l.at(0).toUInt() > 255)
+		{
+			bWarn = true;
+			s = "0";
+		}
+		else
+			s = l.at(0);
+		if(bWarn)
+			QMessageBox::warning(this, tr("Warning"), tr("The AAA range of Gateway \"AAA.BBB.CCC.CCC\" is \"0-255\""));
+#endif
 	}
 	s += ".";
 	if(l.at(1) == "")
@@ -1689,7 +1701,7 @@ void Setup::on_lineEdit_GateWay_editingFinished()
 	{
 		if(l.at(1).toUInt() > 255)
 		{
-			s += "255";
+			s += "0";
 			QMessageBox::warning(this, tr("Warning"), tr("The BBB range of Gateway \"AAA.BBB.CCC.CCC\" is \"0-255\""));
 		}
 		else
@@ -1702,7 +1714,7 @@ void Setup::on_lineEdit_GateWay_editingFinished()
 	{
 		if(l.at(2).toUInt() > 255)
 		{
-			s += "255";
+			s += "0";
 			QMessageBox::warning(this, tr("Warning"), tr("The CCC range of Gateway \"AAA.BBB.CCC.CCC\" is \"0-255\""));
 		}
 		else
@@ -1715,7 +1727,7 @@ void Setup::on_lineEdit_GateWay_editingFinished()
 	{
 		if(l.at(3).toUInt() > 255)
 		{
-			s += "255";
+			s += "0";
 			QMessageBox::warning(this, tr("Warning"), tr("The DDD range of Gateway \"AAA.BBB.CCC.CCC\" is \"0-255\""));
 		}
 		else
@@ -1989,6 +2001,7 @@ void Setup::on_lineEdit_GateWay_2_editingFinished()
 	else
 	{
 		bool bWarn = false;
+#if 0
 		if(l.at(0).toUInt() == 0)
 		{
 			bWarn = true;
@@ -2003,6 +2016,17 @@ void Setup::on_lineEdit_GateWay_2_editingFinished()
 			s = l.at(0);
 		if(bWarn)
 			QMessageBox::warning(this, tr("Warning"), tr("The AAA range of Gateway \"AAA.BBB.CCC.CCC\" is \"1-223\""));
+#else
+		if(l.at(0).toUInt() > 255)
+		{
+			bWarn = true;
+			s = "0";
+		}
+		else
+			s = l.at(0);
+		if(bWarn)
+			QMessageBox::warning(this, tr("Warning"), tr("The AAA range of Gateway \"AAA.BBB.CCC.CCC\" is \"0-255\""));
+#endif
 	}
 	s += ".";
 	if(l.at(1) == "")

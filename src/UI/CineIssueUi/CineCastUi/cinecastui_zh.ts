@@ -4,46 +4,46 @@
 <context>
     <name>CineCastUi</name>
     <message>
-        <location filename="cinecastui.cpp" line="111"/>
+        <location filename="cinecastui.cpp" line="114"/>
         <source>Reboot Machine</source>
         <translation>重启接收机</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="112"/>
+        <location filename="cinecastui.cpp" line="115"/>
         <source>Shutdown Machine</source>
         <translation>关闭接收机</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="381"/>
+        <location filename="cinecastui.cpp" line="401"/>
         <source>Do you want to Reboot</source>
         <translation>请确认重启系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="405"/>
-        <location filename="cinecastui.cpp" line="439"/>
+        <location filename="cinecastui.cpp" line="425"/>
+        <location filename="cinecastui.cpp" line="478"/>
         <source>Reboot successful</source>
         <translation>重启成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="413"/>
-        <location filename="cinecastui.cpp" line="447"/>
+        <location filename="cinecastui.cpp" line="433"/>
+        <location filename="cinecastui.cpp" line="486"/>
         <source>Reboot failed,network errors, operation failed</source>
         <translation>网络错误导致重启失败</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="464"/>
+        <location filename="cinecastui.cpp" line="503"/>
         <source>Do you want to Shutdown</source>
         <translation>请确认关闭系统</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="488"/>
-        <location filename="cinecastui.cpp" line="520"/>
+        <location filename="cinecastui.cpp" line="527"/>
+        <location filename="cinecastui.cpp" line="579"/>
         <source>Shutdown successful</source>
         <translation>关机成功</translation>
     </message>
     <message>
-        <location filename="cinecastui.cpp" line="494"/>
-        <location filename="cinecastui.cpp" line="526"/>
+        <location filename="cinecastui.cpp" line="533"/>
+        <location filename="cinecastui.cpp" line="585"/>
         <source>Shutdown failed,network errors, operation failed</source>
         <translation>网络错误导致关机失败</translation>
     </message>
@@ -68,22 +68,27 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="217"/>
+        <location filename="cinecastui.ui" line="138"/>
+        <source> </source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="cinecastui.ui" line="248"/>
         <source>Status</source>
         <translation>状态</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="231"/>
+        <location filename="cinecastui.ui" line="262"/>
         <source>Content</source>
         <translation>内容</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="245"/>
+        <location filename="cinecastui.ui" line="276"/>
         <source>Disk Manager</source>
         <translation>可抽取硬盘管理</translation>
     </message>
     <message>
-        <location filename="cinecastui.ui" line="259"/>
+        <location filename="cinecastui.ui" line="290"/>
         <source>Setup</source>
         <translation>设置</translation>
     </message>
@@ -110,32 +115,32 @@
     <message>
         <location filename="content.cpp" line="179"/>
         <location filename="content.cpp" line="208"/>
-        <location filename="content.cpp" line="757"/>
-        <location filename="content.cpp" line="847"/>
-        <location filename="content.cpp" line="989"/>
-        <location filename="content.cpp" line="1038"/>
+        <location filename="content.cpp" line="780"/>
+        <location filename="content.cpp" line="870"/>
+        <location filename="content.cpp" line="1012"/>
+        <location filename="content.cpp" line="1061"/>
         <source>network error, operation failed</source>
         <translation>网络错误</translation>
     </message>
     <message>
         <location filename="content.cpp" line="464"/>
-        <location filename="content.cpp" line="750"/>
-        <location filename="content.cpp" line="1029"/>
+        <location filename="content.cpp" line="773"/>
+        <location filename="content.cpp" line="1052"/>
         <source>operation successful</source>
         <translation>操作成功</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="835"/>
+        <location filename="content.cpp" line="858"/>
         <source>operation start</source>
         <translation>操作开始</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="944"/>
+        <location filename="content.cpp" line="967"/>
         <source>Delete confirm</source>
         <translation>确认删除</translation>
     </message>
     <message>
-        <location filename="content.cpp" line="944"/>
+        <location filename="content.cpp" line="967"/>
         <source>Please make sure to delete content.</source>
         <translation>电影文件删除后将不可恢复，请确认是否删除？</translation>
     </message>
@@ -813,44 +818,46 @@
         <location filename="setup.cpp" line="1627"/>
         <location filename="setup.cpp" line="1640"/>
         <location filename="setup.cpp" line="1653"/>
-        <location filename="setup.cpp" line="1683"/>
-        <location filename="setup.cpp" line="1693"/>
-        <location filename="setup.cpp" line="1706"/>
-        <location filename="setup.cpp" line="1719"/>
-        <location filename="setup.cpp" line="1749"/>
-        <location filename="setup.cpp" line="1759"/>
-        <location filename="setup.cpp" line="1772"/>
-        <location filename="setup.cpp" line="1785"/>
-        <location filename="setup.cpp" line="1815"/>
-        <location filename="setup.cpp" line="1825"/>
-        <location filename="setup.cpp" line="1838"/>
-        <location filename="setup.cpp" line="1851"/>
-        <location filename="setup.cpp" line="1881"/>
-        <location filename="setup.cpp" line="1891"/>
-        <location filename="setup.cpp" line="1904"/>
-        <location filename="setup.cpp" line="1917"/>
-        <location filename="setup.cpp" line="1936"/>
-        <location filename="setup.cpp" line="1949"/>
-        <location filename="setup.cpp" line="1962"/>
-        <location filename="setup.cpp" line="1975"/>
-        <location filename="setup.cpp" line="2005"/>
-        <location filename="setup.cpp" line="2015"/>
+        <location filename="setup.cpp" line="1684"/>
+        <location filename="setup.cpp" line="1694"/>
+        <location filename="setup.cpp" line="1705"/>
+        <location filename="setup.cpp" line="1718"/>
+        <location filename="setup.cpp" line="1731"/>
+        <location filename="setup.cpp" line="1761"/>
+        <location filename="setup.cpp" line="1771"/>
+        <location filename="setup.cpp" line="1784"/>
+        <location filename="setup.cpp" line="1797"/>
+        <location filename="setup.cpp" line="1827"/>
+        <location filename="setup.cpp" line="1837"/>
+        <location filename="setup.cpp" line="1850"/>
+        <location filename="setup.cpp" line="1863"/>
+        <location filename="setup.cpp" line="1893"/>
+        <location filename="setup.cpp" line="1903"/>
+        <location filename="setup.cpp" line="1916"/>
+        <location filename="setup.cpp" line="1929"/>
+        <location filename="setup.cpp" line="1948"/>
+        <location filename="setup.cpp" line="1961"/>
+        <location filename="setup.cpp" line="1974"/>
+        <location filename="setup.cpp" line="1987"/>
+        <location filename="setup.cpp" line="2018"/>
         <location filename="setup.cpp" line="2028"/>
-        <location filename="setup.cpp" line="2041"/>
-        <location filename="setup.cpp" line="2071"/>
-        <location filename="setup.cpp" line="2081"/>
-        <location filename="setup.cpp" line="2094"/>
-        <location filename="setup.cpp" line="2107"/>
-        <location filename="setup.cpp" line="2137"/>
-        <location filename="setup.cpp" line="2147"/>
-        <location filename="setup.cpp" line="2160"/>
-        <location filename="setup.cpp" line="2173"/>
-        <location filename="setup.cpp" line="2421"/>
-        <location filename="setup.cpp" line="2428"/>
-        <location filename="setup.cpp" line="2441"/>
-        <location filename="setup.cpp" line="2447"/>
-        <location filename="setup.cpp" line="2676"/>
-        <location filename="setup.cpp" line="2682"/>
+        <location filename="setup.cpp" line="2039"/>
+        <location filename="setup.cpp" line="2052"/>
+        <location filename="setup.cpp" line="2065"/>
+        <location filename="setup.cpp" line="2095"/>
+        <location filename="setup.cpp" line="2105"/>
+        <location filename="setup.cpp" line="2118"/>
+        <location filename="setup.cpp" line="2131"/>
+        <location filename="setup.cpp" line="2161"/>
+        <location filename="setup.cpp" line="2171"/>
+        <location filename="setup.cpp" line="2184"/>
+        <location filename="setup.cpp" line="2197"/>
+        <location filename="setup.cpp" line="2445"/>
+        <location filename="setup.cpp" line="2452"/>
+        <location filename="setup.cpp" line="2465"/>
+        <location filename="setup.cpp" line="2471"/>
+        <location filename="setup.cpp" line="2700"/>
+        <location filename="setup.cpp" line="2706"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -906,13 +913,13 @@
     </message>
     <message>
         <location filename="setup.cpp" line="932"/>
-        <location filename="setup.cpp" line="2676"/>
+        <location filename="setup.cpp" line="2700"/>
         <source>Frequency must above 12250000.</source>
         <translation>Ku波段下频率必须大于或等于12250000，将自动修改到合适数值。</translation>
     </message>
     <message>
         <location filename="setup.cpp" line="938"/>
-        <location filename="setup.cpp" line="2682"/>
+        <location filename="setup.cpp" line="2706"/>
         <source>Frequency must less 13450000.</source>
         <translation>Ku波段下频率必须小于或等于13450000，将自动修改到合适数值。</translation>
     </message>
@@ -928,132 +935,138 @@
     </message>
     <message>
         <location filename="setup.cpp" line="1559"/>
-        <location filename="setup.cpp" line="1881"/>
+        <location filename="setup.cpp" line="1893"/>
         <source>The AAA range of IP address &quot;AAA.BBB.CCC.CCC&quot; is &quot;1-223&quot;</source>
         <translation>IP地址“AAA.BBB.CCC.DDD”的“AAA”段范围为“1-223”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
         <location filename="setup.cpp" line="1569"/>
-        <location filename="setup.cpp" line="1891"/>
+        <location filename="setup.cpp" line="1903"/>
         <source>The BBB range of IP address &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>IP地址“AAA.BBB.CCC.DDD”的“BBB”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
         <location filename="setup.cpp" line="1582"/>
-        <location filename="setup.cpp" line="1904"/>
+        <location filename="setup.cpp" line="1916"/>
         <source>The CCC range of IP address &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>IP地址“AAA.BBB.CCC.DDD”的“CCC”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
         <location filename="setup.cpp" line="1595"/>
-        <location filename="setup.cpp" line="1917"/>
+        <location filename="setup.cpp" line="1929"/>
         <source>The DDD range of IP address &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>IP地址“AAA.BBB.CCC.DDD”的“DDD”段范围为“0.255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
         <location filename="setup.cpp" line="1614"/>
-        <location filename="setup.cpp" line="1936"/>
+        <location filename="setup.cpp" line="1948"/>
         <source>The AAA range of Netmask &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>子网掩码“AAA.BBB.CCC.DDD”的“AAA”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
         <location filename="setup.cpp" line="1627"/>
-        <location filename="setup.cpp" line="1949"/>
+        <location filename="setup.cpp" line="1961"/>
         <source>The BBB range of Netmask &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>子网掩码“AAA.BBB.CCC.DDD”的“BBB”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
         <location filename="setup.cpp" line="1640"/>
-        <location filename="setup.cpp" line="1962"/>
+        <location filename="setup.cpp" line="1974"/>
         <source>The CCC range of Netmask &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>子网掩码“AAA.BBB.CCC.DDD”的“CCC”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
         <location filename="setup.cpp" line="1653"/>
-        <location filename="setup.cpp" line="1975"/>
+        <location filename="setup.cpp" line="1987"/>
         <source>The DDD range of Netmask &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>子网掩码“AAA.BBB.CCC.DDD”的“DDD”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1683"/>
-        <location filename="setup.cpp" line="2005"/>
+        <location filename="setup.cpp" line="1684"/>
+        <location filename="setup.cpp" line="2018"/>
         <source>The AAA range of Gateway &quot;AAA.BBB.CCC.CCC&quot; is &quot;1-223&quot;</source>
         <translation>网关地址“AAA.BBB.CCC.DDD”的“AAA”段范围为“1-223”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1693"/>
-        <location filename="setup.cpp" line="2015"/>
+        <location filename="setup.cpp" line="1694"/>
+        <location filename="setup.cpp" line="2028"/>
+        <source>The AAA range of Gateway &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
+        <translation>网关地址“AAA.BBB.CCC.DDD”的“AAA”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
+    </message>
+    <message>
+        <location filename="setup.cpp" line="1705"/>
+        <location filename="setup.cpp" line="2039"/>
         <source>The BBB range of Gateway &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>网关地址“AAA.BBB.CCC.DDD”的“BBB”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1706"/>
-        <location filename="setup.cpp" line="2028"/>
+        <location filename="setup.cpp" line="1718"/>
+        <location filename="setup.cpp" line="2052"/>
         <source>The CCC range of Gateway &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>网关地址“AAA.BBB.CCC.DDD”的“CCC”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1719"/>
-        <location filename="setup.cpp" line="2041"/>
+        <location filename="setup.cpp" line="1731"/>
+        <location filename="setup.cpp" line="2065"/>
         <source>The DDD range of Gateway &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>网关地址“AAA.BBB.CCC.DDD”的“DDD”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1749"/>
-        <location filename="setup.cpp" line="1815"/>
-        <location filename="setup.cpp" line="2071"/>
-        <location filename="setup.cpp" line="2137"/>
+        <location filename="setup.cpp" line="1761"/>
+        <location filename="setup.cpp" line="1827"/>
+        <location filename="setup.cpp" line="2095"/>
+        <location filename="setup.cpp" line="2161"/>
         <source>The AAA range of DNS &quot;AAA.BBB.CCC.CCC&quot; is &quot;1-223&quot;</source>
         <translation>DNS地址“AAA.BBB.CCC.DDD”的“AAA”段范围为“1-223”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1759"/>
-        <location filename="setup.cpp" line="1825"/>
-        <location filename="setup.cpp" line="2081"/>
-        <location filename="setup.cpp" line="2147"/>
+        <location filename="setup.cpp" line="1771"/>
+        <location filename="setup.cpp" line="1837"/>
+        <location filename="setup.cpp" line="2105"/>
+        <location filename="setup.cpp" line="2171"/>
         <source>The BBB range of DNS &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>DNS地址“AAA.BBB.CCC.DDD”的“BBB”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1772"/>
-        <location filename="setup.cpp" line="1838"/>
-        <location filename="setup.cpp" line="2094"/>
-        <location filename="setup.cpp" line="2160"/>
+        <location filename="setup.cpp" line="1784"/>
+        <location filename="setup.cpp" line="1850"/>
+        <location filename="setup.cpp" line="2118"/>
+        <location filename="setup.cpp" line="2184"/>
         <source>The CCC range of DNS &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>DNS地址“AAA.BBB.CCC.DDD”的“CCC”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="1785"/>
-        <location filename="setup.cpp" line="1851"/>
-        <location filename="setup.cpp" line="2107"/>
-        <location filename="setup.cpp" line="2173"/>
+        <location filename="setup.cpp" line="1797"/>
+        <location filename="setup.cpp" line="1863"/>
+        <location filename="setup.cpp" line="2131"/>
+        <location filename="setup.cpp" line="2197"/>
         <source>The DDD range of DNS &quot;AAA.BBB.CCC.CCC&quot; is &quot;0-255&quot;</source>
         <translation>DNS地址“AAA.BBB.CCC.DDD”的“DDD”段范围为“0-255”，已超出范围，将自动修改为合适的数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2421"/>
+        <location filename="setup.cpp" line="2445"/>
         <source>Remote can not empty.</source>
         <translation>远程主机不能为空。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2428"/>
+        <location filename="setup.cpp" line="2452"/>
         <source>Doesn&apos;t support non ASCII.</source>
         <translation>不支持非英文字符。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2441"/>
-        <location filename="setup.cpp" line="2447"/>
+        <location filename="setup.cpp" line="2465"/>
+        <location filename="setup.cpp" line="2471"/>
         <source>Port range is &quot;1-65535&quot;</source>
         <translation>端口号取值范围为“1-65535”，已超出范围，将自动选择合适数值</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2584"/>
+        <location filename="setup.cpp" line="2608"/>
         <source>Connected.</source>
         <translation>已连接节目管理中心。</translation>
     </message>
     <message>
-        <location filename="setup.cpp" line="2589"/>
-        <location filename="setup.cpp" line="2596"/>
+        <location filename="setup.cpp" line="2613"/>
+        <location filename="setup.cpp" line="2620"/>
         <source>Connecting...</source>
         <translation>正在连接节目管理中心...</translation>
     </message>
@@ -1406,13 +1419,13 @@
         <translation>未锁定</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="72"/>
+        <location filename="status.cpp" line="75"/>
         <source> Bytes</source>
         <translation> 字节</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="139"/>
-        <location filename="status.cpp" line="465"/>
+        <location filename="status.cpp" line="140"/>
+        <location filename="status.cpp" line="468"/>
         <source>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Creator: %2	Issuer: %3	IssueDate: %4
 Round: %9	Total Segment: %5	Received Segment: %6
 RecvRate: %10 MB/S	CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</source>
@@ -1421,13 +1434,18 @@ RecvRate: %10 MB/S	CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</source>
 接收速度: %10 MB/S	CRC错误: %7	已丢失分片:%8&lt;/pre&gt;</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="150"/>
-        <location filename="status.cpp" line="476"/>
+        <location filename="status.cpp" line="153"/>
+        <location filename="status.cpp" line="481"/>
         <source>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Creator: %2	Issuer: %3	IssueDate: %4
 Round: %9	Total Segment: %5	Received Segment: %6	CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</source>
         <translation>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;创建: %2	发行: %3	发行时间: %4
 轮数: %9	分片总数: %5	已接收分片: %6
 CRC错误: %7	已丢失分片:%8&lt;/pre&gt;</translation>
+    </message>
+    <message>
+        <location filename="status.cpp" line="518"/>
+        <source>Ingest update file from USB disk, please reboot to update system.</source>
+        <translation>成功从U盘导入升级文件，请重启设备以完成升级。</translation>
     </message>
     <message>
         <source>&lt;pre style=&quot;font-size: 14px; font-family:Book Antiqua&quot;&gt;Creator: %2	Issuer: %3	IssueDate: %4
@@ -1439,17 +1457,17 @@ CRC Error: %7	Lost Segment:%8&lt;/pre&gt;</source>
 CRC错误: %7	已丢失分片:%8&lt;/pre&gt;</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="439"/>
+        <location filename="status.cpp" line="442"/>
         <source>Get update file. To update system, please reboot system.</source>
-        <translation>升级文件接收成功，请重启设备已完成升级。</translation>
+        <translation>升级文件接收成功，请重启设备以完成升级。</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="463"/>
+        <location filename="status.cpp" line="466"/>
         <source>Please power-off and take out the removeable disk.</source>
         <translation>接收完成，请关机并取出可抽取硬盘。</translation>
     </message>
     <message>
-        <location filename="status.cpp" line="499"/>
+        <location filename="status.cpp" line="504"/>
         <source>Mount removeable disk error, please check disk.</source>
         <translation>挂载可抽取硬盘失败，请检查硬盘是否插好。</translation>
     </message>

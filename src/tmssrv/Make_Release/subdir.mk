@@ -29,8 +29,10 @@ INCLUDE += \
 CFLAGS += \
 -fPIC \
 -O3 \
-#-DDEBUG \
 -Wall
+#-DENABLE_RAID \
+
+#-DDEBUG \
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ../%.cpp

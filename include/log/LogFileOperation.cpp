@@ -1,4 +1,4 @@
-﻿#ifdef WIN32
+#ifdef WIN32
 #include "StdAfx.h"
 #else
 #include <sys/stat.h>
@@ -151,7 +151,7 @@ int CLogFileOperation::DeleteDirectory(const char* path)
 	tempFind.Close();
 	if(!RemoveDirectory(path))
 	{
-		::MessageBox(0,"删目录失埽","息",MB_OK);
+		::MessageBox(0,"ɾĿ¼ʧܣ","Ϣ",MB_OK);
 		return FALSE;
 	}
 	return TRUE;
@@ -181,7 +181,6 @@ int CLogFileOperation::DeleteDirectory(const char* path)
 
 int CLogFileOperation::OpenFile(const char* file)
 {
-	//printf("Open %s\n", file);
 	m_pfile = fopen(file,"r");
 	if (m_pfile == NULL)
 		return 0;
@@ -228,87 +227,33 @@ int CLogFileOperation::Write(const char* file,const int type, const char* contex
 	return 1;
 }
 
-std::string str_LOG;//NEW
-std::string g_LogAll;
-
 int CLogFileOperation::Read(const int type, TLogQueryResultArray & result)
 {
 	char* pfile = NULL;
 	char* pMove = NULL;
-	char buf[MAX_PATH] = {0};
-	char str[MAX_PATH] = {0};
+	char buf[MAX_PATH]= {0};
+	char str[MAX_PATH]= {0};
 
-	//LOGQUERYRESULT res; //don't know why, it cause code dump
-	
-	//用任意字符填充 只要有push函数就会出错
-	/*
-	res.time="time time time time time";
-	res.text="text text text text text";
-	result.push_back(res);  //new
-	*/
-	
-	//NEW
-	str_LOG="";  //全局字符串初始化
-	g_LogAll="";
-	char sType[6];
-	
+	LOGQUERYRESULT res;
 	while ((pfile = fgets(buf,MAX_PATH,m_pfile)))
 	{
-#if 0
 		res.type = (LOGTYPE)atoi(buf);
 		pfile = strstr(buf," ");
 		pMove = strstr(++pfile," ");
 		memcpy(str,pfile,pMove - pfile);
+		
 		res.time = str;
 		res.text = ++pMove;
+	
+        //new
+		/*
+		strcpy(res.time,str);
+		strcpy(res.text,++pMove);
+		*/
 
-		if ((LOGTYPE)type == LOG_ALL || (LOGTYPE)type == res.type)
-		{	
-			//res.push_back(res);   //OLD
-			//NEW
-			printf("Read:%s %s", res.time.c_str(), res.text.c_str());	
-			str_LOG+=res.time.c_str();
-			str_LOG+="  ";   //时间与日志内容加空格间隙
-			str_LOG+=res.text.c_str();
-			sprintf(sType, "%d ", res.type);
-			g_LogAll += sType;
-			g_LogAll += res.time.c_str();
-			g_LogAll += " ";
-			g_LogAll += res.text.c_str();
+		if ((LOGTYPE)type == LOG_ALL || (LOGTYPE)type == res.type)		
+			result.push_back(res);
 	}
-#else
-		if(buf[0] != 0x0a)
-		{
-		//printf("befor atoi %02x %02x %02x\n", buf[0], buf[1], buf[2]);	
-		int log_type = (LOGTYPE)atoi(buf);
-		//printf("befor atoi %d\n", log_type);	
-		pfile = strstr(buf," ");
-		//printf("befor ++pfile\n");	
-		pMove = strstr(++pfile," ");	
-		//printf("befor copy\n");	
-		memcpy(str,pfile,pMove - pfile);
-		//printf("after copy\n");	
-		//str[pMove - pfile] = 0;
-		//printf("%d %s %s\n", log_type, str, pMove);
-		#if 1
-		if ((LOGTYPE)type == LOG_ALL || (LOGTYPE)type == log_type)
-		{
-			str_LOG += str;
-			str_LOG += "  ";
-			str_LOG += ++pMove;
-			sprintf(sType, "%d ", log_type);
-			g_LogAll += sType;
-			g_LogAll += str;
-			g_LogAll += " ";
-			g_LogAll += pMove;
-		}
-#endif
-	}
-#endif
-	}
-		
-	//NEW
-	//printf("str_LOG=%s", str_LOG.c_str());	
 
 	return 0;
 }

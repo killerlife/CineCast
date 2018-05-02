@@ -23,6 +23,7 @@ extern RECEIVE_INFO gRecv;
 extern TUNER_CONF gTuner;
 extern char *gMd5;
 extern PATDataThread* pPat;
+extern bool bRemoteConnect;
 
 #pragma pack(1)
 struct INET_DESCRIPTOR
@@ -49,6 +50,7 @@ enum ENCRYPTION
 };
 
 char gVersion[16];
+uint32 gMachineId;
 
 #include <time.h>
 string getDateTime()
@@ -86,6 +88,13 @@ int getTime()
 	time_t t;
 	time(&t);
 	return t;
+}
+
+unsigned long get_tick()
+{
+	struct timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	return (ts.tv_sec*1000 + ts.tv_nsec/1000000);
 }
 
 void aes_encrypt(uint8 *key, uint8 *in, uint8 *out, uint32 size)
@@ -142,6 +151,23 @@ void save_proto(const char *headbuf, int headsize, int ID, const char* bodybuf, 
 		fclose(fp);
 	}
 #endif
+}
+
+void save_proto(const char *headbuf, int headsize, int ID, const char* bodybuf, int bodysize, bool bsave)
+{
+	if(bsave)
+	{
+		char fn[256];
+		sprintf(fn, "/var/log/CineCast/%s_%02d.pro", getDateTime().c_str(), ID);
+		FILE *fp = fopen(fn, "wb");
+		if(fp)
+		{
+			fwrite(headbuf, headsize, 1, fp);
+			if(bodybuf != NULL)
+				fwrite(bodybuf, bodysize, 1, fp);
+			fclose(fp);
+		}
+	}
 }
 
 class HeartThread: public brunt::CActiveThread
@@ -254,7 +280,7 @@ void ReleaseNetComm(NetCommThread* pNet)
 
 }
 
-NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false), pHeartThread(NULL), bPause(false), nHeartCount(0), nDNSCount(0)
+NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false), pHeartThread(NULL), bPause(false), nHeartCount(0), nDNSCount(0), m_pUpdateFile(NULL)
 {
 	string s = getDateTime();
 	memset(m_loginReq.startupTime, 0, 20);
@@ -285,6 +311,27 @@ NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(fals
 
 	pHeartThread = new HeartThread;
 	pHeartThread->Init(this);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Add BootTime [2/8/2018 jaontolt]
+	struct sysinfo info;
+	time_t curTime = 0;
+	boot_time = 0;
+	if(sysinfo(&info))
+	{
+		DPRINTF("Failed to get sysinfo, errno:%u, reason:%s\n", errno, strerror(errno));
+	}
+	time(&curTime);
+	if(curTime > info.uptime)
+		boot_time = curTime - info.uptime;
+	else
+		boot_time = info.uptime - curTime;
+	struct tm *ptm = NULL;
+	ptm = gmtime(&boot_time);
+	DPRINTF("System boot time: %d-%d-%d %d:%d:%d\n", ptm->tm_year + 1900, ptm->tm_mon + 1,
+		ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
+	DPRINTF("timestamp:%lld\n", boot_time);
+	//////////////////////////////////////////////////////////////////////////
 }
 
 NetCommThread::~NetCommThread()
@@ -441,7 +488,7 @@ bool NetCommThread::Login()
 
 	//Send login request to remote
 	size_t send_size = 0;
-	t_timeout tm = 8000;
+	t_timeout tm = 16000;
 
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)&req, sizeof(struct L_LOGIN_REQ));
@@ -459,7 +506,7 @@ bool NetCommThread::Login()
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
-			sprintf(str, "[NetCommThread] Login WAIT_R_TIMEOUT");
+			sprintf(str, "[NetCommThread] Login Send Head WAIT_R_TIMEOUT");
 			if (gLog)
 			{
 				gLog->Write(LOG_ERROR, str);
@@ -475,7 +522,7 @@ bool NetCommThread::Login()
 		}
 		else if(err < 0)
 		{
-			sprintf(str, "[NetCommThread] Login WriteError");
+			sprintf(str, "[NetCommThread] Login Send head WriteError");
 			if (gLog)
 			{
 				gLog->Write(LOG_ERROR, str);
@@ -491,7 +538,7 @@ bool NetCommThread::Login()
 	}
 
 	send_size = 0;
-	tm = 8000;
+	tm = 16000;
 	reTry = 0;
 	for(;;)
 	{
@@ -503,7 +550,7 @@ bool NetCommThread::Login()
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
-			sprintf(str, "[NetCommThread] Login WAIT_R_TIMEOUT");
+			sprintf(str, "[NetCommThread] Login Send Body WAIT_R_TIMEOUT");
 			if (gLog)
 			{
 				gLog->Write(LOG_ERROR, str);
@@ -519,7 +566,7 @@ bool NetCommThread::Login()
 		}
 		else if(err < 0)
 		{
-			sprintf(str, "[NetCommThread] Login WriteError");
+			sprintf(str, "[NetCommThread] Login Send Body WriteError");
 			if (gLog)
 			{
 				gLog->Write(LOG_ERROR, str);
@@ -536,7 +583,7 @@ bool NetCommThread::Login()
 
 	//Read login response
 	size_t get_size = 0;
-	tm = 10000;
+	tm = 20000;
 	reTry = 0;
 	for(;;)
 	{
@@ -548,7 +595,7 @@ bool NetCommThread::Login()
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
-			sprintf(str, "[NetCommThread] Login WAIT_R_TIMEOUT");
+			sprintf(str, "[NetCommThread] Login Read Head WAIT_R_TIMEOUT");
 			if (gLog)
 			{
 				gLog->Write(LOG_ERROR, str);
@@ -564,7 +611,7 @@ bool NetCommThread::Login()
 		}
 		else if(err < 0)
 		{
-			sprintf(str, "[NetCommThread] Login ReadError");
+			sprintf(str, "[NetCommThread] Login Read Head ReadError");
 			if (gLog)
 			{
 				gLog->Write(LOG_ERROR, str);
@@ -580,7 +627,7 @@ bool NetCommThread::Login()
 	}
 
 	get_size = 0;
-	tm = 10000;
+	tm = 20000;
 	reTry = 0;
 	for(;;)
 	{
@@ -592,7 +639,7 @@ bool NetCommThread::Login()
 			&tm);
 		if (err == CZSocket::WAIT_R_TIMEOUT)
 		{
-			sprintf(str, "[NetCommThread] Login WAIT_R_TIMEOUT");
+			sprintf(str, "[NetCommThread] Login Read Body WAIT_R_TIMEOUT");
 			if (gLog)
 			{
 				gLog->Write(LOG_ERROR, str);
@@ -608,7 +655,7 @@ bool NetCommThread::Login()
 		}
 		else if(err < 0)
 		{
-			sprintf(str, "[NetCommThread] Login ReadError");
+			sprintf(str, "[NetCommThread] Login Read Body ReadError");
 			if (gLog)
 			{
 				gLog->Write(LOG_ERROR, str);
@@ -647,17 +694,20 @@ bool NetCommThread::Login()
 		sizeof(struct R_LOGIN_REP) - 4);
 	if(crc32 == m_loginRep.crc32)
 	{
+		if(!bLeonisCfg)
+		{
 		sprintf(str,
 			"\"%04u-%02u-%02u %02u:%02u:%02u\"",
-			m_loginRep.sys_year,
-			m_loginRep.sys_month,
-			m_loginRep.sys_date,
-			m_loginRep.sys_hour,
-			m_loginRep.sys_minute,
-			m_loginRep.sys_second);
+				m_loginRep.sys_year & 0xffff,
+				m_loginRep.sys_month & 0xff,
+				m_loginRep.sys_date & 0xff,
+				m_loginRep.sys_hour & 0xff,
+				m_loginRep.sys_minute & 0xff,
+				m_loginRep.sys_second & 0xff);
 		DPRINTF("Received remote date %s", str);
 		System sys;
 		sys.SetDateTime(str);
+		}
 		return true;
 	}
 	sprintf(str, "[NetCommThread] Login receive crc error");
@@ -680,7 +730,7 @@ bool NetCommThread::Auth()
 	inet_descriptor.subCommand = 0x00;
 	inet_descriptor.payloadLength = sizeof(struct L_AUTH_REQ);
 
-	struct L_AUTH_REQ m_authReq;
+//	struct L_AUTH_REQ m_authReq;
 
 	//construct auth request
 	m_authReq.machineID = m_nMachineId;
@@ -760,7 +810,7 @@ bool NetCommThread::Auth()
 	//Send login request to remote
 	size_t send_size = 0;
 
-	t_timeout tm = 8000;
+	t_timeout tm = 10000;
 
 	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
 		(char*)buf, inet_descriptor.payloadLength);
@@ -793,7 +843,7 @@ bool NetCommThread::Auth()
 		}
 		else if(err < 0)
 		{
-			sprintf(str, "[NetCommThread] Auth WriteError");
+			sprintf(str, "[NetCommThread] Auth WriteError: %d", err);
 			if (gLog)
 	{
 				gLog->Write(LOG_ERROR, str);
@@ -810,7 +860,7 @@ bool NetCommThread::Auth()
 	}
 
 	send_size = 0;
-	tm = 8000;
+	tm = 10000;
 	reTry = 0;
 	for(;;)
 	{
@@ -857,7 +907,7 @@ bool NetCommThread::Auth()
 
 	//Read auth response
 	size_t get_size = 0;
-	tm = 10000;
+	tm = 100000;
 	reTry = 0;
 	for(;;)
 	{
@@ -903,7 +953,7 @@ bool NetCommThread::Auth()
 	}
 
 	get_size = 0;
-	tm = 10000;
+	tm = 200000;
 	reTry = 0;
 	for(;;)
 	{
@@ -922,6 +972,7 @@ bool NetCommThread::Auth()
 			}
 			if(reTry > 5)
 			{
+				DPRINTF("Auth Get body Retry overloop\n");
 				delete[] buf;
 // 				bConnected = false;
 // 				m_authSocket.Destroy();
@@ -942,6 +993,7 @@ bool NetCommThread::Auth()
 // 			m_authSocket.Destroy();
 // 			if(m_status == NET_READ)
 // 				m_status = NET_RUN;
+			DPRINTF("[NetCommThread] Auth WriteError \n");
 		return false;
 	}
 		else
@@ -965,14 +1017,20 @@ bool NetCommThread::Auth()
 	memcpy(&m_authRep, buf, sizeof(R_AUTH_REP));
 // 	print_hex((char*)&m_authRep, sizeof(m_authRep));
 
-// 	DPRINTF("Calc CRC, size %04x\n", sizeof(m_authRep) - sizeof(uint32));
+ 	DPRINTF("Calc CRC, size %04x\n", sizeof(m_authRep) - sizeof(uint32));
 	uint32 crc32 = calc_crc32((uint8*)buf,
 		sizeof(R_AUTH_REP) - sizeof(uint32));
-// 	DPRINTF("CRC %08x\n", crc32);
+ 	DPRINTF("CRC %08x %08x\n", crc32, m_authRep.crc32);
 	if(crc32 == m_authRep.crc32)
 	{
 		sprintf(str,
 			"[NetCommThread] Auth get session key: %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X",
+			m_authRep.sessionKey[0], m_authRep.sessionKey[1], m_authRep.sessionKey[2], m_authRep.sessionKey[3], 
+			m_authRep.sessionKey[4], m_authRep.sessionKey[5], m_authRep.sessionKey[6], m_authRep.sessionKey[7], 
+			m_authRep.sessionKey[8], m_authRep.sessionKey[9], m_authRep.sessionKey[10], m_authRep.sessionKey[11], 
+			m_authRep.sessionKey[12], m_authRep.sessionKey[13], m_authRep.sessionKey[14], m_authRep.sessionKey[15]);
+		DPRINTF(
+			"[NetCommThread] Auth get session key: %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X\n",
 			m_authRep.sessionKey[0], m_authRep.sessionKey[1], m_authRep.sessionKey[2], m_authRep.sessionKey[3], 
 			m_authRep.sessionKey[4], m_authRep.sessionKey[5], m_authRep.sessionKey[6], m_authRep.sessionKey[7], 
 			m_authRep.sessionKey[8], m_authRep.sessionKey[9], m_authRep.sessionKey[10], m_authRep.sessionKey[11], 
@@ -985,6 +1043,13 @@ bool NetCommThread::Auth()
 // 		DPRINTF("Free buf success\n");
 		return true;
 	}
+	DPRINTF(
+		"[NetCommThread] Auth get session key: %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X %02X%02X%02X%02X\n",
+		m_authRep.sessionKey[0], m_authRep.sessionKey[1], m_authRep.sessionKey[2], m_authRep.sessionKey[3], 
+		m_authRep.sessionKey[4], m_authRep.sessionKey[5], m_authRep.sessionKey[6], m_authRep.sessionKey[7], 
+		m_authRep.sessionKey[8], m_authRep.sessionKey[9], m_authRep.sessionKey[10], m_authRep.sessionKey[11], 
+		m_authRep.sessionKey[12], m_authRep.sessionKey[13], m_authRep.sessionKey[14], m_authRep.sessionKey[15]);
+	DPRINTF("[NetCommThread] Auth crc error\n");
 	if (gLog)
 		gLog->Write(LOG_ERROR, "[NetCommThread] Auth crc error");
 	delete[] buf;
@@ -1097,6 +1162,7 @@ bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 	inet_descriptor.command = NET_LOST_UPLOAD;
 	inet_descriptor.subCommand = 0x00;
 
+#if 0
 	if(bLeonisCfg)
 	{
 		uint32 crc32 = calc_crc32((uint8*)buf, nLeoSize - sizeof(uint32));
@@ -1104,6 +1170,7 @@ bool NetCommThread::ReportLost(char* buf, int nSize, int nLeoSize)
 		inet_descriptor.payloadLength = nLeoSize;
 	}
 	else
+#endif // 0
 	{
 	#if 0
 	uint32 crc32 = calc_crc32((uint8*)buf, nSize - sizeof(uint32));
@@ -1198,8 +1265,8 @@ bool NetCommThread::HeartBreat()
 	m_sHeart.machineID = m_nMachineId;
 	m_sHeart.temperature = 30;
 	m_sHeart.CPUUsage = 10;
-	m_sHeart.memTotal = 4096;
-	m_sHeart.memIdle = 1024;
+	m_sHeart.memTotal = (uint64)(4096L*1024L*1024L); //For DMCC Requirement, Change GigaBytes to Bytes
+	m_sHeart.memIdle = (uint64)(1024L*1024L*1024L);	//For DMCC Requirement, Change GigaBytes to Bytes
 	m_sHeart.networkRate = 2;
 	m_sHeart.agc = gInfo.nAGC;
 	m_sHeart.snr = gInfo.nSNR;
@@ -1212,6 +1279,15 @@ bool NetCommThread::HeartBreat()
 	m_sHeart.dataRate = 80;
     
 	m_sHeart.reserved;
+	if(bLeonisCfg)
+	{
+		if(bRemoteConnect)
+			m_sHeart.reserved[0] = 1;
+		else
+			m_sHeart.reserved[0] = 0;
+		uint8* p = &m_sHeart.reserved[1];
+		*((uint64*)p) = boot_time;
+	}
 	m_sHeart.filmID = gRecv.nFileID;
 	m_sHeart.filmNameLength = gRecv.strFilmName.size();
 	m_sHeart.filmLength = gRecv.nFileLength;
@@ -1220,6 +1296,12 @@ bool NetCommThread::HeartBreat()
 	memcpy(m_sHeart.taskStartTime, m_strTaskTime.c_str(), m_strTaskTime.size());
 	memcpy(m_sHeart.recvStartTime, m_strRoundTime.c_str(), m_strRoundTime.size());
 	m_sHeart.filmRecvState = gRecv.nReceiveStatus & 0xffff;
+	if(bLeonisCfg)
+	{
+		ContentOperation co;
+		m_sHeart.reserved2 = co.GetAvalibleSpace(0);
+	}
+	else
 	m_sHeart.reserved2 = 0;
 	m_sHeart.recvLength = gRecv.nReceiveLength;
 	
@@ -1281,13 +1363,23 @@ bool NetCommThread::HeartBreat()
 	memcpy(pos, &m_sHeart.filmID, sizeof(uint32));
 	pos += sizeof(uint32);
 
+	//////////////////////////////////////////////////////////////////////////
+	//Fix DMCC error, 2017-5-10
+	if(m_sHeart.filmNameLength > 0)
+		m_sHeart.filmNameLength += 1;
+	//////////////////////////////////////////////////////////////////////////
 	memcpy(pos, &m_sHeart.filmNameLength, sizeof(uint32));
 	pos += sizeof(uint32);
 
-	if(m_sHeart.filmNameLength > 0)
+	if(gRecv.strFilmName.size() > 0)
 	{
-		memcpy(pos, gRecv.strFilmName.c_str(), m_sHeart.filmNameLength);
+		memcpy(pos, gRecv.strFilmName.c_str(), gRecv.strFilmName.size());
 		pos += m_sHeart.filmNameLength;
+
+		//////////////////////////////////////////////////////////////////////////
+		//Fix DMCC error, 2017-5-9
+		memset((pos - 1), 0, 1);
+		//////////////////////////////////////////////////////////////////////////
 	}
 
 	memcpy(pos, &m_sHeart.filmLength, sizeof(uint64));
@@ -1603,13 +1695,13 @@ void NetCommThread::doit()
 					{
 						if (ini->read("ID_HardKey", "ID", tmp))
 						{
-							m_nMachineId = atoi(tmp.c_str());
+								gMachineId = m_nMachineId = atoi(tmp.c_str());
 						}
 						else
 						{
 							if(gLog)
 								gLog->Write(LOG_NETCOMMU, "[NetCommThread] read MachineId failed");
-							m_nMachineId = 0;
+								gMachineId = m_nMachineId = 0;
 						}
 						if(ini->read("ID_HardKey", "HardKey", tmp))
 						{
@@ -1716,9 +1808,15 @@ void NetCommThread::doit()
 							m_authSocket.Destroy();
 							throw -1;
 						}
+							if(error == 0 && bLeonisCfg)
+							{
+								int on = 1;
+								m_authSocket.SetSocketOpt(IPPROTO_TCP, TCP_NODELAY, (void*)&on, sizeof(on));
+							}
 					}while(error);
 					if(Auth() == false)
 					{
+							DPRINTF("auth failure\n");
 						bConnected = false;
 						m_authSocket.Destroy();
 						m_status = NET_RUN;
@@ -1786,6 +1884,8 @@ void NetCommThread::StartConnect()
 	m_status = NET_RUN;
 }
 
+extern void print_hex(char* buf, int len);
+
 bool NetCommThread::RecvFilter()
 {
 				struct INET_DESCRIPTOR m_inetDesc;
@@ -1793,21 +1893,28 @@ bool NetCommThread::RecvFilter()
 	static char a_buf[2048];
 	static char b_buf[2048];
 	char *buf = NULL;
-	if(bLeonisCfg)
-		buf = a_buf;
-	else
+	t_timeout tm;
+// 	if(bLeonisCfg)
+// 	{
+// 		buf = a_buf;
+// 		tm = 100;
+// 	}
+// 	else
+	{
 		buf = b_buf;
-
-	t_timeout tm = 3000;
+		tm = 3000;
+	}
 
 	if(nHeartCount >= 10)
 		nHeartCount++;
+// 	DPRINTF("Get pkg Head %lld\n", get_tick());
 	int err = m_authSocket.Receive2((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), get_size, &tm);
 	if( err == CZSocket::WAIT_R_TIMEOUT)
 				{
 		if(nHeartCount > 15)
 		{
 			nHeartCount = 0;
+			DPRINTF("nHeartCount overflow\n");
 			throw -1;
 		}
 // 		DPRINTF("Receive timeout\n");
@@ -1816,8 +1923,14 @@ bool NetCommThread::RecvFilter()
 	if( err  < 0)
 	{
 		nHeartCount = 0;
+		DPRINTF("read head error %d \n",err);
 		throw -1;
 	}
+// 	DPRINTF("read head error %d size %d %lld\n",err, get_size, get_tick());
+	if(get_size < sizeof(INET_DESCRIPTOR))
+		return true;
+
+// 	print_hex((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR));
 
 				switch(m_inetDesc.command)
 				{
@@ -2340,6 +2453,7 @@ bool NetCommThread::RecvFilter()
 				m_strUpdateFile = "";
 				if(crc32 == *(uint32*)pCrc32)
 				{
+					DPRINTF("CRC OK\n");
 					char *pos = (char*)&pReq->pDescription + pReq->descriptionLength;
 					uint32 FID = *(uint32*)pos;
 					pos += sizeof(uint32);
@@ -2349,6 +2463,10 @@ bool NetCommThread::RecvFilter()
 					m_strUpdateFile.resize(FileNameLen);
 
 					UpdateRep(pReq->updateSerialNo);
+				}
+				else
+				{
+					DPRINTF("CRC ERROR\n");
 				}
 				if(bNew)
 					delete[] buf1;
@@ -2733,9 +2851,195 @@ bool NetCommThread::RecvFilter()
 			}
 		}
 		break;
+	case NET_REMOTE_UPDATE_PUSH_LEONIS:
+		{
+// 			if(gLog)
+// 				gLog->Write(LOG_NETCOMMU, "Receive Leonis Update Push.");
+// 			DPRINTF("Receive Leonis RemoteUpdate push %lld\n", get_tick());
+			char *buf1 = NULL;
+			bool bNew = false;
+			if(m_inetDesc.payloadLength < 2048)
+				buf1 = buf;
+			else
+			{
+				buf1 = new char[m_inetDesc.payloadLength];
+				bNew = true;
+			}
+			if (buf1)
+			{
+				tm = 10000;
+				get_size = 0;
+				if(m_authSocket.Receive((char*)buf1, m_inetDesc.payloadLength, get_size, &tm) < 0)
+				{
+					if(bNew)
+						delete[] buf1;
+					throw (-1);
+				}
+
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
+				if (m_inetDesc.flag != ENC_NONE)
+				{
+					aes_decrypt((uint8*)m_authRep.sessionKey,
+						(uint8*)buf1,
+						(uint8*)buf1,
+						m_inetDesc.payloadLength);
+				}
+// 				DPRINTF("decrypt success %lld\n", get_tick());
+
+				uint32 crc32 = calc_crc32((uint8*)buf1, m_inetDesc.payloadLength - sizeof(uint32));
+				R_REMOTE_UPGRADE_LEONIS_REQ *pReq = (R_REMOTE_UPGRADE_LEONIS_REQ*)buf1;
+				char* pCrc32 = buf1 + m_inetDesc.payloadLength - sizeof(uint32);
+				m_strUpdateFile = "";
+				if(crc32 == *(uint32*)pCrc32)
+				{
+
+// 					DPRINTF("crc success\n");
+					char *pos = (char*)&pReq->pFileName;
+					std::string filename = pos;
+					filename.resize(pReq->fileNameLength);
+
+					pos += pReq->fileNameLength;
+					uint32 DataLength = *(uint32*)pos;
+					pos += sizeof(uint32);
+
+// 					DPRINTF("name len %d %s %d %lld\n", pReq->fileNameLength, filename.c_str(), DataLength, pReq->segmentNo);
+					
+					if(filename != m_strUpdateFileName)
+					{
+						if(m_pUpdateFile != NULL)
+							fclose(m_pUpdateFile);
+						m_strUpdateFileName = filename;
+						m_pUpdateFile = fopen(m_strUpdateFileName.c_str(), "wb+");
+						if(m_pUpdateFile)
+						{
+							DPRINTF("create file success\n");
+							fseek(m_pUpdateFile, pReq->segmentNo*1024, SEEK_SET);
+						}
+						else
+						{
+							DPRINTF("create file error\n");
+							m_pUpdateFile = NULL;
+							UpdateLeonisRep((void*)pReq, 2);
+						}
+					}
+					if(pReq->segmentNo == 0)
+					{
+						if(m_pUpdateFile != NULL)
+							fclose(m_pUpdateFile);
+						m_strUpdateFileName = filename;
+						m_pUpdateFile = fopen(m_strUpdateFileName.c_str(), "wb+");
+						if(m_pUpdateFile)
+						{
+							DPRINTF("create file success\n");
+							fseek(m_pUpdateFile, pReq->segmentNo*1024, SEEK_SET);
+						}
+						else
+						{
+							DPRINTF("create file error\n");
+							m_pUpdateFile = NULL;
+							UpdateLeonisRep((void*)pReq, 2);
+						}
+					}
+// 					else
+					if(m_pUpdateFile != NULL)
+					{
+// 						print_hex((char*)pos, DataLength);
+						if(fwrite(pos, DataLength, 1, m_pUpdateFile) < 1)
+						{
+							UpdateLeonisRep((void*)pReq, 2);
+							fflush(m_pUpdateFile);
+							DPRINTF("write file error\n");
+						}
+						else
+						{
+							UpdateLeonisRep((void*)pReq, 0);
+							fflush(m_pUpdateFile);
+// 							DPRINTF("write file success %lld %lld\n", pReq->segmentNo, DataLength);
+						}
+					}
+				}
+				else
+				{
+					DPRINTF("CRC ERROR:%08x %08x\n", crc32, *(uint32*)pCrc32);
+					UpdateLeonisRep((void*)pReq, 1);
+				}
+				if(bNew)
+					delete[] buf1;
+			}
+			else
+			{
+				DPRINTF("new buf error\n");
+			}
+		}
+		break;
+	case NET_REMOTE_UPEATE_REQ_LEONIS:
+		{
+			DPRINTF("Receive Leonis RemoteUpdate req\n");
+			char *buf1 = NULL;
+			bool bNew = false;
+			if(m_inetDesc.payloadLength < 2048)
+				buf1 = buf;
+			else
+			{
+				buf1 = new char[m_inetDesc.payloadLength];
+				bNew = true;
+			}
+			if (buf1)
+			{
+				tm = 10000;
+				get_size = 0;
+				if(m_authSocket.Receive((char*)buf1, m_inetDesc.payloadLength, get_size, &tm) < 0)
+				{
+					if(bNew)
+						delete[] buf1;
+					throw (-1);
+				}
+
+				save_proto((char*)&m_inetDesc, sizeof(INET_DESCRIPTOR), m_inetDesc.command,
+					(char*)buf1, m_inetDesc.payloadLength);
+
+				if (m_inetDesc.flag != ENC_NONE)
+				{
+					aes_decrypt((uint8*)m_authRep.sessionKey,
+						(uint8*)buf1,
+						(uint8*)buf1,
+						m_inetDesc.payloadLength);
+				}
+
+				uint32 crc32 = calc_crc32((uint8*)buf1, m_inetDesc.payloadLength - sizeof(uint32));
+				R_REMOTE_UPGRADE_PUSH_CONFIRM *pReq = (R_REMOTE_UPGRADE_PUSH_CONFIRM*)buf1;
+				char* pCrc32 = buf1 + m_inetDesc.payloadLength - sizeof(uint32);
+				m_strUpdateFile = "";
+				if(m_pUpdateFile)
+				{
+					DPRINTF("Close file\n");
+					fclose(m_pUpdateFile);
+					m_pUpdateFile = NULL;
+				}
+				if(crc32 == *(uint32*)pCrc32)
+				{
+					//TODO: Update system
+					DPRINTF("Update system after reboot\n");
+				}
+// 				else
+// 				{
+// 					DPRINTF("CRC error %08x %08x\n", crc32, *pCrc32);
+// 				}
+				if(bNew)
+					delete[] buf1;
+			}
+			else
+			{
+				DPRINTF("new buf error\n");
+			}
+		}
+		break;
 	default:
 		{
 			DPRINTF("Unknow message %04X\n", m_inetDesc.command);
+			return true;
 #if 0
 			m_inetDesc.subCommand = 0x02;
 			m_inetDesc.payloadLength = 0;
@@ -3151,6 +3455,8 @@ bool NetCommThread::UpdateRep(uint8* sn)
 		}
 		return false;
 	}
+	printf("Update command received\n");
+
 	//construct preamble
 	struct INET_DESCRIPTOR inet_descriptor;
 	inet_descriptor.flag = ENC_SESSIONKEY;
@@ -3180,12 +3486,13 @@ bool NetCommThread::UpdateRep(uint8* sn)
 			}
 		}
 	}
+	printf("updatefile:%s\n", m_strUpdateFile.c_str());
 	//
 
 	if (bSuccess)
 		m_upRep.updateCheckResult = 0;
 	else
-		m_upRep.updateCheckResult = 1;
+		m_upRep.updateCheckResult = 2;
 	memcpy(m_upRep.updateSerialNo, sn, 16);
 	m_upRep.reserved_1 = 0;
 
@@ -3244,6 +3551,91 @@ bool NetCommThread::UpdateRep(uint8* sn)
 	tm = 10000;
 	if(m_authSocket.Send((char*)&m_upRep,
 		sizeof(struct L_REMOTE_UPGRADE_PUSH_REP),
+		send_size,
+		&tm) < 0)
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
+
+		return false;
+	}
+	ReleaseMutex();
+	return true;
+}
+
+bool NetCommThread::UpdateLeonisRep(void *pReq, int bRes /*= 0*/)
+{
+	if(!bConnected)
+	{
+		char str[512];
+		sprintf(str, "[NetCommThread] Leonis UpdateRep: remote not connect.");
+		if (gLog)
+		{
+			gLog->Write(LOG_NETCOMMU, str);
+		}
+		return false;
+	}
+	//construct preamble
+	struct INET_DESCRIPTOR inet_descriptor;
+	inet_descriptor.flag = ENC_SESSIONKEY;
+	inet_descriptor.command = NET_REMOTE_UPDATE_PUSH_REP_LEONIS;
+	if(bRes != 0)
+		inet_descriptor.subCommand = 0x0002;
+	else
+		inet_descriptor.subCommand = 0x0001;
+	inet_descriptor.payloadLength = sizeof(struct L_REMOTE_UPGRADE_PUSH_LEONIS_REP);
+
+	struct L_REMOTE_UPGRADE_PUSH_LEONIS_REP m_upRep;
+	struct R_REMOTE_UPGRADE_LEONIS_REQ *pUReq = (struct R_REMOTE_UPGRADE_LEONIS_REQ*)pReq;
+
+	char str[512];
+
+	m_upRep.updateCheckResult = bRes;
+	m_upRep.reserved = 0;
+	m_upRep.reserved_2 = 0;
+
+	memcpy(m_upRep.oldVersion, m_authReq.version, 16);
+	memcpy(m_upRep.updateSerialNo, pUReq->updateSerialNo, 16);
+	m_upRep.segmentNo = pUReq->segmentNo;
+	
+	m_upRep.crc32 = calc_crc32((uint8*)&m_upRep,
+		sizeof(L_REMOTE_UPGRADE_PUSH_LEONIS_REP) - 4);
+
+	//Encrypt request with AES128 ECB
+	aes_encrypt((uint8*)m_authRep.sessionKey, 
+		(uint8*)&m_upRep, 
+		(uint8*)&m_upRep,
+		sizeof(struct L_REMOTE_UPGRADE_PUSH_LEONIS_REP));
+
+	//Send request to remote
+	size_t send_size = 0;
+
+	t_timeout tm = 10000;
+
+	save_proto((char*)&inet_descriptor, sizeof(struct INET_DESCRIPTOR), inet_descriptor.command,
+		(char*)&m_upRep, sizeof(struct L_REMOTE_UPGRADE_PUSH_LEONIS_REP));
+
+	GetMutex();
+	if(m_authSocket.Send((char*)&inet_descriptor,
+		sizeof(struct INET_DESCRIPTOR),
+		send_size,
+		&tm) < 0)
+	{
+		ReleaseMutex();
+		bConnected = false;
+		m_authSocket.Destroy();
+		if(m_status == NET_READ)
+			m_status = NET_RUN;
+
+		return false;
+	}
+	send_size = 0;
+	tm = 10000;
+	if(m_authSocket.Send((char*)&m_upRep,
+		sizeof(struct L_REMOTE_UPGRADE_PUSH_LEONIS_REP),
 		send_size,
 		&tm) < 0)
 	{

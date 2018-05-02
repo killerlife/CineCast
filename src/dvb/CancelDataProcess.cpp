@@ -14,6 +14,8 @@ CancelDataThread gCancel;
 extern char SimDataBuf[10][4096];
 extern int SimBufPos;
 #endif
+extern char strDemux[1024];
+
 CancelDataThread* CreateCancel()
 {
 	return &gCancel;
@@ -53,7 +55,8 @@ bool CancelDataThread::Init(void *param1, void *param2)
 bool CancelDataThread::Start()
 {
 	Stop();
-	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+// 	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+	m_pFilter->SetStrDevName(strDemux);
 	m_pFilter->SetFilterID(m_pid, 0x94);
 	m_status = RUN;
 	m_bCancel = false;

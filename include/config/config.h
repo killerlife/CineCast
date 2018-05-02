@@ -3,13 +3,15 @@
 
 #include <string>
 #include <vector>
+#include "dvb/mytype.h"
+
 using namespace std;
 
 class IConfig
 {
 public:
-	virtual const string getRemoteUrl() = 0;
-	virtual const int getRemotePort() = 0;
+	virtual string getRemoteUrl() = 0;
+	virtual int getRemotePort() = 0;
 	virtual const string getLeonisUrl() = 0;
 	virtual const int getLeonisPort() = 0;
 	virtual const string getProgramRootPath() = 0;
@@ -18,8 +20,8 @@ public:
 	virtual const string getLogPath() = 0;
 	virtual const string getLogOutPath() = 0;
 	virtual const string getBreakPointPath() = 0;
-	virtual const uint32 getMachineId() = 0;
-	virtual const string getHardKey() = 0;
+	virtual uint32 getMachineId() = 0;
+	virtual string getHardKey() = 0;
 	virtual ~IConfig(){};
 };
 

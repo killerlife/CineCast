@@ -21,6 +21,7 @@ public:
 	int GetStatus() { return m_status; };
 	uint64 ReciveLength(){ return 0; };
 	uint64 FileLength(){return 0;};
+	uint32 GetFilmId(){ return m_filmId;};
 
 private:
 	virtual void doit();
@@ -32,4 +33,6 @@ private:
 	uint32 m_machineId;
 	Filter* m_pFilter;
 	uint8 m_buffer[4096];
+	uint32 m_filmId;
+// 	ILog* pLog;
 };

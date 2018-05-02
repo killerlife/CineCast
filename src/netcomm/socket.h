@@ -56,4 +56,6 @@ int socket_gethostbyname(const char *addr, struct hostent **hp);
 
 const char* socket_name(p_socket ps);
 
+int socket_setopt(p_socket ps, int level, int optname, const void *optval, socklen_t optlen);
+
 #endif /* SOCKET_H */

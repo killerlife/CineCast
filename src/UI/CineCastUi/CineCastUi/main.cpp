@@ -1,6 +1,6 @@
 #include <QtGui/QApplication>
 #include <QTranslator>
-
+#include <QDesktopWidget>
 #include "cinecastui.h"
 
 QString rIp;

@@ -10,6 +10,7 @@ CPP_SRCS += \
 ../zSocket.cpp \
 ../GuiServer.cpp \
 ../SimulatorServer.cpp \
+../cfctms.cpp \
 ../BaseOperation.cpp 
 #../Log.cpp \
 #../LogFileOperation.cpp
@@ -25,6 +26,7 @@ OBJS += \
 ./NetCommThread.o \
 ./GuiServer.o \
 ./SimulatorServer.o \
+./cfctms.o \
 ./BaseOperation.o 
 #./Log.o \
 #./LogFileOperation.o
@@ -34,6 +36,7 @@ CPP_DEPS += \
 ./NetCommThread.d \
 ./GuiServer.d \
 ./SimulatorServer.d \
+./cfctms.d \
 ./BaseOperation.d 
 #./Log.d \
 #./LogFileOperation.d

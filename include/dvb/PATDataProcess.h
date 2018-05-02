@@ -24,7 +24,9 @@ public:
 	
 	int GetStatus() { return m_status; };
 
-	void GetLostSegment();
+	uint64 GetLostSegment(); //Use to calc lost segment/receive segment, and generate lost info struct
+	
+	bool UnzipSubtitle(); //find and unzip subtitle zip file
 
 private:
 	virtual void doit();

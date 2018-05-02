@@ -113,6 +113,7 @@ public:
 	bool IsSameDCP(std::string path);
 	bool IsReady();
 	bool RoundCleanCounter();
+	bool IsNewSession();
 
 public:
 	struct PmtDescriptor* m_pPmtDescriptor;
@@ -158,5 +159,6 @@ private:
 	uint32 m_lastSegNum;
 	uint32* pDebugCmd;
 	
+	bool bNewSession;
 // 	ILog *pLog;
 };

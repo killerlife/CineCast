@@ -419,7 +419,7 @@ bool SimulatorThread::NotifyProc(char* buf)
 // 	print_hex(buf + sizeof(KL), pKL->m_length);
 // 	print_hex(pos, pKL->m_length);
 	SimBufPos = (SimBufPos+1)%10;
-	DPRINTF("SimPos=%d\n", SimBufPos);
+// 	DPRINTF("SimPos=%d\n", SimBufPos);
 // 	if (gLog)
 // 	{
 // 		char str[512];
@@ -440,7 +440,7 @@ bool SimulatorThread::StartProc(char* buf)
 	pos += sizeof(uint16);
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
 	SimBufPos = (SimBufPos+1)%10;
-	DPRINTF("SimPos=%d\n", SimBufPos);
+// 	DPRINTF("SimPos=%d\n", SimBufPos);
 // 	if (gLog)
 // 	{
 // 		char str[512];
@@ -482,8 +482,8 @@ bool SimulatorThread::CancelProc(char* buf)
 	pos += sizeof(uint16);
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
 	SimBufPos = (SimBufPos+1)%10;
-	DPRINTF("SimPos=%d\n", SimBufPos);
-	if (gLog)
+// 	DPRINTF("SimPos=%d\n", SimBufPos);
+// if (gLog)
 // 	{
 // 		char str[512];
 // 		sprintf(str, "[SimulatorThread] Received protocol: %04X.", pKL->m_keyID);
@@ -503,8 +503,8 @@ bool SimulatorThread::PatProc(char* buf)
 	pos += sizeof(uint16);
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
 	SimBufPos = (SimBufPos+1)%10;
-	DPRINTF("SimPos=%d\n", SimBufPos);
-	if (gLog)
+// 	DPRINTF("SimPos=%d\n", SimBufPos);
+// 	if (gLog)
 // 	{
 // 		char str[512];
 // 		sprintf(str, "[SimulatorThread] Received protocol: %04X.", pKL->m_keyID);
@@ -524,7 +524,7 @@ bool SimulatorThread::PmtProc(char* buf)
 	pos += sizeof(uint16);
 	memcpy(pos, buf + sizeof(KL), pKL->m_length);
 	SimBufPos = (SimBufPos+1)%10;
-	DPRINTF("SimPos=%d\n", SimBufPos);
+// 	DPRINTF("SimPos=%d\n", SimBufPos);
 // 	print_hex(pos, pKL->m_length);
 // 	if (gLog)
 // 	{
@@ -548,7 +548,7 @@ bool SimulatorThread::DataProc(char* buf)
 		pos += sizeof(uint16);
 		memcpy(pos, buf + sizeof(KL), pKL->m_length);
 		SimBufPos = (SimBufPos+1)%10;
-		DPRINTF("SimPos=%d\n", SimBufPos);
+// 		DPRINTF("SimPos=%d\n", SimBufPos);
 	}
 // 	if (gLog)
 // 	{

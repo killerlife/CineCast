@@ -18,6 +18,9 @@
 extern ILog* gLog;
 extern NetCommThread *pNetComm;
 extern RECEIVE_INFO gRecv;
+
+extern char strDemux[1024];
+
 bool gFilmDataFlag = false;
 #if SIMULATOR
 extern char SimDataBuf[10][4096];
@@ -39,7 +42,8 @@ PATDataThread::PATDataThread():
 	nCrc(0),
 	nReceiveSegment(0),
 	nFileLength(0),
-	nReceiveLength(0)
+	nReceiveLength(0),
+	bReset(false)
 {
 	m_pFilter = new Filter;
 	pDebugCmd = GetDebugCommand();
@@ -60,7 +64,8 @@ PATDataThread::~PATDataThread()
 bool PATDataThread::Init(void *param1, void *param2)
 {
 	m_PatId = *(uint16*)param1;
-	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+// 	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+	m_pFilter->SetStrDevName(strDemux);
 	m_pFilter->SetFilterID(m_PatId, 0x00);
 	return true;
 	//Use Start function to start thread.
@@ -80,6 +85,40 @@ bool PATDataThread::Start()
 	m_status = RUN;
 	if(gLog)
 		gLog->Write(LOG_DVB, "[PATDataThread] Start: Run.");
+		bReset = false;
+#if 0 //This patch will make the receive stop after one round finished
+
+		//////////////////////////////////////////////////////////////////////////
+		// PreCreate PMT thread
+		if(m_pManager == NULL)
+			m_pManager = brunt::createThreadManager();
+		if(m_pmtIdList.empty())
+		{
+			for(int i = 0x21; i<0x26; i++)
+			{
+				m_pmtIdList.push_back(i);
+
+				char str[200];
+				sprintf(str, "[PAT Descriptor] Create PMT Descriptor: %d", i);
+				//pLog->Write(LOG_DVB, str);
+				//syslog(LOG_INFO|LOG_USER, "[PAT Descriptor] Create PMT Descriptor: %d", pmtId); 
+				PMTDataThread *thread = new PMTDataThread;
+				thread->Init(&i, NULL);
+#if 1
+				brunt::ThreadRunPolicy policy;
+				policy.order = 0;
+				policy.policy = brunt::POLICY_ERROR_EXIT;
+
+				brunt::CThreadRunInfo threadInfo(thread, policy);
+				m_pManager->addThread(threadInfo); 
+				m_pManager->setParallelNum(0, m_pmtIdList.size());
+				m_pManager->run();
+#endif
+				m_pmtList.push_back(thread);
+			}
+		}
+		//////////////////////////////////////////////////////////////////////////
+#endif
 	}
 	return true;
 }
@@ -87,7 +126,7 @@ bool PATDataThread::Start()
 bool PATDataThread::Reset(bool bFinish)
 {
 	m_status = IDLE;
-	if(gLog)
+	if(gLog && bReset == false)
 		gLog->Write(LOG_DVB, "[PATDataThread] Reset: Processing.");
 
 	std::list<PMTDataThread*>::iterator itor;
@@ -97,7 +136,7 @@ bool PATDataThread::Reset(bool bFinish)
 	{
 		PMTDataThread *pmtThread = *itor;
 		pmtThread->Stop();
-		if(gLog)
+		if(gLog && bReset == false)
 		{
 			sprintf(str, "[PATDataThread] Reset: %d:%d PMT stopped", i, m_pmtList.size());
 			gLog->Write(LOG_DVB, str);
@@ -105,7 +144,7 @@ bool PATDataThread::Reset(bool bFinish)
 		if(bFinish)
 		{
 		pmtThread->FinishDCP();
-		if(gLog)
+			if(gLog && bReset == false)
 		{
 			sprintf(str, "[PATDataThread] Reset: %d Finish DCP", i);
 			gLog->Write(LOG_DVB, str);
@@ -113,7 +152,7 @@ bool PATDataThread::Reset(bool bFinish)
 		}
 
 		delete pmtThread;
-		if(gLog)
+		if(gLog && bReset == false)
 		{
 			sprintf(str, "[PATDataThread] Reset: %d:%d PMT deleted", i, m_pmtList.size());
 			gLog->Write(LOG_DVB, str);
@@ -121,12 +160,13 @@ bool PATDataThread::Reset(bool bFinish)
 	}
 	m_pmtList.clear();
 	m_pmtIdList.clear();
-	if(gLog)
+	if(gLog && bReset == false)
 		gLog->Write(LOG_DVB, "[PATDataThread] Reset: All Clear.");
 	while(bIdle == false)
 	{
 		usleep(2000);
 	}
+	bReset = true;
 	//Disable for change function to reset
 	//m_status = RUN;
 }
@@ -578,7 +618,19 @@ bool PATDataThread::SendLostReport()
 	sprintf(str, "/tmp/lost%ld.zip ", m_FilmId);
 	std::string cmd = "/bin/rm -rf ";
 	cmd = cmd + str;
+#if 0
+	//////////////////////////////////////////////////////////////////////////
+	// If use SuperDog, it BLOCK system call !!!! [10/10/2017 killerlife]
+	// So we use ExternCall class to instead it.
 	system(cmd.c_str());
+#else
+	IExternCall *pEc = CreateExternCall();
+	pEc->RunCommand(cmd.c_str());
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+#endif
 	if(gLog)
 		gLog->Write(LOG_SYSTEM, cmd.c_str());
 	
@@ -590,15 +642,11 @@ bool PATDataThread::SendLostReport()
 	cmd = "/bin/zip ";
 	cmd = cmd + str + m_strReportFileList;
 #if 1
-	IExternCall *pEc = CreateExternCall();
+// 	IExternCall *pEc = CreateExternCall();
 	pEc->RunCommand(cmd.c_str());
-	int count = 0;
 	while(!pEc->IsFinish())
 	{
-		count++;
 		usleep(200000);
-		if(count > 25)
-			break;
 	}
 	if(gLog)
 		gLog->Write(LOG_SYSTEM, pEc->GetOutput().c_str());

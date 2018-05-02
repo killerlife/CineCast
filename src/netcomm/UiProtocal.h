@@ -16,6 +16,7 @@ typedef enum
 	S_GET_HARDDRIVER,
 	S_GET_TMS,
 	S_GET_VERSION,
+	S_GET_SERIALNUMBER,
 
 	//0x150 Config function
 	S_GET_CONFIG = 0x150, //include DelSys/FEC/MOD/ROL/POL
@@ -58,21 +59,21 @@ typedef enum
 
     //new
 	M_COPYDIR_HDD_TO_USB,
-	M_GETCOPYPROCESS,  //ȡļ
+	M_GETCOPYPROCESS,  //取募
 
-    M_DELETE_DIR,      //ɾӰƬļĿ¼
+    M_DELETE_DIR,      //删影片募目录
 
-	M_UPDATE_PROGRAM_LIST_HDD,     //UpdateProgramListˢӲб���Ա? 
-	M_UPDATE_PROGRAM_LIST_USB,     //UpdateProgramListˢӲб���Ա? 
+	M_UPDATE_PROGRAM_LIST_HDD,     //UpdateProgramList刷硬斜恚毖? 
+	M_UPDATE_PROGRAM_LIST_USB,     //UpdateProgramList刷硬斜恚毖? 
      
-	M_IS_PROGRAM_LIST_READY_HDD,   //IsProgramListReadyѯǷ׼
-	M_IS_PROGRAM_LIST_READY_USB,   //IsProgramListReadyѯǷ׼
+	M_IS_PROGRAM_LIST_READY_HDD,   //IsProgramListReady询欠准
+	M_IS_PROGRAM_LIST_READY_USB,   //IsProgramListReady询欠准
 
 	M_GET_RAID_CONTENT_LIST,
 	M_SET_RAID_CONTENT_DEL,
 	M_GET_RAID_INFO,
-	M_UPDATE_PROGRAM_LIST_RAID,     //UpdateProgramListˢӲб���Ա? 
-	M_IS_PROGRAM_LIST_READY_RAID,   //IsProgramListReadyѯǷ׼
+	M_UPDATE_PROGRAM_LIST_RAID,     //UpdateProgramList刷硬斜恚毖? 
+	M_IS_PROGRAM_LIST_READY_RAID,   //IsProgramListReady询欠准
 
 	R_GET_RAID_INFO = 0x400,
 
@@ -82,7 +83,7 @@ typedef enum
 } UiProtocalKey;
 
 
-//һ־ʱṹ塣uiݸserver
+//一志时峁瑰。ui莞server
 typedef struct _LOGDATE_
 {
 	unsigned short after_year;
@@ -95,7 +96,7 @@ typedef struct _LOGDATE_
 
 
 
-//charַ·ٸ
+//char址路俑
 typedef struct _copy_path_
 {
 	char path_src[512];
@@ -199,8 +200,8 @@ typedef enum
 	CONTENT_RECV_DATETIME,
 	CONTENT_LOCATE,
 
-	CONTENT_PATH_SRC,   //Դ·ַ
-	CONTENT_PATH_DST,   //Ŀ·ַ
+	CONTENT_PATH_SRC,   //源路址
+	CONTENT_PATH_DST,   //目路址
 
 	RAID_INFO_LEVEL,
 	RAID_INFO_STATE,

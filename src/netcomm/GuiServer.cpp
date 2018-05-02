@@ -1,6 +1,7 @@
 ﻿#include "GuiServer.h"
 #include "UiProtocal.h"
 #include "BaseOperation.h"
+#include "../externcall/ExternCall.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -192,7 +193,7 @@ int cpfile(char *path_dst,char *path_src,long long totalsize,long long* complete
 */     
    close(source);
 
-   //fflush(FILE* srteam)(stdio.h) : дѻݼʱд,����ļܸоܿ.ǲһʵд?
+   //fflush(FILE* srteam)(stdio.h) : дѻݼʱд,��ļܸоܿ.ǲһʵд?
    //linuxint fsync(int fd);#include <unistd.h>
 
    fsync(target); //ͬڴ޸ĵļݵ?
@@ -322,7 +323,16 @@ int CopyThread::copy_dir(char *dir_dst,char *dir_src,int* complete_percent,int* 
 		  }
 		  char cmd[2048];
 		  sprintf(cmd, "ln -s %s /storage/recv/%s", dir_dst, dest.c_str());
+#if 0
 		  system(cmd);
+#else
+		  IExternCall *pEc = CreateExternCall();
+		  pEc->RunCommand(cmd);
+		  while(!pEc->IsFinish())
+		  {
+			  usleep(200000);
+		  }
+#endif
 	  }
 	  *copy_flag=0;          //=0 , һɹ
 	  return 0;
@@ -703,6 +713,8 @@ bool GuiThread::UiProcessFilter()
 				return C_SetTuner(buf);
 			case S_GET_VERSION:
 				return S_GetVersion(buf);
+			case S_GET_SERIALNUMBER:
+				return S_GetSerialNumber(buf);
 			case N_GET_CONFIG:
 				return N_GetConfig(buf);
 			case N_SET_CONFIG:
@@ -2189,7 +2201,30 @@ bool DeleteSymlink( const fs::path & dir_path, std::string symLink)
 				{
 					gLog->Write(LOG_ERROR, s.c_str());
 				}
-				system(s.c_str());
+#if 1
+				try
+				{
+					fs::remove(itr->path().native());
+				}
+				catch(const fs::filesystem_error& e)
+				{
+					sprintf(str, "[GuiServer] DeleteSymlink: Skip the IO error, except: %s.", e.what());
+					if (gLog)
+					{
+						gLog->Write(LOG_ERROR, str);
+					}
+					DPRINTF("[GuiServer] DeleteSymlink: Skip the IO error, except: %s.", e.what());
+				}
+				
+// 				system(s.c_str());
+#else
+				IExternCall *pEc = CreateExternCall();
+				pEc->RunCommand(s.c_str());
+				while(!pEc->IsFinish())
+				{
+					usleep(200000);
+				}
+#endif
 			}
 			else if (fs::is_directory( *itr )) 
 			{
@@ -2222,7 +2257,16 @@ bool GuiThread::M_DeleteDir(char* buf)
     //²ԷŵBaseOperation
     char str_cmd[256]="rm -rf ";    //ǿɾ
     strcat(str_cmd,path_del);       //ƴӳϵͳ
+#if 0
     system(str_cmd);                 //system("umount /media/usb"); 
+#else
+	IExternCall *pEc = CreateExternCall();
+	pEc->RunCommand(str_cmd);
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+#endif
 
 	std::string s = str_cmd;
     if(gLog)
@@ -2535,7 +2579,16 @@ bool GuiThread::R_SetDebugCmd(char* buf)
 	{
 		char cmd[512];
 		sprintf(cmd, "/bin/rm -rf /storage/20160324");
+#if 0
 		system(cmd);
+#else
+		IExternCall *pEc = CreateExternCall();
+		pEc->RunCommand(cmd);
+		while(!pEc->IsFinish())
+		{
+			usleep(200000);
+		}
+#endif
 	}
 	return res;
 }
@@ -2548,6 +2601,17 @@ bool GuiThread::S_GetVersion(char* buf)
 	memcpy(buf + sizeof(KL), gVersion, 16);
 	int sendsize = sizeof(KL) + 16;
 	return Write(buf, sendsize, sendsize);
+}
+
+bool GuiThread::S_GetSerialNumber(char* buf)
+{
+	extern uint32 gMachineId;
+	KL *pKL = (KL*) buf;
+	pKL->m_length = sizeof(uint32);
+	memcpy(buf + sizeof(KL), &gMachineId, sizeof(uint32));
+	int sendsize = sizeof(KL) + sizeof(uint32);
+	return Write(buf, sendsize, sendsize);
+
 }
 
 bool GuiThread::S_GetShutdownFlag(char* buf)

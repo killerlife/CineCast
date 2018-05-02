@@ -1,4 +1,5 @@
 ﻿#include "PMTDataProcess.h"
+#include "../netcomm/BaseOperation.h"
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
@@ -9,6 +10,8 @@
 #include <syslog.h>
 //#include <log/Log.h>
 #include <time.h>
+#include "../brunt/myini/myini.h"
+using namespace brunt;
 
 extern RECEIVE_INFO gRecv;
 #if SIMULATOR
@@ -44,10 +47,13 @@ bool PMTDataThread::Init(void *param1, void *param2)
 	return Start();
 }
 
+extern char strDemux[1024];
+
 bool PMTDataThread::Start()
 {
 	Stop();
-	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+	m_pFilter->SetStrDevName(strDemux);
+// 	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
 	m_pFilter->SetFilterID(m_PmtId, 0x02);
 	m_status = RUN;
 	return true;
@@ -224,6 +230,10 @@ void PMTDataThread::doit()
 
 									m_pmtList.push_back(pPmtDescriptor);
 
+									//用于SSD为0时删除影片
+									ContentOperation co;
+									co.CheckWhileFull(0);
+
 									sprintf(str, "[PMT Descriptor] Create FilmData 0x%x", pPmtDescriptor->ElementaryPid);
 									//pLog->Write(LOG_DVB, str);
 									//syslog(LOG_INFO|LOG_USER, str);
@@ -235,6 +245,12 @@ void PMTDataThread::doit()
 									{
 										pFilmDataThread->start();
 										DPRINTF("%s\n", pPmtDescriptor->fileDescriptor->FileName);
+									}
+									if(pFilmDataThread->IsNewSession())
+									{
+										extern std::vector<std::string> gRunPathList;
+										DPRINTF("Auto Delete in PMT Thread\n");
+										co.AutoDelete(0, gRunPathList, 1024000000);
 									}
 
 									m_filmList.push_back(pFilmDataThread);
@@ -353,6 +369,10 @@ void PMTDataThread::doit()
 
 							m_pmtList.push_back(pPmtDescriptor);
 
+							//用于SSD为0时删除影片
+							ContentOperation co;
+							co.CheckWhileFull(0);
+
 							sprintf(str, "[PMT Descriptor] Create FilmData 0x%x", pPmtDescriptor->ElementaryPid);
 							//pLog->Write(LOG_DVB, str);
 							//syslog(LOG_INFO|LOG_USER, str);
@@ -365,7 +385,12 @@ void PMTDataThread::doit()
 								pFilmDataThread->start();
 								DPRINTF("%s\n", pPmtDescriptor->fileDescriptor->FileName);
 							}
-
+							if(pFilmDataThread->IsNewSession())
+							{
+								extern std::vector<std::string> gRunPathList;
+								DPRINTF("Auto Delete in PMT Thread\n");
+								co.AutoDelete(0, gRunPathList, 1024000000);
+							}
 							m_filmList.push_back(pFilmDataThread);
 						}
 					}
@@ -441,6 +466,11 @@ void PMTDataThread::doit()
 
 								m_pmtList.push_back(pPmtDescriptor);
 
+								//用于SSD为0时删除影片
+								DPRINTF("Check disk full in pmt\n");
+								ContentOperation co;
+								co.CheckWhileFull(0);
+
 								sprintf(str, "[PMT Descriptor] Create FilmData 0x%x", pPmtDescriptor->ElementaryPid);
 								//pLog->Write(LOG_DVB, str);
 								//syslog(LOG_INFO|LOG_USER, str);
@@ -453,7 +483,12 @@ void PMTDataThread::doit()
 									pFilmDataThread->start();
 									DPRINTF("%s\n", pPmtDescriptor->fileDescriptor->FileName);
 								}
-
+								if(pFilmDataThread->IsNewSession())
+								{
+									extern std::vector<std::string> gRunPathList;
+									DPRINTF("Auto Delete in PMT Thread\n");
+									co.AutoDelete(0, gRunPathList, 1024000000);
+								}
 								m_filmList.push_back(pFilmDataThread);
 							}
 						}
@@ -720,6 +755,12 @@ bool PMTDataThread::IsFilmDataReady()
 #include <boost/filesystem/exception.hpp>
 namespace fs = boost::filesystem;
 
+//////////////////////////////////////////////////////////////////////////
+// Import Contents to TMS [6/13/2017 killerlife]
+#include "../netcomm/cfctms.h"
+#include "../content/IContentParser.h"
+#include "../externcall/ExternCall.h"
+//////////////////////////////////////////////////////////////////////////
 bool PMTDataThread::FinishDCP()
 {
 	char cmd[2048];
@@ -733,30 +774,128 @@ bool PMTDataThread::FinishDCP()
 	}
 	//----------------------------------
 
+	//////////////////////////////////////////////////////////////////////////
+	// Read FTP Directory from Configuration [6/22/2017 killerlife]
+	ICMyini* ini = createMyini();
+	std::string tmp;
+	if(ini)
+	{
+		if(ini->load("/etc/vsftpd/vuser_conf/leonis"))
+		{
+			if(!ini->read(" ", "local_root", tmp))
+				tmp = "/storage/ftp"; //Use /storage instead if not set ftp local root
+		}
+		releaseMyini(ini);
+	}
+	fs::create_directory(tmp.c_str());
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	// Just for CFCTMS [6/22/2017 killerlife]
+	// To create protocol content
+	std::string toTMS;
+	if(dcp.size() > 0)
+	    toTMS = "\"dcpList\":[";
+	//////////////////////////////////////////////////////////////////////////
+
 	for(int i = 0; i < dcp.size(); i++)
 	{
 		std::string fn = dcp.at(i);
 		//std::string cmd = "mv ";
+		IExternCall *pEc = CreateExternCall();
+		std::string cplPath, cplUuid;
+		size_t pos;
 #ifdef ENABLE_RAID
-		sprintf(cmd, "cp -Rf %s /raid", fn.c_str());
+
+		// 当程序用在无RAID机器上时，拷贝影片会耗尽硬盘空间 [1/18/2018 jaontolt]
+		// 增加目的路径判断，只有RAID时才拷贝
+		if((pos = fn.find("/storage/ftp")) == std::string::npos && tmp == "/storage/ftp")
+		{
+			sprintf(cmd, "mv -Rf %s %s", fn.c_str(), tmp.c_str());
+		}
+		else
+		{
+			sprintf(cmd, "cp -Rf %s %s", fn.c_str(), tmp.c_str());
+		}
+
 
 		if (gLog)
 		{
 			gLog->Write(LOG_SYSTEM, cmd);
 		}
-		system(cmd);
+		pEc->RunCommand(cmd);
+		while (!pEc->IsFinish())
+		{
+			usleep(200000);
+		}
+		if(gLog)
+			gLog->Write(LOG_SYSTEM, pEc->GetOutput().c_str());
+		//system(cmd);
+
+		//////////////////////////////////////////////////////////////////////////
+		// Just for CFCTMS [6/22/2017 killerlife]
+		//re-construct DCP Path
+		{
+			std::string dest = fn;
+			size_t p;
+			if (dest.at(dest.size() - 1) == '/')
+			{
+				dest.resize(dest.size() - 1);
+			}
+			while(1)
+			{
+				p = dest.find("/");
+				if(p != std::string::npos)
+				{
+					dest.erase(0, p+1);
+				}
+				else
+					break;
+			}
+			cplPath = tmp + "/" + dest;
+
+			IContentParser * iCP = CreateContentParser();
+			if(gLog)
+			{
+				gLog->Write(LOG_SYSTEM, "Get CPL info:");
+				gLog->Write(LOG_SYSTEM, cplPath.c_str());
+			}
+			iCP->openCPL(cplPath);
+			iCP->getCPLInfo(cplUuid);
+		}
+		//////////////////////////////////////////////////////////////////////////
 #endif
+
+		// 当程序用在无RAID机器上时，拷贝影片会耗尽硬盘空间 [1/18/2018 jaontolt]
+		// 增加目的路径判断，只有RAID时才拷贝
+		if((pos = fn.find("/storage/ftp")) == std::string::npos)
+		{
 		sprintf(cmd, "mv %s /storage/ftp", fn.c_str());
 // 		cmd += fn;
 // 		cmd += " /storage/ftp";
 		//Create /storage/ftp first, it's vsftp root directory
+#if 0
 		system("mkdir /storage/ftp");
+#else
+			pEc = CreateExternCall();
+			pEc->RunCommand("mkdir /storage/ftp");
+			while (!pEc->IsFinish())
+			{
+				usleep(200000);
+			}
+#endif
 		if (gLog)
 		{
 			gLog->Write(LOG_SYSTEM, cmd);
 		}
-		system(cmd);
-		size_t pos;
+			// 		pEc = CreateExternCall();
+			pEc->RunCommand(cmd);
+			while(!pEc->IsFinish())
+			{
+				usleep(200000);
+			}
+			// 		system(cmd);
+		}
 		if((pos = fn.find("/storage/recv/")) != std::string::npos)
 		{
 			fn.erase(pos, 14);
@@ -777,19 +916,45 @@ bool PMTDataThread::FinishDCP()
 						break;
 				}
 				sprintf(cmd, "ln -s /storage/ftp/%s /storage/recv/%s", dest.c_str(), fn.c_str());
+#if 0
 				system(cmd);
+#else
+				pEc->RunCommand(cmd);
+				while(!pEc->IsFinish())
+				{
+					usleep(200000);
+				}
+#endif
+				if (gLog)
+				{
+					gLog->Write(LOG_SYSTEM, cmd);
+				}
+#ifndef ENABLE_RAID
+				//////////////////////////////////////////////////////////////////////////
+				// Just for CFCTMS [6/22/2017 killerlife]
+				cplPath = "/storage/ftp/" + dest;
+				//////////////////////////////////////////////////////////////////////////
 
+				//////////////////////////////////////////////////////////////////////////
+				//Import Contents to TMS
+				//std::string contentDir = "/storage/recv/" + dest;
+				//CreateCfcTms()->ImportContentUsbLocalToTms(contentDir);
+				//////////////////////////////////////////////////////////////////////////
+#endif
 				//Add command to AutoUpload shell script
 				if(fp)
 				{
 					sprintf(cmd, "scp -r /storage/ftp/%s root@$FTP_IP:$FTP_ROOT\n", dest.c_str());
 					fwrite(cmd, strlen(cmd), 1, fp);
 				}
-				//--------------------------------------
-			}
 			if(gLog)
+				{
 				gLog->Write(LOG_SYSTEM, cmd);
 		}
+				//--------------------------------------
+			}
+		}
+
 		if((pos = fn.find("/storage/")) != std::string::npos)
 		{
 			fn.erase(pos, 9);
@@ -811,7 +976,25 @@ bool PMTDataThread::FinishDCP()
 				}
 
 				sprintf(cmd, "ln -s /storage/ftp/%s /storage/%s", dest.c_str(), fn.c_str());
+#if 0
 				system(cmd);
+#else
+				pEc->RunCommand(cmd);
+				while(!pEc->IsFinish())
+				{
+					usleep(200000);
+				}
+#endif
+				if (gLog)
+				{
+					gLog->Write(LOG_SYSTEM, cmd);
+				}
+#ifndef ENABLE_RAID
+				//////////////////////////////////////////////////////////////////////////
+				// Just for CFCTMS [6/22/2017 killerlife]
+				cplPath = "/storage/ftp/" + dest;
+				//////////////////////////////////////////////////////////////////////////
+#endif
 
 				//Add command to AutoUpload shell script
 				if(fp)
@@ -819,25 +1002,60 @@ bool PMTDataThread::FinishDCP()
 					sprintf(cmd, "scp -r /storage/ftp/%s root@$FTP_IP:$FTP_ROOT\n", dest.c_str());
 					fwrite(cmd, strlen(cmd), 1, fp);
 				}
-				//--------------------------------------
-
-			}
 			if (gLog)
 			{
 				gLog->Write(LOG_SYSTEM, cmd);
 			}
+				//--------------------------------------
+			}
 		}
+#ifdef ENABLE_RAID
+		//////////////////////////////////////////////////////////////////////////
+		// Just for CFCTMS [6/22/2017 killerlife]
+		char tt[4096];
+		sprintf(tt, "{\"contentUUID\":\"%s\",\"dcpPath\":\"%s\"}", cplUuid.c_str(), cplPath.c_str());
+		if(i != 0)
+		{
+			toTMS += ",";
 	}
+		toTMS += tt;
+		//////////////////////////////////////////////////////////////////////////
+#endif
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Just for CFCTMS [6/22/2017 killerlife]
+	if(dcp.size() > 0)
+	    toTMS += "]";
+	CreateCfcTms()->finishSatelliteDownload(toTMS);
+	//////////////////////////////////////////////////////////////////////////
 	
 	//Close AutoUpload shell script
 	if(fp)
 	{
 		fclose(fp);
+#if 0
 		system("chmod +x /usr/bin/auto_upload.sh");
 		system("systemctl start autoupload.service");
+#else
+		IExternCall *pEc = CreateExternCall();
+		pEc->RunCommand("chmod +x /usr/bin/auto_upload.sh");
+		while(!pEc->IsFinish())
+		{
+			usleep(200000);
+	}
+
+		pEc->RunCommand("systemctl start autoupload.service");
+		while(!pEc->IsFinish())
+		{
+			usleep(200000);
+		}
+#endif
 	}
 	//-----------------------------
-
+#ifdef ENABLE_RAID
+	gRecv.nReceiveStatus  = (gRecv.nReceiveStatus & 0xffff0000) + 11;
+#endif
 	return true;
 }
 

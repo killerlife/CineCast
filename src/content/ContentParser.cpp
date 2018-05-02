@@ -33,12 +33,23 @@ public:
 
 	//for get packinglistFile and composition's absolute file name,path must be absolute path!
 	virtual bool open(const std::string& path);
+	
+	//////////////////////////////////////////////////////////////////////////
+	// Just for CFCTMS [6/22/2017 killerlife]
+	virtual bool openCPL(const std::string& path);
+	//////////////////////////////////////////////////////////////////////////
+
 	virtual void close();
 
 	virtual int getProgramNum();
 	virtual int parseProgramInfo(DcpInfo& info, int index = 0);
-	virtual int getProgramFilePath(std::vector<ReelInfo>&filePathList, int index = 0); //(add by qwy)uuidõcplļ(·)
+	virtual int getProgramFilePath(std::vector<ReelInfo>&filePathList, int index = 0); //(add by qwy)根据uuid得到cpl文件(包含路径)
 	virtual int getProgramId(std::string programId, int index = 0);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Just for CFCTMS [6/22/2017 killerlife]
+	virtual int getCPLInfo(std::string &uuid, int index = 0);
+	//////////////////////////////////////////////////////////////////////////
 
 	virtual int getLastError()
 	{
@@ -52,6 +63,11 @@ protected:
 	void findXmlFiles(const std::string& path, std::vector<std::string>& xmlFiles);
 
 	std::string getRecvRatio();
+
+	//////////////////////////////////////////////////////////////////////////
+	// Just for CFCTMS [6/22/2017 killerlife]
+	int getCPLuuid(std::string& uuid, std::string filepath);
+	//////////////////////////////////////////////////////////////////////////
 
 private:
 	int m_error;
@@ -76,6 +92,12 @@ private:
 	STATUS_INFO m_status;
 	vector<std::string> m_pklList;
 	vector<std::string> m_idList;
+
+	//////////////////////////////////////////////////////////////////////////
+	// Just for CFCTMS [6/22/2017 killerlife]
+	vector<std::string> m_pList;
+	std::string mPath;
+	//////////////////////////////////////////////////////////////////////////
 
 	ILog* pLog;
 };
@@ -304,13 +326,57 @@ bool ContentParser::open(const std::string& path)
 		char *buf = new char[fs::file_size(path)];
 		fread(buf, fs::file_size(path), 1, fp);
 		if(strstr(buf, "PackingList")!=NULL)
+		{
 			m_pklList.push_back(filesXml[k]);
+			sprintf(str, "[ContentParser] Find PKL: %s.", filesXml[k].c_str());
+			if (pLog)
+			{
+				pLog->Write(LOG_ERROR, str);
+			}
+		}
 		delete[] buf;
 		fclose(fp);
 	}
 
 	return true;
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Just for CFCTMS [6/22/2017 killerlife]
+bool ContentParser::openCPL(const std::string& path)
+{
+	m_pList.clear();	// to be look at more safety
+
+	char str[512];
+	DPRINTF("[ContentParse] open %s\n", path.c_str());
+	
+	mPath = path;
+
+	//Add for display 99% while one dcp not finish in task
+	std::vector<std::string> filesXml;
+	findXmlFiles(path, filesXml);
+
+	for(int k=0; k<filesXml.size(); k++)
+	{
+		FILE *fp = fopen(filesXml[k].c_str(), "rb");
+		fs::path path(filesXml[k]);
+		if(fs::file_size(path) > 1024*5000)
+		{
+			fclose(fp);
+			continue;
+		}
+		char *buf = new char[fs::file_size(path)];
+		fread(buf, fs::file_size(path), 1, fp);
+		if(strstr(buf, "CompositionPlaylist")!=NULL)
+			m_pList.push_back(filesXml[k]);
+		delete[] buf;
+		fclose(fp);
+	}
+
+	return true;
+}
+//////////////////////////////////////////////////////////////////////////
+
 
 void ContentParser::close()
 {
@@ -443,6 +509,117 @@ int ContentParser::parseProgramInfo(DcpInfo& info, int index /* = 0 */)
 	return -1;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Just for CFCTMS [6/22/2017 killerlife]
+int ContentParser::getCPLInfo(std::string& info, int index /* = 0 */)
+{
+	char str[512];
+
+	if (index < m_pklList.size())
+	{
+		std::string pklFile = m_pList[index];
+		return getCPLuuid(info, pklFile);
+#if 0
+		QFile file(pklFile.c_str());
+		DPRINTF("[ContentParser] parseProgramInfo: %s\n", pklFile.c_str());
+		if(!file.open(QFile::ReadOnly|QFile::Text))
+			return -1;
+		
+		QString errStr;
+		int errLine;
+		int errColumn;
+
+		QDomDocument doc;
+		if (doc.setContent(&file,
+			true, &errStr, &errLine, &errColumn))
+		{
+			QDomElement root = doc.firstChildElement("PackingList");
+			if(root.isNull())
+				return -1;
+
+			QDomElement item = root.firstChildElement("AssetList");
+			QDomNodeList list = item.elementsByTagName("Asset");
+			for (int i = 0; i < list.size(); i++)
+			{
+				QDomNode a = list.at(i);
+				QDomElement b = a.firstChildElement("Type");
+				if(!b.isNull())
+					DPRINTF("%s\n", b.text().toStdString().c_str());
+					if(b.text().compare("text/xml;asdcpKind=CPL") == 0)
+					{
+						b = a.firstChildElement("OriginalFileName");
+					DPRINTF("%s\n", b.text().toStdString().c_str());
+
+						if(b.isNull())
+							continue;
+						std::string p = mPath;
+						if(p.at(p.length() - 1) != '/')
+							p += '/';
+						p += b.text().toStdString();
+						DPRINTF("[ContentParser] parseProgramInfo: OriginalFileName is %s\n", p.c_str());
+
+						return getCPLuuid(info, p);
+					}
+			}
+			return 0;
+		}
+		else
+		{
+			sprintf(str, "[ContentParser] parseProgramInfo error: %s.", errStr.toStdString().c_str());
+			if (pLog)
+			{
+				pLog->Write(LOG_ERROR, str);
+			}
+			return -1;
+		}
+#endif
+	}
+	return -1;
+}
+
+int ContentParser::getCPLuuid(std::string& uuid, std::string filepath)
+{
+	char str[512];
+
+	{
+		QFile file(filepath.c_str());
+		DPRINTF("[ContentParser] parseProgramInfo: %s\n", filepath.c_str());
+		if(!file.open(QFile::ReadOnly|QFile::Text))
+			return -1;
+		
+		QString errStr;
+		int errLine;
+		int errColumn;
+
+		QDomDocument doc;
+		if (doc.setContent(&file,
+			true, &errStr, &errLine, &errColumn))
+		{
+			QDomElement root = doc.firstChildElement("CompositionPlaylist");
+			if(root.isNull())
+			{
+				DPRINTF("cpl root error\n");
+				return -1;
+			}
+			QDomElement item = root.firstChildElement("Id");
+			if (!item.isNull())
+				uuid = item.text().toStdString();
+
+			return 0;
+		}
+		else
+		{
+			sprintf(str, "[ContentParser] parseProgramInfo error: %s.", errStr.toStdString().c_str());
+			if (pLog)
+			{
+				pLog->Write(LOG_ERROR, str);
+			}
+			return -1;
+		}
+	}
+	return -1;
+}
+//////////////////////////////////////////////////////////////////////////
 
 std::string ContentParser::getRecvRatio()
 {

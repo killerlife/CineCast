@@ -174,7 +174,7 @@ int CZSocket::Receive2(char* buff, int size, size_t& getsize, t_timeout* tm)
 		if(ZSOCKET_FAILED(m_error))
 			break;
 	}
-	getsize = size;
+	getsize = s_get;
 	return m_error;
 }
 
@@ -269,4 +269,9 @@ std::string CZSocket::GetSockName()
 {
 	m_sockName = socket_name(&m_socket);
 	return m_sockName;
+}
+
+int CZSocket::SetSocketOpt(int level, int optname, const void* optval, socklen_t optlen)
+{
+	return socket_setopt(&m_socket, level, optname, optval, optlen);
 }

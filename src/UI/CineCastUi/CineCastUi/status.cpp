@@ -446,7 +446,9 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 			s.sprintf("%lld/%lld", tInfo->nFileLength, tInfo->nFileLength);
 			ui.label_Receiver->setText(s);
 		}
-		
+		break;
+	case 20:
+		ui.label_38->setText(tr("Uploading DCP to RAID Array... DO NOT TURN OFF POWER."));
 		break;
 	}
 	if (tInfo->strExtend.find("REMOTE:1") != std::string::npos)
@@ -475,4 +477,9 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.groupBox_satellite->setEnabled(false);
 		ui.groupBox_Filme->setEnabled(false);
 	}
+	if(tInfo->strExtend.find("UPDATE:1") != std::string::npos)
+	{
+		ui.label_38->setText(tr("Ingest update file from USB disk, please reboot to update system."));
+	}
+	ui.textBrowser->moveCursor(QTextCursor::End);
 }

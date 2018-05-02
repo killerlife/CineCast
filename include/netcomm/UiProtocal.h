@@ -3,6 +3,8 @@
 
 #include <dvb/mytype.h>
 #include <string>
+#include <vector>
+#include <string.h>
 
 #pragma pack(1)
 typedef enum
@@ -13,6 +15,7 @@ typedef enum
 	S_GET_REMOTE,
 	S_GET_HARDDRIVER,
 	S_GET_TMS,
+	S_GET_VERSION,
 
 	//0x150 Config function
 	S_GET_CONFIG = 0x150, //include DelSys/FEC/MOD/ROL/POL
@@ -23,6 +26,7 @@ typedef enum
 
 	N_GET_REMOTE,	//remote ip
 	N_SET_REMOTE,
+	N_GET_STATUS,
 
 	//0x200 Manager function
 	M_GET_USB_MOUNT = 0x200,
@@ -51,20 +55,31 @@ typedef enum
 
     //new
 	M_COPYDIR_HDD_TO_USB,
-	M_GETCOPYPROCESS,  //ȡļ
+	M_GETCOPYPROCESS,  //取募
 
-    M_DELETE_DIR,      //ɾӰƬļĿ¼
+    M_DELETE_DIR,      //删影片募目录
 
-	M_UPDATE_PROGRAM_LIST_HDD,     //UpdateProgramListˢӲб���Ա? 
-	M_UPDATE_PROGRAM_LIST_USB,     //UpdateProgramListˢӲб���Ա? 
+	M_UPDATE_PROGRAM_LIST_HDD,     //UpdateProgramList刷硬斜恚毖? 
+	M_UPDATE_PROGRAM_LIST_USB,     //UpdateProgramList刷硬斜恚毖? 
      
-	M_IS_PROGRAM_LIST_READY_HDD,   //IsProgramListReadyѯǷ׼
-	M_IS_PROGRAM_LIST_READY_USB,   //IsProgramListReadyѯǷ׼
+	M_IS_PROGRAM_LIST_READY_HDD,   //IsProgramListReady询欠准
+	M_IS_PROGRAM_LIST_READY_USB,   //IsProgramListReady询欠准
+
+	M_GET_RAID_CONTENT_LIST,
+	M_SET_RAID_CONTENT_DEL,
+	M_GET_RAID_INFO,
+	M_UPDATE_PROGRAM_LIST_RAID,     //UpdateProgramList刷硬斜恚毖? 
+	M_IS_PROGRAM_LIST_READY_RAID,   //IsProgramListReady询欠准
+
+	R_GET_RAID_INFO = 0x400,
+
+	R_SET_DEBUG_CMD = 0x500,
+     
 
 } UiProtocalKey;
 
 
-//һ־ʱṹ塣uiݸserver
+//一志时峁瑰。ui莞server
 typedef struct _LOGDATE_
 {
 	unsigned short after_year;
@@ -77,11 +92,17 @@ typedef struct _LOGDATE_
 
 
 
-//charַ·ٸ
+//char址路俑
 typedef struct _copy_path_
 {
 	char path_src[512];
 	char path_dst[512];
+public:
+	_copy_path_()
+	{
+		memset(path_src, 0, 512);
+		memset(path_dst, 0, 512);
+	}
 }copy_path;
 
 
@@ -136,6 +157,7 @@ typedef enum
 	RECEIVE_FILM_ISSUE_DATE,
 	RECEIVE_FILM_ISSUER,
 	RECEIVE_FILM_CREATOR,
+	RECEIVE_EXTEND,
 
 	TUNER_CONFIG = 0x20,
 	TUNER_DEV_NAME,
@@ -151,10 +173,12 @@ typedef enum
 	NET_IP,
 	NET_NETMASK,
 	NET_GATEWAY,
+	NET_CONNECTED,
 	
 	REMOTE_CONFIG = 0x60,
 	REMOTE_DNS,
 	REMOTE_SERVER,
+	REMOTE_PORT,
 
 	CONTENT_ID = 0x80,
 	CONTENT_NAME,
@@ -172,8 +196,12 @@ typedef enum
 	CONTENT_RECV_DATETIME,
 	CONTENT_LOCATE,
 
-	CONTENT_PATH_SRC,   //Դ·ַ
-	CONTENT_PATH_DST,   //Ŀ·ַ
+	CONTENT_PATH_SRC,   //源路址
+	CONTENT_PATH_DST,   //目路址
+
+	RAID_INFO_LEVEL,
+	RAID_INFO_STATE,
+	RAID_INFO_DEVSTATE,
 
 } ReceiveKey;
 
@@ -192,6 +220,7 @@ typedef struct receive_info
 	std::string strIssueDate;
 	std::string strIssuer;
 	std::string strCreator;
+	std::string strExtend;
 } RECEIVE_INFO;
 
 typedef struct tuner_conf {
@@ -224,12 +253,20 @@ typedef struct tuner_conf {
 	};
 } TUNER_CONF;
 
+typedef struct network_status {
+	std::string strDevName;
+	std::string strConnected;
+} NETWORK_STATUS;
+
 typedef struct network_conf {
 	uint8 nDhcp;
 	std::string strDevName;
 	std::string strIp;
 	std::string strNetmask;
 	std::string strGateway;
+	std::string strConnected;
+	std::string strDns1;
+	std::string strDns2;
 } NETWORK_CONF;
 
 typedef struct remote_conf {
@@ -262,5 +299,18 @@ typedef struct disk_info
 	uint64 nTotal;
 	uint64 nAvali;
 }DISK_INFO;
+
+typedef struct raid_info
+{
+	uint16 nRaidDevices;
+	uint16 nActiveDevices;
+	uint16 nWorkingDevices;
+	uint16 nFailedDevices;
+	uint64 nArraySize;
+	uint64 nUsedSize;
+	std::string strLevel;
+	std::string strState;
+	std::vector<std::string> strDevState;
+}RAID_INFO;
 
 #endif _UI_PROTOCOL_H_

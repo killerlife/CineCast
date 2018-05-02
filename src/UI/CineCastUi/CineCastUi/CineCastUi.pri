@@ -5,6 +5,7 @@
 
 #Header files
 HEADERS += ./cinecastui.h \
+    ./WindowMatchingPid.h \
     ./content.h \
     ./copyfilm.h \
     ./delconfirm.h \

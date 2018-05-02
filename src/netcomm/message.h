@@ -59,6 +59,9 @@ typedef enum Net_Command
 	NET_PKG_COLLECT_START,
 	NET_LOG_REQ_LEONIS = 0x100,
 	NET_LOG_REP_LEONIS,
+	NET_REMOTE_UPDATE_PUSH_LEONIS = 0x8071,
+	NET_REMOTE_UPDATE_PUSH_REP_LEONIS,
+	NET_REMOTE_UPEATE_REQ_LEONIS,
 }Net_Command_t;
 
 struct L_LOGIN_REQ
@@ -360,6 +363,42 @@ struct R_PKG_SEND_DATA
 	uint32 filmID;
 	uint32 segNum;
 	uint32 dataLen;
+};
+
+struct R_REMOTE_UPGRADE_LEONIS_REQ
+{
+	uint64 segmentNo;
+	uint8 updateSerialNo[16];
+	uint8 reserved[16];
+	uint32 FID;
+	uint32 fileNameLength;
+	uint8* pFileName;
+	uint32 dataLength;
+	uint8* pData;
+	uint32 crc32;
+	R_REMOTE_UPGRADE_LEONIS_REQ()
+	{
+		memset(updateSerialNo, 0, 16);
+		memset(reserved, 0, 16);
+	}
+};
+
+struct L_REMOTE_UPGRADE_PUSH_LEONIS_REP
+{
+	uint32 updateCheckResult;
+	uint32 reserved;
+	uint8 oldVersion[16];
+	uint8 updateSerialNo[16];
+	uint64 segmentNo;
+	uint64 reserved_2;
+	uint32 crc32;
+	L_REMOTE_UPGRADE_PUSH_LEONIS_REP()
+	{
+		reserved = reserved_2 = 0;
+		updateCheckResult = 0;
+		memset(oldVersion, 0, 16);
+		memset(updateSerialNo, 0, 16);
+	}
 };
 
 std::string getDateTime();

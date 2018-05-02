@@ -63,6 +63,7 @@ private:
 	uint64 nReceiveSegment;
 	uint64 nFileLength;
 	uint64 nReceiveLength;
+	bool bReset;
 // 	ILog *pLog;
 };
 

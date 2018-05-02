@@ -84,9 +84,19 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	ss += s;
 	ss += dd;
 	ui.label_Receiver->setText(ss);
+	int nprg = 0;
 	if(tInfo->nFileLength > 0)
 	{
+#if 1 //UI fake
+		nprg = tInfo->nReceiveLength*10000/tInfo->nFileLength;
+		if((nprg % 100) > 0)
+			nprg += 100;
+		if(nprg > 10000)
+			nprg = 10000;
+		ui.progressBar_Revceiver_length->setValue(nprg);
+#else
 		ui.progressBar_Revceiver_length->setValue(tInfo->nReceiveLength*10000/tInfo->nFileLength);
+#endif
 	}
 	else
 		ui.progressBar_Revceiver_length->setValue(0);
@@ -102,11 +112,34 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 	}
 	else
 		sRate = "0";
+#if 1 //UI fake
+	QString total;
+	QString recvs;
+	QString lost;
 
+
+	if(nprg >= 10000)
+	{
+		total = QString::number(tInfo->nTotalSegment);
+		recvs = QString::number(tInfo->nTotalSegment);
+		lost = QString::number(0);
+	}
+	else
+	{
+		total = QString::number(tInfo->nTotalSegment);
+		recvs = QString::number(tInfo->nReceiveSegment);
+		lost = QString::number(tInfo->nLostSegment);
+	}
+	QString round = QString::number(tInfo->nReceiveStatus>>16);
+	QString crc = QString::number(tInfo->nCrcErrorSegment);
+#else
 	QString round = QString::number(tInfo->nReceiveStatus>>16);
 	QString crc = QString::number(tInfo->nCrcErrorSegment);
 	QString total = QString::number(tInfo->nTotalSegment);
 	QString recvs = QString::number(tInfo->nReceiveSegment);
+	QString lost = QString::number(tInfo->nLostSegment);
+#endif
+
 	if(creator.isEmpty())
 	{
 		creator = "\t";
@@ -157,7 +190,7 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		.arg(total)
 		.arg(recvs)
 		.arg(crc)
-		.arg(QString::number(tInfo->nLostSegment))
+		.arg(lost)
 		.arg(round);
 #endif
 	ui.textBrowser->setText(txt);
@@ -512,6 +545,10 @@ void Status::UpdateRecv(RECEIVE_INFO* tInfo)
 		ui.progressBar_siganl_Strength->setEnabled(false);
 		ui.progressBar_siganl_Quality->setEnabled(false);
 		ui.groupBox_Filme->setEnabled(false);
+	}
+	if(tInfo->strExtend.find("UPDATE:1") != std::string::npos)
+	{
+		ui.label_38->setText(tr("Ingest update file from USB disk, please reboot to update system."));
 	}
 	ui.textBrowser->moveCursor(QTextCursor::End);
 }

@@ -1,4 +1,4 @@
-﻿// config.cpp :  DLL Ӧóڵ㡣
+﻿// config.cpp : 定义 DLL 应用程序的入口点。
 //
 #ifdef WIN32
 #include "stdafx.h"

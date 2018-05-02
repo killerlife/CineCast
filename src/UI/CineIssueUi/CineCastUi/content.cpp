@@ -443,6 +443,31 @@ void Content::LoadContent_HDD()
 				break;
 			case CONTENT_LOCATE:
 				item_HDD->pData[C_LOCATE] = tmp;
+
+#if 1 //UI fake
+#ifdef WIN32
+				int64 nRec = _atoi64(item_HDD->pData[C_RECVSEGMENT].c_str());
+				int64 nTotal = _atoi64(item_HDD->pData[C_TOTAL_SEGMENT].c_str());
+#else
+				int64 nRec = atoll(item_HDD->pData[C_RECVSEGMENT].c_str());
+				int64 nTotal = atoll(item_HDD->pData[C_TOTAL_SEGMENT].c_str());
+#endif
+				int nprg = nRec * 10000 / nTotal;
+				if(nprg % 100 > 0)
+					nprg += 100;
+				nprg /= 100;
+				if(nprg > 100)
+					nprg = 100;
+				char ss[50];
+				sprintf(ss, "%d%", nprg);
+				item_HDD->pData[C_PROGRESS] = ss;
+
+				if(nprg >= 100)
+				{
+					item_HDD->pData[C_RECVSEGMENT] = item_HDD->pData[C_TOTAL_SEGMENT];
+				}
+
+#endif
 				item_HDD->MakeItem_HDD();
 
 				ui.treeWidget_HDD_info->addTopLevelItem((QTreeWidgetItem*)(item_HDD));
@@ -792,7 +817,7 @@ void Content::on_pushButton_ExporttoUSB_clicked()
 	//取说前选时默为-1
 	int currentIndex_row=(int)(ui.treeWidget_HDD_info->currentIndex().row());
     printf("treeWidget_HDD_info->currentIndex_row=%d\n",currentIndex_row);
-    if(currentIndex_row==-1)   return;  //没选愍燀祷
+    if(currentIndex_row==-1)   return;  //没选锟斤拷锟斤拷
 
 
     //一碌睿蔡縐痰路UI偷
@@ -918,7 +943,7 @@ int Content::getCopyProgress()   //时询募
 			
 			int get_copy_flag=1;                         //取目状态   
             void* pos2=buf+sizeof(KL)+sizeof(int);
-	        memcpy(&get_copy_flag,pos2,sizeof(int));    //桑鄢晒恙燀祷0
+	        memcpy(&get_copy_flag,pos2,sizeof(int));    //桑鄢晒锟斤拷锟斤拷0
 
 			if(get_percent>=0&&get_percent<=10000)
             ui.progressBar_CopyDir->setValue(get_percent);     //
@@ -962,7 +987,7 @@ void Content::on_pushButton_DeleteDir_HDD_clicked()
 {
     //取说前选时默为-1
 	int currentIndex_row=(ui.treeWidget_HDD_info->currentIndex().row());
-    if(currentIndex_row==-1)   return;  //没选愍燀祷
+    if(currentIndex_row==-1)   return;  //没选锟斤拷锟斤拷
 
 	if(QMessageBox::question(this, tr("Delete confirm"), tr("Please make sure to delete content."),
 		QMessageBox::Yes, QMessageBox::No) == QMessageBox::No)
@@ -1020,7 +1045,7 @@ void Content::on_pushButton_DeleteDir_USB_clicked()
     //取说前选时默为-1
 	int currentIndex_row=(ui.treeWidget_USB_info->currentIndex().row());
     printf("treeWidget_USB_info->currentIndex_row=%d\n",currentIndex_row);
-    if(currentIndex_row==-1)   return;  //没选愍燀祷
+    if(currentIndex_row==-1)   return;  //没选锟斤拷锟斤拷
 
 	if(m_ConnectStatus==2)    
 	{

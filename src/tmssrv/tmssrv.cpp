@@ -22,6 +22,14 @@
 using namespace brunt;
 extern ILog* gLog;
 
+enum{
+	TMS_NO_CONNECT = 0,
+	TMS_CONNECT_REQ,
+	TMS_CONTENT_REQ,
+	TMS_FTP_REQ,
+	TMS_END_REQ,
+};
+
 class TmsThread: public CActiveThread
 {
 public:
@@ -850,7 +858,7 @@ bool TmsThread::ftp_req(char* buf)
 
 						std::string ip = m_socket.GetSockName().c_str();
 						QString source;
-						source.sprintf("ftp://%s/", ip.c_str());
+						source.sprintf("ftp://%s:1221/", ip.c_str());
 						txt = doc.createTextNode(source);
 						item.appendChild(txt);
 

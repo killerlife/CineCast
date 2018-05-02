@@ -15,10 +15,10 @@ public:
 	~Setup();
 
 	void LoadConfig();
-	void getTMS();      //ȡ־
-	void TMS_start();   //ȡ־ʱ
-	void TMS_stop();    //رջȡ־ʱ
-	int m_TMS_timer;    //ʱȡ־ 
+	void getTMS();      //取志
+	void TMS_start();   //取志时
+	void TMS_stop();    //乇栈取志时
+	int m_TMS_timer;    //时取志 
 
 private:
 	void Init();

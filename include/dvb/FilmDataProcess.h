@@ -74,6 +74,8 @@ public:
 	uint64 CRCError();
 	uint64 TotalSegment();
 
+	void UpdateInfo();
+
 	int GetStatus() { return m_status; };
 // 	void SetObserver(IFilmDataObserver* pObserver) { m_pObserver = pObserver; };
 	void WriteFile(uint64 pos, uint8 *pbuf, uint16 size);
@@ -92,7 +94,10 @@ public:
 
 	bool isStop() { return bStop; };
 
+	bool haveSegment(uint32 nSegNum);
+
 	struct LostBuf* GetLostSegment();
+	bool UnzipSubtitle();
 
 public:
 	struct PmtDescriptor* m_pPmtDescriptor;
@@ -106,7 +111,7 @@ private:
 private:
 	int m_status;
 // 	IFilmDataObserver *m_pObserver;
-	std::string m_strFileName;
+	std::string m_strFileName, m_strFileNameReport;
 	std::string m_strZtFileName;
 	int m_nZtBufSize;
 	uint8 *m_pZtBuf;
@@ -131,5 +136,6 @@ private:
 
 	bool bStop;
 
+	uint64 m_ztPos;
 // 	ILog *pLog;
 };

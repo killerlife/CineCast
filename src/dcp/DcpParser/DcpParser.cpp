@@ -176,6 +176,7 @@ std::string CDcpParse::findCPLFile(const std::string& path, const std::string& c
 		return ""; 
 	}
 
+//	DP_PrintS("CDcpParse::findCPLFile %d", childFiles.size());
 	DP_PrintS("CDcpParse::findCPLFile %d", childFiles.size());
 
 	for(unsigned int i=0;i<childFiles.size();++i)

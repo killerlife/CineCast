@@ -30,7 +30,7 @@ private:
 	void Init();
 
 private slots:
-	void on_pushButton_Shutdown_clicked();     //	ػ
+	void on_pushButton_Shutdown_clicked();     //	鼗
 	void on_pushButton_Reboot_clicked();       //	  
 
 	void on_tabWidget_currentChanged(int);
@@ -59,7 +59,7 @@ private:
 
 	QTcpSocket socket;
 	int m_network_timer;
-    int m_UpdateSatellite_timer;   //ʱѯ״̬ʱ
+    int m_UpdateSatellite_timer;   //时询状态时
 	int m_time_timer;
 };
 

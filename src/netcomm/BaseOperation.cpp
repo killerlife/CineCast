@@ -599,6 +599,8 @@ REMOTE_CONF& NetOperation::GetRemoteConfig()
 
 extern NetCommThread *pNetComm;
 
+#include "../externcall/ExternCall.h"
+
 bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 {
 #if 0
@@ -658,7 +660,17 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 		{
 			sprintf(fn, "nmcli connection modify %s ipv4.method auto ipv4.address '' ipv4.gateway ''", nc.strDevName.c_str());
 			DPRINTF("%s\n", fn);
+#if 0
 			system(fn);
+#else
+			IExternCall *pEc = CreateExternCall();
+			pEc->RunCommand(fn);
+			while(!pEc->IsFinish())
+			{
+				usleep(200000);
+			}
+
+#endif
 		}
 		else
 		{
@@ -669,7 +681,16 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 				calcmask(nc.strNetmask),
 				nc.strGateway.c_str());
 			DPRINTF("%s\n", fn);
+#if 0
 			system(fn);
+#else
+			IExternCall *pEc = CreateExternCall();
+			pEc->RunCommand(fn);
+			while(!pEc->IsFinish())
+			{
+				usleep(200000);
+			}
+#endif
 		}
 		sprintf(fn,
 			"nmcli con mod %s ipv4.dns \"%s 8.8.8.8\"",
@@ -677,13 +698,29 @@ bool NetOperation::SetNetConfig(std::list<NETWORK_CONF>& m_listNetconf)
 			nc.strDns1.c_str());//,
 //			nc.strDns2.c_str());
 		DPRINTF("%s\n", fn);
+#if 0
 		system(fn);
-
+#else
+		IExternCall *pEc = CreateExternCall();
+		pEc->RunCommand(fn);
+		while(!pEc->IsFinish())
+		{
+			usleep(200000);
+		}
+#endif
 			sprintf(fn,
 				"nmcli con up %s",
 				nc.strDevName.c_str());
 			DPRINTF("%s\n", fn);
+#if 0
 			system(fn);
+#else
+		pEc->RunCommand(fn);
+		while(!pEc->IsFinish())
+		{
+			usleep(200000);
+		}
+#endif
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1123,7 +1160,9 @@ void ContentOperation::UpdateDirList(int src)
 		break;
 	}
 	m_dir.clear();
-	FindDir(root);
+	m_time.clear();
+	m_deadlink.clear();
+	FindDir(root, 0);
 #if 0
 	for(int i = 0; i < m_dir.size(); i++)
 	{
@@ -1132,14 +1171,37 @@ void ContentOperation::UpdateDirList(int src)
 #endif
 }
 
-void ContentOperation::FindDir(std::string dir)
+void ContentOperation::FindDir(std::string dir, int n)
 {
 	char str[512];
 	fs::path p(dir);
+	int deep = n+1;
 	try
 	{
+		if(!(dir == "/storage/ftp" || dir == "/storage/recv"))
+		{
 		m_dir.push_back(dir);
-		sprintf(str, "[ContentOperation] FindDir: %s.", dir.c_str());
+			m_time.push_back(fs::last_write_time(dir));
+			//////////////////////////////////////////////////////////////////////////
+			// 死链接判断 [1/19/2018 jaontolt]
+			//1. 去除路径最后的"/"或"\"
+			if(dir.at(dir.size()-1) == '/' || dir.at(dir.size()-1) == '\\')
+				dir.resize(dir.size() - 1);
+			//2. Find symlink
+			if(fs::is_symlink(dir))
+			{
+				//3. Add dir to deadlink list
+				//   remove dir from m_dir and m_time
+				if(!fs::exists(dir))
+				{
+					m_deadlink.push_back(dir);
+					m_dir.pop_back();
+					m_time.pop_back();
+				}
+			}
+			//////////////////////////////////////////////////////////////////////////
+		}
+		sprintf(str, "[ContentOperation] FindDir(%d): %s.", deep, dir.c_str());
 		if (gLog)
 		{
 			gLog->Write(LOG_NETCOMMU, str);
@@ -1153,7 +1215,43 @@ void ContentOperation::FindDir(std::string dir)
 				boost::filesystem::path* dir_name = NULL;
 				if(fs::is_directory(*itr))
 				{
-					FindDir((*itr).path().native());
+					if(deep < 10)
+						FindDir((*itr).path().native(), deep);
+				}
+				else
+				{
+					std::string xx = (*itr).path().native();
+					//////////////////////////////////////////////////////////////////////////
+					// 死链接判断 [1/19/2018 jaontolt]
+					//1. 去除路径最后的"/"或"\"
+					if(xx.at(xx.size()-1) == '/' || xx.at(xx.size()-1) == '\\')
+						xx.resize(xx.size() - 1);
+					if(!(xx == "/storage/ftp" || (*itr).path().native() == "/storage/recv"))
+					{
+						//2. Find symlink
+						if(fs::is_symlink(xx))
+						{
+							//3. Add dir to deadlink list
+							//   remove dir from m_dir and m_time
+							if(!fs::exists(xx))
+							{
+								m_deadlink.push_back(xx);
+								sprintf(str, "[ContentOperation] DEAD LINK(%d): %s.", deep, xx.c_str());
+								if (gLog)
+								{
+									gLog->Write(LOG_NETCOMMU, str);
+								}
+							}
+						}
+						//////////////////////////////////////////////////////////////////////////
+						// Add file to delete list, make sure the orphan file will be delete [5/2/2018 jaontolt]
+						else
+						{
+							m_dir.push_back(xx);
+							m_time.push_back(fs::last_write_time(dir));
+						}
+						//////////////////////////////////////////////////////////////////////////
+					}
 				}
 			}
 			catch(const fs::filesystem_error& e)
@@ -1177,12 +1275,246 @@ void ContentOperation::FindDir(std::string dir)
 	}
 }
 
-bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList)
+class fileStruct{
+public:
+	std::string filename;
+	time_t writetime;
+	size_t filesize;
+
+	fileStruct(){}
+
+	bool operator < (const fileStruct& right) const
+	{
+		return writetime < right.writetime;
+	}
+
+	bool operator()(const fileStruct& left, const fileStruct& right)
+	{
+		return left.filesize < right.filesize;
+	}
+};
+
+std::list<fileStruct> fileListCheck;
+
+void FindFile(std::string dir, int n)
 {
-	uint64 fspace = GetAvalibleSpace(src);
-	if( fspace < (uint64)350*1024*1024*1024)
 	{
 		char str[512];
+		fs::path p(dir);
+		int deep = n+1;
+		try
+		{
+			if(!fs::is_symlink(dir))
+			{
+				if(!fs::is_directory(dir))
+				{
+					if(fs::exists(dir))
+					{
+						fileStruct FS;
+						FS.filename = dir;
+						FS.writetime = fs::last_write_time(dir);
+						FS.filesize = fs::file_size(dir);
+						fileListCheck.push_back(FS);
+						sprintf(str, "[ContentOperation] FindFile: %s.\nwrite time: %d filesize: %lld",
+							FS.filename.c_str(), FS.writetime, FS.filesize);
+						if (gLog)
+						{
+							gLog->Write(LOG_ERROR, str);
+						}
+						DPRINTF("%s\n", str);
+					}
+				}
+				else
+				{
+					fs::directory_iterator end_itr;
+					for(fs::directory_iterator itr(p); itr != end_itr; ++itr)
+					{
+						try
+						{
+							boost::filesystem::path* dir_name = NULL;
+							if(fs::is_directory(*itr))
+							{
+								if(deep < 10)
+									FindFile((*itr).path().native(), deep);
+							}
+							else
+							{
+								if(!fs::is_symlink(*itr))
+								{
+									if(fs::exists(*itr))
+									{
+										fileStruct FS;
+										FS.filename = (*itr).path().native();
+										FS.writetime = fs::last_write_time(*itr);
+										FS.filesize = fs::file_size(*itr);
+										fileListCheck.push_back(FS);
+										sprintf(str, "[ContentOperation] FindFile: %s.\nwrite time: %d filesize: %lld",
+											FS.filename.c_str(), FS.writetime, FS.filesize);
+										if (gLog)
+										{
+											gLog->Write(LOG_ERROR, str);
+										}
+										DPRINTF("%s\n", str);
+									}
+								}
+							}
+						}
+						catch(const fs::filesystem_error& e)
+						{
+							sprintf(str, "[ContentOperation] FindFile: Skip the IO error, except: %s.", e.what());
+							if (gLog)
+							{
+								gLog->Write(LOG_ERROR, str);
+							}
+							DPRINTF("[ContentOperation] FindFile: Skip the IO error, except: %s.", e.what());
+						}
+					}
+				}
+			}
+		}
+		catch(const fs::filesystem_error& e)
+		{
+			sprintf(str, "[ContentOperation] FindFile: except: %s.", e.what());
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, str);
+			}
+		}
+	}
+}
+
+void CheckFileList(int src)
+{
+	std::string root;
+	switch(src)
+	{
+	case PST_HDD:
+		root = "/storage/";
+		break;
+	case PST_USB:
+		root = "/media/usb";
+		break;
+	}
+	fileListCheck.clear();
+	FindFile(root, 0);
+}
+
+void printsort(std::list<fileStruct>& fc)
+{
+	std::list<fileStruct>::iterator itor;
+	for(itor = fc.begin(); itor != fc.end(); ++itor)
+	{
+		printf("%s\n write time:%d\tfile size:%lld\n", itor->filename.c_str(), itor->writetime, itor->filesize);
+	}
+}
+
+// 对SSD硬盘空间为0时，删除100K数据，以便系统能进入后续处理流程 [3/15/2018 jaontolt]
+bool ContentOperation::CheckWhileFull(int src)
+{
+{
+	uint64 fspace = GetAvalibleSpace(src);
+		if(fspace < (uint64)1024000000*4)
+	{
+			CheckFileList(src);
+
+			//////////////////////////////////////////////////////////////////////////
+			// 对硬盘上的影片文件按时间排序 [3/15/2018 jaontolt]
+			fileListCheck.sort();
+
+// 			DPRINTF("\n=============================datetime sort====================================\n");
+//  			printsort(fileListCheck);
+
+			std::list<fileStruct> tmp;
+			
+			time_t tt = fileListCheck.front().writetime;
+
+			int ss = fileListCheck.size();
+			// 对排序后的文件找出前5小时的存到临时列表 [3/15/2018 jaontolt]
+			for(int i = 0; i < ss; i++)
+			{
+				fileStruct FS = fileListCheck.front();
+				fileListCheck.pop_front();
+				if(FS.writetime < (tt + 36000*5))
+				{
+// 					DPRINTF("insert %d %lld, %lld\n", i, FS.writetime, FS.filesize);
+					tmp.push_back(FS);
+				}
+#ifdef DEBUG
+				else
+				{
+					DPRINTF("Skip %d %lld, %lld\n", i, FS.writetime, (tt + 36000*5));
+				}
+#endif
+			}
+// 			DPRINTF("Check File List 4\n");
+
+			//////////////////////////////////////////////////////////////////////////
+			// 对临时列表的文件再按大小排序 [3/15/2018 jaontolt]
+			tmp.sort(fileStruct());
+			
+// 			DPRINTF("\n=============================size sort====================================\n");
+// 			printsort(tmp);
+
+			int st = 102400;
+			ss = tmp.size();
+			// 对排序后的临时列表从小到大删除，删除大小达到100K后退出 [3/15/2018 jaontolt]
+			for(int i = 0; i < ss; i++)
+			{
+				fileStruct FS = tmp.front();
+				tmp.pop_front();
+				char cmd[512];
+#if 0
+				sprintf(cmd, "rm -rf %s", FS.filename.c_str());
+				if (gLog)
+				{
+					gLog->Write(LOG_NETCOMMU, cmd);
+				}
+				IExternCall *pEc = CreateExternCall();
+// 				DPRINTF("%s, %lld %lld\n",cmd, st, FS.filesize);
+				pEc->RunCommand(cmd);
+				while(!pEc->IsFinish())
+				{
+					usleep(200);
+				}
+#else
+				try
+				{
+					fs::remove(FS.filename);
+				}
+				catch(const fs::filesystem_error& e)
+				{
+					sprintf(cmd, "[ContentOperation] CheckWhileFull: Skip the IO error, except: %s.", e.what());
+					if (gLog)
+					{
+						gLog->Write(LOG_ERROR, cmd);
+					}
+					DPRINTF("[ContentOperation] CheckWhileFull: Skip the IO error, except: %s.", e.what());
+				}
+#endif
+				st -= FS.filesize;
+				if(st <= 0)
+					break;
+			}
+		}
+	}
+}
+
+//后续处理流程，按接收的影片大小删除文件，保证可用空间比接收大小大10G
+bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList, uint64 needSpace)
+{
+	uint64 fspace = GetAvalibleSpace(src);
+	uint64 nspace;
+		char str[512];
+	if(needSpace != 0)
+		nspace = needSpace + (uint64)10*1024*1024*1024;
+	else
+		nspace = (uint64)400*1024*1024*1024;
+	sprintf(str, "free space:%lld, %lld", fspace, nspace);
+// 	printf("%s\n", str);
+	if(gLog)
+		gLog->Write(LOG_NETCOMMU, str);
+	if( fspace < nspace)
+	{
 		sprintf(str, "[ContentOperation] AutoDelete: %lld free.", fspace);
 		if(gLog)
 		    gLog->Write(LOG_NETCOMMU, str);
@@ -1206,7 +1538,7 @@ bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList)
 					if(!bFind)
 					{
 						//Don't delete /storage/ftp, it's vsftp root directory.
-						if(!(m_dir.at(i) == "/storage/ftp" || m_dir.at(i) == "storage/recv"))
+						if(!(m_dir.at(i) == "/storage/ftp" || m_dir.at(i) == "/storage/recv"))
 						{
 						char cmd[512];
 						sprintf(cmd, "rm -rf %s", m_dir.at(i).c_str());
@@ -1214,16 +1546,102 @@ bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList)
 						{
 							gLog->Write(LOG_NETCOMMU, cmd);
 						}
+#if 0
 						system(cmd);
+#else
+							IExternCall *pEc = CreateExternCall();
+							pEc->RunCommand(cmd);
+							while(!pEc->IsFinish())
+							{
+								usleep(200);
+							}
+#endif
+						}
 					}
 				}
+				//////////////////////////////////////////////////////////////////////////
+				// Delete Dead Symlink [1/19/2018 jaontolt]
+				// 改用boost filesystem remove删除文件 [3/15/2018 jaontolt]
+				if(gLog)
+					gLog->Write(LOG_NETCOMMU, "---------------Delete Dead Symlink----------");
+				for(int i = 0; i < m_deadlink.size(); i++)
+				{
+#if 0
+					char cmd[512];
+					sprintf(cmd, "rm -rf %s", m_deadlink.at(i).c_str());
+					if(gLog)
+					{
+						gLog->Write(LOG_NETCOMMU, cmd);
+					}
+					IExternCall *pEc = CreateExternCall();
+					pEc->RunCommand(cmd);
+					while(!pEc->IsFinish())
+						usleep(200000);
+#else
+					try{
+						fs::remove(m_deadlink.at(i));
+					}
+					catch(const fs::filesystem_error& e)
+					{
+						sprintf(str, "[ContentOperation] AutoDelete: Skip the IO error, except: %s.", e.what());
+						if (gLog)
+						{
+							gLog->Write(LOG_ERROR, str);
+					}
+						DPRINTF("[ContentOperation] AutoDelete: Skip the IO error, except: %s.", e.what());
+				}
+#endif
 			}
+				//////////////////////////////////////////////////////////////////////////
 			}
 			break;
 		case PST_USB:
 			break;
 		}
 	}
+}
+
+bool ContentOperation::DeleteDeadLink(int src)
+{
+	//////////////////////////////////////////////////////////////////////////
+	// Delete Dead Symlink [1/19/2018 jaontolt]
+	UpdateDirList(src);
+	if(gLog)
+		gLog->Write(LOG_NETCOMMU, "---------------Delete Dead Symlink----------");
+	for(int i = 0; i < m_deadlink.size(); i++)
+	{
+		char cmd[512];
+#if 0
+		sprintf(cmd, "rm -rf %s", m_deadlink.at(i).c_str());
+		if(gLog)
+		{
+			gLog->Write(LOG_NETCOMMU, cmd);
+		}
+		IExternCall *pEc = CreateExternCall();
+		pEc->RunCommand(cmd);
+		while(!pEc->IsFinish())
+			usleep(200000);
+#else
+		try{
+			sprintf(cmd, "rm -rf %s", m_deadlink.at(i).c_str());
+			if(gLog)
+			{
+				gLog->Write(LOG_NETCOMMU, cmd);
+			}
+			fs::remove(m_deadlink.at(i));
+		}
+		catch(const fs::filesystem_error& e)
+		{
+			sprintf(cmd, "[ContentOperation] DeleteDeadLink: Skip the IO error, except: %s.", e.what());
+			if (gLog)
+			{
+				gLog->Write(LOG_ERROR, cmd);
+			}
+			DPRINTF("[ContentOperation] DeleteDeadLink: Skip the IO error, except: %s.", e.what());
+		}
+#endif
+	}
+	//////////////////////////////////////////////////////////////////////////
 }
 
 mke2fs::mke2fs():fp(NULL), m_Status(0)
@@ -1306,11 +1724,21 @@ void mke2fs::doit()
 	}
 	releaseMyini(ini);
 
+	IExternCall *pEc = CreateExternCall();
+	int count = 0;
 	switch(m_type)
 	{
 	case DISK_REMOVEABLE:
 		chdir("/");
+#if 0
 		system("fuser -ck /storage");
+#else
+		pEc->RunCommand("fuser -ck /storage");
+		while(!pEc->IsFinish())
+		{
+			usleep(200000);
+		}
+#endif
 		sleep(2);
 		res = umount("/storage");
 		if(res != 0)
@@ -1345,14 +1773,35 @@ void mke2fs::doit()
 #endif
 		MountDisk(DISK_REMOVEABLE);
 		chdir("/storage");
+#if 0
 		system("mkdir /storage/ftp");
 		system("mkdir /storage/recv");
+#else
+		pEc->RunCommand("mkdir /storage/ftp");
+		while(!pEc->IsFinish())
+		{
+			usleep(200000);
+		}
+		pEc->RunCommand("mkdir /storage/recv");
+		while(!pEc->IsFinish())
+		{
+			usleep(200000);
+		}
+#endif
 
 		break;
 	case DISK_RAID:
 		if(tmp != "")
 		{
+#if 0
 			system("fuser -ck /raid");
+#else
+			pEc->RunCommand("fuser -ck /raid");
+			while(!pEc->IsFinish())
+			{
+				usleep(200000);
+			}
+#endif
 			res = umount("/raid");
 			if(res != 0)
 			{
@@ -1535,27 +1984,204 @@ bool mke2fs::MountDisk(DISK_TYPE type)
 	return false;
 }
 
+int mke2fs::UmountDisk(char* mountPoint)
+{
+	int res = umount(mountPoint);
+	char str[512];
+	sprintf(str, "[mke2fs] Umount %s.", mountPoint);
+	DPRINTF("%s\n", str);
+
+	if(gLog)
+		gLog->Write(LOG_ERROR, str);
+	if(res != 0)
+	{
+		sprintf(str, "[mke2fs] Umount error:%d, %s.", errno, strerror(errno));
+	}
+	else
+	{
+		sprintf(str, "[mke2fs] Umount OK.");
+	}
+	DPRINTF("%s\n", str);
+		gLog->Write(LOG_ERROR, str);
+	return res;
+}
+
 void System::Reboot()
 {
+#if 0
 	system("/bin/sync");
 	system("/sbin/reboot");
+#else
+	IExternCall *pEc = CreateExternCall();
+	pEc->RunCommand("/bin/sync");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+	pEc->RunCommand("/sbin/reboot");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+#endif
 }
 
 void System::Shutdown()
 {
+#if 0
 	system("/bin/sync");
 	system("/sbin/init 0");
+#else
+	IExternCall *pEc = CreateExternCall();
+	pEc->RunCommand("/bin/sync");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+	pEc->RunCommand("/sbin/init 0");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+#endif
 }
 
 void System::SetDateTime(char* stime)
 {
 	std::string strParam = "/bin/date -s ";
 	strParam += stime;
+#if 0
 	system(strParam.c_str());
 	system("/sbin/clock -w");
+#else
+	IExternCall *pEc = CreateExternCall();
+	pEc->RunCommand(strParam.c_str());
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+	pEc->RunCommand("/sbin/clock -w");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+#endif
 }
 
+#define MAX_PATH 1024
 void System::ClearSystem()
+{
+#if 0
+	system("rm -rf /var/log/audit/audit.log.*");
+	system("rm -rf /var/log/cups/access_log-*");
+	system("rm -rf /var/log/cups/error_log-*");
+	system("rm -rf /var/log/*.gz");
+	system("rm -rf /tmp/*");
+	system("rm -rf /var/tmp/*");
+#else
+	IExternCall *pEc = CreateExternCall();
+
+	if(!fs::exists("/storage"))
+	{
+		fs::create_directory("/storage");
+	}
+	//////////////////////////////////////////////////////////////////////////
+	// Clean Data on local system disk [2/8/2018 jaontolt]
+	mke2fs disk;
+	int res = disk.UmountDisk("/storage");
+	if(res == 0 || res == EINVAL)
+	{
+		DPRINTF("rm -rf /storage/*\n");
+		pEc->RunCommand("rm -rf /storage/*");
+		while (!pEc->IsFinish())
+		{
+			usleep(200000);
+		}
+	}
+	res = disk.UmountDisk("/raid");
+	if(res == 0 || res == EINVAL)
+	{
+		pEc->RunCommand("rm -rf /raid/*");
+		while(!pEc->IsFinish())
+			usleep(200000);
+	}
+	//////////////////////////////////////////////////////////////////////////
+
+	pEc->RunCommand("rm -rf /var/log/audit/audit.log.*");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+	pEc->RunCommand("rm -rf /var/log/cups/access_log-*");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+	pEc->RunCommand("rm -rf /var/log/cups/error_log-*");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+	pEc->RunCommand("rm -rf /var/log/*.gz");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+	pEc->RunCommand("rm -rf /tmp/*");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+	pEc->RunCommand("rm -rf /var/tmp/*");
+	while(!pEc->IsFinish())
+	{
+		usleep(200000);
+	}
+#endif
+	char str[512];
+	fs::path p("/var/log/CineCast");
+	try{
+		if(!fs::exists(p))
+		{
+			DPRINTF("path no exists\n");
+			return;
+		}
+		fs::directory_iterator end_itr;
+		for(fs::directory_iterator itr(p); itr != end_itr; ++itr)
+		{
+			std::string name = (*itr).path().native();
+			time_t timep;
+			time	(&timep);
+			tm* p = localtime(&timep);
+			char buft[MAX_PATH] = {0};
+			sprintf(buft,"/var/log/CineCast/%04d-%02d",(1900+p->tm_year),(1+p->tm_mon));
+			if(name == buft)
+				continue;
+			sprintf(buft, "rm -rf \"%s\"", name.c_str());
+#if 0
+			system(buft);
+#else
+			IExternCall *pEc = CreateExternCall();
+			pEc->RunCommand(buft);
+			while(!pEc->IsFinish())
+			{
+				usleep(200000);
+			}
+#endif
+			printf("%s\n", buft);
+		}
+	}
+	catch(const fs::filesystem_error& e)
+	{
+		sprintf(str, "[USB] FindDir: except: %s.", e.what());
+		if (gLog)
+		{
+			gLog->Write(LOG_ERROR, str);
+		}
+		DPRINTF("[USB] FindDir: except: %s.\n", e.what());
+	}
+}
+#if 0
 {
 	system("rm -rf /var/log/audit/audit.log.*");
 	system("rm -rf /var/log/cups/access_log-*");
@@ -1565,6 +2191,7 @@ void System::ClearSystem()
 	system("rm -rf /tmp/*");
 	system("rm -rf /var/tmp/*");
 }
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1678,7 +2305,16 @@ bool USB::ReadyUpdate()
 			//20160612: Fix pathname with space
 			sprintf(cmd, "cp -f \"%s\" /home/leonis/update/leonisupdate.zt", src.c_str());
 			//---------------------------------
+#if 0
 			system(cmd);
+#else
+			IExternCall *pEc = CreateExternCall();
+			pEc->RunCommand(cmd);
+			while(!pEc->IsFinish())
+			{
+				usleep(200000);
+			}
+#endif
 			std::string dest = "/home/leonis/update/leonisupdate.zt";
 			fs::path dest_path(dest);
 			if(fs::exists(dest_path))

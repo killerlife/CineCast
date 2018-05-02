@@ -16,9 +16,9 @@ typedef unsigned long long uint64;
 #endif
 
 #ifdef DEBUG
-#define DPRINTF(arg,...) printf(arg)
+#define DPRINTF printf
 #else
-#define DPRINTF(arg,...)
+#define DPRINTF
 #endif
 
 

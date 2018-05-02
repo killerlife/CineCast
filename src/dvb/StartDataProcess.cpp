@@ -69,10 +69,13 @@ bool StartDataThread::IsStart()
 	return bRet;
 }
 
+extern char strDemux[1024];
+
 bool StartDataThread::Start()
 {
 	Stop();
-	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+// 	m_pFilter->SetStrDevName("/dev/dvb/adapter0/demux0");
+	m_pFilter->SetStrDevName(strDemux);
 	m_pFilter->SetFilterID(m_pid, 0x92);
 	m_status = RUN;
 	return true;

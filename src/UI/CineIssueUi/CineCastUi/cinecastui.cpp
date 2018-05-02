@@ -6,6 +6,8 @@
 #include "live.h"
 #include "raid.h"
 #include "tkr.h"
+#include "../../../externcall/ExternCall.h"
+
 #include <QPixmap>
 
 int m_ConnectStatus = 0;    //״̬    =2=1=0
@@ -106,6 +108,7 @@ void CineCastUi::Init()
 	ui.tabWidget->setCurrentIndex(0);
 
 	ui.label_Version->setStyleSheet("QLabel{color:white}");
+	ui.label_sn->setStyleSheet("QLabel{color:white}");
 
 	m_time_timer = startTimer(500);
 	ui.pushButton_Reboot->setToolTip(tr("Reboot Machine"));
@@ -226,6 +229,21 @@ void CineCastUi::UiFilter()
 	if(pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_GET_VERSION)
 	{
 		ui.label_Version->setText(buf + sizeof(KL));
+	}
+
+	//Get SN
+	pKL->m_pkgHead = 0x7585;
+	pKL->m_keyID = S_GET_SERIALNUMBER;
+	pKL->m_length = 1;
+	buf[sizeof(KL)] = 1;
+	socket.write(buf, sizeof(KL) + 1);
+	socket.waitForBytesWritten(-1);
+	socket.waitForReadyRead(-1);
+	i = socket.read(buf, 2048);
+	if(pKL->m_pkgHead == 0x7585 && pKL->m_keyID == S_GET_SERIALNUMBER)
+	{
+		uint32* p = (uint32*)(buf + sizeof(KL));
+		ui.label_sn->setText(QString::number(*p));
 	}
 
 	//Get Satellite Status
@@ -416,8 +434,27 @@ void CineCastUi::on_pushButton_Reboot_clicked()
 					return;
 				}
 #else
+#if 0
+				//////////////////////////////////////////////////////////////////////////
+				// If use SuperDog, it BLOCK system call !!!! [10/10/2017 killerlife]
+				// So we use ExternCall class to instead it.
 				system("/bin/sync");
 				system("/sbin/reboot");
+#else
+				IExternCall *pEC = CreateExternCall();
+				pEC->RunCommand("/bin/sync");
+				while(1)
+				{
+					if(pEC->IsFinish())
+						break;
+				}
+				pEC->RunCommand("/sbin/reboot");
+				while(1)
+				{
+					if(pEC->IsFinish())
+						break;
+				}
+#endif
 #endif
 			}
 			else
@@ -497,8 +534,27 @@ void CineCastUi::on_pushButton_Shutdown_clicked()
 					return;
 				}
 #else
+#if 0
+				//////////////////////////////////////////////////////////////////////////
+				// If use SuperDog, it BLOCK system call !!!! [10/10/2017 killerlife]
+				// So we use ExternCall class to instead it.
 				system("/bin/sync");
 				system("/sbin/init 0");
+#else
+				IExternCall *pEC = CreateExternCall();
+				pEC->RunCommand("/bin/sync");
+				while(1)
+				{
+				    if(pEC->IsFinish())
+					break;
+				}
+				pEC->RunCommand("/sbin/init 0");
+				while(1)
+				{
+				    if(pEC->IsFinish())
+					break;
+				}
+#endif
 #endif
 			}
 			else

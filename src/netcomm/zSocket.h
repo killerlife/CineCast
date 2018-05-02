@@ -45,6 +45,8 @@ public:
 	int ReceiveFrom( char* buff, int size, size_t& getsize, const sockaddr_in *addr_in, t_timeout* tm = 0);
 	int Wait(int type, t_timeout* tm = 0);
 	int GetLastError(char* buff = NULL, int bufsize = 0);
+	int SetSocketOpt(int level, int optname, const void* optval, socklen_t optlen);
+
 	std::string GetSockName();
 
 protected:

@@ -151,7 +151,7 @@ int CLogFileOperation::DeleteDirectory(const char* path)
 	tempFind.Close();
 	if(!RemoveDirectory(path))
 	{
-		::MessageBox(0,"删目录失埽","息",MB_OK);
+		::MessageBox(0,"ɾĿ¼ʧܣ","Ϣ",MB_OK);
 		return FALSE;
 	}
 	return TRUE;
@@ -181,7 +181,6 @@ int CLogFileOperation::DeleteDirectory(const char* path)
 
 int CLogFileOperation::OpenFile(const char* file)
 {
-	//printf("Open %s\n", file);
 	m_pfile = fopen(file,"r");
 	if (m_pfile == NULL)
 		return 0;
@@ -237,7 +236,7 @@ int CLogFileOperation::Read(const int type, TLogQueryResultArray & result)
 	char* pMove = NULL;
 	char buf[MAX_PATH] = {0};
 	char str[MAX_PATH] = {0};
-
+	
 	//LOGQUERYRESULT res; //don't know why, it cause code dump
 	
 	//用任意字符填充 只要有push函数就会出错
@@ -251,14 +250,14 @@ int CLogFileOperation::Read(const int type, TLogQueryResultArray & result)
 	str_LOG="";  //全局字符串初始化
 	g_LogAll="";
 	char sType[6];
-	
+
 	while ((pfile = fgets(buf,MAX_PATH,m_pfile)))
 	{
 #if 0
 		res.type = (LOGTYPE)atoi(buf);
 		pfile = strstr(buf," ");
-		pMove = strstr(++pfile," ");
-		memcpy(str,pfile,pMove - pfile);
+		pMove = strstr(++pfile," ");	
+		memcpy(str,pfile,pMove - pfile);	
 		res.time = str;
 		res.text = ++pMove;
 
@@ -275,22 +274,12 @@ int CLogFileOperation::Read(const int type, TLogQueryResultArray & result)
 			g_LogAll += res.time.c_str();
 			g_LogAll += " ";
 			g_LogAll += res.text.c_str();
-	}
+		}
 #else
-		if(buf[0] != 0x0a)
-		{
-		//printf("befor atoi %02x %02x %02x\n", buf[0], buf[1], buf[2]);	
 		int log_type = (LOGTYPE)atoi(buf);
-		//printf("befor atoi %d\n", log_type);	
 		pfile = strstr(buf," ");
-		//printf("befor ++pfile\n");	
 		pMove = strstr(++pfile," ");	
-		//printf("befor copy\n");	
 		memcpy(str,pfile,pMove - pfile);
-		//printf("after copy\n");	
-		//str[pMove - pfile] = 0;
-		//printf("%d %s %s\n", log_type, str, pMove);
-		#if 1
 		if ((LOGTYPE)type == LOG_ALL || (LOGTYPE)type == log_type)
 		{
 			str_LOG += str;
@@ -304,12 +293,10 @@ int CLogFileOperation::Read(const int type, TLogQueryResultArray & result)
 		}
 #endif
 	}
-#endif
-	}
-		
+
 	//NEW
 	//printf("str_LOG=%s", str_LOG.c_str());	
-
+	
 	return 0;
 }
 

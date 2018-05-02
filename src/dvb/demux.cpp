@@ -684,6 +684,7 @@ static uint32 m_crc32Table[256] = {
 	0xBCB4666D,0xB8757BDA,0xB5365D03,0xB1F740B4
 };
 
+#if 1
 uint32 calc_crc32(uint8 *pData,
 				  int32 nLength)
 {
@@ -700,3 +701,23 @@ uint32 calc_crc32(uint8 *pData,
 	}
 	return crc32;
 }
+#else
+uint32 calc_crc32(uint8 *pData, int32 nLength)
+{
+	uint32 crc = 0;
+	unsigned long bytes = nLength;
+
+
+	while (bytes--) {
+		crc = (crc << 8) ^ m_crc32Table[((crc >> 24) ^ *pData++) & 0xFF];
+	}
+
+	for (; nLength; nLength >>= 8) {
+		crc = (crc << 8) ^ m_crc32Table[((crc >> 24) ^ nLength) & 0xFF];
+	}
+
+	crc = ~crc & 0xFFFFFFFF;
+
+	return crc;
+}
+#endif

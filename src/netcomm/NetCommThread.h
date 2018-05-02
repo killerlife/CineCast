@@ -4,6 +4,10 @@
 #include <list>
 #include <dvb/demux.h>
 #include <thread/activeThread/activeThreadManager_i.h>
+#include <sys/sysinfo.h>
+#include <time.h>
+#include <stdio.h>
+#include <errno.h>
 #include "zSocket.h"
 #include "message.h"
 
@@ -55,6 +59,8 @@ private:
 	bool DecryptRep(uint32 filmId);
 	bool UpdateRep(uint8* sn);
 
+	bool UpdateLeonisRep(void *pReq, int bRes = 0);
+
 private:
 	int m_status;
 	CZSocket m_loginSocket;
@@ -63,6 +69,7 @@ private:
 	struct R_LOGIN_REP m_loginRep; 
 	uint32 m_nMachineId;
 	uint8 m_hardKey[16];
+	struct L_AUTH_REQ m_authReq;
 	struct R_AUTH_REP m_authRep;
 	int m_mutex;
 	struct R_MD5_KEY_REP m_md5Rep;
@@ -80,6 +87,16 @@ private:
 	bool bPause;
 	int nHeartCount;
 	int nDNSCount;
+
+	// Use new FileName Descriptor to support NEW PROTOCOL [1/16/2018 jaontolt]
+	FILE* m_pUpdateFile;
+	std::string m_strUpdateFileName;
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	// Add BootTime [2/8/2018 jaontolt]
+	time_t boot_time;
+	//////////////////////////////////////////////////////////////////////////
 };
 
 NetCommThread* CreateNetComm();

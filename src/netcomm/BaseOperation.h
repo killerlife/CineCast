@@ -62,17 +62,21 @@ public:
 	bool IsProgramListReady(int src);
 	uint64 GetAvalibleSpace(int src);
 	uint64 GetTotalSpace(int src);
-	bool AutoDelete(int src, std::vector<std::string>&runList);
+	bool AutoDelete(int src, std::vector<std::string>&runList, uint64 needSpace = 0);
+	bool CheckWhileFull(int src);
+	bool DeleteDeadLink(int src);
 
 private:
 	void UpdateDirList(int src);
-	void FindDir(std::string dir);
+	void FindDir(std::string dir, int n);
 
 private:
 	std::vector<InfoData> m_Content;
 	std::vector<InfoData> m_UsbContent;
 	std::vector<InfoData> m_RaidContent;
 	std::vector<std::string>m_dir;
+	std::vector<std::string>m_deadlink;
+	std::vector<time_t>m_time;
 	std::vector<int> m_srcList;
 };
 
@@ -91,6 +95,7 @@ public:
 	std::string& GetSOutput();
 	uint8 CheckStatus();
 	bool MountDisk(DISK_TYPE type);
+	int UmountDisk(char* mountPoint);
 
 private:
 	virtual void doit();

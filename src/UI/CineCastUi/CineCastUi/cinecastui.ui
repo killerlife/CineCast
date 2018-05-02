@@ -116,6 +116,34 @@
       </spacer>
      </item>
      <item>
+      <widget class="QLabel" name="label_sn" >
+       <property name="font" >
+        <font>
+         <family>Book Antiqua</family>
+         <pointsize>20</pointsize>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_4" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QLabel" name="label" >
        <property name="pixmap" >
         <pixmap resource="cinecastui.qrc" >:/CineCastUi/Resources/recv.png</pixmap>

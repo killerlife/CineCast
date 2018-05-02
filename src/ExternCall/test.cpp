@@ -4,7 +4,6 @@
 
 int main(int argc, char* argv[])
 {
-#if 0
 	IExternCall* pEC = CreateExternCall();
 	pEC->RunCommand("mdadm -D /dev/md0");
 	while(1)
@@ -21,17 +20,5 @@ int main(int argc, char* argv[])
 			break;
 		}
 	}
-#else
-	FILE *fp = fopen("test.res", "rb");
-	char buf[300];
-	std::string m_strRes;
-	if(fp > 0)
-	{
-		fread(buf, 300, 1, fp);
-		m_strRes = buf;
-
-	}
-#endif
-
 	return 0;
 }

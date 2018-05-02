@@ -16,7 +16,7 @@ NetCommThread *pNetComm;
 std::vector<std::string> gRunPathList;
 PATDataThread* pPat;
 bool gShutdownAfterFinish;
-
+char strDemux[1024];
 ITmsServer *tms = 0;
 
 int main(int argc, char *argv[])
