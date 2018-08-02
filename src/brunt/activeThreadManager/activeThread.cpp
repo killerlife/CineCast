@@ -147,6 +147,7 @@ void CActiveThread::stop()
 	}
 }
 
+
 void CActiveThread::setId(int id)
 {
 	_impl->m_id = id;

@@ -559,6 +559,7 @@ void CineCastUi::on_pushButton_Shutdown_clicked()
 			}
 			else
 			{
+				printf("Shutting down by network\n");
 				if(m_ConnectStatus==2)     
 				{
 					KL *pKL = (KL*)buf;
@@ -588,6 +589,7 @@ void CineCastUi::on_pushButton_Shutdown_clicked()
 		}
 		break;
 	case QMessageBox::Cancel:
+		printf("Cancel button press\n");
 		break;
 	default:
 		break;

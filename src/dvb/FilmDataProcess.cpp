@@ -104,11 +104,25 @@ bool FilmDataThread::Init(void *param1, void *param2)
 		fs::create_directories(m_strFileName);
 	}
 
+	bool bFound = false;
+	for(int i = 0; i < gRunPathList.size(); i++)
+	{
+		if(gRunPathList.at(i) == m_strFileName)
+			bFound = true;
+	}
+	if(!bFound)
 	gRunPathList.push_back(m_strFileName);
-	std::string strFtpFileName = m_strFileName;
 
+	std::string strFtpFileName = m_strFileName;
 	//To make sure the DCP of current Task don't delete from ftp directory
 	strFtpFileName.insert(9, "ftp/", 4);
+	bFound = false;
+	for (int i = 0; i < gRunPathList.size(); i++)
+	{
+		if(gRunPathList.at(i) == strFtpFileName)
+			bFound = true;
+	}
+	if(!bFound)
 	gRunPathList.push_back(strFtpFileName);
 	//--------------------------------------------------------------------
 

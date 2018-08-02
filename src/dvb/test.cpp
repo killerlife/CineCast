@@ -8,6 +8,7 @@
 #include "../netcomm/BaseOperation.h"
 #include "../netcomm/cfctms.h"
 #include "../externcall/ExternCall.h"
+#include "../netcomm/aureolam.h"
 
 #if SIMULATOR
 #include "../netcomm/SimulatorServer.h"
@@ -58,6 +59,14 @@ ILog* gLog;
 NetCommThread *pNetComm = NULL;
 NetCommThread *pLeoNetComm = NULL;
 
+#ifdef WANDA
+NetCommThread *pWanDaNetComm = NULL;
+#endif // WANDA
+
+#ifdef AUREOLAM
+AureoLamThread *pAureoLam = NULL;
+#endif // AUREOLAM
+
 bool bRemoteConnect = false;
 
 std::vector<std::string> gRunPathList;
@@ -83,6 +92,12 @@ static void handle_sigint(int sig)
 #endif
 	pNetComm->Stop();
 	pLeoNetComm->Stop();
+#ifdef WANDA
+	pWanDaNetComm->Stop();
+#endif // WANDA
+#ifdef AUREOLAM
+	pAureoLam->Stop();
+#endif // AUREOLAM
 	pCfcTms->Stop();
 	sleep(1);
 
@@ -228,7 +243,12 @@ int main(int argc, char **argv)
 #endif
 	pNetComm = new NetCommThread;
 	pLeoNetComm = new NetCommThread;
-
+#ifdef WANDA
+	pWanDaNetComm = new NetCommThread;
+#endif // WANDA
+#ifdef AUREOLAM
+	pAureoLam = new AureoLamThread;
+#endif // AUREOLAM
 	pCfcTms = CreateCfcTms();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -412,8 +432,16 @@ int main(int argc, char **argv)
 	
 	pNetComm->Init();
 	pNetComm->Start();
-	pLeoNetComm->Init(true);
+	pLeoNetComm->Init(0);
 	pLeoNetComm->Start();
+#ifdef WANDA
+	pWanDaNetComm->Init(1);
+	pWanDaNetComm->Start();
+#endif // WANDA
+#ifdef AUREOLAM
+	pAureoLam->Init();
+	pAureoLam->Start();
+#endif // AUREOLAM
 	
 	//////////////////////////////////////////////////////////////////////////
 	// Just for CFCTMS [6/22/2017 killerlife]
@@ -614,6 +642,8 @@ int main(int argc, char **argv)
 			{
 				ContentOperation co;
 // 				printf("Auto Delete\n");
+				if(gLog)
+					gLog->Write(LOG_SYSTEM, "Auto Delete in main()");
 				co.AutoDelete(0, gRunPathList, gRecv.nFileLength);
 			}
 		}
@@ -624,6 +654,7 @@ int main(int argc, char **argv)
 		//Process Notify from DVB
 		if(pNotify->IsNotify())
 		{
+			DPRINTF("Is NOTIFY IN\n");
 			if (prevFilmID != pNotify->GetFilmId())
 		{
 				//Reset Pat and another things
@@ -656,7 +687,36 @@ int main(int argc, char **argv)
 				// Make sure the start processing be after notify processing [3/16/2018 jaontolt]
 				bNotify = true;
 				//////////////////////////////////////////////////////////////////////////
+
+				//////////////////////////////////////////////////////////////////////////
+				//Set task start time for heart beat
+				if(pNetComm)
+				{
+					pNetComm->StartRecvTask();
+					pNetComm->StartRoundRecv();
+				}
+				if(pLeoNetComm)
+				{
+					pLeoNetComm->StartRecvTask();
+					pLeoNetComm->StartRoundRecv();
 		}
+#ifdef WANDA
+				if(pWanDaNetComm)
+				{
+					pWanDaNetComm->StartRecvTask();
+					pWanDaNetComm->StartRoundRecv();
+				}
+#endif // WANDA
+#ifdef AUREOLAM
+				if (pAureoLam)
+				{
+					pAureoLam->StartRecvTask();
+					pAureoLam->StartRoundRecv();
+				}
+#endif // AUREOLAM
+				//////////////////////////////////////////////////////////////////////////
+			}
+			DPRINTF("Is NOTIFY OUT\n");
 		}
 		//===========================================================
 
@@ -665,6 +725,7 @@ int main(int argc, char **argv)
 		//Process START from DVB
  		if(pStart->IsStart() && ((gRecv.nReceiveStatus & 0xffff) != 11) && bNotify)
 		{
+			DPRINTF("Is START IN\n");
 			pPat->Start();
 			bLog = false;
 			//-------------------------------------------------
@@ -682,19 +743,33 @@ int main(int argc, char **argv)
 					bRoundCount);
 					gLog->Write(LOG_SYSTEM, m_log);
 
-					//Get task start time for heart beat
+					//Set task start time for heart beat
 					if((gRecv.nReceiveStatus & 0xffff0000) == 0x010000)
 		{
 						if(pNetComm)
 					pNetComm->StartRecvTask();
-						if(pLeoNetComm)
-							pLeoNetComm->StartRecvTask();
+#ifdef WANDA
+						if(pWanDaNetComm)
+							pWanDaNetComm->StartRecvTask();
+#endif // WANDA
+#ifdef AUREOLAM
+						if(pAureoLam)
+							pAureoLam->StartRecvTask();
+#endif // AUREOLAM
 		}
-					//Get Round start time for heart beat
+					//Set Round start time for heart beat
 					if(pNetComm)
 				pNetComm->StartRoundRecv();
 					if(pLeoNetComm)
 						pLeoNetComm->StartRoundRecv();
+#ifdef WANDA
+					if(pWanDaNetComm)
+						pWanDaNetComm->StartRoundRecv();
+#endif // WANDA
+#ifdef AUREOLAM
+					if(pAureoLam)
+						pAureoLam->StartRoundRecv();
+#endif // AUREOLAM
 
 					//////////////////////////////////////////////////////////////////////////
 					// Register satellite task to TMS [6/13/2017 killerlife]
@@ -723,6 +798,7 @@ int main(int argc, char **argv)
 				gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 1;
 			}
 			//=================================================
+			DPRINTF("Is START OUT\n");
 		}
 		//------------START-----------------------------------------------
 
@@ -732,12 +808,19 @@ int main(int argc, char **argv)
 		//Process FINISH from DVB
 		if(pFinish->IsFinish() && ((gRecv.nReceiveStatus & 0xffff) != 11))
 		{
+			DPRINTF("Is FINISH IN\n");
 			//-----------------------------------------------------------
 			//Set status to data received and lost analysis
 			if (!(gRecv.nReceiveSegment == gRecv.nTotalSegment && gRecv.nTotalSegment != 0))
 			{
+				//////////////////////////////////////////////////////////////////////////
+				// It change status to FINISH only in IDLE & RECEIVE status [5/30/2018 jaontolt]
+				if((gRecv.nReceiveStatus & 0xffff) < 2)
+				{
 				printf("set state 2\n");
 			gRecv.nReceiveStatus = (gRecv.nReceiveStatus & 0xffff0000) + 2; //STOP
+			}
+				//////////////////////////////////////////////////////////////////////////
 			}
 			//-----------------------------------------------------------
 			
@@ -804,6 +887,7 @@ int main(int argc, char **argv)
 				}
 				//-----------------------------------------------------------
 			}
+			DPRINTF("Is FINISH OUT\n");
 			}
 		//=================FINISH============================================================
 
@@ -933,6 +1017,34 @@ int main(int argc, char **argv)
 			pPat->Reset(false);
 			pPat->Clear();
 
+			//////////////////////////////////////////////////////////////////////////
+			// Reset Task Time and Round Time to zero [5/28/2018 jaontolt]
+			if(pNetComm)
+			{
+				pNetComm->ResetRecvTask();
+				pNetComm->ResetRoundRecv();
+			}
+			if(pLeoNetComm)
+			{
+				pLeoNetComm->ResetRecvTask();
+				pLeoNetComm->ResetRoundRecv();
+			}
+#ifdef WANDA
+			if(pWanDaNetComm)
+			{
+				pWanDaNetComm->ResetRecvTask();
+				pWanDaNetComm->ResetRoundRecv();
+			}
+#endif // WANDA
+#ifdef AUREOLAM
+			if (pAureoLam)
+			{
+				pAureoLam->ResetRecvTask();
+				pAureoLam->ResetRoundRecv();
+			}
+#endif // AUREOLAM
+			//////////////////////////////////////////////////////////////////////////
+
 			sprintf(m_log, "[CineCast] Received Cancel from satellite, restart PAT Thread.");
 			if(!bLog)
 			{
@@ -999,6 +1111,34 @@ int main(int argc, char **argv)
 				gLog->Write(LOG_SYSTEM, "[CineCast] Finish!!! Keep Power-on...");
 			}
 			bLog = true;
+
+			//////////////////////////////////////////////////////////////////////////
+			// Reset Task Time and Round Time to zero [5/28/2018 jaontolt]
+			if(pNetComm)
+			{
+				pNetComm->ResetRecvTask();
+				pNetComm->ResetRoundRecv();
+			}
+			if(pLeoNetComm)
+			{
+				pLeoNetComm->ResetRecvTask();
+				pLeoNetComm->ResetRoundRecv();
+			}
+#ifdef WANDA
+			if(pWanDaNetComm)
+			{
+				pWanDaNetComm->ResetRecvTask();
+				pWanDaNetComm->ResetRoundRecv();
+			}
+#endif // WANDA
+#ifdef AUREOLAM
+			if (pAureoLam)
+			{
+				pAureoLam->ResetRecvTask();
+				pAureoLam->ResetRoundRecv();
+			}
+#endif // AUREOLAM
+			//////////////////////////////////////////////////////////////////////////
 		}
 		//===================================================================================
 

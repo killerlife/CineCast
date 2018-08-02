@@ -14,7 +14,7 @@
 using namespace std;
 using namespace brunt;
 
-// Aavan:2008-7-6 系息SECTION
+// Aavan:2008-7-6 断点信息SECTION
 #define BKP_SECTION_IMPORT			           "V15_BREAKPOINT_IMPORT"
 #define CONFIG_ROOT_IMPORT_PATH               "/hdisk/data/bp/"
 #define CONFIGBK_ROOT_IMPORT_PATH           "/hdisk/databackup/bp/"

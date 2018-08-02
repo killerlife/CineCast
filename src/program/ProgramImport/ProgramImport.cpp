@@ -1,4 +1,4 @@
-// ProgramImport.cpp :  DLL Ä³Ê¼Ì¡
+// ProgramImport.cpp : ¶¨Òå DLL µÄ³õÊ¼»¯Àı³Ì¡£
 //
 #ifdef WIN32
 #include "stdafx.h"
@@ -31,8 +31,8 @@
 #define DP_PrintS(arg,...) printf(arg,...)
 #define DPRINT(arg,...) printf(arg,...)
 #else
-#define DP_PrintS(arg...)
-#define DPRINT(arg...)
+#define DP_PrintS(arg,...) printf(arg)
+#define DPRINT(arg,...) printf(arg)
 #endif
 #endif
 #ifdef WIN32
@@ -105,7 +105,7 @@ private:
 	// Aavan: 2008-7-3
 	string getDstPath(const string& basePath, const string& id);//, const bool isdms, const string& adjustpath);
 
-	// Aavan: 2008-7-3 Ğ¶Ç·ÎªDMSÄ¿
+	// Aavan: 2008-7-3 ÅĞ¶ÏÊÇ·ñÎªDMS½ÚÄ¿
 	bool isDmsProgram(vector<string>& childFiles);
 	string getDmsDstProgram(vector<string>& childFiles);
 	bool DeleteDirectory(char *DirName);
@@ -121,13 +121,13 @@ private:
 	int m_status;
 	CGetSpace getSpace;
 private:
-	long long int  m_nProgramSize;  // Ä¿Ğ¡
-	std::vector<filename> m_oProgramfileList; //Ä¿Ä¼Ğ± 
+	long long int  m_nProgramSize;  // ½ÚÄ¿´óĞ¡
+	std::vector<filename> m_oProgramfileList; //½ÚÄ¿ÎÄ¼şÁĞ±í 
 	CImportThread* m_importThread;
 	int m_ProgramType;  //	ta_type_movie = 0, 
 	//   ta_type_publicad,
 	//   ta_type_businessad 
-	int m_nIsEnd;//ß³Ì½
+	int m_nIsEnd;//Ïß³Ì½áÊø
 
 	IProgramQuery*  m_pQueryImport;
 	IProgramQuery*  m_pQueryTarget;
@@ -237,7 +237,7 @@ bool CProgramImport::DeleteDirectory(char *DirName)
 	tempFind.Close();
 	if(!RemoveDirectory(DirName))
 	{
-		::MessageBox(0,"É¾Ä¿Â¼Ê§Ü£","Ï¢",MB_OK);
+		::MessageBox(0,"É¾³ıÄ¿Â¼Ê§°Ü£¡","¾¯¸æĞÅÏ¢",MB_OK);
 		return false;
 	}
 	return true;
@@ -402,14 +402,16 @@ int CProgramImport::checkImportProgram(const std::string& programPath, const std
 	error = m_pQueryImport->open(programPath, true);
 	if(error!=0)
 	{
-		DPRINT((DP_Error, "CProgramImport", "IProgramQuery->open() error: %d", error));
+		DPRINT("IProgramQuery->open() error: %d", error);
+//		DPRINT((DP_Error, "CProgramImport", "IProgramQuery->open() error: %d", error));
 		error = invalid_program_error;
 		releaseProgramQuery(m_pQueryImport);
 		return error;
 	}
 	if(m_pQueryImport->getProgramIndex(programId)<0)
 	{
-		DPRINT((DP_Error, "CProgramImport", "cannot find the program (id:%s).", programId.c_str()));
+		DPRINT("cannot find the program (id:%s).", programId.c_str());
+//		DPRINT((DP_Error, "CProgramImport", "cannot find the program (id:%s).", programId.c_str()));
 		error = invalid_program_error;
 	}
 
@@ -427,14 +429,16 @@ int CProgramImport::checkTargetProgram(const std::string& programPath, const std
 	error = m_pQueryTarget->open(programPath, true);
 	if(error!=0)
 	{
-		DPRINT((DP_Error, "CProgramImport", "IProgramQuery->open() error: %d", error));
+		DPRINT("IProgramQuery->open() error: %d", error);
+//		DPRINT((DP_Error, "CProgramImport", "IProgramQuery->open() error: %d", error));
 		error = invalid_program_error;
 		releaseProgramQuery(m_pQueryTarget);
 		return error;
 	}
 	if(m_pQueryTarget->getProgramIndex(programId)<0)
 	{
-		DPRINT((DP_Error, "CProgramImport", "cannot find the program (id:%s).", programId.c_str()));
+		DPRINT("cannot find the program (id:%s).", programId.c_str());
+//		DPRINT((DP_Error, "CProgramImport", "cannot find the program (id:%s).", programId.c_str()));
 		error = invalid_program_error;
 	}
 
@@ -545,7 +549,7 @@ int CProgramImport::import(const std::string& programPath, const std::string& pr
 		}
 
 		/*         
-		// Ó°Í¹
+		// µçÓ°ºÍ¹ã¸æ·ÖÀà
 		if (m_ProgramType != 0)
 		programId = lid;
 		else 
@@ -607,7 +611,7 @@ int CProgramImport::import(const std::string& programPath, const std::string& pr
 		string sIdFile = getSpace.getSaveFile();
 		if (sIdFile != "")
 		{
-			cout << "Ø¼Ä¼ id  | describe.ini   ||| sIdFile = " << sIdFile << endl;
+			cout << "¹Ø¼üÎÄ¼ş id  | describe.ini   ||| sIdFile = " << sIdFile << endl;
 			childFiles.push_back(sIdFile);
 		}
 		*/
@@ -633,8 +637,10 @@ int CProgramImport::import(const std::string& programPath, const std::string& pr
 			fs::path filePath(srcfilename.c_str());
 			long long filesize = fs::file_size(filePath);
 			m_nProgramSize += filesize;
-			DPRINT((DP_Trace, "CProgramImport", "import files(%d/%d) : %s : %I64d", 
-											i, childFiles.size(), srcfilename.c_str(), filesize));
+			DPRINT("import files(%d/%d) : %s : %I64d", 
+											i, childFiles.size(), srcfilename.c_str(), filesize);
+//			DPRINT((DP_Trace, "CProgramImport", "import files(%d/%d) : %s : %I64d", 
+//											i, childFiles.size(), srcfilename.c_str(), filesize));
 
 			filename fn;
 			fn.m_src   = srcfilename;
@@ -819,7 +825,7 @@ string CProgramImport::getDstPath(const string& basePath, const string& id)//, c
 	*/ 
 }
 
-// Aavan: 2008-7-3 Ğ¶Ç·ÎªDMSÄ¿
+// Aavan: 2008-7-3 ÅĞ¶ÏÊÇ·ñÎªDMS½ÚÄ¿
 bool CProgramImport::isDmsProgram(vector<string>& childFiles)
 {
 	vector<string>::iterator ite_child = childFiles.begin();
@@ -841,7 +847,7 @@ bool CProgramImport::isDmsProgram(vector<string>& childFiles)
 	return false;
 }
 
-// Aavan: 2008-7-3 Ä¿Â·
+// Aavan: 2008-7-3 µ÷ÕûÄ¿±êÂ·¾¶
 string CProgramImport::getDmsDstProgram(vector<string>& childFiles)
 {
 	vector<string>::iterator ite_child = childFiles.begin();
@@ -867,30 +873,30 @@ string CProgramImport::getDmsDstProgram(vector<string>& childFiles)
 
 
 //
-//	×¢â£¡
+//	×¢Òâ£¡
 //
-//		 DLL Ì¬Óµ MFC
-//		DLLÓ´ DLL 
-//		 MFC ÎºÎºÚºÇ°
-//		 AFX_MANAGE_STATE ê¡£
+//		Èç¹û´Ë DLL ¶¯Ì¬Á´½Óµ½ MFC
+//		DLL£¬´Ó´Ë DLL µ¼³ö²¢
+//		µ÷Èë MFC µÄÈÎºÎº¯ÊıÔÚº¯ÊıµÄ×îÇ°Ãæ
+//		¶¼±ØĞëÌí¼Ó AFX_MANAGE_STATE ºê¡£
 //
-//		:
+//		ÀıÈç:
 //
 //		extern "C" BOOL PASCAL EXPORT ExportedFunction()
 //		{
 //			AFX_MANAGE_STATE(AfxGetStaticModuleState());
-//			// Ë´ÎªÍ¨
+//			// ´Ë´¦ÎªÆÕÍ¨º¯ÊıÌå
 //		}
 //
-//		ËºÎº MFC 
-//		Ã¿Ê®ÒªÎ¶
-//		ÎªĞµÄµÒ»
-//		Ö£Ğ¶
-//		ÎªÇµÄ¹ìº¯ MFC
-//		DLL Ã¡
+//		´ËºêÏÈÓÚÈÎºÎ MFC µ÷ÓÃ
+//		³öÏÖÔÚÃ¿¸öº¯ÊıÖĞÊ®·ÖÖØÒª¡£ÕâÒâÎ¶×Å
+//		Ëü±ØĞë×÷Îªº¯ÊıÖĞµÄµÚÒ»¸öÓï¾ä
+//		³öÏÖ£¬ÉõÖÁÏÈÓÚËùÓĞ¶ÔÏó±äÁ¿ÉùÃ÷£¬
+//		ÕâÊÇÒòÎªËüÃÇµÄ¹¹Ôìº¯Êı¿ÉÄÜÉú³É MFC
+//		DLL µ÷ÓÃ¡£
 //
-//		Ğ¹Ï¸Ï¢
-//		 MFC Ëµ 33  58
+//		ÓĞ¹ØÆäËûÏêÏ¸ĞÅÏ¢£¬
+//		Çë²ÎÔÄ MFC ¼¼ÊõËµÃ÷ 33 ºÍ 58¡£
 //
 
 // CProgramImportApp
@@ -899,21 +905,21 @@ BEGIN_MESSAGE_MAP(CProgramImportApp, CWinApp)
 END_MESSAGE_MAP()
 
 
-// CProgramImportApp 
+// CProgramImportApp ¹¹Ôì
 
 CProgramImportApp::CProgramImportApp()
 {
-	// TODO: Ú´Ë´Ó¹ë£¬
-	// ÒªÄ³Ê¼ InitInstance 
+	// TODO: ÔÚ´Ë´¦Ìí¼Ó¹¹Ôì´úÂë£¬
+	// ½«ËùÓĞÖØÒªµÄ³õÊ¼»¯·ÅÖÃÔÚ InitInstance ÖĞ
 }
 
 
-// Î¨Ò»Ò» CProgramImportApp 
+// Î¨Ò»µÄÒ»¸ö CProgramImportApp ¶ÔÏó
 
 CProgramImportApp theApp;
 
 
-// CProgramImportApp Ê¼
+// CProgramImportApp ³õÊ¼»¯
 
 BOOL CProgramImportApp::InitInstance()
 {

@@ -1,0 +1,2 @@
+#!/bin/bash
+make clean all NOC_WANDA=TRUE NOC_URL_LEONIS="NOC_URL_LEONIS='\"noc.leoniscinema.com\"'" NOC_IP_LEONIS="NOC_IP_LEONIS='\"139.199.98.74\"'" NOC_URL="NOC_URL='\"www.chinafilmdsd.com\"'" NOC_IP="NOC_IP='\"123.127.110.181\"'" NOC_IP_WANDA="NOC_IP_WANDA='\"10.199.89.213\"'"

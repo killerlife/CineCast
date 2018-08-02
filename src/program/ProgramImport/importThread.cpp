@@ -13,9 +13,9 @@
 #ifdef DEBUGPRINT
 #include "brunt/debugprint.h"
 #else
-#define DP_Trace(arg...)
-#define DPRINT(arg...)
-#define DP_PrintS(arg...)
+#define DP_Trace(arg,...)
+#define DPRINT(arg,...) printf(arg)
+#define DP_PrintS(arg,...)
 #endif
 //#include <sys/time.h>
 //#include <sys/types.h>
@@ -159,15 +159,15 @@ int CImportThread::importFile()
 		unsigned long nBytesRead,nLongW = 0;
 		int n = 1;
 //		DPRINT((DP_Trace, "CImportThread", "start copy"));
-		DPRINT("CImportThread start copy\n");
-		mytime("始");
+		DPRINT("start copy");
+		mytime("开始");
 		BOOL bResult = TRUE;
 		while ((status() != thread_stoping) && (status() != thread_stopped))
 		{			
 			nBytesRead = 0;
 			bResult = TRUE;
 			bResult = ReadFile(hSrcFile,pBuf,nSize,&nBytesRead,NULL);
-			mytime("");
+			mytime("结束");
 			if (nBytesRead == 0) 
 			{   // this is the end of the file 
 				break;
@@ -424,9 +424,9 @@ int CImportThread::importFile()
 {
 	std::vector<filename>::iterator ite;
 	filename fn;
-// 	mytime("100K  始目");
+// 	mytime("100K  开始导入节目");
 // 
-// 	cout << "2叱" <<endl;
+// 	cout << "2进入线程" <<endl;
 
 	m_nIsEnd = 0;
 
@@ -448,7 +448,7 @@ int CImportThread::importFile()
 		}
 		catch (const fs::filesystem_error& ex)
 		{
-			cout << "募路丫" <<endl;
+			cout << "文件路径已经存在" <<endl;
 			std::string error = ex.what();
 			return false;
 		}
@@ -461,8 +461,8 @@ int CImportThread::importFile()
 
 		//FileHandle srcFile = fopen64(m_src.c_str() ,"rb"); 		
 		if(!FileValid(srcFile)){
-			cout << "  募m_src  = " << m_src  << endl;
-			DP_PrintS(" 募");
+			cout << " 打开 文件错误m_src  = " << m_src  << endl;
+			DP_PrintS("打开 文件错误");
 			return false;
 		}
 		cout << "file 22222222 = " << m_dest << endl;
@@ -472,14 +472,14 @@ int CImportThread::importFile()
 		if(!FileValid(destFile)){
 			destFile = FileOpenNew(m_dest.c_str());
 //			destFile = fopen64(m_dest.c_str() ,"w+b"); 
-			cout << " 目募m_dest   = "<< m_dest  << endl;						
-			DP_PrintS("目募");
+			cout << " 创建目标文件m_dest   = "<< m_dest  << endl;						
+			DP_PrintS("创建目标文件");
 		}
 
 		
 		if(!FileValid(destFile))
 		{
-			cout << " 目募m_dest   = "<< m_dest  << endl;									
+			cout << " 创建目标文件错误m_dest   = "<< m_dest  << endl;									
 			FileClose(srcFile);
 			return false;
 		}
@@ -497,7 +497,7 @@ int CImportThread::importFile()
 		
 		FileSeek(srcFile, dstSize);
 
-		// 系募小1M ,系
+		// 如果断点的文件小于1M ,不做断点续传
 		if(dstSize > srcSize && dstSize < BREAK_POINT_DELETE_FILE_SZIE)
 		{
 			cout << "dstSize > srcSize  " << endl;					
@@ -562,7 +562,7 @@ int CImportThread::importFile()
 
 				if(readBytes == 0)
 				{
-					cout << "**readBytes == 0 " <<endl;
+					cout << "**readBytes == 0 进入" <<endl;
 					if (srcSize == readAddSize){
 						brunt::sleep(1000);
 						cout << "srcSize = " << srcSize << endl;					
@@ -597,7 +597,7 @@ int CImportThread::importFile()
 			
 			if (srcSize != readAddSize)
 			{
-				cout << "**err 目募copy募小" <<endl;
+				cout << "**err 目标文件与copy的文件大小不等" <<endl;
 				m_nIsEnd = 1;
 				FileClose(srcFile);
 				FileClose(destFile);
@@ -613,12 +613,12 @@ int CImportThread::importFile()
 		FileClose(srcFile);
 		FileClose(destFile);
 
-		// cui win 眉
+		// cui win 不用加这个
 		//		system("sync");
 	}
 
 	/*  
-	// 牵薷ID
+	// 代码的作用是，广告修改ID
 	if (m_adId != "" && m_adPath != "")
 	{
 		IProgramParse* programParse = createProgramParse();
@@ -654,7 +654,7 @@ void CImportThread::doit()
 	else
 		m_status = IMPORT_STATUS_END;
 	m_pObserver->notify(m_status,m_nIsEnd);
-	mytime("傻目");
+	mytime("完成导入节目");
 
 	cout <<" ***doit = " << m_status << endl;
 }

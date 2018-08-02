@@ -250,6 +250,8 @@ void PMTDataThread::doit()
 									{
 										extern std::vector<std::string> gRunPathList;
 										DPRINTF("Auto Delete in PMT Thread\n");
+										if(gLog)
+											gLog->Write(LOG_SYSTEM, "Auto Delete in PMT Thread");
 										co.AutoDelete(0, gRunPathList, 1024000000);
 									}
 
@@ -389,6 +391,8 @@ void PMTDataThread::doit()
 							{
 								extern std::vector<std::string> gRunPathList;
 								DPRINTF("Auto Delete in PMT Thread\n");
+								if(gLog)
+									gLog->Write(LOG_SYSTEM, "Auto Delete in PMT Thread");
 								co.AutoDelete(0, gRunPathList, 1024000000);
 							}
 							m_filmList.push_back(pFilmDataThread);

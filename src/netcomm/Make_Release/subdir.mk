@@ -11,6 +11,7 @@ CPP_SRCS += \
 ../GuiServer.cpp \
 ../SimulatorServer.cpp \
 ../cfctms.cpp \
+../aureolam.cpp \
 ../BaseOperation.cpp 
 #../Log.cpp \
 #../LogFileOperation.cpp
@@ -27,6 +28,7 @@ OBJS += \
 ./GuiServer.o \
 ./SimulatorServer.o \
 ./cfctms.o \
+./aureolam.o \
 ./BaseOperation.o 
 #./Log.o \
 #./LogFileOperation.o
@@ -37,6 +39,7 @@ CPP_DEPS += \
 ./GuiServer.d \
 ./SimulatorServer.d \
 ./cfctms.d \
+./aureolam.d \
 ./BaseOperation.d 
 #./Log.d \
 #./LogFileOperation.d
@@ -66,6 +69,16 @@ CXXFLAGS += \
 -fPIC \
 -O0 \
 -Wall
+
+ifeq ($(NOC_WANDA), TRUE)
+CPPFLAGS += -DWANDA
+CXXFLAGS += -DWANDA
+endif
+
+ifeq ($(NOC_AUREOLAM), TRUE)
+CPPFLAGS += -DAUREOLAM
+CXXFLAGS += -DAUREOLAM
+endif
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: ../%.cxx

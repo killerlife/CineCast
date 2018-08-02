@@ -31,15 +31,18 @@ class NetCommThread: public brunt::CActiveThread
 public:
 	NetCommThread();
 	virtual ~NetCommThread();
-	bool Init(bool bLeonis = false);
+	bool Init(); //节目管理中心
+	bool Init(int type); //LEONIS OR WANDA OR OTHER
 	bool Start();
 	bool Stop();
 	int GetStatus() { return m_status; };
 	bool GetMD5File(uint32 filmId); //向节目管理中心平台发送MD5请求
 	bool ReportLost(char* buf, int nSize, int nLeoSize); //向节目管理中心平台上报丢包信息
 	bool HeartBreat(); //发送心跳包
-	void StartRecvTask(); //初始化任务开始时间
-	void StartRoundRecv(); //初始化每轮开始时间
+	void StartRecvTask(); //设置任务开始时间
+	void StartRoundRecv(); //设置初始化本次开始时间
+	void ResetRecvTask(); //复位任务开始时间
+	void ResetRoundRecv(); //复位本次接收开始时间
 	bool LogUpload(uint32 nBegin, uint32 nEnd, bool bLeonis = false); //日志上报
 	bool PkgSendConfirm(uint32 filmId); //LEONIS分布式补包丢包上报确认
 	bool IsConnect(){ return bConnected;}; //节目管理中心平台是否连接
@@ -87,6 +90,7 @@ private:
 	bool bPause;
 	int nHeartCount;
 	int nDNSCount;
+	bool nChangDns;
 
 	// Use new FileName Descriptor to support NEW PROTOCOL [1/16/2018 jaontolt]
 	FILE* m_pUpdateFile;
@@ -97,6 +101,8 @@ private:
 	// Add BootTime [2/8/2018 jaontolt]
 	time_t boot_time;
 	//////////////////////////////////////////////////////////////////////////
+
+	int nNocType;
 };
 
 NetCommThread* CreateNetComm();

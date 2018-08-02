@@ -1,4 +1,16 @@
-﻿#include "NetCommThread.h"
+﻿//////////////////////////////////////////////////////////////////////////
+// 修改记录
+// --------
+//
+// 修改NetCommThread::doit中的DNS解释代码 [7/31/2018 jaontolt]
+// 当域名解析不通时，自动转换为IP
+// 当域名或IP连不上时，自动换用IP或域名
+// 更换默认管理中心，LEONIS中心，WANDA中心的URL与IP为宏定义，通过Makefile修改
+//
+//////////////////////////////////////////////////////////////////////////
+
+
+#include "NetCommThread.h"
 #include "message.h"
 #include "ini.h"
 #include "BaseOperation.h"
@@ -280,7 +292,7 @@ void ReleaseNetComm(NetCommThread* pNet)
 
 }
 
-NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false), pHeartThread(NULL), bPause(false), nHeartCount(0), nDNSCount(0), m_pUpdateFile(NULL)
+NetCommThread::NetCommThread():m_mutex(0), bConnected(false), bPkgSendStart(false), pHeartThread(NULL), bPause(false), nHeartCount(0), nDNSCount(0), m_pUpdateFile(NULL), nChangDns(false)
 {
 	string s = getDateTime();
 	memset(m_loginReq.startupTime, 0, 20);
@@ -355,10 +367,16 @@ void NetCommThread::StartRoundRecv()
 	m_strRoundTime = getDateTime();
 }
 
-bool NetCommThread::Init(bool bLeonis)
+bool NetCommThread::Init()
 {
-	bLeonisCfg = bLeonis;
+	bLeonisCfg = false;
 	return true;
+}
+
+bool NetCommThread::Init(int type)
+{
+	bLeonisCfg = true;
+	nNocType = type;
 }
 
 bool NetCommThread::Start()
@@ -1293,8 +1311,22 @@ bool NetCommThread::HeartBreat()
 	m_sHeart.filmLength = gRecv.nFileLength;
 	m_sHeart.filmSegment = gRecv.nTotalSegment;
 	m_sHeart.recvRound = gRecv.nReceiveStatus >> 16;
+
+	//////////////////////////////////////////////////////////////////////////
+	//  [5/28/2018 jaontolt]
+	//Make sure the value is 0, while waiting the task start
+	if(m_strTaskTime.empty())
+		memset(m_sHeart.taskStartTime, 0, 20);
+	else
 	memcpy(m_sHeart.taskStartTime, m_strTaskTime.c_str(), m_strTaskTime.size());
+	if(m_strRoundTime.empty())
+		memset(m_sHeart.recvStartTime, 0, 20);
+	else
 	memcpy(m_sHeart.recvStartTime, m_strRoundTime.c_str(), m_strRoundTime.size());
+	//////////////////////////////////////////////////////////////////////////
+	DPRINTF("Task Time: %s\n", m_sHeart.taskStartTime);
+	DPRINTF("Round Time: %s\n", m_sHeart.recvStartTime);
+
 	m_sHeart.filmRecvState = gRecv.nReceiveStatus & 0xffff;
 	if(bLeonisCfg)
 	{
@@ -1646,13 +1678,16 @@ void NetCommThread::doit()
 					{
 						if(bLeonisCfg)
 						{
+								switch(nNocType)
+								{
+								case 0:
 							if(ini->read(" ", "LEONIS-SERVER", tmp))
 							{
 								url = tmp;
 							}
 							else
 							{
-								url = "";
+										url = NOC_URL_LEONIS;
 								if(gLog)
 									gLog->Write(LOG_NETCOMMU, "[NetCommThread] read leonis server failed");
 							}
@@ -1664,6 +1699,35 @@ void NetCommThread::doit()
 							{
 								if(gLog)
 									gLog->Write(LOG_NETCOMMU, "[NetCommThread] read leonis port failed");
+										port = 8000;
+									}
+									break;
+#ifdef WANDA
+								case 1:
+									if(ini->read(" ", "WANDA-SERVER", tmp))
+									{
+										url = tmp;
+									}
+									else
+									{
+										url = NOC_IP_WANDA;
+										if(gLog)
+											gLog->Write(LOG_NETCOMMU, "[NetCommThread] read wanda server failed");
+									}
+									if (ini->read(" ", "WANDA-PORT", tmp))
+									{
+										port = atoi(tmp.c_str());
+									}
+									else
+									{
+										if(gLog)
+											gLog->Write(LOG_NETCOMMU, "[NetCommThread] read wanda port failed");
+										port = 8000;
+									}
+									break;
+#endif // WANDA
+								default:
+									url = "";
 								port = 0;
 							}
 						}
@@ -1675,7 +1739,7 @@ void NetCommThread::doit()
 						}
 						else
 						{
-							url = "";
+									url = NOC_URL;
 							if(gLog)
 								gLog->Write(LOG_NETCOMMU, "[NetCommThread] read server failed");
 						}
@@ -1687,7 +1751,7 @@ void NetCommThread::doit()
 						{
 							if(gLog)
 								gLog->Write(LOG_NETCOMMU, "[NetCommThread] read port failed");
-							port = 0;
+									port = 8000;
 						}
 					}
 					}
@@ -1715,24 +1779,58 @@ void NetCommThread::doit()
 					}
 					releaseMyini(ini);
 				}
+					std::string tmpUrl = url;
 				try
 				{
 					if(m_loginSocket.Create(AF_INET, SOCK_STREAM, 0))
 					{
+							//////////////////////////////////////////////////////////////////////////
+							// 当域名解析不了时，换用IP [7/31/2018 jaontolt]
+							// 当域名或IP连不上时，换用IP或域名
 							if(nDNSCount > 5)
 							{
-								url = "123.127.110.181";
+								if(nChangDns)
+								{
+									tmpUrl = url;
+									nChangDns = false;
+								}
+								else
+								{
+									//Change URL to IP
+									//Change IP to URL
+									if(bLeonisCfg)
+									{
+										switch(nNocType)
+										{
+										case 0:
+											tmpUrl = NOC_IP_LEONIS;
+											break;
+#ifdef WANDA
+										case 1:
+											tmpUrl = NOC_IP_WANDA;
+											break;
+#endif // WANDA
+										default:
+											break;
+										}
+									}
+									else
+										tmpUrl = NOC_IP;
+									nChangDns = true;
+								}
 								nDNSCount = 0;
 							}
+							//////////////////////////////////////////////////////////////////////////
 						struct sockaddr_in addr_in;
 						memset(&addr_in, 0, sizeof(sockaddr_in));
 						addr_in.sin_family = AF_INET;
 						addr_in.sin_port = htons(port);
 						struct hostent *he;
-						if((he = gethostbyname(url.c_str())) == NULL)
+							if((he = gethostbyname(tmpUrl.c_str())) == NULL)
 							{
+								sprintf(str, "[NetCommThread] gethostbyname %s error.", tmpUrl.c_str());
 							if(gLog)
-								gLog->Write(LOG_NETCOMMU, "[NetCommThread] gethostbyname error.");
+									gLog->Write(LOG_NETCOMMU, str);
 								throw -2;
 							}
 						struct in_addr **addr_list = (struct in_addr**)he->h_addr_list;
@@ -1742,7 +1840,7 @@ void NetCommThread::doit()
 							strcpy(ip, inet_ntoa(*addr_list[i]));
 							break;
 						}
-						sprintf(str, "[NetCommThread] %s resolved to %s.", url.c_str(), ip);
+							sprintf(str, "[NetCommThread] %s resolved to %s.", tmpUrl.c_str(), ip);
 						if(gLog)
 							gLog->Write(LOG_ERROR, str);
 						addr_in.sin_addr.s_addr = inet_addr(ip);
@@ -1764,12 +1862,14 @@ void NetCommThread::doit()
 						m_loginSocket.Destroy();
 					sleep(5);
 						bConnected = false;
-					sprintf(str, "[NetCommThread] Connect to login server %s:%d error.", url.c_str(), (uint16)port);
+						sprintf(str, "[NetCommThread] Connect to login server %s:%d error.", tmpUrl.c_str(), (uint16)port);
 					if(gLog)
 						gLog->Write(LOG_ERROR, str);
 					DPRINTF("%s\n", str);
 						if(err == -2)
 							nDNSCount++;
+						if(err == -1)
+							nDNSCount = 6; // 域名或IP连不上，更换为IP或域名 [7/31/2018 jaontolt]
 				}
 			}
 			break;
@@ -3649,4 +3749,14 @@ bool NetCommThread::UpdateLeonisRep(void *pReq, int bRes /*= 0*/)
 	}
 	ReleaseMutex();
 	return true;
+}
+
+void NetCommThread::ResetRecvTask()
+{
+	m_strTaskTime.clear();
+}
+
+void NetCommThread::ResetRoundRecv()
+{
+	m_strRoundTime.clear();
 }

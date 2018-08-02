@@ -1,4 +1,4 @@
-// ProgramManager.cpp :  DLL Ó¦Ã³Úµã¡£
+// ProgramManager.cpp : ¶¨Òå DLL Ó¦ÓÃ³ÌÐòµÄÈë¿Úµã¡£
 //
 #include "ProgramManager.h"
 #include "activeThread.h"
@@ -123,7 +123,7 @@ int CProgramManager::update(const vector<int>& updateSrcList)
 {
 	if(!(status() == thread_stopped || status() == thread_ready ))
 	{
-		DPRINT("CProgramManager The thread had not been ready, status = %d.\n", status());
+		DPRINT("The thread had not been ready, status = %d.", status());
 //		DPRINT((DP_Error, "CProgramManager", "The thread had not been ready, status = %d.", status()));
 		return -1;
 	}
@@ -136,7 +136,7 @@ int CProgramManager::update(const vector<int>& updateSrcList)
 	m_updateSrcList = updateSrcList;
 	if(!start())
 	{
-		DPRINT("CProgramManager Start thread failed, status = %d.\n", status());
+		DPRINT("Start thread failed, status = %d.", status());
 //		DPRINT((DP_Error, "CProgramManager", "Start thread failed, status = %d.", status()));
 		return -1;
 	}
@@ -253,7 +253,7 @@ void CProgramManager::loadInfo(int nSrc)
 
 	if(p->open(root, true)!=0)
 	{
-		DPRINT("CProgramManager IProgramQuery->open(%s) failed.\n", root.c_str());
+		DPRINT("IProgramQuery->open(%s) failed.", root.c_str());
 //		DPRINT(DP_Error, "CProgramManager", "IProgramQuery->open(%s) failed.", root.c_str());
 //		releaseProgramQuery(p);
 //		return;
@@ -291,15 +291,20 @@ int CProgramManager::getProgramFileList(int nSrc, int type, std::vector<InfoData
 	IProgramQuery* p = m_queryInfoList[nSrc].query;
 	if (p == NULL)
 	{
+		DPRINT("Program query == NULL\n");
 		return -1;
 	}
 	
 
+	DPRINT("program count %d\n", p->getProgramCount());
 	for (int i = 0; i < p->getProgramCount(); i++)
 	{
 		TProgramInfo info;
 		if (p->getProgramInfo(i, info) < 0)
+		{
+			DPRINT("get program info failed\n");
 			continue;
+		}
 // 		if ((info.type.compare(sType)))
 // 			continue;
 

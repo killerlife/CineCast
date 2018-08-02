@@ -110,7 +110,7 @@ void StartDataThread::doit()
 #if SIMULATOR
 			if((*pDebugCmd) == D_SIMULATOR)
 			{
-// 				DPRINTF("[Start Descriptor] Get Data\n");
+				DPRINTF("[Start Descriptor debug] Get Data\n");
 				char *pos = &SimDataBuf[SimBufPos?(SimBufPos-1)%10:9][0];
 				if((*(uint16*)pos) == 0x2ff)
 				{
@@ -271,7 +271,7 @@ void StartDataThread::doit()
 #endif
 			if (m_pFilter->ReadFilter(m_buffer, count))
 			{
-				//DPRINTF("[Start Descriptor] Get Data\n");
+				DPRINTF("[Start Descriptor] Get Data\n");
 				//do crc32 check
 				uint16 len = getBits(m_buffer, 12, 12);
 				uint32 crc = calc_crc32(m_buffer, len -1) & 0xffffffff;
@@ -284,8 +284,10 @@ void StartDataThread::doit()
 					uint8 *pdata = m_buffer+3;
 					if (m_pStartDescriptor)
 					{
+						DPRINTF("[Start Descriptor] del descriptor\n");
 						delete m_pStartDescriptor;
 						m_pStartDescriptor = NULL;
+						DPRINTF("[Start Descriptor] deleted descriptor\n");
 					}
 					m_pStartDescriptor = new struct StartDescriptor;
 
@@ -320,7 +322,7 @@ void StartDataThread::doit()
 						delete[] m_pStartDescriptor->FileName;
 						m_pStartDescriptor->FileName = NULL;
 					}
-					m_pStartDescriptor->FileName = new char[m_pStartDescriptor->FilmNameLength];
+					m_pStartDescriptor->FileName = new char[m_pStartDescriptor->FilmNameLength + 1];
 					memcpy(m_pStartDescriptor->FileName,
 						pdata,
 						m_pStartDescriptor->FilmNameLength);
@@ -334,7 +336,7 @@ void StartDataThread::doit()
 						delete[] m_pStartDescriptor->UUID;
 						m_pStartDescriptor->UUID = NULL;
 					}
-					m_pStartDescriptor->UUID = new char[m_pStartDescriptor->UUIDLength];
+					m_pStartDescriptor->UUID = new char[m_pStartDescriptor->UUIDLength + 1];
 					memcpy(m_pStartDescriptor->UUID,
 						pdata,
 						m_pStartDescriptor->UUIDLength);
@@ -348,7 +350,7 @@ void StartDataThread::doit()
 						delete[] m_pStartDescriptor->IssueDate;
 						m_pStartDescriptor->IssueDate = NULL;
 					}
-					m_pStartDescriptor->IssueDate = new char[m_pStartDescriptor->IssueDateLength];
+					m_pStartDescriptor->IssueDate = new char[m_pStartDescriptor->IssueDateLength + 1];
 					memcpy(m_pStartDescriptor->IssueDate,
 						pdata,
 						m_pStartDescriptor->IssueDateLength);
@@ -362,7 +364,7 @@ void StartDataThread::doit()
 						delete[] m_pStartDescriptor->Issuer;
 						m_pStartDescriptor->Issuer = NULL;
 					}
-					m_pStartDescriptor->Issuer = new char[m_pStartDescriptor->IssuerLength];
+					m_pStartDescriptor->Issuer = new char[m_pStartDescriptor->IssuerLength + 1];
 					memcpy(m_pStartDescriptor->Issuer,
 						pdata,
 						m_pStartDescriptor->IssuerLength);
@@ -376,7 +378,7 @@ void StartDataThread::doit()
 						delete[] m_pStartDescriptor->Creator;
 						m_pStartDescriptor->Creator = NULL;
 					}
-					m_pStartDescriptor->Creator = new char[m_pStartDescriptor->CreatorLength];
+					m_pStartDescriptor->Creator = new char[m_pStartDescriptor->CreatorLength + 1];
 					memcpy(m_pStartDescriptor->Creator,
 						pdata,
 						m_pStartDescriptor->CreatorLength);
@@ -386,6 +388,7 @@ void StartDataThread::doit()
 
 					if (m_pFileDescriptor != NULL)
 					{
+						DPRINTF("[Start Descriptor] delete file descriptor\n");
 						delete m_pFileDescriptor;
 						m_pFileDescriptor = NULL;
 					}

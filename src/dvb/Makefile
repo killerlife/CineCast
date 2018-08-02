@@ -1,4 +1,4 @@
-﻿CC=gcc
+CC=gcc
 CPLUS=g++
 
 SRC=test.cpp
@@ -8,8 +8,19 @@ OBJ=test.o
 CFLG = -L../../lib -L/usr/lib64
 
 CFLAGS += \
--DSIMULATOR \
--DENABLE_RAID 
+-DSIMULATOR
+
+ifeq ($(NOC_WANDA), TRUE)
+CFLAGS += -DWANDA
+endif
+
+ifeq ($(NOC_AUREOLAM), TRUE)
+CFLAGS += -DAUREOLAM
+endif
+
+ifeq ($(ENABLE_RAID), TRUE)
+CFLAGS += -DENABLE_RAID
+endif
 
 CLIB = \
 -lQtCore \

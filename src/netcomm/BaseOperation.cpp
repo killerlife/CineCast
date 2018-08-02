@@ -1,4 +1,14 @@
-﻿#include "BaseOperation.h"
+﻿//////////////////////////////////////////////////////////////////////////
+// 修改记录
+// --------
+//
+// 修改U盘升级策略，增加新的升级文件命名规则支持 [8/1/2018 jaontolt]
+// 支持升级文件自动识别，根据序列号，寻找Cast/Issue的升级包 [8/1/2018 jaontolt]
+// 根据版本号中的标识，自动寻找针对相应加密狗的升级包 [8/1/2018 jaontolt]
+// 针对U盘多个适合的升级包，自动寻找最新的升级包 [8/1/2018 jaontolt]
+//////////////////////////////////////////////////////////////////////////
+
+#include "BaseOperation.h"
 #include "ini.h"
 #include "../externcall/ExternCall.h"
 
@@ -1163,12 +1173,15 @@ void ContentOperation::UpdateDirList(int src)
 	m_time.clear();
 	m_deadlink.clear();
 	FindDir(root, 0);
-#if 0
+
+	if(gLog)
+		gLog->Write(LOG_SYSTEM, "M_DIR FIND RESULT:");
 	for(int i = 0; i < m_dir.size(); i++)
 	{
-		DPRINTF("%s\n", m_dir.at(i).c_str());
+		if(gLog)
+			gLog->Write(LOG_SYSTEM, m_dir.at(i).c_str());
+// 		DPRINTF("%s\n", m_dir.at(i).c_str());
 	}
-#endif
 }
 
 void ContentOperation::FindDir(std::string dir, int n)
@@ -1499,6 +1512,7 @@ bool ContentOperation::CheckWhileFull(int src)
 	}
 }
 
+//#define TEST 1
 //后续处理流程，按接收的影片大小删除文件，保证可用空间比接收大小大10G
 bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList, uint64 needSpace)
 {
@@ -1509,10 +1523,18 @@ bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList, uin
 		nspace = needSpace + (uint64)10*1024*1024*1024;
 	else
 		nspace = (uint64)400*1024*1024*1024;
-	sprintf(str, "free space:%lld, %lld", fspace, nspace);
-// 	printf("%s\n", str);
+	sprintf(str, "free space:%lld, need space:%lld", fspace, nspace);
 	if(gLog)
 		gLog->Write(LOG_NETCOMMU, str);
+
+	for (int i = 0; i < runList.size(); i++)
+	{
+		sprintf(str, "Run List: %s", runList.at(i).c_str());
+	if(gLog)
+		gLog->Write(LOG_NETCOMMU, str);
+	}
+
+// 	printf("%s\n", str);
 	if( fspace < nspace)
 	{
 		sprintf(str, "[ContentOperation] AutoDelete: %lld free.", fspace);
@@ -1527,18 +1549,60 @@ bool ContentOperation::AutoDelete(int src, std::vector<std::string>&runList, uin
 				for (int i = 0; i < m_dir.size(); i++)
 				{
 					bool bFind = false;
+
+					std::string sss = m_dir.at(i);
+					if(sss.at(sss.size() - 1) == '\\' || sss.at(sss.size() - 1) == '/')
+						sss.resize(sss.size() - 1);
+					if(!fs::is_directory(sss))
+					{
+						fs::path p(sss);
+						sss = p.parent_path().string();
+					}
+
+					if(gLog)
+					{
+						char cmd[512];
+						sprintf(cmd, "FILE to DIR: %s", sss.c_str());
+						gLog->Write(LOG_SYSTEM, cmd);
+					}
+
 					for(int j = 0; j < runList.size(); j++)
 					{
-						if(runList.at(j).find(m_dir.at(i)) != std::string::npos)
+// 						if(runList.at(j).find(m_dir.at(i)) != std::string::npos)
+						std::string rl = runList.at(j);
+						if(rl.at(rl.size() - 1) == '\\' || rl.at(rl.size() - 1) == '/')
+							rl.resize(rl.size() - 1);
+
+						if(rl.size() > sss.size())
+							bFind = false;
+						else
 						{
+							if(strncmp(sss.c_str(), rl.c_str(), rl.size()) == 0)
+						{
+								char cmd[512];
+								sprintf(cmd, "found dir: %s\n %s", sss.c_str(), runList.at(j).c_str());
+								if(gLog)
+									gLog->Write(LOG_SYSTEM, cmd);
+								bFind = true;
+								break;
+							}
+						}
+#if 0
+						if(sss.find(rl.at(j)) != std::string::npos) //RunList是目录，比m_dir中的文件名短
+						{
+							char cmd[512];
+							sprintf(cmd, "found dir: %s\n %s", sss.c_str(), runList.at(j).c_str());
+							if(gLog)
+								gLog->Write(LOG_SYSTEM, cmd);
 							bFind = true;
 							break;
 						}
+#endif // 0
 					}
 					if(!bFind)
 					{
 						//Don't delete /storage/ftp, it's vsftp root directory.
-						if(!(m_dir.at(i) == "/storage/ftp" || m_dir.at(i) == "/storage/recv"))
+						if(!(sss == "/storage/ftp" || sss == "/storage/recv" || sss == "/storage" || sss == "/storage/disk"))
 						{
 						char cmd[512];
 						sprintf(cmd, "rm -rf %s", m_dir.at(i).c_str());
@@ -2278,6 +2342,7 @@ std::string USB::GetMountPoint()
 		return s;
 }
 
+#include <algorithm>
 bool USB::ReadyUpdate()
 {
 	char cmd[500];
@@ -2288,6 +2353,7 @@ bool USB::ReadyUpdate()
 		if(bMount)
 		{
 			std::string src = m_dir.at(0);
+#if 0 // 老升级策略 [8/1/2018 jaontolt]
 			src += "/leonisupdate.zt";
 			fs::path src_path(src);
 			if(!fs::exists(src_path))
@@ -2302,6 +2368,115 @@ bool USB::ReadyUpdate()
 				DPRINTF("[USB] no src: %s\n", src.c_str());
 				return false;
 }
+#else // 新的升级策略 [8/1/2018 jaontolt]
+			try
+			{
+				fs::path usbpath(src);
+				std::list<std::string> fileList;
+				fs::directory_iterator end_itr;
+				for(fs::directory_iterator itr(usbpath); itr != end_itr; ++itr)
+				{
+					if(fs::is_regular(*itr))
+					{
+						std::string tmp = fs::extension(*itr);
+						transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
+						if(tmp == ".zt")
+						{
+							std::string file = itr->path().string();
+							transform(file.begin(), file.end(), file.begin(), ::tolower);
+							if(file.find("leonisupdate") != std::string::npos)
+							{
+								DPRINTF("[USB] find src: %s\n", itr->path().string().c_str());
+								fileList.push_back(itr->path().string());
+							}
+						}
+					}
+				}
+				if(fileList.size() == 0)
+				{
+					DPRINTF("[USB] no src: %s\n", src.c_str());
+					return false;
+				}
+
+				std::string tmp = fileList.front();
+				transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
+				if(fileList.size() == 1 && tmp.find("leonisupdate.zt") != std::string::npos)
+				{
+					// 当只有1个升级文件，并且命名规则为老规则时，使用这个兼容文件 [8/1/2018 jaontolt]
+					src = fileList.front();
+					fileList.pop_front();
+					DPRINTF("[USB] only one old school src: %s\n", src.c_str());
+				}
+				else
+				{
+					// 当有多个升级文件或命名规则为新规则时，按以下流程处理
+					//leonisupdate-YYYYMMDD-XFFE-
+					extern char gVersion[16];
+					extern uint32 gMachineId;
+					// 通过版本号获得加密狗类型 H/S [8/1/2018 jaontolt]
+					char cType = toupper(gVersion[12]);
+					DPRINTF("[USB] dog type: %c\n", cType);
+
+					// 通过设备ID得到设备类型 Cast/Issue [8/1/2018 jaontolt]
+					bool bIssue;
+					if(gMachineId > 10065000)
+						bIssue = true;
+					else
+						bIssue = false;
+
+					std::list<std::string>::iterator itor;
+
+					// 删除列表中的非本设备类型与加密狗类型的升级文件 [8/1/2018 jaontolt]
+					for(itor = fileList.begin(); itor != fileList.end();)
+					{
+						std::string name = fs::basename(*itor);
+						transform(name.begin(), name.end(), name.begin(), ::toupper); //转为大写作比较
+						DPRINTF("[USB] process src: %s\n", name.c_str());
+						if(bIssue)
+						{
+							if(name.find("ISSUE") == std::string::npos)
+							{
+								DPRINTF("[USB] erase src not issue\n");
+								itor = fileList.erase(itor);
+							}
+							else if(cType != name.at(25))
+							{
+								DPRINTF("[USB] erase src type: %c\n", cType);
+								itor = fileList.erase(itor);
+							}
+							else 
+								++itor;
+						}
+						else
+						{
+							if(name.find("ISSUE") != std::string::npos)
+							{
+								DPRINTF("[USB] erase src is issue\n");
+								itor = fileList.erase(itor);
+							}
+							else if(cType != name.at(25))
+							{
+								DPRINTF("[USB] erase src type: %c\n", cType);
+								itor = fileList.erase(itor);
+							}
+							else
+								++itor;
+						}
+					}
+					fileList.sort();
+					src = fileList.back();
+					fileList.clear();
+					DPRINTF("[USB] new school src: %s\n", src.c_str());
+				}
+			}
+			catch (const fs::filesystem_error& e)
+			{
+				sprintf(cmd, "[USB] ReadyUpdate: except %s.", e.what());
+				if(gLog)
+					gLog->Write(LOG_ERROR, cmd);
+				return false;
+			}
+#endif
 			//20160612: Fix pathname with space
 			sprintf(cmd, "cp -f \"%s\" /home/leonis/update/leonisupdate.zt", src.c_str());
 			//---------------------------------
